@@ -5,6 +5,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -15,9 +16,9 @@ class HealthControllerTest {
 
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.service").value("tangluck"))
-                .andExpect(jsonPath("$.status").value("ok"))
-                .andExpect(jsonPath("$.app").value("/app/register"));
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Tang Luck P0-A")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("http://127.0.0.1:5175/app/register")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("http://127.0.0.1:5175/admin")));
     }
 
     @Test
