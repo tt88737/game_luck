@@ -13,3 +13,5 @@
 - 新增 `docker-compose.yml`，定义本地 MySQL 8 开发服务。
 - 生成 Spring Boot 3.5.15 后端骨架和 Vite/Vue 3 前端骨架；原计划中的 Spring Boot 3.3.6 已被 Spring Initializr 拒绝。
 - 后端骨架测试首次失败，根因是默认 `@SpringBootTest` 连接本地 MySQL 账号失败；新增 H2 测试 profile 让基线测试独立运行。
+- 完成 P0-A 核心数据库迁移和演示种子数据，包含 13 张核心表、地区/合规文档/活动/Coupon 初始数据。
+- 验证通过：`backend .\gradlew.bat test`，`frontend npm run build`。
