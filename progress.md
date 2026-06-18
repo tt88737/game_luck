@@ -19,3 +19,5 @@
 - 验证通过：`backend .\gradlew.bat test`，`frontend npm run build`。
 - 完成注册服务、合规地区校验、条款确认日志、GC/SC 钱包创建、合规文档查询接口和基础 Security 配置。
 - 验证通过：`backend .\gradlew.bat test`，`frontend npm run build`。
+- 完成钱包入账服务、`wallet_ledger` 写入、幂等 key 防重复、钱包汇总、SC 来源汇总和流水查询接口。
+- 验证通过：`backend .\gradlew.bat test`，`frontend npm run build`。

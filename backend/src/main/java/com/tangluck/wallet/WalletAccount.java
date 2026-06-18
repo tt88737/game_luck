@@ -62,4 +62,13 @@ public class WalletAccount {
     public BigDecimal getFrozenBalance() {
         return frozenBalance;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void credit(BigDecimal amount, Instant now) {
+        this.balance = this.balance.add(amount);
+        this.updatedAt = now;
+    }
 }
