@@ -1,5 +1,6 @@
 import { mount, flushPromises } from '@vue/test-utils'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { createPinia, setActivePinia } from 'pinia'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import AppHome from './AppHome.vue'
 
 function json(data: unknown, status = 200) {
@@ -10,12 +11,17 @@ function json(data: unknown, status = 200) {
 }
 
 describe('AppHome', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia())
+  })
+
   afterEach(() => {
     vi.restoreAllMocks()
     localStorage.clear()
   })
 
   it('shows balances, rewards, tasks, coupon, and legal links', async () => {
+    localStorage.setItem('tangluck_user_id', '1')
     vi.spyOn(globalThis, 'fetch').mockImplementation((input) => {
       const url = String(input)
       if (url.endsWith('/wallet/summary')) {
@@ -54,6 +60,7 @@ describe('AppHome', () => {
   })
 
   it('displays region restriction from backend errors', async () => {
+    localStorage.setItem('tangluck_user_id', '1')
     vi.spyOn(globalThis, 'fetch').mockImplementation((input) => {
       if (String(input).endsWith('/wallet/summary')) {
         return json({
@@ -74,6 +81,7 @@ describe('AppHome', () => {
   })
 
   it('shows duplicate claim errors from campaign claim', async () => {
+    localStorage.setItem('tangluck_user_id', '1')
     vi.spyOn(globalThis, 'fetch').mockImplementation((input, init) => {
       const url = String(input)
       if (url.endsWith('/wallet/summary')) {
@@ -107,8 +115,10 @@ describe('AppHome', () => {
 })
 
 function mountHome() {
+  const pinia = createPinia()
   return mount(AppHome, {
     global: {
+      plugins: [pinia],
       stubs: {
         RouterLink: {
           props: ['to'],

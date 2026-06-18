@@ -1,11 +1,6 @@
 import { expect, test } from '@playwright/test'
 
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => {
-    localStorage.setItem('tangluck_token', 'demo-token')
-    localStorage.setItem('tangluck_user_id', '1')
-  })
-
   await page.route('/api/v1/wallet/summary', async (route) => {
     await route.fulfill({
       json: {
@@ -35,8 +30,24 @@ test.beforeEach(async ({ page }) => {
     await route.fulfill({
       json: [
         { documentType: 'terms', version: 'terms-v1', title: 'Terms of Use', contentUrl: '/legal/terms-v1' },
+        { documentType: 'sweepstakes_rules', version: 'rules-v1', title: 'Sweepstakes Rules', contentUrl: '/legal/rules-v1' },
+        { documentType: 'privacy', version: 'privacy-v1', title: 'Privacy Policy', contentUrl: '/legal/privacy-v1' },
         { documentType: 'amoe', version: 'amoe-v1', title: 'AMOE / No Purchase Necessary', contentUrl: '/legal/amoe-v1' },
       ],
+    })
+  })
+  await page.route('/api/v1/auth/register', async (route) => {
+    await route.fulfill({
+      json: {
+        user: { userId: 1, email: 'demo.ca@example.com', countryCode: 'US', stateCode: 'CA', riskLevel: 'normal', status: 'active' },
+        wallet: { gcBalance: '0', scBalance: '0', scFrozen: '0' },
+        token: 'demo-token',
+      },
+    })
+  })
+  await page.route('/api/v1/campaigns/WELCOME_BONUS/claim', async (route) => {
+    await route.fulfill({
+      json: { claimId: 1, campaignCode: 'WELCOME_BONUS', status: 'claimed', riskAction: 'normal', rewards: [{ currency: 'GC', amount: '10000' }, { currency: 'SC', amount: '0.50' }], ledgerIds: [1, 2] },
     })
   })
   await page.route('/api/v1/admin/dashboard/summary', async (route) => {
@@ -53,10 +64,18 @@ test.beforeEach(async ({ page }) => {
 })
 
 test('P0-A C-side and admin pages render demo workflow', async ({ page }) => {
-  await page.goto('/app')
+  await page.goto('/app/register')
+  await expect(page.getByText('Register for P0-A demo')).toBeVisible()
+  await page.getByLabel('Terms of Use terms-v1').check()
+  await page.getByLabel('Sweepstakes Rules rules-v1').check()
+  await page.getByLabel('Privacy Policy privacy-v1').check()
+  await page.getByRole('button', { name: 'Register and continue' }).click()
+
   await expect(page.getByText('Rewards wallet')).toBeVisible()
   await expect(page.getByText('WELCOME_BONUS')).toBeVisible()
   await expect(page.getByText('AMOE / No Purchase Necessary')).toBeVisible()
+  await page.getByRole('button', { name: 'Claim' }).click()
+  await expect(page.getByText('Claimed 10,000 GC + 0.50 SC')).toBeVisible()
 
   await page.getByRole('link', { name: 'Wallet' }).click()
   await expect(page.getByText('Balances and ledger')).toBeVisible()

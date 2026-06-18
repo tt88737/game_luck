@@ -68,6 +68,39 @@ export interface ComplianceDocument {
   contentUrl: string
 }
 
+export interface AcceptedDocument {
+  documentType: string
+  version: string
+}
+
+export interface RegisterRequest {
+  email: string
+  password: string
+  birthDate: string
+  countryCode: string
+  stateCode: string
+  acceptedDocuments: AcceptedDocument[]
+  utmSource: string
+  deviceId: string
+}
+
+export interface RegisterResponse {
+  user: {
+    userId: number
+    email: string
+    countryCode: string
+    stateCode: string
+    riskLevel: string
+    status: string
+  }
+  wallet: {
+    gcBalance: string | number
+    scBalance: string | number
+    scFrozen: string | number
+  }
+  token: string
+}
+
 export interface DashboardSummary {
   registrations: number
   claims: number

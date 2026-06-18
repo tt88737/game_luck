@@ -12,5 +12,11 @@ export const useSessionStore = defineStore('session', {
       localStorage.setItem('tangluck_token', token)
       localStorage.setItem('tangluck_user_id', userId)
     },
+    clearSession() {
+      this.token = ''
+      this.userId = ''
+      localStorage.removeItem('tangluck_token')
+      localStorage.removeItem('tangluck_user_id')
+    },
   },
 })

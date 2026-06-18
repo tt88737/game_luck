@@ -254,6 +254,50 @@ h2 {
   gap: 10px;
 }
 
+.form-stack {
+  display: grid;
+  gap: 12px;
+}
+
+.form-stack label {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+  text-align: left;
+}
+
+.form-stack input,
+.form-stack select {
+  width: 100%;
+}
+
+.legal-checks {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 8px;
+  background: var(--surface-soft);
+}
+
+.check-row {
+  display: grid !important;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 10px !important;
+}
+
+.check-row input {
+  width: 18px;
+  height: 18px;
+}
+
+.check-row small {
+  color: var(--muted);
+  font-weight: 600;
+}
+
 .bottom-nav {
   position: fixed;
   right: 0;

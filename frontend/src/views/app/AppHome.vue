@@ -3,7 +3,9 @@ import { computed, onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import { ApiError, apiGet, apiPost } from '../../api/http'
 import type { Campaign, ClaimResponse, ComplianceDocument, DailyTask, WalletSummary } from '../../api/contracts'
+import { useSessionStore } from '../../stores/session'
 
+const session = useSessionStore()
 const loading = ref(true)
 const error = ref('')
 const success = ref('')
@@ -19,7 +21,13 @@ const welcome = computed(() => campaigns.value.find((item) => item.campaignType 
 const dailyLogin = computed(() => tasks.value[0])
 const isRegionRestricted = computed(() => error.value.toLowerCase().includes('region') || error.value.includes('available in your region'))
 
-onMounted(loadHome)
+onMounted(() => {
+  if (!session.userId) {
+    loading.value = false
+    return
+  }
+  void loadHome()
+})
 
 async function loadHome() {
   loading.value = true
@@ -114,6 +122,12 @@ function formatAmount(value: string | number, digits: number) {
 
     <section v-if="loading" class="status-panel">Loading wallet and rewards...</section>
 
+    <section v-else-if="!session.userId" class="status-panel">
+      <strong>Register to start</strong>
+      <span>Create a demo account to load wallet, rewards, and legal document state.</span>
+      <RouterLink class="plain-link" to="/app/register">Register now</RouterLink>
+    </section>
+
     <section v-else-if="error && !summary" class="status-panel danger">
       <strong>{{ isRegionRestricted ? 'Region restricted' : 'Unable to load' }}</strong>
       <span>{{ error }}</span>
@@ -185,9 +199,9 @@ function formatAmount(value: string | number, digits: number) {
     </template>
 
     <nav class="bottom-nav" aria-label="App navigation">
+      <RouterLink to="/app/register">Register</RouterLink>
       <RouterLink to="/app">Home</RouterLink>
       <RouterLink to="/app/wallet">Wallet</RouterLink>
-      <RouterLink to="/app/activity">Activity</RouterLink>
     </nav>
   </main>
 </template>
