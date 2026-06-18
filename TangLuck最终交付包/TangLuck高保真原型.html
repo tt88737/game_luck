@@ -1,0 +1,850 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="format-detection" content="telephone=no">
+  <title>Tang Luck 高保真原型</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #eef2f6;
+      --paper: #ffffff;
+      --ink: #17202a;
+      --muted: #667085;
+      --line: #d7dde8;
+      --soft: #f5f7fa;
+      --brand: #0f766e;
+      --brand-2: #2563eb;
+      --gold: #c88a14;
+      --sc: #2563eb;
+      --danger: #b42318;
+      --warn: #b54708;
+      --ok: #027a48;
+      --shadow: 0 18px 45px rgba(15, 23, 42, .10);
+      --radius: 8px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif;
+      line-height: 1.45;
+      letter-spacing: 0;
+    }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 22px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, .94);
+      backdrop-filter: blur(12px);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      font-weight: 800;
+    }
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      background: #0f766e;
+      color: #fff;
+      font-weight: 900;
+    }
+    .brand small {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .mode-tabs {
+      display: inline-flex;
+      gap: 4px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--soft);
+    }
+    .mode-tabs button {
+      min-height: 34px;
+      padding: 0 14px;
+      border: 0;
+      border-radius: 7px;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .mode-tabs button.active {
+      background: #fff;
+      color: var(--ink);
+      box-shadow: 0 1px 4px rgba(15, 23, 42, .12);
+    }
+    .workspace { padding: 22px; }
+    .view { display: none; }
+    .view.active { display: block; }
+    .prototype-note {
+      max-width: 1180px;
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 12px;
+      border: 1px solid #c7d7fe;
+      border-radius: var(--radius);
+      background: #eff6ff;
+      color: #1849a9;
+      font-size: 13px;
+    }
+    .phone-stage {
+      display: grid;
+      grid-template-columns: minmax(320px, 420px) minmax(360px, 1fr);
+      gap: 22px;
+      max-width: 1180px;
+      margin: 0 auto;
+      align-items: start;
+    }
+    .phone {
+      width: 390px;
+      max-width: 100%;
+      min-height: 812px;
+      margin: 0 auto;
+      border: 10px solid #101828;
+      border-radius: 34px;
+      overflow: hidden;
+      background: #f8fafc;
+      box-shadow: var(--shadow);
+    }
+    .phone-status {
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      background: #101828;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .app-screen { display: none; min-height: 700px; background: #f8fafc; }
+    .app-screen.active { display: block; }
+    .app-head {
+      padding: 16px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--line);
+    }
+    .app-head-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .wallet-strip {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .coin-box {
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--soft);
+    }
+    .coin-box span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .coin-box strong { font-size: 18px; }
+    .gc { color: var(--gold); }
+    .sc { color: var(--sc); }
+    .app-content { padding: 14px; }
+    .banner {
+      padding: 14px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #0f766e, #2563eb);
+      color: #fff;
+    }
+    .banner h2 { margin: 0 0 6px; font-size: 20px; }
+    .banner p { margin: 0; color: rgba(255,255,255,.86); font-size: 13px; }
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin: 12px 0;
+    }
+    .quick {
+      min-height: 64px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 16px 0 8px;
+      font-weight: 800;
+    }
+    .section-title small { color: var(--muted); font-weight: 700; }
+    .task-card, .activity-card, .pack-card, .status-card {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      margin-bottom: 10px;
+    }
+    .task-card {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+    }
+    .task-card p, .activity-card p, .pack-card p, .status-card p { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+    .btn {
+      min-height: 34px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fff;
+      color: var(--ink);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .btn.primary { border-color: var(--brand); background: var(--brand); color: #fff; }
+    .btn.blue { border-color: var(--brand-2); background: var(--brand-2); color: #fff; }
+    .btn.disabled { color: #98a2b3; background: #f2f4f7; cursor: not-allowed; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      padding: 0 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      background: #f2f4f7;
+      color: #475467;
+    }
+    .badge.ok { background: #ecfdf3; color: var(--ok); }
+    .badge.warn { background: #fff7ed; color: var(--warn); }
+    .badge.blue { background: #eff6ff; color: var(--brand-2); }
+    .badge.red { background: #fef3f2; color: var(--danger); }
+    .legal-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+      font-size: 12px;
+    }
+    .legal-row a { color: #1849a9; text-decoration: none; font-weight: 800; }
+    .bottom-nav {
+      position: sticky;
+      bottom: 0;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      border-top: 1px solid var(--line);
+      background: #fff;
+    }
+    .bottom-nav button {
+      min-height: 54px;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .bottom-nav button.active { color: var(--brand); }
+    .side-panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .side-panel h2 { margin: 0; padding: 16px; border-bottom: 1px solid var(--line); font-size: 18px; }
+    .flow-list { padding: 14px 16px 18px; }
+    .flow-step {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .flow-step:last-child { border-bottom: 0; }
+    .step-no {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: #e6fffb;
+      color: var(--brand);
+      font-weight: 900;
+    }
+    .flow-step strong { display: block; }
+    .flow-step span { display: block; color: var(--muted); font-size: 13px; margin-top: 2px; }
+    .admin-layout {
+      max-width: 1380px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 236px minmax(0, 1fr);
+      min-height: 760px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+    .admin-nav {
+      background: #111827;
+      color: #d0d5dd;
+      padding: 16px 12px;
+    }
+    .admin-nav h3 { margin: 0 8px 14px; color: #fff; font-size: 15px; }
+    .admin-nav button {
+      width: 100%;
+      min-height: 38px;
+      margin-bottom: 4px;
+      padding: 0 10px;
+      border: 0;
+      border-radius: 7px;
+      background: transparent;
+      color: inherit;
+      text-align: left;
+      font-weight: 700;
+    }
+    .admin-nav button.active { background: #1f2937; color: #fff; }
+    .admin-main { min-width: 0; background: #f8fafc; }
+    .admin-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+    .admin-head h1 { margin: 0; font-size: 22px; }
+    .admin-head p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    .admin-page { display: none; padding: 18px 20px 28px; }
+    .admin-page.active { display: block; }
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(160px, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .metric {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+    .metric span { color: var(--muted); font-size: 12px; font-weight: 800; }
+    .metric strong { display: block; margin-top: 6px; font-size: 24px; }
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+    .filters { display: flex; gap: 8px; flex-wrap: wrap; }
+    .input, select {
+      min-height: 34px;
+      padding: 0 10px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fff;
+      color: var(--ink);
+    }
+    .table-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      overflow: auto;
+    }
+    table {
+      width: 100%;
+      min-width: 840px;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th, td {
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+    th { color: #475467; background: #f8fafc; font-size: 12px; }
+    tr:last-child td { border-bottom: 0; }
+    .split {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 340px;
+      gap: 14px;
+    }
+    .review-panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 14px;
+    }
+    .review-panel h3 { margin: 0 0 10px; }
+    .field {
+      display: grid;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .field label { color: var(--muted); font-size: 12px; font-weight: 800; }
+    textarea {
+      min-height: 86px;
+      resize: vertical;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+    }
+    .timeline { display: grid; gap: 10px; }
+    .timeline div {
+      padding-left: 12px;
+      border-left: 3px solid #d0d5dd;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(15, 23, 42, .48);
+    }
+    .modal.active { display: flex; }
+    .modal-card {
+      width: min(520px, 100%);
+      border-radius: 10px;
+      background: #fff;
+      box-shadow: 0 24px 80px rgba(15, 23, 42, .28);
+      overflow: hidden;
+    }
+    .modal-card header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+    }
+    .modal-card main { padding: 16px; }
+    .modal-card footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 12px 16px;
+      border-top: 1px solid var(--line);
+      background: #f8fafc;
+    }
+    @media (max-width: 980px) {
+      .workspace { padding: 12px; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .phone-stage { grid-template-columns: 1fr; }
+      .side-panel { order: -1; }
+      .admin-layout { grid-template-columns: 1fr; }
+      .admin-nav {
+        display: flex;
+        overflow-x: auto;
+        gap: 6px;
+      }
+      .admin-nav h3 { display: none; }
+      .admin-nav button { width: auto; flex: 0 0 auto; white-space: nowrap; }
+      .metric-grid { grid-template-columns: repeat(2, 1fr); }
+      .split { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 520px) {
+      .mode-tabs { width: 100%; }
+      .mode-tabs button { flex: 1; }
+      .prototype-note { display: block; }
+      .phone { border-width: 6px; border-radius: 24px; }
+      .quick-grid { grid-template-columns: repeat(2, 1fr); }
+      .metric-grid { grid-template-columns: 1fr; }
+      .toolbar { align-items: stretch; flex-direction: column; }
+      .filters { display: grid; grid-template-columns: 1fr; width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">TL</div>
+        <div>Tang Luck 高保真原型<small>美国 Sweepstakes Casino 合规平台</small></div>
+      </div>
+      <div class="mode-tabs" role="tablist" aria-label="原型视图切换">
+        <button class="active" data-mode="app">C端用户 App</button>
+        <button data-mode="admin">后台运营管理</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="view active" id="view-app">
+        <div class="prototype-note">
+          <span>当前为 C 端 P0-A 到 P1 关键链路原型：注册领奖、任务、钱包、GC 商店、兑换、AMOE、客服。</span>
+          <span><strong>合规重点：</strong>GC/SC 分离、No Purchase Necessary、AMOE、KYC、地区限制。</span>
+        </div>
+        <div class="phone-stage">
+          <div class="phone" aria-label="C端移动端原型">
+            <div class="phone-status"><span>9:41</span><span>Tang Luck</span><span>5G</span></div>
+            <section class="app-screen active" data-app-screen="home">
+              <div class="app-head">
+                <div class="app-head-row">
+                  <div><strong>Hi, Ava</strong><br><span class="badge ok">允许地区 CA</span></div>
+                  <button class="btn" data-open-modal="rules">Rules</button>
+                </div>
+                <div class="wallet-strip">
+                  <div class="coin-box"><span>Gold Coins</span><strong class="gc">128,500</strong></div>
+                  <div class="coin-box"><span>Sweeps Coins</span><strong class="sc">3.25</strong></div>
+                </div>
+              </div>
+              <div class="app-content">
+                <div class="banner">
+                  <h2>Welcome Bonus Ready</h2>
+                  <p>注册奖励：10,000 GC + 0.5 SC。SC 受地区、年龄、风控限制。</p>
+                  <div style="margin-top:12px"><button class="btn primary" data-open-modal="claim">领取奖励</button></div>
+                </div>
+                <div class="quick-grid">
+                  <button class="quick" data-app-nav="wallet">钱包</button>
+                  <button class="quick" data-app-nav="activity">任务</button>
+                  <button class="quick" data-app-nav="shop">商店</button>
+                  <button class="quick" data-app-nav="redeem">兑换</button>
+                </div>
+                <div class="section-title">每日任务 <small>UTC 00:00 重置</small></div>
+                <div class="task-card">
+                  <div><strong>查看 Sweepstakes Rules</strong><p>合规教育任务，只发 GC。</p></div>
+                  <button class="btn">+500 GC</button>
+                </div>
+                <div class="task-card">
+                  <div><strong>每日登录</strong><p>低额 SC 策略，风险用户只发 GC。</p></div>
+                  <button class="btn primary">领取</button>
+                </div>
+                <div class="section-title">Coupon Code</div>
+                <div class="task-card">
+                  <input class="input" value="WELCOME500" aria-label="Coupon Code">
+                  <button class="btn blue" data-open-modal="coupon">兑换</button>
+                </div>
+                <div class="legal-row">
+                  <a href="#">Terms</a><a href="#">Sweepstakes Rules</a><a href="#">No Purchase Necessary</a><a href="#">AMOE</a><a href="#">Responsible Gaming</a>
+                </div>
+              </div>
+            </section>
+
+            <section class="app-screen" data-app-screen="wallet">
+              <div class="app-head">
+                <div class="app-head-row"><strong>钱包</strong><span class="badge blue">Ledger 可追溯</span></div>
+                <div class="wallet-strip">
+                  <div class="coin-box"><span>GC 可用</span><strong class="gc">128,500</strong></div>
+                  <div class="coin-box"><span>SC 可兑换</span><strong class="sc">3.25</strong></div>
+                </div>
+              </div>
+              <div class="app-content">
+                <div class="status-card"><strong>冻结 SC</strong><p>0.00 SC。兑换审核中会冻结对应 SC，审核失败后释放或扣减。</p></div>
+                <div class="section-title">SC 来源说明</div>
+                <div class="status-card"><strong>SC 不销售</strong><p>SC 只能来自免费路径、促销赠品或经确认的活动奖励。</p></div>
+                <div class="section-title">最近流水</div>
+                <div class="task-card"><div><strong>注册赠送</strong><p>reward.register_bonus · legal approved</p></div><span class="badge ok">+0.50 SC</span></div>
+                <div class="task-card"><div><strong>每日登录</strong><p>risk_action=pass · CA</p></div><span class="badge ok">+0.05 SC</span></div>
+                <div class="task-card"><div><strong>查看规则</strong><p>gc_only</p></div><span class="badge">+500 GC</span></div>
+              </div>
+            </section>
+
+            <section class="app-screen" data-app-screen="activity">
+              <div class="app-head"><div class="app-head-row"><strong>活动中心</strong><span class="badge warn">SC 活动需审批</span></div></div>
+              <div class="app-content">
+                <div class="activity-card"><strong>注册赠送</strong><p>每用户一次，完成年龄和条款确认后可领取。</p><br><button class="btn disabled">已领取</button></div>
+                <div class="activity-card"><strong>每日登录</strong><p>默认小额 SC，风险用户降级为 GC。</p><br><button class="btn primary">领取今日奖励</button></div>
+                <div class="activity-card"><strong>邀请奖励</strong><p>默认只发 GC/经验/Coupon；发 SC 必须法务确认。</p><br><button class="btn">查看邀请链接</button></div>
+                <div class="activity-card"><strong>排行榜</strong><p>P1 开启，默认 GC/徽章，榜单结算需风控审核。</p><br><span class="badge">P1 预留</span></div>
+                <div class="activity-card"><strong>转盘</strong><p>概率、免费次数、奖池和 SC 额度必须通过法务确认。</p><br><span class="badge red">默认关闭</span></div>
+              </div>
+            </section>
+
+            <section class="app-screen" data-app-screen="shop">
+              <div class="app-head"><div class="app-head-row"><strong>Gold Coins Store</strong><span class="badge ok">No Purchase Necessary</span></div></div>
+              <div class="app-content">
+                <div class="status-card"><strong>购买对象说明</strong><p>本页只销售 Gold Coins。Sweeps Coins 不销售，若展示 SC bonus，必须作为促销赠品并经过审批。</p></div>
+                <div class="pack-card"><strong>Starter Pack</strong><p>50,000 GC · $4.99 · SC bonus 默认关闭</p><br><button class="btn blue">Buy Gold Coins</button></div>
+                <div class="pack-card"><strong>Value Pack</strong><p>150,000 GC · $14.99 · legal_approval_id required if SC bonus enabled</p><br><button class="btn blue">Buy Gold Coins</button></div>
+                <div class="pack-card"><strong>Promo Pack</strong><p>300,000 GC + Bonus SC 2.00 · 仅开放州展示</p><br><button class="btn disabled">等待法务确认</button></div>
+              </div>
+            </section>
+
+            <section class="app-screen" data-app-screen="redeem">
+              <div class="app-head"><div class="app-head-row"><strong>兑换奖励</strong><span class="badge warn">KYC Required</span></div></div>
+              <div class="app-content">
+                <div class="status-card"><strong>当前状态：资料待补充</strong><p>兑换需满足开放州、KYC、SC 门槛、风控审核。审核中 SC 将冻结。</p></div>
+                <div class="task-card"><div><strong>Gift Card $25</strong><p>需要 25 SC，可兑换余额不足。</p></div><button class="btn disabled">不可用</button></div>
+                <div class="task-card"><div><strong>KYC Verification</strong><p>姓名、生日、地址、证件信息。</p></div><button class="btn primary" data-open-modal="kyc">开始认证</button></div>
+                <div class="task-card"><div><strong>Redemption History</strong><p>暂无兑换申请。</p></div><span class="badge">empty</span></div>
+              </div>
+            </section>
+
+            <section class="app-screen" data-app-screen="support">
+              <div class="app-head"><div class="app-head-row"><strong>客服与 AMOE</strong><span class="badge blue">免费路径</span></div></div>
+              <div class="app-content">
+                <div class="status-card"><strong>AMOE 免费参与</strong><p>用户可通过 No Purchase Necessary 路径申请 SC。申请频率、地区和发放额度需法务确认。</p><br><button class="btn primary" data-open-modal="amoe">提交 AMOE 申请</button></div>
+                <div class="status-card"><strong>客服工单</strong><p>可关联钱包流水、Coupon、兑换、AMOE。客服不能直接补发 SC。</p><br><button class="btn blue">创建工单</button></div>
+                <div class="status-card"><strong>FAQ</strong><p>SC 来源、GC 购买、兑换资格、地区限制、Responsible Gaming。</p></div>
+              </div>
+            </section>
+            <nav class="bottom-nav">
+              <button class="active" data-app-nav="home">首页</button>
+              <button data-app-nav="wallet">钱包</button>
+              <button data-app-nav="activity">活动</button>
+              <button data-app-nav="shop">商店</button>
+              <button data-app-nav="support">客服</button>
+            </nav>
+          </div>
+
+          <aside class="side-panel">
+            <h2>C 端关键流程说明</h2>
+            <div class="flow-list">
+              <div class="flow-step"><div class="step-no">1</div><div><strong>注册与合规确认</strong><span>年龄、地区、Terms、Rules、Privacy 必须在领奖前完成。</span></div></div>
+              <div class="flow-step"><div class="step-no">2</div><div><strong>GC/SC 双钱包</strong><span>GC 娱乐币和 SC 促销币分开展示、分开入账、分开解释来源。</span></div></div>
+              <div class="flow-step"><div class="step-no">3</div><div><strong>活动发奖策略</strong><span>注册/登录可小额 SC；邀请、排行榜、会员默认 GC；转盘和商品包 SC bonus 需审批。</span></div></div>
+              <div class="flow-step"><div class="step-no">4</div><div><strong>购买链路</strong><span>只购买 Gold Coins，订单、按钮、收据不得表达为购买 SC。</span></div></div>
+              <div class="flow-step"><div class="step-no">5</div><div><strong>兑换链路</strong><span>KYC、地区、SC 余额、冻结、人工审核、审计日志缺一不可。</span></div></div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="view" id="view-admin">
+        <div class="prototype-note">
+          <span>当前为后台运营管理原型：活动配置、商品包、兑换/AMOE 审核、钱包流水、审计日志。</span>
+          <span><strong>验收重点：</strong>高风险操作必须审批、留痕、可回溯。</span>
+        </div>
+        <div class="admin-layout">
+          <aside class="admin-nav">
+            <h3>Tang Luck Admin</h3>
+            <button class="active" data-admin-nav="dashboard">BI 看板</button>
+            <button data-admin-nav="users">用户管理</button>
+            <button data-admin-nav="ledger">钱包流水</button>
+            <button data-admin-nav="campaigns">活动配置</button>
+            <button data-admin-nav="packages">商品包配置</button>
+            <button data-admin-nav="redemption">兑换审核</button>
+            <button data-admin-nav="amoe">AMOE 审核</button>
+            <button data-admin-nav="support">客服工单</button>
+            <button data-admin-nav="audit">审计日志</button>
+          </aside>
+          <section class="admin-main">
+            <header class="admin-head">
+              <div><h1 id="admin-title">BI 看板</h1><p id="admin-subtitle">运营、合规、风控统一监控。</p></div>
+              <div><button class="btn">导出</button> <button class="btn primary">新建配置</button></div>
+            </header>
+
+            <div class="admin-page active" data-admin-page="dashboard">
+              <div class="metric-grid">
+                <div class="metric"><span>今日注册</span><strong>1,248</strong></div>
+                <div class="metric"><span>SC 发放</span><strong>386.50</strong></div>
+                <div class="metric"><span>购买 GC 订单</span><strong>$18,420</strong></div>
+                <div class="metric"><span>待审核兑换</span><strong>37</strong></div>
+              </div>
+              <div class="split">
+                <div class="table-card">
+                  <table>
+                    <thead><tr><th>指标</th><th>P0-A 口径</th><th>今日</th><th>风险提示</th></tr></thead>
+                    <tbody>
+                      <tr><td>注册奖励领取率</td><td>完成注册且通过地区/年龄</td><td>72.4%</td><td><span class="badge ok">正常</span></td></tr>
+                      <tr><td>SC 发放用户数</td><td>legal approved campaign</td><td>5,620</td><td><span class="badge warn">接近日上限</span></td></tr>
+                      <tr><td>AMOE 申请</td><td>免费路径提交量</td><td>84</td><td><span class="badge ok">正常</span></td></tr>
+                      <tr><td>兑换失败率</td><td>KYC/风控/余额不足</td><td>18.1%</td><td><span class="badge warn">需复盘</span></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="review-panel">
+                  <h3>上线阻断</h3>
+                  <div class="timeline">
+                    <div><strong>SC 活动缺 legal_approval_id</strong><br>禁止发布</div>
+                    <div><strong>商品包 SC bonus 未审批</strong><br>默认关闭</div>
+                    <div><strong>开放州未配置</strong><br>前后端同时拦截</div>
+                    <div><strong>兑换未接 KYC</strong><br>只能灰态展示</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="admin-page" data-admin-page="users">
+              <div class="toolbar"><div class="filters"><input class="input" value="ava@example.com"><select><option>全部地区</option><option>CA</option><option>NY</option></select><select><option>风险等级</option><option>low</option><option>manual_review</option></select></div><button class="btn">查询</button></div>
+              <div class="table-card"><table><thead><tr><th>用户</th><th>地区</th><th>年龄确认</th><th>风险</th><th>GC</th><th>SC</th><th>状态</th><th>操作</th></tr></thead><tbody>
+                <tr><td>ava@example.com</td><td>CA</td><td>已确认</td><td><span class="badge ok">low</span></td><td>128,500</td><td>3.25</td><td>active</td><td><button class="btn">详情</button></td></tr>
+                <tr><td>risk01@mail.com</td><td>FL</td><td>已确认</td><td><span class="badge warn">manual</span></td><td>18,000</td><td>0.00</td><td>SC blocked</td><td><button class="btn">查看风控</button></td></tr>
+                <tr><td>blocked@mail.com</td><td>WA</td><td>未通过</td><td><span class="badge red">blocked</span></td><td>0</td><td>0.00</td><td>restricted</td><td><button class="btn disabled">限制</button></td></tr>
+              </tbody></table></div>
+            </div>
+
+            <div class="admin-page" data-admin-page="ledger">
+              <div class="toolbar"><div class="filters"><select><option>GC/SC 全部</option><option>GC</option><option>SC</option></select><select><option>来源类型</option><option>register_bonus</option><option>daily_login</option><option>amoe</option></select><input class="input" value="ledger key / user id"></div><button class="btn">导出流水</button></div>
+              <div class="table-card"><table><thead><tr><th>时间</th><th>用户</th><th>币种</th><th>变动</th><th>来源</th><th>幂等 key</th><th>状态</th></tr></thead><tbody>
+                <tr><td>2026-06-17 09:12</td><td>ava@example.com</td><td>SC</td><td>+0.50</td><td>register_bonus</td><td>reward:10001</td><td><span class="badge ok">posted</span></td></tr>
+                <tr><td>2026-06-17 09:14</td><td>ava@example.com</td><td>GC</td><td>+500</td><td>view_rules_task</td><td>task:20911</td><td><span class="badge ok">posted</span></td></tr>
+                <tr><td>2026-06-17 10:21</td><td>user45@mail.com</td><td>SC</td><td>-25.00</td><td>redemption_freeze</td><td>redeem:883</td><td><span class="badge warn">frozen</span></td></tr>
+              </tbody></table></div>
+            </div>
+
+            <div class="admin-page" data-admin-page="campaigns">
+              <div class="split">
+                <div class="table-card"><table><thead><tr><th>活动</th><th>类型</th><th>SC 策略</th><th>地区</th><th>预算</th><th>规则版本</th><th>状态</th></tr></thead><tbody>
+                  <tr><td>注册赠送</td><td>register</td><td>default_small_sc</td><td>CA,TX,NJ</td><td>500 SC/day</td><td>rules-v1</td><td><span class="badge ok">active</span></td></tr>
+                  <tr><td>每日任务</td><td>daily_task</td><td>gc_only</td><td>US allowed</td><td>2M GC/day</td><td>rules-v1</td><td><span class="badge ok">active</span></td></tr>
+                  <tr><td>转盘</td><td>wheel</td><td>legal_required</td><td>review</td><td>未配置</td><td>draft</td><td><span class="badge red">blocked</span></td></tr>
+                </tbody></table></div>
+                <div class="review-panel"><h3>活动发布校验</h3><div class="field"><label>SC 策略</label><select><option>default_small_sc</option><option>gc_only</option><option>legal_required</option></select></div><div class="field"><label>legal_approval_id</label><input class="input" value="LEGAL-2026-0617-CA"></div><div class="field"><label>发布阻断</label><span class="badge ok">通过</span></div><button class="btn primary">提交发布</button></div>
+              </div>
+            </div>
+
+            <div class="admin-page" data-admin-page="packages">
+              <div class="table-card"><table><thead><tr><th>商品包</th><th>GC 数量</th><th>价格</th><th>SC bonus</th><th>法务 ID</th><th>地区</th><th>状态</th></tr></thead><tbody>
+                <tr><td>Starter Pack</td><td>50,000</td><td>$4.99</td><td>关闭</td><td>-</td><td>purchase_allowed</td><td><span class="badge ok">active</span></td></tr>
+                <tr><td>Promo Pack</td><td>300,000</td><td>$29.99</td><td>2.00 SC</td><td>缺失</td><td>review</td><td><span class="badge red">不可发布</span></td></tr>
+              </tbody></table></div>
+            </div>
+
+            <div class="admin-page" data-admin-page="redemption">
+              <div class="split">
+                <div class="table-card"><table><thead><tr><th>申请号</th><th>用户</th><th>金额</th><th>KYC</th><th>冻结 SC</th><th>风险</th><th>状态</th></tr></thead><tbody>
+                  <tr><td>RD-883</td><td>user45@mail.com</td><td>$25 Gift Card</td><td>通过</td><td>25.00</td><td><span class="badge warn">设备重复</span></td><td>manual_review</td></tr>
+                  <tr><td>RD-884</td><td>ava@example.com</td><td>$10 Gift Card</td><td>待补充</td><td>0.00</td><td><span class="badge ok">low</span></td><td>need_kyc</td></tr>
+                </tbody></table></div>
+                <div class="review-panel"><h3>兑换审核</h3><div class="field"><label>审核动作</label><select><option>通过并打款</option><option>拒绝并释放 SC</option><option>拒绝并扣减 SC</option><option>要求补资料</option></select></div><div class="field"><label>审核原因</label><textarea>设备重复命中，需二次确认地址与身份。</textarea></div><button class="btn primary">提交审核并写入审计</button></div>
+              </div>
+            </div>
+
+            <div class="admin-page" data-admin-page="amoe">
+              <div class="table-card"><table><thead><tr><th>申请号</th><th>用户</th><th>地区</th><th>频率</th><th>SC 发放</th><th>状态</th><th>操作</th></tr></thead><tbody>
+                <tr><td>AM-1021</td><td>freepath@mail.com</td><td>CA</td><td>本月 1 次</td><td>0.50</td><td><span class="badge warn">待审核</span></td><td><button class="btn">审核</button></td></tr>
+                <tr><td>AM-1022</td><td>multi@mail.com</td><td>NY</td><td>本月 6 次</td><td>0.00</td><td><span class="badge red">频率拦截</span></td><td><button class="btn">详情</button></td></tr>
+              </tbody></table></div>
+            </div>
+
+            <div class="admin-page" data-admin-page="support">
+              <div class="table-card"><table><thead><tr><th>工单</th><th>分类</th><th>关联业务</th><th>用户</th><th>SLA</th><th>状态</th><th>限制</th></tr></thead><tbody>
+                <tr><td>TK-501</td><td>Coupon</td><td>coupon:WELCOME500</td><td>ava@example.com</td><td>4h</td><td><span class="badge warn">处理中</span></td><td>客服只能补偿 GC</td></tr>
+                <tr><td>TK-502</td><td>兑换</td><td>RD-883</td><td>user45@mail.com</td><td>24h</td><td><span class="badge">等待风控</span></td><td>不能承诺保证到账</td></tr>
+              </tbody></table></div>
+            </div>
+
+            <div class="admin-page" data-admin-page="audit">
+              <div class="table-card"><table><thead><tr><th>时间</th><th>操作人</th><th>对象</th><th>动作</th><th>前值</th><th>后值</th><th>IP</th></tr></thead><tbody>
+                <tr><td>2026-06-17 11:30</td><td>ops_admin</td><td>campaign:wheel</td><td>publish_blocked</td><td>draft</td><td>missing legal_approval_id</td><td>10.0.0.8</td></tr>
+                <tr><td>2026-06-17 11:42</td><td>risk_mgr</td><td>redemption:RD-883</td><td>manual_review</td><td>pending</td><td>need second check</td><td>10.0.0.9</td></tr>
+                <tr><td>2026-06-17 12:05</td><td>support_01</td><td>ticket:TK-501</td><td>gc_compensation</td><td>0</td><td>+500 GC</td><td>10.0.0.11</td></tr>
+              </tbody></table></div>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal" id="modal">
+    <div class="modal-card">
+      <header><strong id="modal-title">操作确认</strong><button class="btn" data-close-modal>关闭</button></header>
+      <main id="modal-body"></main>
+      <footer><button class="btn" data-close-modal>取消</button><button class="btn primary" data-close-modal>确认</button></footer>
+    </div>
+  </div>
+
+  <script>
+    const modeButtons = document.querySelectorAll('[data-mode]');
+    const views = { app: document.querySelector('#view-app'), admin: document.querySelector('#view-admin') };
+    modeButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        modeButtons.forEach((item) => item.classList.remove('active'));
+        button.classList.add('active');
+        Object.values(views).forEach((view) => view.classList.remove('active'));
+        views[button.dataset.mode].classList.add('active');
+      });
+    });
+
+    const appNavButtons = document.querySelectorAll('[data-app-nav]');
+    const appScreens = document.querySelectorAll('[data-app-screen]');
+    appNavButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const target = button.dataset.appNav;
+        appScreens.forEach((screen) => screen.classList.toggle('active', screen.dataset.appScreen === target));
+        document.querySelectorAll('.bottom-nav [data-app-nav]').forEach((item) => item.classList.toggle('active', item.dataset.appNav === target));
+      });
+    });
+
+    const adminTitles = {
+      dashboard: ['BI 看板', '运营、合规、风控统一监控。'],
+      users: ['用户管理', '查看用户资料、地区、风险等级和钱包摘要。'],
+      ledger: ['钱包流水', '查询 GC/SC 变动、来源和幂等 key。'],
+      campaigns: ['活动配置', '配置活动类型、地区、奖励、预算、SC 策略和规则版本。'],
+      packages: ['商品包配置', '只销售 GC，SC bonus 默认关闭并需审批。'],
+      redemption: ['兑换审核', '审核 KYC、冻结 SC、风险信号和打款动作。'],
+      amoe: ['AMOE 审核', '处理 No Purchase Necessary 免费参与申请。'],
+      support: ['客服工单', '关联业务单据，控制客服补偿边界。'],
+      audit: ['审计日志', '记录后台操作人、对象、前后值、时间和 IP。']
+    };
+    document.querySelectorAll('[data-admin-nav]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const target = button.dataset.adminNav;
+        document.querySelectorAll('[data-admin-nav]').forEach((item) => item.classList.remove('active'));
+        button.classList.add('active');
+        document.querySelectorAll('[data-admin-page]').forEach((page) => page.classList.toggle('active', page.dataset.adminPage === target));
+        document.querySelector('#admin-title').textContent = adminTitles[target][0];
+        document.querySelector('#admin-subtitle').textContent = adminTitles[target][1];
+      });
+    });
+
+    const modalCopy = {
+      claim: ['领取注册奖励', '奖励将写入 wallet_ledger。若用户地区、年龄、设备或风险校验未通过，SC 将被拦截或降级为 GC。'],
+      coupon: ['Coupon 兑换', 'Coupon 默认只发 GC 或优惠权益；若配置 SC，必须存在 legal_approval_id 并通过地区限制。'],
+      rules: ['Sweepstakes Rules', '规则入口必须在注册、活动、钱包、商店和页脚可访问，并保留版本和用户确认记录。'],
+      kyc: ['KYC Verification', '兑换前需完成姓名、生日、地址和证件校验。审核中冻结 SC，审核动作写入审计日志。'],
+      amoe: ['AMOE 免费参与', 'AMOE 申请不要求购买。频率、地区、额度、审核 SLA 和发放规则需由法务确认。']
+    };
+    const modal = document.querySelector('#modal');
+    document.querySelectorAll('[data-open-modal]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const copy = modalCopy[button.dataset.openModal];
+        document.querySelector('#modal-title').textContent = copy[0];
+        document.querySelector('#modal-body').innerHTML = '<p>' + copy[1] + '</p>';
+        modal.classList.add('active');
+      });
+    });
+    document.querySelectorAll('[data-close-modal]').forEach((button) => button.addEventListener('click', () => modal.classList.remove('active')));
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) modal.classList.remove('active');
+    });
+  </script>
+</body>
+</html>
