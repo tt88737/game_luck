@@ -15,3 +15,5 @@
 - 后端骨架测试首次失败，根因是默认 `@SpringBootTest` 连接本地 MySQL 账号失败；新增 H2 测试 profile 让基线测试独立运行。
 - 完成 P0-A 核心数据库迁移和演示种子数据，包含 13 张核心表、地区/合规文档/活动/Coupon 初始数据。
 - 验证通过：`backend .\gradlew.bat test`，`frontend npm run build`。
+- 完成统一 API 错误模型、业务错误码、业务异常和全局异常处理；覆盖 `REGION_BLOCKED` 等 P0-A 错误码到 HTTP 状态映射。
+- 验证通过：`backend .\gradlew.bat test`，`frontend npm run build`。
