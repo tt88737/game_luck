@@ -18,7 +18,7 @@
 | 1. 文档分析 | complete | 已阅读总入口、接口草案、数据库说明、页面原型、冲刺表、QA 矩阵 |
 | 2. 技术方案 | complete | 已确认 Java Spring Boot + Vue 3 + MySQL，从零搭建工程 |
 | 3. 实施计划 | complete | 已生成 `TangLuck-P0A-实施计划.md` |
-| 4. 首阶段开发 | pending | 预计先做后端 API/数据模型骨架和前端原型工程 |
+| 4. 首阶段开发 | in_progress | 已创建开发分支 `develop/p0a`，开始搭建后端/前端骨架 |
 
 ## 初步范围
 P0-A 包含注册、登录、条款确认、地区合规、GC/SC 钱包、钱包流水、活动领取、每日任务、Coupon、SC 策略、后台活动配置、审计日志和基础看板。

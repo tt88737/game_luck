@@ -1,0 +1,21 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: tangluck
+  datasource:
+    url: jdbc:mysql://localhost:3306/tangluck?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
+    username: tangluck
+    password: tangluck
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+tangluck:
+  jwt-secret: "local-dev-change-me-local-dev-change-me"
+  jwt-ttl-minutes: 720
