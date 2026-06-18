@@ -37,6 +37,13 @@ public class WalletService {
                 .orElseGet(() -> createCredit(userId, currency, amount, businessType, businessId, idempotencyKey));
     }
 
+    @Transactional
+    public LedgerDto freeze(Long userId, String currency, BigDecimal amount, String businessType, String businessId, String idempotencyKey) {
+        return ledgerRepository.findByIdempotencyKey(idempotencyKey)
+                .map(this::toDto)
+                .orElseGet(() -> createFreeze(userId, currency, amount, businessType, businessId, idempotencyKey));
+    }
+
     @Transactional(readOnly = true)
     public WalletSummaryResponse summary(Long userId) {
         var gc = accountRepository.findByUserIdAndCurrency(userId, "GC").orElseThrow();
@@ -99,12 +106,39 @@ public class WalletService {
         return toDto(ledger);
     }
 
+    private LedgerDto createFreeze(Long userId, String currency, BigDecimal amount, String businessType, String businessId, String idempotencyKey) {
+        var account = accountRepository.findByUserIdAndCurrency(userId, currency)
+                .orElseThrow(() -> new BusinessException(ErrorCode.INTERNAL_ERROR, "Wallet account does not exist.", Map.of("currency", currency)));
+        try {
+            account.freeze(amount, clock.instant());
+        } catch (IllegalArgumentException exception) {
+            throw new BusinessException(ErrorCode.REDEMPTION_NOT_ALLOWED, "Insufficient redeemable balance.", Map.of("currency", currency));
+        }
+        accountRepository.save(account);
+
+        var ledger = ledgerRepository.save(new WalletLedger(
+                userId,
+                account.getId(),
+                currency,
+                "freeze",
+                amount,
+                account.getBalance(),
+                account.getFrozenBalance(),
+                businessType,
+                businessId,
+                idempotencyKey,
+                clock.instant()
+        ));
+
+        return toDto(ledger);
+    }
+
     private LedgerDto toDto(WalletLedger ledger) {
         return new LedgerDto(
                 ledger.getId(),
                 ledger.getCurrency(),
                 ledger.getAmount(),
-                "credit",
+                ledger.getDirection(),
                 ledger.getBusinessType(),
                 ledger.getBusinessId(),
                 ledger.getStatus(),

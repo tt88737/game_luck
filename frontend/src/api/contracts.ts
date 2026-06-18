@@ -143,3 +143,49 @@ export interface AuditLog {
   ip: string
   createdAt: string
 }
+
+export interface ProductPackage {
+  packageCode: string
+  name: string
+  priceAmount: string | number
+  priceCurrency: string
+  gcAmount: string | number
+  sandboxOnly: boolean
+}
+
+export interface PurchaseOrder {
+  orderId: string
+  userId: number
+  packageCode: string
+  priceAmount: string | number
+  priceCurrency: string
+  status: string
+  provider: string
+  currencyGranted: string
+  amountGranted: string | number
+  createdAt: string
+}
+
+export interface KycStatus {
+  userId: number
+  status: 'not_started' | 'reviewing' | 'approved' | 'rejected'
+  legalName: string | null
+  reviewReason: string | null
+  updatedAt: string | null
+}
+
+export interface RedemptionRequest {
+  redemptionId: string
+  userId: number
+  scAmount: string | number
+  method: string
+  status: string
+  sandboxOnly: boolean
+  createdAt: string
+}
+
+export interface P1Operations {
+  purchaseOrders: PurchaseOrder[]
+  kycApplications: KycStatus[]
+  redemptionRequests: RedemptionRequest[]
+}

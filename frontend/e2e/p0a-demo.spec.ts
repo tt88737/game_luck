@@ -61,6 +61,40 @@ test.beforeEach(async ({ page }) => {
       json: [{ id: 1, operatorId: 1, operatorRole: 'ops_admin', action: 'campaign_publish', targetType: 'promotion_campaign', targetId: 'OPS_SC_BONUS', beforeJson: '{"status":"draft"}', afterJson: '{"status":"active"}', ip: '127.0.0.1', createdAt: '2026-06-18T00:00:00Z' }],
     })
   })
+  await page.route('/api/v1/purchase/packages', async (route) => {
+    await route.fulfill({
+      json: [{ packageCode: 'gc_499', name: 'GC 5,000 Sandbox Pack', priceAmount: '4.9900', priceCurrency: 'USD', gcAmount: '5000.0000', sandboxOnly: true }],
+    })
+  })
+  await page.route('/api/v1/purchase/orders', async (route) => {
+    await route.fulfill({
+      json: { orderId: 'ord_demo', userId: 1, packageCode: 'gc_499', priceAmount: '4.9900', priceCurrency: 'USD', status: 'paid', provider: 'sandbox', currencyGranted: 'GC', amountGranted: '5000.0000', createdAt: '2026-06-19T00:00:00Z' },
+    })
+  })
+  let kycStatus = 'not_started'
+  await page.route('/api/v1/kyc/status', async (route) => {
+    await route.fulfill({ json: { userId: 1, status: kycStatus, legalName: kycStatus === 'not_started' ? null : 'P1 Demo User', reviewReason: kycStatus === 'approved' ? 'sandbox approved by ops' : null, updatedAt: '2026-06-19T00:00:00Z' } })
+  })
+  await page.route('/api/v1/kyc/applications', async (route) => {
+    kycStatus = 'reviewing'
+    await route.fulfill({ json: { userId: 1, status: 'reviewing', legalName: 'P1 Demo User', reviewReason: null, updatedAt: '2026-06-19T00:00:00Z' } })
+  })
+  await page.route('/api/v1/redemptions', async (route) => {
+    await route.fulfill({ json: { redemptionId: 'red_demo', userId: 1, scAmount: '0.5000', method: 'sandbox_gift_card', status: 'reviewing', sandboxOnly: true, createdAt: '2026-06-19T00:00:00Z' } })
+  })
+  await page.route('/api/v1/admin/kyc/1/approve', async (route) => {
+    kycStatus = 'approved'
+    await route.fulfill({ json: { userId: 1, status: 'approved', legalName: 'P1 Demo User', reviewReason: 'sandbox approved by ops', updatedAt: '2026-06-19T00:00:01Z' } })
+  })
+  await page.route('/api/v1/admin/p1/operations', async (route) => {
+    await route.fulfill({
+      json: {
+        purchaseOrders: [{ orderId: 'ord_demo', userId: 1, packageCode: 'gc_499', priceAmount: '4.9900', priceCurrency: 'USD', status: 'paid', provider: 'sandbox', currencyGranted: 'GC', amountGranted: '5000.0000', createdAt: '2026-06-19T00:00:00Z' }],
+        kycApplications: [{ userId: 1, status: kycStatus === 'approved' ? 'approved' : 'reviewing', legalName: 'P1 Demo User', reviewReason: null, updatedAt: '2026-06-19T00:00:00Z' }],
+        redemptionRequests: [{ redemptionId: 'red_demo', userId: 1, scAmount: '0.5000', method: 'sandbox_gift_card', status: 'reviewing', sandboxOnly: true, createdAt: '2026-06-19T00:00:00Z' }],
+      },
+    })
+  })
 })
 
 test('P0-A C-side and admin pages render demo workflow', async ({ page }) => {
@@ -92,4 +126,36 @@ test('P0-A C-side and admin pages render demo workflow', async ({ page }) => {
   await page.goto('/admin/audit-logs')
   await expect(page.getByText('campaign_publish')).toBeVisible()
   await expect(page.getByText('ops_admin')).toBeVisible()
+})
+
+test('P1 sandbox store, KYC, redemption, and ops pages render operating loop', async ({ page }) => {
+  await page.goto('/app/register')
+  await page.getByLabel('Terms of Use terms-v1').check()
+  await page.getByLabel('Sweepstakes Rules rules-v1').check()
+  await page.getByLabel('Privacy Policy privacy-v1').check()
+  await page.getByRole('button', { name: 'Register and continue' }).click()
+
+  await page.getByRole('link', { name: 'Store' }).click()
+  await expect(page.getByText('GC 5,000 Sandbox Pack')).toBeVisible()
+  await page.getByRole('button', { name: 'Buy' }).click()
+  await expect(page.getByText('Sandbox order paid')).toBeVisible()
+  await expect(page.getByText('ord_demo')).toBeVisible()
+
+  await page.getByRole('link', { name: 'KYC' }).click()
+  await expect(page.getByText('not_started')).toBeVisible()
+  await page.locator('[data-test="submit-kyc"]').click()
+  await expect(page.getByText('reviewing')).toBeVisible()
+
+  await page.getByLabel('App navigation').getByRole('link', { name: 'Redeem' }).click()
+  await expect(page.getByText('KYC approval is required')).toBeVisible()
+
+  await page.goto('/admin/p1')
+  await expect(page.getByRole('heading', { name: 'Purchase, KYC, redemption' })).toBeVisible()
+  await expect(page.getByText('ord_demo')).toBeVisible()
+  await page.getByRole('button', { name: 'Approve' }).click()
+  await expect(page.getByText('KYC approved for user 1.')).toBeVisible()
+
+  await page.goto('/app/redemption')
+  await page.locator('[data-test="submit-redemption"]').click()
+  await expect(page.getByText('Request red_demo is waiting for manual review.')).toBeVisible()
 })

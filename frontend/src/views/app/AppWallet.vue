@@ -102,8 +102,10 @@ function formatAmount(value: string | number, digits: number) {
 
     <nav class="bottom-nav" aria-label="App navigation">
       <RouterLink to="/app">Home</RouterLink>
+      <RouterLink to="/app/store">Store</RouterLink>
+      <RouterLink to="/app/kyc">KYC</RouterLink>
+      <RouterLink to="/app/redemption">Redeem</RouterLink>
       <RouterLink to="/app/wallet">Wallet</RouterLink>
-      <RouterLink to="/app/activity">Activity</RouterLink>
     </nav>
   </main>
 </template>

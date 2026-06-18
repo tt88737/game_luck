@@ -87,6 +87,10 @@ public class WalletLedger {
         return amount;
     }
 
+    public String getDirection() {
+        return direction;
+    }
+
     public BigDecimal getBalanceAfter() {
         return balanceAfter;
     }

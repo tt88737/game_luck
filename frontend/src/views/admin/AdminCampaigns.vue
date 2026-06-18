@@ -87,6 +87,7 @@ function toRequest(row: CampaignRow): AdminCampaignRequest {
       <strong>Tang Luck Ops</strong>
       <RouterLink to="/admin">Dashboard</RouterLink>
       <RouterLink to="/admin/campaigns">Campaigns</RouterLink>
+      <RouterLink to="/admin/p1">P1 Ops</RouterLink>
       <RouterLink to="/admin/audit-logs">Audit logs</RouterLink>
     </aside>
 
