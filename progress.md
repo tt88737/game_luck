@@ -17,3 +17,5 @@
 - 验证通过：`backend .\gradlew.bat test`，`frontend npm run build`。
 - 完成统一 API 错误模型、业务错误码、业务异常和全局异常处理；覆盖 `REGION_BLOCKED` 等 P0-A 错误码到 HTTP 状态映射。
 - 验证通过：`backend .\gradlew.bat test`，`frontend npm run build`。
+- 完成注册服务、合规地区校验、条款确认日志、GC/SC 钱包创建、合规文档查询接口和基础 Security 配置。
+- 验证通过：`backend .\gradlew.bat test`，`frontend npm run build`。
