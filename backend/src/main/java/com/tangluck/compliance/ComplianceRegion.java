@@ -14,7 +14,7 @@ public class ComplianceRegion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "country_code", nullable = false)
+    @Column(name = "country_code", nullable = false, columnDefinition = "char(2)")
     private String countryCode;
 
     @Column(name = "state_code", nullable = false)

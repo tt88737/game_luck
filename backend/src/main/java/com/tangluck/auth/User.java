@@ -26,7 +26,7 @@ public class User {
     @Column(name = "birth_date", nullable = false)
     private LocalDate birthDate;
 
-    @Column(name = "country_code", nullable = false)
+    @Column(name = "country_code", nullable = false, columnDefinition = "char(2)")
     private String countryCode;
 
     @Column(name = "state_code", nullable = false)

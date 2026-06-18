@@ -37,4 +37,8 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	maxParallelForks = 1
+	forkEvery = 0
+	maxHeapSize = '128m'
+	jvmArgs '-XX:MaxMetaspaceSize=128m'
 }
