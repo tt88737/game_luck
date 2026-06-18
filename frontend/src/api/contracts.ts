@@ -67,3 +67,46 @@ export interface ComplianceDocument {
   title: string
   contentUrl: string
 }
+
+export interface DashboardSummary {
+  registrations: number
+  claims: number
+  scGranted: string | number
+  riskEvents: number
+}
+
+export interface AdminRewardRequest {
+  currency: string
+  amount: string
+}
+
+export interface AdminCampaignRequest {
+  campaignCode: string
+  name: string
+  campaignType: string
+  eligibleRegions: string[]
+  blockedRegions: string[]
+  rewardPolicy: AdminRewardRequest[]
+  scStrategy: string
+  rulesVersion: string
+  legalApprovalId: string
+  riskAction: string
+}
+
+export interface AdminCampaignResponse {
+  campaignCode: string
+  status: string
+}
+
+export interface AuditLog {
+  id: number
+  operatorId: number
+  operatorRole: string
+  action: string
+  targetType: string
+  targetId: string
+  beforeJson: string
+  afterJson: string
+  ip: string
+  createdAt: string
+}
