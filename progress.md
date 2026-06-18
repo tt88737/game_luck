@@ -23,3 +23,5 @@
 - 验证通过：`backend .\gradlew.bat test`，`frontend npm run build`。
 - 完成注册赠送、每日登录、每日任务、Coupon 的领取服务和 C 端 API；包含重复领取拦截、地区拦截、风险用户只发 GC、发奖流水写入。
 - 验证通过：`backend .\gradlew.bat test`，`frontend npm run build`。
+- 完成后台活动新建、发布、暂停、发布阻断、审计日志写入/查询和基础看板摘要接口。
+- 验证通过：`backend .\gradlew.bat test`，`frontend npm run build`。
