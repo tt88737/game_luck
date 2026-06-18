@@ -38,6 +38,8 @@ async function request<T>(path: string, init: RequestInit): Promise<T> {
     ...(init.headers as Record<string, string> | undefined),
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
   }
+  const userId = localStorage.getItem('tangluck_user_id')
+  if (userId) headers['X-User-Id'] = userId
 
   const response = await fetch(`${API_BASE}${path}`, { ...init, headers })
   const payload = await response.json().catch(() => undefined)

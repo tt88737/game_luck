@@ -9,6 +9,7 @@ describe('http api client', () => {
 
   it('attaches bearer token and parses JSON success responses', async () => {
     localStorage.setItem('tangluck_token', 'jwt_user_token')
+    localStorage.setItem('tangluck_user_id', '42')
     const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
       new Response(JSON.stringify({ ok: true }), {
         status: 200,
@@ -22,6 +23,7 @@ describe('http api client', () => {
     expect(fetchMock).toHaveBeenCalledWith('/api/v1/me', expect.objectContaining({
       headers: expect.objectContaining({
         Authorization: 'Bearer jwt_user_token',
+        'X-User-Id': '42',
       }),
     }))
   })
