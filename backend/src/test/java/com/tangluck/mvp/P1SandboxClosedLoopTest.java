@@ -31,8 +31,9 @@ class P1SandboxClosedLoopTest {
         mockMvc.perform(get("/api/v1/purchase/packages"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].packageCode").value("gc_499"))
+                .andExpect(jsonPath("$[0].name").value("GC 5,000 Pack"))
                 .andExpect(jsonPath("$[0].gcAmount").value(5000))
-                .andExpect(jsonPath("$[0].sandboxOnly").value(true));
+                .andExpect(jsonPath("$[0].sandboxOnly").value(false));
 
         String orderJson = mockMvc.perform(post("/api/v1/purchase/orders")
                         .header("X-User-Id", userId)
@@ -41,6 +42,7 @@ class P1SandboxClosedLoopTest {
                         .content("{\"packageCode\":\"gc_499\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("paid"))
+                .andExpect(jsonPath("$.provider").value("manual"))
                 .andExpect(jsonPath("$.currencyGranted").value("GC"))
                 .andExpect(jsonPath("$.amountGranted").value(5000))
                 .andReturn()

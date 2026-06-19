@@ -92,7 +92,7 @@ public class KycApplication {
 
     public void approve(Instant now) {
         this.status = "approved";
-        this.reviewReason = "sandbox approved by ops";
+        this.reviewReason = "approved by ops";
         this.updatedAt = now;
     }
 }

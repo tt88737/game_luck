@@ -3,7 +3,9 @@ import { computed, onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import { ApiError, apiGet } from '../../api/http'
 import type { LedgerPage, WalletSummary } from '../../api/contracts'
+import { useSessionStore } from '../../stores/session'
 
+const session = useSessionStore()
 const loading = ref(true)
 const error = ref('')
 const currency = ref<'GC' | 'SC'>('SC')
@@ -18,6 +20,10 @@ const scRedeemable = computed(() => formatAmount(summary.value?.wallet.scRedeema
 onMounted(loadWallet)
 
 async function loadWallet() {
+  if (!session.userId) {
+    loading.value = false
+    return
+  }
   loading.value = true
   error.value = ''
   try {
@@ -53,6 +59,11 @@ function formatAmount(value: string | number, digits: number) {
     </header>
 
     <section v-if="loading" class="status-panel">Loading ledger...</section>
+    <section v-else-if="!session.userId" class="status-panel">
+      <strong>Create your account</strong>
+      <span>Create an account before viewing wallet balances and ledger.</span>
+      <RouterLink class="plain-link" to="/app/register">Register and continue</RouterLink>
+    </section>
     <section v-else-if="error" class="status-panel danger">{{ error }}</section>
 
     <template v-else>

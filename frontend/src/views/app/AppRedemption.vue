@@ -4,7 +4,9 @@ import { RouterLink } from 'vue-router'
 import { ApiError, apiGet, apiPost } from '../../api/http'
 import type { KycStatus, RedemptionRequest, WalletSummary } from '../../api/contracts'
 import { i18n } from '../../i18n'
+import { useSessionStore } from '../../stores/session'
 
+const session = useSessionStore()
 const loading = ref(true)
 const submitting = ref(false)
 const error = ref('')
@@ -24,6 +26,10 @@ const canSubmit = computed(() => kycReady.value && redeemable.value >= Number(fo
 onMounted(loadState)
 
 async function loadState() {
+  if (!session.userId) {
+    loading.value = false
+    return
+  }
   loading.value = true
   error.value = ''
   try {
@@ -80,6 +86,11 @@ function amount(value: string | number | undefined, digits = 2) {
     </header>
 
     <section v-if="loading" class="status-panel">{{ $t('redemption.loading') }}</section>
+    <section v-else-if="!session.userId" class="status-panel">
+      <strong>{{ $t('register.heading') }}</strong>
+      <span>Create an account before requesting redemption.</span>
+      <RouterLink class="plain-link" to="/app/register">{{ $t('register.submit') }}</RouterLink>
+    </section>
     <section v-else>
       <section class="wallet-band">
         <div><span>SC balance</span><strong>{{ amount(wallet?.wallet.scBalance) }}</strong></div>

@@ -4,15 +4,17 @@ import { RouterLink } from 'vue-router'
 import { ApiError, apiGet, apiPost } from '../../api/http'
 import type { KycStatus } from '../../api/contracts'
 import { i18n } from '../../i18n'
+import { useSessionStore } from '../../stores/session'
 
+const session = useSessionStore()
 const loading = ref(true)
 const submitting = ref(false)
 const error = ref('')
 const status = ref<KycStatus | null>(null)
 const form = reactive({
-  legalName: 'P1 Demo User',
+  legalName: '',
   birthDate: '1994-03-02',
-  addressLine: '100 Demo Street',
+  addressLine: '',
   stateCode: 'CA',
 })
 
@@ -21,6 +23,10 @@ const statusLabel = computed(() => status.value?.status ?? 'not_started')
 onMounted(loadStatus)
 
 async function loadStatus() {
+  if (!session.userId) {
+    loading.value = false
+    return
+  }
   loading.value = true
   error.value = ''
   try {
@@ -61,6 +67,11 @@ function messageFrom(err: unknown) {
     </header>
 
     <section v-if="loading" class="status-panel">{{ $t('kyc.loading') }}</section>
+    <section v-else-if="!session.userId" class="status-panel">
+      <strong>{{ $t('register.heading') }}</strong>
+      <span>Create an account before submitting identity verification.</span>
+      <RouterLink class="plain-link" to="/app/register">{{ $t('register.submit') }}</RouterLink>
+    </section>
     <section v-else>
       <div class="section-block">
         <div class="section-title">

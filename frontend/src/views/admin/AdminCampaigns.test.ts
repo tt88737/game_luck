@@ -22,16 +22,28 @@ describe('admin pages', () => {
   })
 
   it('renders campaign table with filters, status tags, SC strategy, budget, and legal approval', async () => {
-    vi.spyOn(globalThis, 'fetch').mockImplementation(() => json({ campaignCode: 'OPS_SC_BONUS', status: 'draft' }))
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation(() => json({ campaignCode: 'OPS_SC_BONUS', status: 'draft' }))
 
     const wrapper = mount(AdminCampaigns, { global: { stubs } })
     await flushPromises()
 
+    expect(fetchMock).not.toHaveBeenCalled()
     expect(wrapper.text()).toContain('Status')
     expect(wrapper.text()).toContain('OPS_SC_BONUS')
     expect(wrapper.text()).toContain('default_small_sc')
     expect(wrapper.text()).toContain('10,000 GC + 0.50 SC')
     expect(wrapper.text()).toContain('LEGAL-2026-0618-SC')
+  })
+
+  it('creates campaign draft only when the operator clicks create draft', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation(() => json({ campaignCode: 'OPS_SC_BONUS', status: 'draft' }))
+
+    const wrapper = mount(AdminCampaigns, { global: { stubs } })
+    await flushPromises()
+    await wrapper.get('[data-test="create-campaign"]').trigger('click')
+    await flushPromises()
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/v1/admin/campaigns', expect.objectContaining({ method: 'POST' }))
   })
 
   it('shows publish blocking reason from backend', async () => {

@@ -64,7 +64,7 @@ public class PurchaseOrder {
         this.priceCurrency = productPackage.getPriceCurrency();
         this.gcAmount = productPackage.getGcAmount();
         this.status = "paid";
-        this.provider = "sandbox";
+        this.provider = "manual";
         this.idempotencyKey = idempotencyKey;
         this.createdAt = now;
         this.updatedAt = now;

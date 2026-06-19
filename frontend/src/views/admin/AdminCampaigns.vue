@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import { ApiError, apiPost } from '../../api/http'
 import type { AdminCampaignRequest, AdminCampaignResponse } from '../../api/contracts'
@@ -9,7 +9,7 @@ interface CampaignRow extends AdminCampaignRequest {
   budgetLabel: string
 }
 
-const loading = ref(true)
+const loading = ref(false)
 const error = ref('')
 const notice = ref('')
 const statusFilter = ref('all')
@@ -30,16 +30,20 @@ const rows = ref<CampaignRow[]>([
   },
 ])
 
-onMounted(async () => {
+async function createDraft() {
+  loading.value = true
+  error.value = ''
+  notice.value = ''
   try {
     const response = await apiPost<AdminCampaignResponse>('/admin/campaigns', toRequest(rows.value[0]))
     rows.value[0].status = response.status
+    notice.value = `${rows.value[0].campaignCode} draft created.`
   } catch (err) {
     error.value = err instanceof ApiError || err instanceof Error ? err.message : 'Campaign setup failed.'
   } finally {
     loading.value = false
   }
-})
+}
 
 async function publish(row: CampaignRow) {
   error.value = ''
@@ -97,7 +101,7 @@ function toRequest(row: CampaignRow): AdminCampaignRequest {
           <p class="eyebrow">Promotion operations</p>
           <h1>Campaigns</h1>
         </div>
-        <button :disabled="loading">Create draft</button>
+        <button data-test="create-campaign" :disabled="loading" @click="createDraft">Create draft</button>
       </header>
 
       <div class="filter-bar">

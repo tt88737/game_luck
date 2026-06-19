@@ -143,6 +143,8 @@ test('store, KYC, redemption, and ops pages render operating loop', async ({ pag
 
   await page.getByRole('link', { name: 'KYC' }).click()
   await expect(page.getByText('not_started')).toBeVisible()
+  await page.getByLabel('Legal name').fill('P1 User')
+  await page.getByLabel('Address').fill('100 Main Street')
   await page.locator('[data-test="submit-kyc"]').click()
   await expect(page.getByText('reviewing')).toBeVisible()
 

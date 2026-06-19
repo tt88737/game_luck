@@ -1,10 +1,11 @@
 import { mount, flushPromises } from '@vue/test-utils'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import AppStore from './AppStore.vue'
 import AppKyc from './AppKyc.vue'
 import AppRedemption from './AppRedemption.vue'
 import AdminP1Operations from '../admin/AdminP1Operations.vue'
 import { i18n } from '../../i18n'
+import { createPinia, setActivePinia } from 'pinia'
 
 function json(data: unknown, status = 200) {
   return Promise.resolve(new Response(JSON.stringify(data), {
@@ -25,6 +26,10 @@ const global = {
 }
 
 describe('P1 production pages', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia())
+  })
+
   afterEach(() => {
     vi.restoreAllMocks()
     localStorage.clear()
@@ -53,6 +58,7 @@ describe('P1 production pages', () => {
   })
 
   it('submits KYC for manual review', async () => {
+    localStorage.setItem('tangluck_user_id', '1')
     vi.spyOn(globalThis, 'fetch').mockImplementation((input, init) => {
       const url = String(input)
       if (url.endsWith('/kyc/status')) return json({ userId: 1, status: 'not_started', legalName: null, reviewReason: null, updatedAt: null })
@@ -71,6 +77,7 @@ describe('P1 production pages', () => {
   })
 
   it('shows KYC blocking state on redemption page', async () => {
+    localStorage.setItem('tangluck_user_id', '1')
     vi.spyOn(globalThis, 'fetch').mockImplementation((input) => {
       const url = String(input)
       if (url.endsWith('/wallet/summary')) {
@@ -85,6 +92,20 @@ describe('P1 production pages', () => {
 
     expect(wrapper.text()).toContain('KYC approval is required')
     expect(wrapper.get('[data-test="submit-redemption"]').attributes('disabled')).toBeDefined()
+  })
+
+  it('does not call user-scoped APIs when the user is not registered', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation(() => json({}))
+
+    const kyc = mount(AppKyc, { global })
+    await flushPromises()
+    expect(kyc.text()).toContain('Create your account')
+
+    const redemption = mount(AppRedemption, { global })
+    await flushPromises()
+    expect(redemption.text()).toContain('Create your account')
+
+    expect(fetchMock).not.toHaveBeenCalled()
   })
 
   it('lets admin approve KYC from the P1 operations table', async () => {
