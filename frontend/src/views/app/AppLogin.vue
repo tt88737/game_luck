@@ -45,6 +45,12 @@ function messageFrom(err: unknown) {
       <RouterLink class="plain-link" to="/app/register">{{ $t('login.noAccount') }}</RouterLink>
     </header>
 
+    <section class="lobby-hero auth-hero">
+      <p class="eyebrow">Tang Luck</p>
+      <h2>{{ $t('login.heading') }}</h2>
+      <p>{{ $t('home.registerBody') }}</p>
+    </section>
+
     <form class="section-block form-stack" @submit.prevent="login">
       <label>
         {{ $t('common.email') }}

@@ -91,41 +91,49 @@ function messageFrom(err: unknown) {
 
     <section v-if="loadingDocs" class="status-panel">{{ $t('register.loadingDocuments') }}</section>
 
-    <form v-else class="section-block form-stack" @submit.prevent="register">
-      <label>
-        {{ $t('common.email') }}
-        <input v-model="form.email" type="email" required autocomplete="email" />
-      </label>
-      <label>
-        {{ $t('common.password') }}
-        <input v-model="form.password" type="password" required autocomplete="new-password" />
-      </label>
-      <label>
-        {{ $t('common.birthDate') }}
-        <input v-model="form.birthDate" type="date" required />
-      </label>
-      <label>
-        {{ $t('common.state') }}
-        <select v-model="form.stateCode">
-          <option value="CA">California</option>
-          <option value="TX">Texas</option>
-          <option value="NJ">New Jersey</option>
-          <option value="WA">Washington</option>
-        </select>
-      </label>
-
-      <section class="legal-checks" :aria-label="$t('register.legalDocuments')">
-        <label v-for="doc in documents" :key="doc.documentType" class="check-row">
-          <input v-model="accepted[doc.documentType]" type="checkbox" />
-          <span>{{ doc.title }} <small>{{ doc.version }}</small></span>
-        </label>
+    <template v-else>
+      <section class="lobby-hero auth-hero">
+        <p class="eyebrow">Tang Luck</p>
+        <h2>{{ $t('register.createAccount') }}</h2>
+        <p>{{ $t('register.legalDocuments') }}</p>
       </section>
 
-      <p v-if="error" class="notice danger">{{ error }}</p>
-      <button data-test="register-submit" :disabled="submitting || !requiredAccepted">
-        {{ submitting ? $t('register.submitting') : $t('register.submit') }}
-      </button>
-    </form>
+      <form class="section-block form-stack" @submit.prevent="register">
+        <label>
+          {{ $t('common.email') }}
+          <input v-model="form.email" type="email" required autocomplete="email" />
+        </label>
+        <label>
+          {{ $t('common.password') }}
+          <input v-model="form.password" type="password" required autocomplete="new-password" />
+        </label>
+        <label>
+          {{ $t('common.birthDate') }}
+          <input v-model="form.birthDate" type="date" required />
+        </label>
+        <label>
+          {{ $t('common.state') }}
+          <select v-model="form.stateCode">
+            <option value="CA">California</option>
+            <option value="TX">Texas</option>
+            <option value="NJ">New Jersey</option>
+            <option value="WA">Washington</option>
+          </select>
+        </label>
+
+        <section class="legal-checks" :aria-label="$t('register.legalDocuments')">
+          <label v-for="doc in documents" :key="doc.documentType" class="check-row">
+            <input v-model="accepted[doc.documentType]" type="checkbox" />
+            <span>{{ doc.title }} <small>{{ doc.version }}</small></span>
+          </label>
+        </section>
+
+        <p v-if="error" class="notice danger">{{ error }}</p>
+        <button data-test="register-submit" :disabled="submitting || !requiredAccepted">
+          {{ submitting ? $t('register.submitting') : $t('register.submit') }}
+        </button>
+      </form>
+    </template>
 
     <nav class="bottom-nav" aria-label="App navigation">
       <RouterLink to="/app/register">{{ $t('nav.register') }}</RouterLink>

@@ -3,6 +3,7 @@ import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import AppHome from './AppHome.vue'
 import { i18n } from '../../i18n'
+import { useSessionStore } from '../../stores/session'
 
 function json(data: unknown, status = 200) {
   return Promise.resolve(new Response(JSON.stringify(data), {
@@ -113,6 +114,33 @@ describe('AppHome', () => {
     await flushPromises()
 
     expect(wrapper.text()).toContain('Reward already claimed for this period.')
+  })
+
+  it('loads home data after session hydration restores the user', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation((input) => {
+      const url = String(input)
+      if (url.endsWith('/wallet/summary')) {
+        return json({
+          wallet: { gcBalance: '7500.0000', scBalance: '1.2500', scFrozen: '0', scRedeemable: '1.2500' },
+          scSourceSummary: [],
+          notices: [],
+        })
+      }
+      if (url.endsWith('/campaigns')) return json([])
+      if (url.endsWith('/tasks/daily')) return json([])
+      if (url.endsWith('/compliance/documents')) return json([])
+      return json({})
+    })
+
+    const wrapper = mountHome()
+    await flushPromises()
+
+    const session = useSessionStore()
+    session.setSession('local-user-9', '9')
+    await flushPromises()
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/v1/wallet/summary', expect.anything())
+    expect(wrapper.text()).toContain('7,500')
   })
 })
 

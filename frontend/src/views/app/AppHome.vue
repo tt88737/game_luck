@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 import { ApiError, apiGet, apiPost } from '../../api/http'
 import type { Campaign, ClaimResponse, ComplianceDocument, DailyTask, WalletSummary } from '../../api/contracts'
@@ -28,6 +28,10 @@ onMounted(() => {
     return
   }
   void loadHome()
+})
+
+watch(() => session.userId, (userId) => {
+  if (userId && !summary.value) void loadHome()
 })
 
 async function loadHome() {
@@ -146,6 +150,27 @@ function formatAmount(value: string | number, digits: number) {
           <strong>{{ scBalance }}</strong>
         </div>
       </section>
+
+      <section class="lobby-hero">
+        <p class="eyebrow">{{ $t('home.availableRewards') }}</p>
+        <h2>{{ $t('home.heading') }}</h2>
+        <p>{{ $t('home.welcomeBonus') }}</p>
+      </section>
+
+      <nav class="quick-actions" aria-label="Quick actions">
+        <RouterLink to="/app/store">
+          {{ $t('nav.store') }}
+          <span>{{ $t('store.gcPackages') }}</span>
+        </RouterLink>
+        <RouterLink to="/app/activity">
+          {{ $t('nav.activity') }}
+          <span>{{ $t('home.allActivity') }}</span>
+        </RouterLink>
+        <RouterLink to="/app/redemption">
+          {{ $t('nav.redeem') }}
+          <span>{{ $t('common.scAmount') }}</span>
+        </RouterLink>
+      </nav>
 
       <p v-if="summary?.notices.length" class="notice">{{ summary.notices[0] }}</p>
       <p v-if="success" class="notice success">{{ success }}</p>

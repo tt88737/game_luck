@@ -78,15 +78,19 @@ function format(value: string | number, digits: number) {
           <h2>{{ $t('common.packages') }}</h2>
           <span>{{ $t('store.activeCount', { count: packages.length }) }}</span>
         </div>
-        <article v-for="item in packages" :key="item.packageCode" class="reward-row">
-          <div>
-            <strong>{{ item.name }}</strong>
-            <span>{{ format(item.gcAmount, 0) }} GC · {{ format(item.priceAmount, 2) }} {{ item.priceCurrency }}</span>
-          </div>
-          <button :data-test="`buy-${item.packageCode}`" :disabled="buying === item.packageCode" @click="buyPackage(item)">
-            {{ buying === item.packageCode ? $t('store.buying') : $t('common.buy') }}
-          </button>
-        </article>
+        <div class="game-card-grid">
+          <article v-for="item in packages" :key="item.packageCode" class="section-block store-card">
+            <div class="reward-row">
+              <div>
+                <strong>{{ item.name }}</strong>
+                <span>{{ format(item.gcAmount, 0) }} GC · {{ format(item.priceAmount, 2) }} {{ item.priceCurrency }}</span>
+              </div>
+              <button :data-test="`buy-${item.packageCode}`" :disabled="buying === item.packageCode" @click="buyPackage(item)">
+                {{ buying === item.packageCode ? $t('store.buying') : $t('common.buy') }}
+              </button>
+            </div>
+          </article>
+        </div>
       </section>
 
       <section v-if="lastOrder" class="section-block">
