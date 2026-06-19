@@ -124,7 +124,11 @@ test('C-side and admin pages render production workflow', async ({ page }) => {
   await page.getByLabel('Privacy Policy privacy-v1').check()
   await page.getByRole('button', { name: 'Register and continue' }).click()
 
-  await expect(page.getByRole('heading', { name: 'Rewards wallet', level: 1 })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Lobby', level: 1 })).toBeVisible()
+  await expect(page.getByText('Featured games')).toBeVisible()
+  await expect(page.getByText('Lucky Slots')).toBeVisible()
+  await expect(page.getByText('KYC required')).toBeVisible()
+  await expect(page.getByText('Daily bonus')).toBeVisible()
   await expect(page.getByText('WELCOME_BONUS')).toBeVisible()
   await expect(page.getByText('AMOE / No Purchase Necessary')).toBeVisible()
   await page.getByRole('button', { name: 'Claim' }).click()
@@ -164,7 +168,7 @@ test('store, KYC, redemption, and ops pages render operating loop', async ({ pag
   await page.locator('input[type="email"]').fill(email)
   await page.locator('input[type="password"]').fill('Password123!')
   await page.locator('[data-test="login-submit"]').click()
-  await expect(page.getByRole('heading', { name: 'Rewards wallet', level: 1 })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Lobby', level: 1 })).toBeVisible()
 
   await page.getByLabel('App navigation').getByRole('link', { name: 'Store' }).click()
   await expect(page.getByText('GC 5,000 Pack')).toBeVisible()

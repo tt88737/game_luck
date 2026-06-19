@@ -21,6 +21,32 @@ const scBalance = computed(() => formatAmount(summary.value?.wallet.scBalance ??
 const welcome = computed(() => campaigns.value.find((item) => item.campaignType === 'register_bonus') ?? campaigns.value[0])
 const dailyLogin = computed(() => tasks.value[0])
 const isRegionRestricted = computed(() => error.value.toLowerCase().includes('region') || error.value.includes('available in your region'))
+const featuredGames = computed(() => [
+  {
+    key: 'slots',
+    title: i18n.t('lobby.luckySlots'),
+    meta: i18n.t('lobby.luckySlotsMeta'),
+    action: i18n.t('lobby.playNow'),
+    to: '/app/activity',
+    status: 'live',
+  },
+  {
+    key: 'tables',
+    title: i18n.t('lobby.tableGames'),
+    meta: i18n.t('lobby.tableGamesMeta'),
+    action: i18n.t('lobby.locked'),
+    to: '/app',
+    status: 'locked',
+  },
+  {
+    key: 'events',
+    title: i18n.t('lobby.liveEvents'),
+    meta: i18n.t('lobby.liveEventsMeta'),
+    action: i18n.t('lobby.playNow'),
+    to: '/app/activity',
+    status: 'event',
+  },
+])
 
 onMounted(() => {
   if (!session.userId) {
@@ -160,7 +186,7 @@ function formatAmount(value: string | number, digits: number) {
       <nav class="quick-actions" aria-label="Quick actions">
         <RouterLink to="/app/store">
           {{ $t('nav.store') }}
-          <span>{{ $t('store.gcPackages') }}</span>
+          <span>{{ $t('lobby.storeCta') }}</span>
         </RouterLink>
         <RouterLink to="/app/activity">
           {{ $t('nav.activity') }}
@@ -168,13 +194,61 @@ function formatAmount(value: string | number, digits: number) {
         </RouterLink>
         <RouterLink to="/app/redemption">
           {{ $t('nav.redeem') }}
-          <span>{{ $t('common.scAmount') }}</span>
+          <span>{{ $t('lobby.redeemCta') }}</span>
         </RouterLink>
       </nav>
 
       <p v-if="summary?.notices.length" class="notice">{{ summary.notices[0] }}</p>
       <p v-if="success" class="notice success">{{ success }}</p>
       <p v-if="error" class="notice danger">{{ error }}</p>
+
+      <section class="section-block lobby-section">
+        <div class="section-title">
+          <h2>{{ $t('lobby.featuredGames') }}</h2>
+          <span>{{ $t('home.allActivity') }}</span>
+        </div>
+        <div class="lobby-game-grid">
+          <RouterLink
+            v-for="game in featuredGames"
+            :key="game.key"
+            class="lobby-game-card"
+            :class="`is-${game.status}`"
+            :to="game.to"
+          >
+            <span class="game-symbol">{{ game.key === 'slots' ? '7' : game.key === 'tables' ? 'A' : 'J' }}</span>
+            <strong>{{ game.title }}</strong>
+            <small>{{ game.meta }}</small>
+            <em>{{ game.action }}</em>
+          </RouterLink>
+        </div>
+      </section>
+
+      <section class="lobby-status-grid">
+        <article class="status-tile kyc-tile">
+          <div>
+            <span class="status-icon">ID</span>
+            <strong>{{ $t('lobby.kycRequired') }}</strong>
+            <small>{{ $t('lobby.kycRequiredBody') }}</small>
+          </div>
+          <RouterLink class="plain-link" to="/app/kyc">{{ $t('common.kyc') }}</RouterLink>
+        </article>
+
+        <article class="status-tile daily-tile">
+          <div>
+            <span class="status-icon">24H</span>
+            <strong>{{ $t('lobby.dailyBonus') }}</strong>
+            <small>{{ dailyLogin ? $t('home.dailyLogin') : $t('home.welcomeBonus') }}</small>
+          </div>
+          <button
+            v-if="dailyLogin"
+            :disabled="claiming === dailyLogin.taskCode"
+            @click="claimTask(dailyLogin.taskCode)"
+          >
+            {{ claiming === dailyLogin.taskCode ? $t('home.claiming') : $t('home.checkIn') }}
+          </button>
+          <RouterLink v-else class="plain-link" to="/app/activity">{{ $t('home.allActivity') }}</RouterLink>
+        </article>
+      </section>
 
       <section class="section-block">
         <div class="section-title">
