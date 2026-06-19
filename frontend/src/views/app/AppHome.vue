@@ -4,6 +4,7 @@ import { RouterLink } from 'vue-router'
 import { ApiError, apiGet, apiPost } from '../../api/http'
 import type { Campaign, ClaimResponse, ComplianceDocument, DailyTask, WalletSummary } from '../../api/contracts'
 import { useSessionStore } from '../../stores/session'
+import { i18n } from '../../i18n'
 
 const session = useSessionStore()
 const loading = ref(true)
@@ -99,7 +100,7 @@ async function claimCoupon() {
 function messageFrom(err: unknown) {
   if (err instanceof ApiError) return err.message
   if (err instanceof Error) return err.message
-  return 'Network request failed.'
+  return i18n.t('home.networkFailed')
 }
 
 function formatAmount(value: string | number, digits: number) {
@@ -114,33 +115,34 @@ function formatAmount(value: string | number, digits: number) {
   <main class="app-screen">
     <header class="app-header">
       <div>
-        <p class="eyebrow">Tang Luck P0-A</p>
-        <h1>Rewards wallet</h1>
+        <p class="eyebrow">{{ $t('home.eyebrow') }}</p>
+        <h1>{{ $t('home.heading') }}</h1>
       </div>
-      <RouterLink class="plain-link" to="/app/wallet">Ledger</RouterLink>
+      <RouterLink class="plain-link" to="/app/wallet">{{ $t('nav.ledger') }}</RouterLink>
     </header>
 
-    <section v-if="loading" class="status-panel">Loading wallet and rewards...</section>
+    <section v-if="loading" class="status-panel">{{ $t('home.loading') }}</section>
 
     <section v-else-if="!session.userId" class="status-panel">
-      <strong>Register to start</strong>
-      <span>Create an account to load wallet, rewards, and legal document state.</span>
-      <RouterLink class="plain-link" to="/app/register">Register now</RouterLink>
+      <strong>{{ $t('home.registerTitle') }}</strong>
+      <span>{{ $t('home.registerBody') }}</span>
+      <RouterLink class="plain-link" to="/app/register">{{ $t('home.registerCta') }}</RouterLink>
+      <RouterLink class="plain-link" to="/app/login">{{ $t('login.submit') }}</RouterLink>
     </section>
 
     <section v-else-if="error && !summary" class="status-panel danger">
-      <strong>{{ isRegionRestricted ? 'Region restricted' : 'Unable to load' }}</strong>
+      <strong>{{ isRegionRestricted ? $t('home.regionRestricted') : $t('home.unableToLoad') }}</strong>
       <span>{{ error }}</span>
     </section>
 
     <template v-else>
       <section class="wallet-band" aria-label="Wallet balance">
         <div>
-          <span>Gold Coins</span>
+          <span>{{ $t('home.goldCoins') }}</span>
           <strong>{{ gcBalance }}</strong>
         </div>
         <div>
-          <span>Sweeps Coins</span>
+          <span>{{ $t('home.sweepsCoins') }}</span>
           <strong>{{ scBalance }}</strong>
         </div>
       </section>
@@ -151,45 +153,45 @@ function formatAmount(value: string | number, digits: number) {
 
       <section class="section-block">
         <div class="section-title">
-          <h2>Available rewards</h2>
-          <RouterLink to="/app/activity">All activity</RouterLink>
+          <h2>{{ $t('home.availableRewards') }}</h2>
+          <RouterLink to="/app/activity">{{ $t('home.allActivity') }}</RouterLink>
         </div>
 
         <article v-if="welcome" class="reward-row">
           <div>
             <strong>{{ welcome.campaignCode }}</strong>
-            <span>Welcome Bonus: 10,000 GC + 0.50 SC when eligible.</span>
+            <span>{{ $t('home.welcomeBonus') }}</span>
           </div>
           <button data-test="claim-welcome" :disabled="claiming === welcome.campaignCode" @click="claimCampaign(welcome.campaignCode)">
-            {{ claiming === welcome.campaignCode ? 'Claiming' : 'Claim' }}
+            {{ claiming === welcome.campaignCode ? $t('home.claiming') : $t('home.claim') }}
           </button>
         </article>
 
         <article v-if="dailyLogin" class="reward-row">
           <div>
             <strong>{{ dailyLogin.taskCode }}</strong>
-            <span>Daily login task, risk users receive GC only.</span>
+            <span>{{ $t('home.dailyLogin') }}</span>
           </div>
           <button :disabled="claiming === dailyLogin.taskCode" @click="claimTask(dailyLogin.taskCode)">
-            {{ claiming === dailyLogin.taskCode ? 'Claiming' : 'Check in' }}
+            {{ claiming === dailyLogin.taskCode ? $t('home.claiming') : $t('home.checkIn') }}
           </button>
         </article>
 
         <article class="reward-row">
           <div>
             <strong>WELCOME500</strong>
-            <span>Coupon code for 500 GC, one redemption per account.</span>
+            <span>{{ $t('home.couponCopy') }}</span>
           </div>
           <button :disabled="claiming === 'WELCOME500'" @click="claimCoupon">
-            {{ claiming === 'WELCOME500' ? 'Applying' : 'Apply' }}
+            {{ claiming === 'WELCOME500' ? $t('home.applying') : $t('home.apply') }}
           </button>
         </article>
       </section>
 
       <section class="section-block">
         <div class="section-title">
-          <h2>Rules</h2>
-          <span>Required links</span>
+          <h2>{{ $t('home.rules') }}</h2>
+          <span>{{ $t('home.requiredLinks') }}</span>
         </div>
         <div class="legal-list">
           <a v-for="doc in documents" :key="doc.documentType" :href="doc.contentUrl">{{ doc.title }}</a>
@@ -199,11 +201,12 @@ function formatAmount(value: string | number, digits: number) {
     </template>
 
     <nav class="bottom-nav" aria-label="App navigation">
-      <RouterLink to="/app/register">Register</RouterLink>
-      <RouterLink to="/app">Home</RouterLink>
-      <RouterLink to="/app/store">Store</RouterLink>
-      <RouterLink to="/app/redemption">Redeem</RouterLink>
-      <RouterLink to="/app/wallet">Wallet</RouterLink>
+      <RouterLink to="/app/register">{{ $t('nav.register') }}</RouterLink>
+      <RouterLink to="/app/login">{{ $t('login.submit') }}</RouterLink>
+      <RouterLink to="/app">{{ $t('nav.home') }}</RouterLink>
+      <RouterLink to="/app/store">{{ $t('nav.store') }}</RouterLink>
+      <RouterLink to="/app/redemption">{{ $t('nav.redeem') }}</RouterLink>
+      <RouterLink to="/app/wallet">{{ $t('common.wallet') }}</RouterLink>
     </nav>
   </main>
 </template>

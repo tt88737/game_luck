@@ -71,6 +71,7 @@ function messageFrom(err: unknown) {
       <strong>{{ $t('register.heading') }}</strong>
       <span>Create an account before submitting identity verification.</span>
       <RouterLink class="plain-link" to="/app/register">{{ $t('register.submit') }}</RouterLink>
+      <RouterLink class="plain-link" to="/app/login">{{ $t('login.submit') }}</RouterLink>
     </section>
     <section v-else>
       <div class="section-block">

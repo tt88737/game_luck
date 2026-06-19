@@ -6,7 +6,7 @@ test.beforeEach(async ({ page }) => {
       json: {
         wallet: { gcBalance: '10000.0000', scBalance: '0.5000', scFrozen: '0.0000', scRedeemable: '0.5000' },
         scSourceSummary: [{ source: 'register_bonus', amount: '0.5000' }],
-        notices: ['SC is promotional and not sold in P0-A.'],
+        notices: ['SC is promotional and not sold.'],
       },
     })
   })
@@ -37,6 +37,25 @@ test.beforeEach(async ({ page }) => {
     })
   })
   await page.route('/api/v1/auth/register', async (route) => {
+    await route.fulfill({
+      json: {
+        user: { userId: 1, email: 'player.ca@example.com', countryCode: 'US', stateCode: 'CA', riskLevel: 'normal', status: 'active' },
+        wallet: { gcBalance: '0', scBalance: '0', scFrozen: '0' },
+        token: 'user-token',
+      },
+    })
+  })
+  await page.route('/api/v1/auth/login', async (route) => {
+    const request = route.request().postDataJSON() as { email?: string }
+    await route.fulfill({
+      json: {
+        user: { userId: 1, email: request.email ?? 'player.ca@example.com', countryCode: 'US', stateCode: 'CA', riskLevel: 'normal', status: 'active' },
+        wallet: { gcBalance: '0', scBalance: '0', scFrozen: '0' },
+        token: 'user-token',
+      },
+    })
+  })
+  await page.route('/api/v1/me', async (route) => {
     await route.fulfill({
       json: {
         user: { userId: 1, email: 'player.ca@example.com', countryCode: 'US', stateCode: 'CA', riskLevel: 'normal', status: 'active' },
@@ -77,7 +96,7 @@ test.beforeEach(async ({ page }) => {
   })
   await page.route('/api/v1/kyc/applications', async (route) => {
     kycStatus = 'reviewing'
-    await route.fulfill({ json: { userId: 1, status: 'reviewing', legalName: 'P1 Demo User', reviewReason: null, updatedAt: '2026-06-19T00:00:00Z' } })
+    await route.fulfill({ json: { userId: 1, status: 'reviewing', legalName: 'P1 User', reviewReason: null, updatedAt: '2026-06-19T00:00:00Z' } })
   })
   await page.route('/api/v1/redemptions', async (route) => {
     await route.fulfill({ json: { redemptionId: 'red_1001', userId: 1, scAmount: '0.5000', method: 'gift_card', status: 'reviewing', sandboxOnly: false, createdAt: '2026-06-19T00:00:00Z' } })
@@ -90,7 +109,7 @@ test.beforeEach(async ({ page }) => {
     await route.fulfill({
       json: {
         purchaseOrders: [{ orderId: 'ord_1001', userId: 1, packageCode: 'gc_499', priceAmount: '4.9900', priceCurrency: 'USD', status: 'paid', provider: 'manual', currencyGranted: 'GC', amountGranted: '5000.0000', createdAt: '2026-06-19T00:00:00Z' }],
-        kycApplications: [{ userId: 1, status: kycStatus === 'approved' ? 'approved' : 'reviewing', legalName: 'P1 Demo User', reviewReason: null, updatedAt: '2026-06-19T00:00:00Z' }],
+        kycApplications: [{ userId: 1, status: kycStatus === 'approved' ? 'approved' : 'reviewing', legalName: 'P1 User', reviewReason: null, updatedAt: '2026-06-19T00:00:00Z' }],
         redemptionRequests: [{ redemptionId: 'red_1001', userId: 1, scAmount: '0.5000', method: 'gift_card', status: 'reviewing', sandboxOnly: false, createdAt: '2026-06-19T00:00:00Z' }],
       },
     })
@@ -129,11 +148,23 @@ test('C-side and admin pages render production workflow', async ({ page }) => {
 })
 
 test('store, KYC, redemption, and ops pages render operating loop', async ({ page }) => {
+  const email = `e2e.${Date.now()}@example.com`
   await page.goto('/app/register')
+  await page.locator('input[type="email"]').fill(email)
   await page.getByLabel('Terms of Use terms-v1').check()
   await page.getByLabel('Sweepstakes Rules rules-v1').check()
   await page.getByLabel('Privacy Policy privacy-v1').check()
   await page.getByRole('button', { name: 'Register and continue' }).click()
+
+  await page.evaluate(() => {
+    localStorage.removeItem('tangluck_token')
+    localStorage.removeItem('tangluck_user_id')
+  })
+  await page.goto('/app/login')
+  await page.locator('input[type="email"]').fill(email)
+  await page.locator('input[type="password"]').fill('Password123!')
+  await page.locator('[data-test="login-submit"]').click()
+  await expect(page.getByText('Rewards wallet')).toBeVisible()
 
   await page.getByRole('link', { name: 'Store' }).click()
   await expect(page.getByText('GC 5,000 Pack')).toBeVisible()

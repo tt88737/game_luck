@@ -11,11 +11,11 @@ public class HealthController {
     public String root() {
         return """
                 <!doctype html>
-                <html lang="zh-CN">
+                <html lang="en">
                 <head>
                   <meta charset="utf-8">
                   <meta name="viewport" content="width=device-width, initial-scale=1">
-                  <title>Tang Luck P0-A</title>
+                  <title>Tang Luck Operations</title>
                   <style>
                     body { margin: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f6f7f4; color: #171b16; }
                     main { max-width: 720px; margin: 72px auto; padding: 0 24px; }
@@ -29,12 +29,12 @@ public class HealthController {
                 </head>
                 <body>
                   <main>
-                    <h1>Tang Luck P0-A</h1>
-                    <p>后端服务已启动。操作页面运行在前端开发服务 <code>http://127.0.0.1:5175</code>。</p>
+                    <h1>Tang Luck Operations</h1>
+                    <p>Backend service is running. Product and operations pages are served by the frontend development server at <code>http://127.0.0.1:5175</code>.</p>
                     <nav>
-                      <a href="http://127.0.0.1:5175/app/register">打开用户端注册</a>
-                      <a class="secondary" href="http://127.0.0.1:5175/admin">打开后台运营</a>
-                      <a class="secondary" href="/health">查看健康状态</a>
+                      <a href="http://127.0.0.1:5175/app/register">Open user registration</a>
+                      <a class="secondary" href="http://127.0.0.1:5175/admin">Open operations console</a>
+                      <a class="secondary" href="/health">View health status</a>
                     </nav>
                   </main>
                 </body>

@@ -90,6 +90,7 @@ function amount(value: string | number | undefined, digits = 2) {
       <strong>{{ $t('register.heading') }}</strong>
       <span>Create an account before requesting redemption.</span>
       <RouterLink class="plain-link" to="/app/register">{{ $t('register.submit') }}</RouterLink>
+      <RouterLink class="plain-link" to="/app/login">{{ $t('login.submit') }}</RouterLink>
     </section>
     <section v-else>
       <section class="wallet-band">

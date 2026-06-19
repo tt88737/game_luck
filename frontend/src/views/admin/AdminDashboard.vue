@@ -39,7 +39,7 @@ function amount(value: string | number | undefined) {
           <p class="eyebrow">Operations</p>
           <h1>Dashboard</h1>
         </div>
-        <span class="status-tag pending">P0-A</span>
+        <span class="status-tag active">Production</span>
       </header>
 
       <section v-if="loading" class="status-panel">Loading dashboard...</section>

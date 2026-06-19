@@ -101,6 +101,11 @@ export interface RegisterResponse {
   token: string
 }
 
+export interface LoginRequest {
+  email: string
+  password: string
+}
+
 export interface DashboardSummary {
   registrations: number
   claims: number

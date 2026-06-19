@@ -4,6 +4,7 @@ import { RouterLink } from 'vue-router'
 import { ApiError, apiGet } from '../../api/http'
 import type { LedgerPage, WalletSummary } from '../../api/contracts'
 import { useSessionStore } from '../../stores/session'
+import { i18n } from '../../i18n'
 
 const session = useSessionStore()
 const loading = ref(true)
@@ -34,7 +35,7 @@ async function loadWallet() {
     summary.value = wallet
     ledger.value = rows
   } catch (err) {
-    error.value = err instanceof ApiError || err instanceof Error ? err.message : 'Wallet request failed.'
+    error.value = err instanceof ApiError || err instanceof Error ? err.message : i18n.t('wallet.requestFailed')
   } finally {
     loading.value = false
   }
@@ -52,47 +53,48 @@ function formatAmount(value: string | number, digits: number) {
   <main class="app-screen">
     <header class="app-header">
       <div>
-        <p class="eyebrow">Wallet</p>
-        <h1>Balances and ledger</h1>
+        <p class="eyebrow">{{ $t('common.wallet') }}</p>
+        <h1>{{ $t('wallet.heading') }}</h1>
       </div>
-      <RouterLink class="plain-link" to="/app">Home</RouterLink>
+      <RouterLink class="plain-link" to="/app">{{ $t('nav.home') }}</RouterLink>
     </header>
 
-    <section v-if="loading" class="status-panel">Loading ledger...</section>
+    <section v-if="loading" class="status-panel">{{ $t('wallet.loadingLedger') }}</section>
     <section v-else-if="!session.userId" class="status-panel">
-      <strong>Create your account</strong>
-      <span>Create an account before viewing wallet balances and ledger.</span>
-      <RouterLink class="plain-link" to="/app/register">Register and continue</RouterLink>
+      <strong>{{ $t('wallet.loggedOutTitle') }}</strong>
+      <span>{{ $t('wallet.loggedOutBody') }}</span>
+      <RouterLink class="plain-link" to="/app/register">{{ $t('register.submit') }}</RouterLink>
+      <RouterLink class="plain-link" to="/app/login">{{ $t('login.submit') }}</RouterLink>
     </section>
     <section v-else-if="error" class="status-panel danger">{{ error }}</section>
 
     <template v-else>
       <section class="wallet-band">
-        <div><span>GC balance</span><strong>{{ gcBalance }}</strong></div>
-        <div><span>SC balance</span><strong>{{ scBalance }}</strong></div>
+        <div><span>{{ $t('wallet.gcBalance') }}</span><strong>{{ gcBalance }}</strong></div>
+        <div><span>{{ $t('wallet.scBalance') }}</span><strong>{{ scBalance }}</strong></div>
       </section>
 
       <section class="section-block">
         <div class="section-title">
-          <h2>SC status</h2>
-          <span>Wallet controls</span>
+          <h2>{{ $t('wallet.scStatus') }}</h2>
+          <span>{{ $t('wallet.controls') }}</span>
         </div>
         <div class="metric-grid">
-          <div><span>Frozen SC</span><strong>{{ scFrozen }}</strong></div>
-          <div><span>Redeemable SC</span><strong>{{ scRedeemable }}</strong></div>
+          <div><span>{{ $t('wallet.frozenSc') }}</span><strong>{{ scFrozen }}</strong></div>
+          <div><span>{{ $t('wallet.redeemableSc') }}</span><strong>{{ scRedeemable }}</strong></div>
         </div>
-        <p class="notice">SC is granted through promotions or AMOE paths in P0-A. It is not sold and redemption payout is not connected.</p>
+        <p class="notice">{{ $t('wallet.notice') }}</p>
         <div class="source-list">
           <span v-for="source in summary?.scSourceSummary" :key="source.source">
             {{ source.source }}: {{ formatAmount(source.amount, 2) }} SC
           </span>
-          <span v-if="!summary?.scSourceSummary.length">No SC source yet.</span>
+          <span v-if="!summary?.scSourceSummary.length">{{ $t('wallet.noScSource') }}</span>
         </div>
       </section>
 
       <section class="section-block">
         <div class="section-title">
-          <h2>Ledger</h2>
+          <h2>{{ $t('nav.ledger') }}</h2>
           <select v-model="currency" @change="loadWallet">
             <option value="SC">SC</option>
             <option value="GC">GC</option>
@@ -106,17 +108,17 @@ function formatAmount(value: string | number, digits: number) {
             </div>
             <b>{{ formatAmount(row.amount, row.currency === 'GC' ? 0 : 2) }} {{ row.currency }}</b>
           </article>
-          <p v-if="!ledger?.items.length" class="empty-state">No ledger rows for {{ currency }}.</p>
+          <p v-if="!ledger?.items.length" class="empty-state">{{ $t('wallet.noLedgerRows', { currency }) }}</p>
         </div>
       </section>
     </template>
 
     <nav class="bottom-nav" aria-label="App navigation">
-      <RouterLink to="/app">Home</RouterLink>
-      <RouterLink to="/app/store">Store</RouterLink>
+      <RouterLink to="/app">{{ $t('nav.home') }}</RouterLink>
+      <RouterLink to="/app/store">{{ $t('nav.store') }}</RouterLink>
       <RouterLink to="/app/kyc">KYC</RouterLink>
-      <RouterLink to="/app/redemption">Redeem</RouterLink>
-      <RouterLink to="/app/wallet">Wallet</RouterLink>
+      <RouterLink to="/app/redemption">{{ $t('nav.redeem') }}</RouterLink>
+      <RouterLink to="/app/wallet">{{ $t('common.wallet') }}</RouterLink>
     </nav>
   </main>
 </template>

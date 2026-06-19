@@ -16,7 +16,8 @@ class HealthControllerTest {
 
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("Tang Luck P0-A")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Tang Luck Operations")))
+                .andExpect(content().string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("P0-A"))))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("http://127.0.0.1:5175/app/register")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("http://127.0.0.1:5175/admin")));
     }

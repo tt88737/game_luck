@@ -4,6 +4,7 @@ const AppHome = () => import('../views/app/AppHome.vue')
 const AppWallet = () => import('../views/app/AppWallet.vue')
 const AppActivity = () => import('../views/app/AppActivity.vue')
 const AppRegister = () => import('../views/app/AppRegister.vue')
+const AppLogin = () => import('../views/app/AppLogin.vue')
 const AppStore = () => import('../views/app/AppStore.vue')
 const AppKyc = () => import('../views/app/AppKyc.vue')
 const AppRedemption = () => import('../views/app/AppRedemption.vue')
@@ -17,6 +18,7 @@ export const router = createRouter({
   routes: [
     { path: '/', redirect: '/app' },
     { path: '/app/register', component: AppRegister },
+    { path: '/app/login', component: AppLogin },
     { path: '/app', component: AppHome },
     { path: '/app/wallet', component: AppWallet },
     { path: '/app/activity', component: AppActivity },

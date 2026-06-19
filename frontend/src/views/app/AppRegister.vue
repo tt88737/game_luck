@@ -63,7 +63,7 @@ async function register() {
       deviceId: `web-${form.stateCode.toLowerCase()}`,
     }
     const response = await apiPost<RegisterResponse>('/auth/register', payload)
-    session.setSession(response.token, String(response.user.userId))
+    session.applyAuthResponse(response)
     await router.push('/app')
   } catch (err) {
     error.value = messageFrom(err)
@@ -86,7 +86,7 @@ function messageFrom(err: unknown) {
         <p class="eyebrow">{{ $t('register.createAccount') }}</p>
         <h1>{{ $t('register.heading') }}</h1>
       </div>
-      <RouterLink class="plain-link" to="/app">{{ $t('nav.home') }}</RouterLink>
+      <RouterLink class="plain-link" to="/app/login">{{ $t('login.submit') }}</RouterLink>
     </header>
 
     <section v-if="loadingDocs" class="status-panel">{{ $t('register.loadingDocuments') }}</section>
@@ -129,7 +129,9 @@ function messageFrom(err: unknown) {
 
     <nav class="bottom-nav" aria-label="App navigation">
       <RouterLink to="/app/register">{{ $t('nav.register') }}</RouterLink>
+      <RouterLink to="/app/login">{{ $t('login.submit') }}</RouterLink>
       <RouterLink to="/app">{{ $t('nav.home') }}</RouterLink>
+      <RouterLink to="/app/store">{{ $t('nav.store') }}</RouterLink>
       <RouterLink to="/app/wallet">{{ $t('common.wallet') }}</RouterLink>
     </nav>
   </main>

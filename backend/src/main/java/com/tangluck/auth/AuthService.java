@@ -98,10 +98,52 @@ public class AuthService {
         var gcWallet = walletAccountRepository.save(new WalletAccount(user.getId(), "GC", now));
         var scWallet = walletAccountRepository.save(new WalletAccount(user.getId(), "SC", now));
 
+        return sessionResponse(user, sessionToken(user.getId()));
+    }
+
+    @Transactional(readOnly = true)
+    public RegisterResponse login(LoginRequest request) {
+        var user = userRepository.findByEmail(request.email())
+                .orElseThrow(() -> invalidCredentials());
+        if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
+            throw invalidCredentials();
+        }
+        return sessionResponse(user, sessionToken(user.getId()));
+    }
+
+    @Transactional(readOnly = true)
+    public RegisterResponse me(String authorization) {
+        var userId = parseLocalUserId(authorization);
+        var user = userRepository.findById(userId).orElseThrow(this::invalidCredentials);
+        return sessionResponse(user, sessionToken(user.getId()));
+    }
+
+    private RegisterResponse sessionResponse(User user, String token) {
+        var gcWallet = walletAccountRepository.findByUserIdAndCurrency(user.getId(), "GC").orElseThrow();
+        var scWallet = walletAccountRepository.findByUserIdAndCurrency(user.getId(), "SC").orElseThrow();
         return new RegisterResponse(
                 new UserDto(user.getId(), user.getEmail(), user.getCountryCode(), user.getStateCode(), user.getRiskLevel(), user.getStatus()),
                 new WalletDto(gcWallet.getBalance(), scWallet.getBalance(), scWallet.getFrozenBalance()),
-                "local-user-" + user.getId()
+                token
         );
+    }
+
+    private BusinessException invalidCredentials() {
+        return new BusinessException(ErrorCode.AUTH_INVALID_CREDENTIALS, "Invalid email or password.");
+    }
+
+    private String sessionToken(Long userId) {
+        return "local-user-" + userId;
+    }
+
+    private Long parseLocalUserId(String authorization) {
+        if (authorization == null || !authorization.startsWith("Bearer local-user-")) {
+            throw invalidCredentials();
+        }
+        try {
+            return Long.parseLong(authorization.substring("Bearer local-user-".length()));
+        } catch (NumberFormatException exception) {
+            throw invalidCredentials();
+        }
     }
 }

@@ -89,4 +89,8 @@ public class User {
     public String getRiskLevel() {
         return riskLevel;
     }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
 }

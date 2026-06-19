@@ -2,6 +2,7 @@ import { mount, flushPromises } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import AppHome from './AppHome.vue'
+import { i18n } from '../../i18n'
 
 function json(data: unknown, status = 200) {
   return Promise.resolve(new Response(JSON.stringify(data), {
@@ -28,7 +29,7 @@ describe('AppHome', () => {
         return json({
           wallet: { gcBalance: '10000.0000', scBalance: '0.5000', scFrozen: '0.0000', scRedeemable: '0.5000' },
           scSourceSummary: [{ source: 'register_bonus', amount: '0.5000' }],
-          notices: ['SC is promotional and not sold in P0-A.'],
+          notices: ['SC is promotional and not sold.'],
         })
       }
       if (url.endsWith('/campaigns')) {
@@ -57,6 +58,7 @@ describe('AppHome', () => {
     expect(wrapper.text()).toContain('WELCOME500')
     expect(wrapper.text()).toContain('Terms of Use')
     expect(wrapper.text()).toContain('AMOE / No Purchase Necessary')
+    expect(wrapper.text()).not.toContain('P0-A')
   })
 
   it('displays region restriction from backend errors', async () => {
@@ -119,6 +121,7 @@ function mountHome() {
   return mount(AppHome, {
     global: {
       plugins: [pinia],
+      mocks: { $t: i18n.t },
       stubs: {
         RouterLink: {
           props: ['to'],

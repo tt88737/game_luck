@@ -86,6 +86,27 @@ class AuthServiceTest {
                         assertThat(exception.getCode()).isEqualTo(ErrorCode.REGION_BLOCKED));
     }
 
+    @Test
+    void loginReturnsRegisteredUserAndWallets() {
+        authService.register(validRequest("service-login@example.com", "CA"));
+
+        var result = authService.login(new LoginRequest("service-login@example.com", "StrongPass123!"));
+
+        assertThat(result.user().email()).isEqualTo("service-login@example.com");
+        assertThat(result.wallet().gcBalance()).isEqualByComparingTo("0");
+        assertThat(result.wallet().scBalance()).isEqualByComparingTo("0");
+        assertThat(result.token()).isNotBlank();
+    }
+
+    @Test
+    void loginRejectsWrongPassword() {
+        authService.register(validRequest("wrong-password@example.com", "CA"));
+
+        assertThatThrownBy(() -> authService.login(new LoginRequest("wrong-password@example.com", "bad-password")))
+                .isInstanceOfSatisfying(BusinessException.class, exception ->
+                        assertThat(exception.getCode()).isEqualTo(ErrorCode.AUTH_INVALID_CREDENTIALS));
+    }
+
     private RegisterRequest validRequest(String email, String stateCode) {
         return new RegisterRequest(
                 email,
