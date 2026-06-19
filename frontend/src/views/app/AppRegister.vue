@@ -4,6 +4,7 @@ import { RouterLink, useRouter } from 'vue-router'
 import { ApiError, apiGet, apiPost } from '../../api/http'
 import type { AcceptedDocument, ComplianceDocument, RegisterRequest, RegisterResponse } from '../../api/contracts'
 import { useSessionStore } from '../../stores/session'
+import { i18n } from '../../i18n'
 
 const router = useRouter()
 const session = useSessionStore()
@@ -13,7 +14,7 @@ const error = ref('')
 const documents = ref<ComplianceDocument[]>([])
 const accepted = ref<Record<string, boolean>>({})
 const form = reactive({
-  email: 'demo.ca@example.com',
+  email: 'player.ca@example.com',
   password: 'Password123!',
   birthDate: '1990-01-01',
   stateCode: 'CA',
@@ -45,7 +46,7 @@ async function loadDocuments() {
 async function register() {
   error.value = ''
   if (!requiredAccepted.value) {
-    error.value = 'Terms, Sweepstakes Rules, and Privacy Policy must be accepted.'
+    error.value = i18n.t('register.mustAccept')
     return
   }
 
@@ -58,7 +59,7 @@ async function register() {
       countryCode: 'US',
       stateCode: form.stateCode,
       acceptedDocuments: selectedDocuments.value,
-      utmSource: 'local_demo',
+      utmSource: 'web',
       deviceId: `web-${form.stateCode.toLowerCase()}`,
     }
     const response = await apiPost<RegisterResponse>('/auth/register', payload)
@@ -82,38 +83,38 @@ function messageFrom(err: unknown) {
   <main class="app-screen">
     <header class="app-header">
       <div>
-        <p class="eyebrow">Create account</p>
-        <h1>Register for P0-A demo</h1>
+        <p class="eyebrow">{{ $t('register.createAccount') }}</p>
+        <h1>{{ $t('register.heading') }}</h1>
       </div>
-      <RouterLink class="plain-link" to="/app">Home</RouterLink>
+      <RouterLink class="plain-link" to="/app">{{ $t('nav.home') }}</RouterLink>
     </header>
 
-    <section v-if="loadingDocs" class="status-panel">Loading required documents...</section>
+    <section v-if="loadingDocs" class="status-panel">{{ $t('register.loadingDocuments') }}</section>
 
     <form v-else class="section-block form-stack" @submit.prevent="register">
       <label>
-        Email
+        {{ $t('common.email') }}
         <input v-model="form.email" type="email" required autocomplete="email" />
       </label>
       <label>
-        Password
+        {{ $t('common.password') }}
         <input v-model="form.password" type="password" required autocomplete="new-password" />
       </label>
       <label>
-        Birth date
+        {{ $t('common.birthDate') }}
         <input v-model="form.birthDate" type="date" required />
       </label>
       <label>
-        State
+        {{ $t('common.state') }}
         <select v-model="form.stateCode">
           <option value="CA">California</option>
           <option value="TX">Texas</option>
           <option value="NJ">New Jersey</option>
-          <option value="WA">Washington blocked demo</option>
+          <option value="WA">Washington</option>
         </select>
       </label>
 
-      <section class="legal-checks" aria-label="Required legal documents">
+      <section class="legal-checks" :aria-label="$t('register.legalDocuments')">
         <label v-for="doc in documents" :key="doc.documentType" class="check-row">
           <input v-model="accepted[doc.documentType]" type="checkbox" />
           <span>{{ doc.title }} <small>{{ doc.version }}</small></span>
@@ -122,14 +123,14 @@ function messageFrom(err: unknown) {
 
       <p v-if="error" class="notice danger">{{ error }}</p>
       <button data-test="register-submit" :disabled="submitting || !requiredAccepted">
-        {{ submitting ? 'Registering' : 'Register and continue' }}
+        {{ submitting ? $t('register.submitting') : $t('register.submit') }}
       </button>
     </form>
 
     <nav class="bottom-nav" aria-label="App navigation">
-      <RouterLink to="/app/register">Register</RouterLink>
-      <RouterLink to="/app">Home</RouterLink>
-      <RouterLink to="/app/wallet">Wallet</RouterLink>
+      <RouterLink to="/app/register">{{ $t('nav.register') }}</RouterLink>
+      <RouterLink to="/app">{{ $t('nav.home') }}</RouterLink>
+      <RouterLink to="/app/wallet">{{ $t('common.wallet') }}</RouterLink>
     </nav>
   </main>
 </template>

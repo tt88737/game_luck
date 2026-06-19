@@ -39,9 +39,9 @@ test.beforeEach(async ({ page }) => {
   await page.route('/api/v1/auth/register', async (route) => {
     await route.fulfill({
       json: {
-        user: { userId: 1, email: 'demo.ca@example.com', countryCode: 'US', stateCode: 'CA', riskLevel: 'normal', status: 'active' },
+        user: { userId: 1, email: 'player.ca@example.com', countryCode: 'US', stateCode: 'CA', riskLevel: 'normal', status: 'active' },
         wallet: { gcBalance: '0', scBalance: '0', scFrozen: '0' },
-        token: 'demo-token',
+        token: 'user-token',
       },
     })
   })
@@ -63,43 +63,43 @@ test.beforeEach(async ({ page }) => {
   })
   await page.route('/api/v1/purchase/packages', async (route) => {
     await route.fulfill({
-      json: [{ packageCode: 'gc_499', name: 'GC 5,000 Sandbox Pack', priceAmount: '4.9900', priceCurrency: 'USD', gcAmount: '5000.0000', sandboxOnly: true }],
+      json: [{ packageCode: 'gc_499', name: 'GC 5,000 Pack', priceAmount: '4.9900', priceCurrency: 'USD', gcAmount: '5000.0000', sandboxOnly: false }],
     })
   })
   await page.route('/api/v1/purchase/orders', async (route) => {
     await route.fulfill({
-      json: { orderId: 'ord_demo', userId: 1, packageCode: 'gc_499', priceAmount: '4.9900', priceCurrency: 'USD', status: 'paid', provider: 'sandbox', currencyGranted: 'GC', amountGranted: '5000.0000', createdAt: '2026-06-19T00:00:00Z' },
+      json: { orderId: 'ord_1001', userId: 1, packageCode: 'gc_499', priceAmount: '4.9900', priceCurrency: 'USD', status: 'paid', provider: 'manual', currencyGranted: 'GC', amountGranted: '5000.0000', createdAt: '2026-06-19T00:00:00Z' },
     })
   })
   let kycStatus = 'not_started'
   await page.route('/api/v1/kyc/status', async (route) => {
-    await route.fulfill({ json: { userId: 1, status: kycStatus, legalName: kycStatus === 'not_started' ? null : 'P1 Demo User', reviewReason: kycStatus === 'approved' ? 'sandbox approved by ops' : null, updatedAt: '2026-06-19T00:00:00Z' } })
+    await route.fulfill({ json: { userId: 1, status: kycStatus, legalName: kycStatus === 'not_started' ? null : 'P1 User', reviewReason: kycStatus === 'approved' ? 'approved by ops' : null, updatedAt: '2026-06-19T00:00:00Z' } })
   })
   await page.route('/api/v1/kyc/applications', async (route) => {
     kycStatus = 'reviewing'
     await route.fulfill({ json: { userId: 1, status: 'reviewing', legalName: 'P1 Demo User', reviewReason: null, updatedAt: '2026-06-19T00:00:00Z' } })
   })
   await page.route('/api/v1/redemptions', async (route) => {
-    await route.fulfill({ json: { redemptionId: 'red_demo', userId: 1, scAmount: '0.5000', method: 'sandbox_gift_card', status: 'reviewing', sandboxOnly: true, createdAt: '2026-06-19T00:00:00Z' } })
+    await route.fulfill({ json: { redemptionId: 'red_1001', userId: 1, scAmount: '0.5000', method: 'gift_card', status: 'reviewing', sandboxOnly: false, createdAt: '2026-06-19T00:00:00Z' } })
   })
   await page.route('/api/v1/admin/kyc/1/approve', async (route) => {
     kycStatus = 'approved'
-    await route.fulfill({ json: { userId: 1, status: 'approved', legalName: 'P1 Demo User', reviewReason: 'sandbox approved by ops', updatedAt: '2026-06-19T00:00:01Z' } })
+    await route.fulfill({ json: { userId: 1, status: 'approved', legalName: 'P1 User', reviewReason: 'approved by ops', updatedAt: '2026-06-19T00:00:01Z' } })
   })
   await page.route('/api/v1/admin/p1/operations', async (route) => {
     await route.fulfill({
       json: {
-        purchaseOrders: [{ orderId: 'ord_demo', userId: 1, packageCode: 'gc_499', priceAmount: '4.9900', priceCurrency: 'USD', status: 'paid', provider: 'sandbox', currencyGranted: 'GC', amountGranted: '5000.0000', createdAt: '2026-06-19T00:00:00Z' }],
+        purchaseOrders: [{ orderId: 'ord_1001', userId: 1, packageCode: 'gc_499', priceAmount: '4.9900', priceCurrency: 'USD', status: 'paid', provider: 'manual', currencyGranted: 'GC', amountGranted: '5000.0000', createdAt: '2026-06-19T00:00:00Z' }],
         kycApplications: [{ userId: 1, status: kycStatus === 'approved' ? 'approved' : 'reviewing', legalName: 'P1 Demo User', reviewReason: null, updatedAt: '2026-06-19T00:00:00Z' }],
-        redemptionRequests: [{ redemptionId: 'red_demo', userId: 1, scAmount: '0.5000', method: 'sandbox_gift_card', status: 'reviewing', sandboxOnly: true, createdAt: '2026-06-19T00:00:00Z' }],
+        redemptionRequests: [{ redemptionId: 'red_1001', userId: 1, scAmount: '0.5000', method: 'gift_card', status: 'reviewing', sandboxOnly: false, createdAt: '2026-06-19T00:00:00Z' }],
       },
     })
   })
 })
 
-test('P0-A C-side and admin pages render demo workflow', async ({ page }) => {
+test('C-side and admin pages render production workflow', async ({ page }) => {
   await page.goto('/app/register')
-  await expect(page.getByText('Register for P0-A demo')).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Create your account' })).toBeVisible()
   await page.getByLabel('Terms of Use terms-v1').check()
   await page.getByLabel('Sweepstakes Rules rules-v1').check()
   await page.getByLabel('Privacy Policy privacy-v1').check()
@@ -128,7 +128,7 @@ test('P0-A C-side and admin pages render demo workflow', async ({ page }) => {
   await expect(page.getByText('ops_admin')).toBeVisible()
 })
 
-test('P1 sandbox store, KYC, redemption, and ops pages render operating loop', async ({ page }) => {
+test('store, KYC, redemption, and ops pages render operating loop', async ({ page }) => {
   await page.goto('/app/register')
   await page.getByLabel('Terms of Use terms-v1').check()
   await page.getByLabel('Sweepstakes Rules rules-v1').check()
@@ -136,10 +136,10 @@ test('P1 sandbox store, KYC, redemption, and ops pages render operating loop', a
   await page.getByRole('button', { name: 'Register and continue' }).click()
 
   await page.getByRole('link', { name: 'Store' }).click()
-  await expect(page.getByText('GC 5,000 Sandbox Pack')).toBeVisible()
+  await expect(page.getByText('GC 5,000 Pack')).toBeVisible()
   await page.getByRole('button', { name: 'Buy' }).click()
-  await expect(page.getByText('Sandbox order paid')).toBeVisible()
-  await expect(page.getByText('ord_demo')).toBeVisible()
+  await expect(page.getByText('Order paid')).toBeVisible()
+  await expect(page.getByText('ord_1001')).toBeVisible()
 
   await page.getByRole('link', { name: 'KYC' }).click()
   await expect(page.getByText('not_started')).toBeVisible()
@@ -151,11 +151,25 @@ test('P1 sandbox store, KYC, redemption, and ops pages render operating loop', a
 
   await page.goto('/admin/p1')
   await expect(page.getByRole('heading', { name: 'Purchase, KYC, redemption' })).toBeVisible()
-  await expect(page.getByText('ord_demo')).toBeVisible()
+  await expect(page.getByText('ord_1001')).toBeVisible()
   await page.getByRole('button', { name: 'Approve' }).click()
   await expect(page.getByText('KYC approved for user 1.')).toBeVisible()
 
   await page.goto('/app/redemption')
   await page.locator('[data-test="submit-redemption"]').click()
-  await expect(page.getByText('Request red_demo is waiting for manual review.')).toBeVisible()
+  await expect(page.getByText('Request red_1001 is waiting for manual review.')).toBeVisible()
+})
+
+test('uses English by default and Chinese for zh browser language', async ({ browser }) => {
+  const englishContext = await browser.newContext({ locale: 'en-US' })
+  const englishPage = await englishContext.newPage()
+  await englishPage.goto('/app/register')
+  await expect(englishPage.getByRole('heading', { name: 'Create your account' })).toBeVisible()
+  await englishContext.close()
+
+  const chineseContext = await browser.newContext({ locale: 'zh-CN' })
+  const chinesePage = await chineseContext.newPage()
+  await chinesePage.goto('/app/register')
+  await expect(chinesePage.getByRole('heading', { name: '创建你的账号' })).toBeVisible()
+  await chineseContext.close()
 })

@@ -64,7 +64,7 @@ function formatAmount(value: string | number, digits: number) {
       <section class="section-block">
         <div class="section-title">
           <h2>SC status</h2>
-          <span>P0-A preview</span>
+          <span>Wallet controls</span>
         </div>
         <div class="metric-grid">
           <div><span>Frozen SC</span><strong>{{ scFrozen }}</strong></div>

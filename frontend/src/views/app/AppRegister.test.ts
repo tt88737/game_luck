@@ -2,6 +2,7 @@ import { flushPromises, mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import AppRegister from './AppRegister.vue'
+import { i18n } from '../../i18n'
 
 function json(data: unknown, status = 200) {
   return Promise.resolve(new Response(JSON.stringify(data), {
@@ -48,7 +49,7 @@ describe('AppRegister', () => {
       return json({})
     })
 
-    const wrapper = mount(AppRegister)
+    const wrapper = mount(AppRegister, { global: { mocks: { $t: i18n.t } } })
     await flushPromises()
     await wrapper.get('input[type="email"]').setValue('player@example.com')
     await wrapper.get('input[type="password"]').setValue('Password123!')
@@ -80,7 +81,7 @@ describe('AppRegister', () => {
       }, 403)
     })
 
-    const wrapper = mount(AppRegister)
+    const wrapper = mount(AppRegister, { global: { mocks: { $t: i18n.t } } })
     await flushPromises()
     await wrapper.get('input[type="email"]').setValue('wa@example.com')
     await wrapper.get('input[type="password"]').setValue('Password123!')

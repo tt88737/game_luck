@@ -124,7 +124,7 @@ function formatAmount(value: string | number, digits: number) {
 
     <section v-else-if="!session.userId" class="status-panel">
       <strong>Register to start</strong>
-      <span>Create a demo account to load wallet, rewards, and legal document state.</span>
+      <span>Create an account to load wallet, rewards, and legal document state.</span>
       <RouterLink class="plain-link" to="/app/register">Register now</RouterLink>
     </section>
 

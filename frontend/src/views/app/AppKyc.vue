@@ -3,6 +3,7 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import { ApiError, apiGet, apiPost } from '../../api/http'
 import type { KycStatus } from '../../api/contracts'
+import { i18n } from '../../i18n'
 
 const loading = ref(true)
 const submitting = ref(false)
@@ -45,7 +46,7 @@ async function submitKyc() {
 
 function messageFrom(err: unknown) {
   if (err instanceof ApiError || err instanceof Error) return err.message
-  return 'KYC request failed.'
+  return i18n.t('kyc.requestFailed')
 }
 </script>
 
@@ -53,20 +54,20 @@ function messageFrom(err: unknown) {
   <main class="app-screen">
     <header class="app-header">
       <div>
-        <p class="eyebrow">P1 KYC</p>
-        <h1>Identity review</h1>
+        <p class="eyebrow">{{ $t('common.kyc') }}</p>
+        <h1>{{ $t('kyc.heading') }}</h1>
       </div>
-      <RouterLink class="plain-link" to="/app/redemption">Redeem</RouterLink>
+      <RouterLink class="plain-link" to="/app/redemption">{{ $t('nav.redeem') }}</RouterLink>
     </header>
 
-    <section v-if="loading" class="status-panel">Loading KYC status...</section>
+    <section v-if="loading" class="status-panel">{{ $t('kyc.loading') }}</section>
     <section v-else>
       <div class="section-block">
         <div class="section-title">
-          <h2>Current status</h2>
+          <h2>{{ $t('common.currentStatus') }}</h2>
           <span class="status-tag" :class="{ active: statusLabel === 'approved', pending: statusLabel === 'reviewing' }">{{ statusLabel }}</span>
         </div>
-        <p class="notice">Sandbox KYC stores a review state only. Admin approval is required before redemption requests can be created.</p>
+        <p class="notice">{{ $t('kyc.notice') }}</p>
         <p v-if="status?.reviewReason" class="notice success">{{ status.reviewReason }}</p>
       </div>
 
@@ -74,41 +75,41 @@ function messageFrom(err: unknown) {
 
       <section class="section-block">
         <div class="section-title">
-          <h2>Application</h2>
-          <span>Manual review</span>
+          <h2>{{ $t('common.application') }}</h2>
+          <span>{{ $t('admin.manualApproval') }}</span>
         </div>
         <form class="form-stack" @submit.prevent="submitKyc">
           <label>
-            Legal name
+            {{ $t('common.legalName') }}
             <input v-model="form.legalName" required />
           </label>
           <label>
-            Birth date
+            {{ $t('common.birthDate') }}
             <input v-model="form.birthDate" type="date" required />
           </label>
           <label>
-            Address
+            {{ $t('common.address') }}
             <input v-model="form.addressLine" required />
           </label>
           <label>
-            State
+            {{ $t('common.state') }}
             <select v-model="form.stateCode">
               <option value="CA">CA</option>
               <option value="FL">FL</option>
               <option value="NY">NY</option>
             </select>
           </label>
-          <button data-test="submit-kyc" :disabled="submitting">{{ submitting ? 'Submitting' : 'Submit for review' }}</button>
+          <button data-test="submit-kyc" :disabled="submitting">{{ submitting ? $t('common.submitting') : $t('common.submitForReview') }}</button>
         </form>
       </section>
     </section>
 
     <nav class="bottom-nav" aria-label="App navigation">
-      <RouterLink to="/app">Home</RouterLink>
-      <RouterLink to="/app/store">Store</RouterLink>
-      <RouterLink to="/app/kyc">KYC</RouterLink>
-      <RouterLink to="/app/redemption">Redeem</RouterLink>
-      <RouterLink to="/app/wallet">Wallet</RouterLink>
+      <RouterLink to="/app">{{ $t('nav.home') }}</RouterLink>
+      <RouterLink to="/app/store">{{ $t('nav.store') }}</RouterLink>
+      <RouterLink to="/app/kyc">{{ $t('nav.kyc') }}</RouterLink>
+      <RouterLink to="/app/redemption">{{ $t('nav.redeem') }}</RouterLink>
+      <RouterLink to="/app/wallet">{{ $t('common.wallet') }}</RouterLink>
     </nav>
   </main>
 </template>

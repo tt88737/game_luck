@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import { ApiError, apiGet, apiPost } from '../../api/http'
 import type { ProductPackage, PurchaseOrder } from '../../api/contracts'
+import { i18n } from '../../i18n'
 
 const loading = ref(true)
 const buying = ref('')
@@ -36,7 +37,7 @@ async function buyPackage(item: ProductPackage) {
       `web-purchase-${item.packageCode}-${Date.now()}`,
     )
     lastOrder.value = order
-    success.value = `Sandbox order paid. ${format(order.amountGranted, 0)} GC credited.`
+    success.value = i18n.t('store.purchaseSuccess', { amount: format(order.amountGranted, 0) })
   } catch (err) {
     error.value = messageFrom(err)
   } finally {
@@ -46,7 +47,7 @@ async function buyPackage(item: ProductPackage) {
 
 function messageFrom(err: unknown) {
   if (err instanceof ApiError || err instanceof Error) return err.message
-  return 'Purchase request failed.'
+  return i18n.t('store.purchaseFailed')
 }
 
 function format(value: string | number, digits: number) {
@@ -58,24 +59,24 @@ function format(value: string | number, digits: number) {
   <main class="app-screen">
     <header class="app-header">
       <div>
-        <p class="eyebrow">P1 Store</p>
-        <h1>GC sandbox packs</h1>
+        <p class="eyebrow">{{ $t('store.gcPackages') }}</p>
+        <h1>{{ $t('store.heading') }}</h1>
       </div>
-      <RouterLink class="plain-link" to="/app/wallet">Ledger</RouterLink>
+      <RouterLink class="plain-link" to="/app/wallet">{{ $t('nav.ledger') }}</RouterLink>
     </header>
 
-    <section v-if="loading" class="status-panel">Loading GC packages...</section>
+    <section v-if="loading" class="status-panel">{{ $t('store.loading') }}</section>
     <section v-else-if="error && !packages.length" class="status-panel danger">{{ error }}</section>
 
     <template v-else>
-      <p class="notice">Sandbox mode: orders are marked paid by the demo backend. GC is credited only; SC is never sold here.</p>
+      <p class="notice">{{ $t('store.notice') }}</p>
       <p v-if="success" class="notice success">{{ success }}</p>
       <p v-if="error" class="notice danger">{{ error }}</p>
 
       <section class="section-block">
         <div class="section-title">
-          <h2>Packages</h2>
-          <span>{{ packages.length }} active</span>
+          <h2>{{ $t('common.packages') }}</h2>
+          <span>{{ $t('store.activeCount', { count: packages.length }) }}</span>
         </div>
         <article v-for="item in packages" :key="item.packageCode" class="reward-row">
           <div>
@@ -83,30 +84,30 @@ function format(value: string | number, digits: number) {
             <span>{{ format(item.gcAmount, 0) }} GC · {{ format(item.priceAmount, 2) }} {{ item.priceCurrency }}</span>
           </div>
           <button :data-test="`buy-${item.packageCode}`" :disabled="buying === item.packageCode" @click="buyPackage(item)">
-            {{ buying === item.packageCode ? 'Paying' : 'Buy' }}
+            {{ buying === item.packageCode ? $t('store.buying') : $t('common.buy') }}
           </button>
         </article>
       </section>
 
       <section v-if="lastOrder" class="section-block">
         <div class="section-title">
-          <h2>Latest order</h2>
+          <h2>{{ $t('common.latestOrder') }}</h2>
           <span class="status-tag active">{{ lastOrder.status }}</span>
         </div>
         <div class="source-list">
-          <span>Order: {{ lastOrder.orderId }}</span>
-          <span>Provider: {{ lastOrder.provider }}</span>
-          <span>Credited: {{ format(lastOrder.amountGranted, 0) }} {{ lastOrder.currencyGranted }}</span>
+          <span>{{ $t('common.order') }}: {{ lastOrder.orderId }}</span>
+          <span>{{ $t('common.provider') }}: {{ lastOrder.provider }}</span>
+          <span>{{ $t('common.credited') }}: {{ format(lastOrder.amountGranted, 0) }} {{ lastOrder.currencyGranted }}</span>
         </div>
       </section>
     </template>
 
     <nav class="bottom-nav" aria-label="App navigation">
-      <RouterLink to="/app">Home</RouterLink>
-      <RouterLink to="/app/store">Store</RouterLink>
-      <RouterLink to="/app/kyc">KYC</RouterLink>
-      <RouterLink to="/app/redemption">Redeem</RouterLink>
-      <RouterLink to="/app/wallet">Wallet</RouterLink>
+      <RouterLink to="/app">{{ $t('nav.home') }}</RouterLink>
+      <RouterLink to="/app/store">{{ $t('nav.store') }}</RouterLink>
+      <RouterLink to="/app/kyc">{{ $t('nav.kyc') }}</RouterLink>
+      <RouterLink to="/app/redemption">{{ $t('nav.redeem') }}</RouterLink>
+      <RouterLink to="/app/wallet">{{ $t('common.wallet') }}</RouterLink>
     </nav>
   </main>
 </template>

@@ -1,10 +1,10 @@
-# Tang Luck P1 Sandbox MVP
+# Tang Luck V1 Production Track
 
-Tang Luck is a runnable Spring Boot + Vue 3 + MySQL implementation for registration, compliance documents, dual wallet ledger, promotional claims, coupon claims, admin campaign operations, audit logs, and P1 sandbox operating workflows.
+Tang Luck is a runnable Spring Boot + Vue 3 + MySQL implementation for registration, compliance documents, dual wallet ledger, promotional claims, coupon claims, admin campaign operations, audit logs, and the V1 production operating workflow.
 
 P1 adds a minimal closed loop for:
 
-- GC product packages and sandbox purchase orders.
+- GC product packages and purchase orders.
 - KYC application submission and admin approval.
 - Redemption request creation after KYC approval, with SC frozen for manual review.
 - C-side pages for Store, KYC, Redemption, Wallet, and Activity.
@@ -29,18 +29,18 @@ Open:
 - Frontend build: `cd frontend && npm run build`
 - E2E smoke: `cd frontend && npx playwright test`
 
-## P1 sandbox boundaries
+## V1 provider boundaries
 
 - No real payment integration.
 - No real redemption payout.
 - SC is not sold.
 - KYC is a local review state only; no real vendor is connected.
-- Purchase orders are automatically marked paid by the sandbox backend.
+- Local development can use a `manual` provider until real payment, KYC, and payout providers are configured.
 - Redemption requests create a manual review record and freeze SC, but no payout is sent.
 - AMOE and No Purchase Necessary links must remain visible.
 
 ## Demo notes
 
 - The backend currently uses `X-User-Id` as a P0-A local user context header for wallet and claim endpoints.
-- The frontend stores `tangluck_user_id` and `tangluck_token` in `localStorage` for local demo calls.
+- The frontend stores `tangluck_user_id` and `tangluck_token` in `localStorage` for local development calls.
 - Playwright E2E mocks backend API responses to verify page rendering without depending on live payment, redemption, or external services.

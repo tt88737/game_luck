@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import { ApiError, apiGet, apiPost } from '../../api/http'
 import type { KycStatus, P1Operations } from '../../api/contracts'
+import { i18n } from '../../i18n'
 
 const loading = ref(true)
 const approving = ref<number | null>(null)
@@ -33,7 +34,7 @@ async function approveKyc(userId: number) {
   message.value = ''
   try {
     const result = await apiPost<KycStatus>(`/admin/kyc/${userId}/approve`)
-    message.value = `KYC approved for user ${result.userId}.`
+    message.value = i18n.t('admin.kycApproved', { userId: result.userId })
     await loadOperations()
   } catch (err) {
     error.value = messageFrom(err)
@@ -56,22 +57,22 @@ function amount(value: string | number, digits = 2) {
   <main class="admin-shell">
     <aside class="admin-nav">
       <strong>Tang Luck Ops</strong>
-      <RouterLink to="/admin">Dashboard</RouterLink>
-      <RouterLink to="/admin/campaigns">Campaigns</RouterLink>
-      <RouterLink to="/admin/p1">P1 Ops</RouterLink>
-      <RouterLink to="/admin/audit-logs">Audit logs</RouterLink>
+      <RouterLink to="/admin">{{ $t('admin.dashboard') }}</RouterLink>
+      <RouterLink to="/admin/campaigns">{{ $t('admin.campaigns') }}</RouterLink>
+      <RouterLink to="/admin/p1">{{ $t('admin.p1Ops') }}</RouterLink>
+      <RouterLink to="/admin/audit-logs">{{ $t('admin.auditLogs') }}</RouterLink>
     </aside>
 
     <section class="admin-content">
       <header class="admin-header">
         <div>
-          <p class="eyebrow">P1 sandbox</p>
-          <h1>Purchase, KYC, redemption</h1>
+          <p class="eyebrow">{{ $t('admin.operations') }}</p>
+          <h1>{{ $t('admin.purchaseKycRedemption') }}</h1>
         </div>
-        <button @click="loadOperations">Refresh</button>
+        <button @click="loadOperations">{{ $t('common.refresh') }}</button>
       </header>
 
-      <section v-if="loading" class="status-panel">Loading P1 operations...</section>
+      <section v-if="loading" class="status-panel">{{ $t('common.loading') }}</section>
       <section v-else-if="error && !data" class="status-panel danger">{{ error }}</section>
 
       <template v-else>
@@ -79,26 +80,26 @@ function amount(value: string | number, digits = 2) {
         <p v-if="error" class="notice danger">{{ error }}</p>
 
         <section class="admin-metrics">
-          <div><span>Purchase orders</span><strong>{{ data?.purchaseOrders.length ?? 0 }}</strong></div>
-          <div><span>KYC reviewing</span><strong>{{ pendingKyc.length }}</strong></div>
-          <div><span>Redemptions reviewing</span><strong>{{ pendingRedemptions.length }}</strong></div>
-          <div><span>Mode</span><strong>Sandbox</strong></div>
+          <div><span>{{ $t('admin.purchaseOrders') }}</span><strong>{{ data?.purchaseOrders.length ?? 0 }}</strong></div>
+          <div><span>{{ $t('admin.kycReviewing') }}</span><strong>{{ pendingKyc.length }}</strong></div>
+          <div><span>{{ $t('admin.redemptionRequests') }}</span><strong>{{ pendingRedemptions.length }}</strong></div>
+          <div><span>{{ $t('admin.mode') }}</span><strong>{{ $t('admin.production') }}</strong></div>
         </section>
 
         <section class="section-block">
           <div class="section-title">
-            <h2>KYC applications</h2>
-            <span>Manual approval</span>
+            <h2>{{ $t('admin.kycApplications') }}</h2>
+            <span>{{ $t('admin.manualApproval') }}</span>
           </div>
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th>User</th>
-                  <th>Name</th>
-                  <th>Status</th>
-                  <th>Updated</th>
-                  <th>Action</th>
+                  <th>{{ $t('admin.user') }}</th>
+                  <th>{{ $t('common.name') }}</th>
+                  <th>{{ $t('common.status') }}</th>
+                  <th>{{ $t('common.updated') }}</th>
+                  <th>{{ $t('common.action') }}</th>
                 </tr>
               </thead>
               <tbody>
@@ -109,11 +110,11 @@ function amount(value: string | number, digits = 2) {
                   <td>{{ row.updatedAt ? new Date(row.updatedAt).toLocaleString() : '-' }}</td>
                   <td>
                     <button :disabled="row.status !== 'reviewing' || approving === row.userId" @click="approveKyc(row.userId)">
-                      {{ approving === row.userId ? 'Approving' : 'Approve' }}
+                      {{ approving === row.userId ? $t('common.approving') : $t('common.approve') }}
                     </button>
                   </td>
                 </tr>
-                <tr v-if="!data?.kycApplications.length"><td colspan="5">No KYC applications.</td></tr>
+                <tr v-if="!data?.kycApplications.length"><td colspan="5">{{ $t('admin.noKycApplications') }}</td></tr>
               </tbody>
             </table>
           </div>
@@ -121,18 +122,18 @@ function amount(value: string | number, digits = 2) {
 
         <section class="section-block">
           <div class="section-title">
-            <h2>Redemption requests</h2>
-            <span>Review queue</span>
+            <h2>{{ $t('admin.redemptionRequests') }}</h2>
+            <span>{{ $t('admin.reviewQueue') }}</span>
           </div>
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th>Request</th>
-                  <th>User</th>
+                  <th>{{ $t('common.request') }}</th>
+                  <th>{{ $t('admin.user') }}</th>
                   <th>SC</th>
-                  <th>Method</th>
-                  <th>Status</th>
+                  <th>{{ $t('common.method') }}</th>
+                  <th>{{ $t('common.status') }}</th>
                 </tr>
               </thead>
               <tbody>
@@ -143,7 +144,7 @@ function amount(value: string | number, digits = 2) {
                   <td>{{ row.method }}</td>
                   <td><span class="status-tag pending">{{ row.status }}</span></td>
                 </tr>
-                <tr v-if="!data?.redemptionRequests.length"><td colspan="5">No redemption requests.</td></tr>
+                <tr v-if="!data?.redemptionRequests.length"><td colspan="5">{{ $t('admin.noRedemptionRequests') }}</td></tr>
               </tbody>
             </table>
           </div>
@@ -151,18 +152,18 @@ function amount(value: string | number, digits = 2) {
 
         <section class="section-block">
           <div class="section-title">
-            <h2>Purchase orders</h2>
+            <h2>{{ $t('admin.purchaseOrders') }}</h2>
             <span>GC only</span>
           </div>
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th>Order</th>
-                  <th>User</th>
-                  <th>Package</th>
-                  <th>Paid</th>
-                  <th>Granted</th>
+                  <th>{{ $t('common.order') }}</th>
+                  <th>{{ $t('admin.user') }}</th>
+                  <th>{{ $t('common.package') }}</th>
+                  <th>{{ $t('common.paid') }}</th>
+                  <th>{{ $t('common.granted') }}</th>
                 </tr>
               </thead>
               <tbody>
@@ -173,7 +174,7 @@ function amount(value: string | number, digits = 2) {
                   <td>{{ amount(row.priceAmount) }} {{ row.priceCurrency }}</td>
                   <td>{{ amount(row.amountGranted, 0) }} {{ row.currencyGranted }}</td>
                 </tr>
-                <tr v-if="!data?.purchaseOrders.length"><td colspan="5">No purchase orders.</td></tr>
+                <tr v-if="!data?.purchaseOrders.length"><td colspan="5">{{ $t('admin.noPurchaseOrders') }}</td></tr>
               </tbody>
             </table>
           </div>
