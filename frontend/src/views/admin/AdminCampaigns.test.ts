@@ -3,6 +3,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import AdminCampaigns from './AdminCampaigns.vue'
 import AdminDashboard from './AdminDashboard.vue'
 import AdminAuditLogs from './AdminAuditLogs.vue'
+import AdminRegions from './AdminRegions.vue'
+import AdminLegalDocuments from './AdminLegalDocuments.vue'
 
 function json(data: unknown, status = 200) {
   return Promise.resolve(new Response(JSON.stringify(data), {
@@ -128,5 +130,58 @@ describe('admin pages', () => {
     expect(audit.text()).toContain('campaign_publish')
     expect(audit.text()).toContain('OPS_SC_BONUS')
     expect(audit.text()).toContain('127.0.0.1')
+  })
+
+  it('lets compliance admins update region feature switches', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation((input, init) => {
+      const url = String(input)
+      if (url.endsWith('/admin/regions') && init?.method !== 'PATCH') {
+        return json([{ countryCode: 'US', stateCode: 'CA', registrationAllowed: true, gameAllowed: true, purchaseAllowed: true, scGrantAllowed: true, redemptionAllowed: true, amoeAllowed: true, requiresLegalReview: false, status: 'active', legalApprovalId: 'LEGAL-CA' }])
+      }
+      if (url.endsWith('/admin/regions/US/CA') && init?.method === 'PATCH') {
+        return json({ countryCode: 'US', stateCode: 'CA', registrationAllowed: true, gameAllowed: true, purchaseAllowed: false, scGrantAllowed: true, redemptionAllowed: true, amoeAllowed: true, requiresLegalReview: false, status: 'active', legalApprovalId: 'LEGAL-CA-OFF' })
+      }
+      return json({})
+    })
+
+    const wrapper = mount(AdminRegions, { global: { stubs } })
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('US-CA')
+    expect(wrapper.text()).toContain('Purchase')
+    await wrapper.get('[data-test="toggle-purchase-US-CA"]').trigger('click')
+    await flushPromises()
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/v1/admin/regions/US/CA', expect.objectContaining({ method: 'PATCH' }))
+    expect(wrapper.text()).toContain('LEGAL-CA-OFF')
+  })
+
+  it('lets legal admins create and publish document versions', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation((input, init) => {
+      const url = String(input)
+      if (url.endsWith('/admin/legal-documents') && init?.method !== 'POST') {
+        return json([{ documentType: 'privacy', version: 'privacy-v1', title: 'Privacy Policy', contentUrl: '/legal/privacy-v1', status: 'active', legalApprovalId: 'LEGAL-V1' }])
+      }
+      if (url.endsWith('/admin/legal-documents') && init?.method === 'POST') {
+        return json({ documentType: 'privacy', version: 'privacy-v2', title: 'Privacy Policy v2', contentUrl: '/legal/privacy-v2', status: 'draft', legalApprovalId: 'LEGAL-V2' })
+      }
+      if (url.endsWith('/admin/legal-documents/privacy/privacy-v2/publish') && init?.method === 'POST') {
+        return json({ documentType: 'privacy', version: 'privacy-v2', title: 'Privacy Policy v2', contentUrl: '/legal/privacy-v2', status: 'active', legalApprovalId: 'LEGAL-V2' })
+      }
+      return json({})
+    })
+
+    const wrapper = mount(AdminLegalDocuments, { global: { stubs } })
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('Privacy Policy')
+    await wrapper.get('[data-test="create-legal-document"]').trigger('click')
+    await flushPromises()
+    await wrapper.get('[data-test="publish-privacy-v2"]').trigger('click')
+    await flushPromises()
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/v1/admin/legal-documents', expect.objectContaining({ method: 'POST' }))
+    expect(fetchMock).toHaveBeenCalledWith('/api/v1/admin/legal-documents/privacy/privacy-v2/publish', expect.objectContaining({ method: 'POST' }))
+    expect(wrapper.text()).toContain('privacy-v2')
   })
 })

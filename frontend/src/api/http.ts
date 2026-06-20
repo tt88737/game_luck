@@ -30,6 +30,13 @@ export async function apiPost<T>(path: string, body?: unknown, idempotencyKey?: 
   })
 }
 
+export async function apiPatch<T>(path: string, body?: unknown): Promise<T> {
+  return request<T>(path, {
+    method: 'PATCH',
+    body: body === undefined ? undefined : JSON.stringify(body),
+  })
+}
+
 async function request<T>(path: string, init: RequestInit): Promise<T> {
   const token = localStorage.getItem('tangluck_token')
   const headers: Record<string, string> = {

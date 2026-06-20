@@ -2,7 +2,7 @@ package com.tangluck.auth;
 
 import com.tangluck.common.api.BusinessException;
 import com.tangluck.common.api.ErrorCode;
-import com.tangluck.compliance.ComplianceRegionRepository;
+import com.tangluck.compliance.ComplianceService;
 import com.tangluck.wallet.WalletAccount;
 import com.tangluck.wallet.WalletAccountRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,7 +27,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final UserConsentLogRepository consentLogRepository;
     private final WalletAccountRepository walletAccountRepository;
-    private final ComplianceRegionRepository complianceRegionRepository;
+    private final ComplianceService complianceService;
     private final PasswordEncoder passwordEncoder;
     private final Clock clock;
 
@@ -35,13 +35,13 @@ public class AuthService {
             UserRepository userRepository,
             UserConsentLogRepository consentLogRepository,
             WalletAccountRepository walletAccountRepository,
-            ComplianceRegionRepository complianceRegionRepository,
+            ComplianceService complianceService,
             PasswordEncoder passwordEncoder
     ) {
         this.userRepository = userRepository;
         this.consentLogRepository = consentLogRepository;
         this.walletAccountRepository = walletAccountRepository;
-        this.complianceRegionRepository = complianceRegionRepository;
+        this.complianceService = complianceService;
         this.passwordEncoder = passwordEncoder;
         this.clock = Clock.systemUTC();
     }
@@ -63,16 +63,7 @@ public class AuthService {
             throw new BusinessException(ErrorCode.CONSENT_REQUIRED, "Required compliance documents must be accepted.");
         }
 
-        var region = complianceRegionRepository
-                .findByCountryCodeAndStateCode(request.countryCode(), request.stateCode())
-                .orElseThrow(() -> new BusinessException(ErrorCode.REGION_BLOCKED, "This region is not configured."));
-        if (!region.isRegistrationAllowed() || !"active".equals(region.getStatus())) {
-            throw new BusinessException(
-                    ErrorCode.REGION_BLOCKED,
-                    "This feature is not available in your region.",
-                    Map.of("state_code", request.stateCode(), "feature", "registration")
-            );
-        }
+        complianceService.requireFeatureAllowed(request.countryCode(), request.stateCode(), "registration");
 
         var now = clock.instant();
         var user = userRepository.save(new User(

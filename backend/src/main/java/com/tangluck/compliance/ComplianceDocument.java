@@ -7,6 +7,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import java.time.Instant;
+
 @Entity
 @Table(name = "compliance_documents")
 public class ComplianceDocument {
@@ -26,10 +28,26 @@ public class ComplianceDocument {
     @Column(name = "content_url", nullable = false)
     private String contentUrl;
 
+    @Column(name = "effective_at", nullable = false)
+    private Instant effectiveAt;
+
     @Column(nullable = false)
     private String status;
 
+    @Column(name = "legal_approval_id")
+    private String legalApprovalId;
+
     protected ComplianceDocument() {
+    }
+
+    public ComplianceDocument(String documentType, String version, String title, String contentUrl, String status, String legalApprovalId, Instant now) {
+        this.documentType = documentType;
+        this.version = version;
+        this.title = title;
+        this.contentUrl = contentUrl;
+        this.effectiveAt = now;
+        this.status = status;
+        this.legalApprovalId = legalApprovalId;
     }
 
     public String getDocumentType() {
@@ -46,5 +64,21 @@ public class ComplianceDocument {
 
     public String getContentUrl() {
         return contentUrl;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public String getLegalApprovalId() {
+        return legalApprovalId;
+    }
+
+    public void publish() {
+        this.status = "active";
+    }
+
+    public void archive() {
+        this.status = "archived";
     }
 }

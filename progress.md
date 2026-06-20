@@ -36,3 +36,27 @@
 - 浏览器截图验收：
   - `frontend/test-results/admin-desktop.png`
   - `frontend/test-results/admin-mobile.png`
+## 2026-06-20 Sprint 2
+- Sprint 2 进入执行：地区合规与法务文档配置闭环。
+- 后端新增后台合规接口：
+  - `GET /api/v1/admin/regions`
+  - `PATCH /api/v1/admin/regions/{countryCode}/{stateCode}`
+  - `GET /api/v1/admin/legal-documents`
+  - `POST /api/v1/admin/legal-documents`
+  - `POST /api/v1/admin/legal-documents/{documentType}/{version}/publish`
+- 后端将注册与购买链路接入 `ComplianceService.requireFeatureAllowed(...)`，购买下单受地区 `purchaseAllowed` 开关控制。
+- 新增合规后台审计：地区更新写入 `compliance_region`，法务文档发布写入 `compliance_document`。
+- 前端新增后台页面：
+  - `frontend/src/views/admin/AdminRegions.vue`
+  - `frontend/src/views/admin/AdminLegalDocuments.vue`
+  - 路由接入 `/admin/regions`、`/admin/legal-documents`
+- 已完成目标测试：
+  - `frontend npm run test -- --run src/views/admin/AdminCampaigns.test.ts --pool=threads --maxWorkers=1`
+  - `backend .\gradlew.bat --no-daemon test --tests com.tangluck.compliance.AdminComplianceControllerTest --tests com.tangluck.mvp.P1SandboxClosedLoopTest --tests com.tangluck.auth.AuthServiceTest`
+- 发现并修复测试隔离问题：`AdminComplianceControllerTest` 修改 CA 地区开关后污染同一 Spring context，已增加 `@DirtiesContext(AFTER_EACH_TEST_METHOD)`。
+- Sprint 2 完整验证通过：
+  - `backend .\gradlew.bat --no-daemon test`
+  - `frontend npm run test -- --run --pool=threads --maxWorkers=1`
+  - `frontend npm run build`
+  - `frontend npx playwright test`
+  - 新增后台页面浏览器截图验收：`frontend/test-results/admin-regions-desktop.png`、`admin-regions-mobile.png`、`admin-legal-docs-desktop.png`、`admin-legal-docs-mobile.png`

@@ -194,3 +194,26 @@ export interface P1Operations {
   kycApplications: KycStatus[]
   redemptionRequests: RedemptionRequest[]
 }
+
+export interface AdminRegion {
+  countryCode: string
+  stateCode: string
+  registrationAllowed: boolean
+  gameAllowed: boolean
+  purchaseAllowed: boolean
+  scGrantAllowed: boolean
+  redemptionAllowed: boolean
+  amoeAllowed: boolean
+  requiresLegalReview: boolean
+  status: string
+  legalApprovalId: string | null
+}
+
+export interface AdminLegalDocument {
+  documentType: string
+  version: string
+  title: string
+  contentUrl: string
+  status: string
+  legalApprovalId: string | null
+}

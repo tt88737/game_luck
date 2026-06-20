@@ -2,8 +2,10 @@ package com.tangluck.p1;
 
 import com.tangluck.admin.AdminAuditService;
 import com.tangluck.admin.AdminOperatorContext;
+import com.tangluck.auth.UserRepository;
 import com.tangluck.common.api.BusinessException;
 import com.tangluck.common.api.ErrorCode;
+import com.tangluck.compliance.ComplianceService;
 import com.tangluck.wallet.WalletService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +32,8 @@ public class P1Service {
     private final RedemptionRequestRepository redemptionRepository;
     private final WalletService walletService;
     private final AdminAuditService adminAuditService;
+    private final UserRepository userRepository;
+    private final ComplianceService complianceService;
     private final Clock clock;
 
     public P1Service(
@@ -38,7 +42,9 @@ public class P1Service {
             KycApplicationRepository kycRepository,
             RedemptionRequestRepository redemptionRepository,
             WalletService walletService,
-            AdminAuditService adminAuditService
+            AdminAuditService adminAuditService,
+            UserRepository userRepository,
+            ComplianceService complianceService
     ) {
         this.packageRepository = packageRepository;
         this.orderRepository = orderRepository;
@@ -46,6 +52,8 @@ public class P1Service {
         this.redemptionRepository = redemptionRepository;
         this.walletService = walletService;
         this.adminAuditService = adminAuditService;
+        this.userRepository = userRepository;
+        this.complianceService = complianceService;
         this.clock = Clock.systemUTC();
     }
 
@@ -123,6 +131,9 @@ public class P1Service {
     }
 
     private PurchaseOrderDto createNewOrder(Long userId, String idempotencyKey, CreatePurchaseOrderRequest request) {
+        var user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.AUTH_INVALID_CREDENTIALS, "User does not exist.", Map.of("userId", userId)));
+        complianceService.requireFeatureAllowed(user.getCountryCode(), user.getStateCode(), "purchase");
         var productPackage = packageRepository.findByPackageCodeAndStatus(request.packageCode(), "active")
                 .orElseThrow(() -> new BusinessException(ErrorCode.PAYMENT_NOT_ALLOWED, "Product package is not available.", Map.of("packageCode", request.packageCode())));
         var order = orderRepository.save(new PurchaseOrder("ord_" + UUID.randomUUID().toString().replace("-", "").substring(0, 16), userId, productPackage, idempotencyKey, clock.instant()));
