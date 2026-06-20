@@ -148,6 +148,20 @@ public class P1Service {
         );
     }
 
+    @Transactional(readOnly = true)
+    public List<KycStatusDto> adminKycApplications() {
+        return kycRepository.findTop50ByOrderByUpdatedAtDesc().stream()
+                .map(this::toDto)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<RedemptionDto> adminRedemptions() {
+        return redemptionRepository.findTop50ByOrderByCreatedAtDesc().stream()
+                .map(this::toDto)
+                .toList();
+    }
+
     @Transactional
     public PurchaseOrderDto markOrderPaid(String orderId, MarkPurchaseOrderPaidRequest request, AdminOperatorContext operator) {
         var order = orderRepository.findByOrderId(orderId)

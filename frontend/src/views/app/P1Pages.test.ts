@@ -6,6 +6,10 @@ import AppRedemption from './AppRedemption.vue'
 import AdminP1Operations from '../admin/AdminP1Operations.vue'
 import AdminPackages from '../admin/AdminPackages.vue'
 import AdminOrders from '../admin/AdminOrders.vue'
+import AdminUsers from '../admin/AdminUsers.vue'
+import AdminWalletLedger from '../admin/AdminWalletLedger.vue'
+import AdminKycReview from '../admin/AdminKycReview.vue'
+import AdminRedemptions from '../admin/AdminRedemptions.vue'
 import { i18n } from '../../i18n'
 import { createPinia, setActivePinia } from 'pinia'
 
@@ -183,5 +187,55 @@ describe('P1 production pages', () => {
     expect(fetchMock).toHaveBeenCalledWith('/api/v1/admin/purchase-orders/ord_1001/mark-paid', expect.objectContaining({ method: 'POST' }))
     expect(wrapper.text()).toContain('paid')
     expect(wrapper.text()).toContain('5,000')
+  })
+
+  it('renders real admin users and wallet ledger modules', async () => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation((input) => {
+      const url = String(input)
+      if (url.endsWith('/admin/users')) {
+        return json([{ userId: 7, email: 'ops-user@example.com', countryCode: 'US', stateCode: 'CA', status: 'active', riskLevel: 'low' }])
+      }
+      if (url.endsWith('/admin/wallet-ledger')) {
+        return json([{ ledgerId: 9, userId: 7, currency: 'SC', direction: 'credit', amount: '0.0500', balanceAfter: '0.0500', frozenAfter: '0', businessType: 'daily_login', businessId: '1', status: 'posted', createdAt: '2026-06-20T00:00:00Z' }])
+      }
+      return json({})
+    })
+
+    const users = mount(AdminUsers, { global })
+    await flushPromises()
+    expect(users.text()).toContain('ops-user@example.com')
+    expect(users.text()).toContain('Risk')
+    expect(users.text()).not.toContain('scheduled')
+
+    const ledger = mount(AdminWalletLedger, { global })
+    await flushPromises()
+    expect(ledger.text()).toContain('daily_login')
+    expect(ledger.text()).toContain('0.05')
+    expect(ledger.text()).not.toContain('scheduled')
+  })
+
+  it('renders real admin KYC and redemption review queues', async () => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation((input) => {
+      const url = String(input)
+      if (url.endsWith('/admin/kyc-applications')) {
+        return json([{ userId: 8, status: 'reviewing', legalName: 'Review User', reviewReason: null, updatedAt: '2026-06-20T00:00:00Z' }])
+      }
+      if (url.endsWith('/admin/redemptions')) {
+        return json([{ redemptionId: 'red_1001', userId: 8, scAmount: '0.0100', method: 'paypal', status: 'reviewing', sandboxOnly: true, createdAt: '2026-06-20T00:00:00Z' }])
+      }
+      return json({})
+    })
+
+    const kyc = mount(AdminKycReview, { global })
+    await flushPromises()
+    expect(kyc.text()).toContain('Review User')
+    expect(kyc.text()).toContain('reviewing')
+    expect(kyc.text()).not.toContain('scheduled')
+
+    const redemptions = mount(AdminRedemptions, { global })
+    await flushPromises()
+    expect(redemptions.text()).toContain('red_1001')
+    expect(redemptions.text()).toContain('paypal')
+    expect(redemptions.text()).not.toContain('scheduled')
   })
 })

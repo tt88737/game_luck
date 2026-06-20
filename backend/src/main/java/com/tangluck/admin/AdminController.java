@@ -16,15 +16,29 @@ import java.util.List;
 public class AdminController {
     private final AdminCampaignService adminCampaignService;
     private final AuditLogRepository auditLogRepository;
+    private final AdminOperationsService adminOperationsService;
 
-    public AdminController(AdminCampaignService adminCampaignService, AuditLogRepository auditLogRepository) {
+    public AdminController(AdminCampaignService adminCampaignService, AuditLogRepository auditLogRepository, AdminOperationsService adminOperationsService) {
         this.adminCampaignService = adminCampaignService;
         this.auditLogRepository = auditLogRepository;
+        this.adminOperationsService = adminOperationsService;
     }
 
     @GetMapping("/dashboard/summary")
     public DashboardSummary dashboardSummary() {
         return adminCampaignService.dashboardSummary();
+    }
+
+    @GetMapping("/users")
+    public List<AdminOperationsDtos.AdminUserDto> users(HttpServletRequest servletRequest) {
+        AdminOperatorContext.from(servletRequest).require("user.read");
+        return adminOperationsService.users();
+    }
+
+    @GetMapping("/wallet-ledger")
+    public List<AdminOperationsDtos.AdminWalletLedgerDto> walletLedger(HttpServletRequest servletRequest) {
+        AdminOperatorContext.from(servletRequest).require("wallet.read");
+        return adminOperationsService.walletLedger();
     }
 
     @GetMapping("/campaigns")

@@ -18,6 +18,10 @@ const AdminLegalDocuments = () => import('../views/admin/AdminLegalDocuments.vue
 const AdminLobby = () => import('../views/admin/AdminLobby.vue')
 const AdminPackages = () => import('../views/admin/AdminPackages.vue')
 const AdminOrders = () => import('../views/admin/AdminOrders.vue')
+const AdminUsers = () => import('../views/admin/AdminUsers.vue')
+const AdminKycReview = () => import('../views/admin/AdminKycReview.vue')
+const AdminRedemptions = () => import('../views/admin/AdminRedemptions.vue')
+const AdminWalletLedger = () => import('../views/admin/AdminWalletLedger.vue')
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -32,16 +36,16 @@ export const router = createRouter({
     { path: '/app/kyc', component: AppKyc },
     { path: '/app/redemption', component: AppRedemption },
     { path: '/admin', component: AdminDashboard },
-    { path: '/admin/users', component: AdminPlaceholder, props: { title: 'Users' } },
+    { path: '/admin/users', component: AdminUsers },
     { path: '/admin/regions', component: AdminRegions },
     { path: '/admin/legal-documents', component: AdminLegalDocuments },
     { path: '/admin/lobby', component: AdminLobby },
     { path: '/admin/campaigns', component: AdminCampaigns },
     { path: '/admin/packages', component: AdminPackages },
     { path: '/admin/orders', component: AdminOrders },
-    { path: '/admin/kyc', component: AdminPlaceholder, props: { title: 'KYC Review' } },
-    { path: '/admin/redemptions', component: AdminPlaceholder, props: { title: 'Redemptions' } },
-    { path: '/admin/wallet-ledger', component: AdminPlaceholder, props: { title: 'Wallet Ledger' } },
+    { path: '/admin/kyc', component: AdminKycReview },
+    { path: '/admin/redemptions', component: AdminRedemptions },
+    { path: '/admin/wallet-ledger', component: AdminWalletLedger },
     { path: '/admin/amoe', component: AdminPlaceholder, props: { title: 'AMOE' } },
     { path: '/admin/support', component: AdminPlaceholder, props: { title: 'Support' } },
     { path: '/admin/audit-logs', component: AdminAuditLogs },

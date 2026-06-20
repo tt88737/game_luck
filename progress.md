@@ -103,3 +103,22 @@
   - `frontend npm run test -- --run --pool=threads --maxWorkers=1`
   - `frontend npm run build`
   - `frontend npx playwright test`
+
+## 2026-06-20 后台占位模块修复
+- 用户指出后台多个菜单仍是 `Planned` 占位页，不符合正式上线产品要求。
+- 已将已有数据源可支撑的模块接入真实后台：
+  - `/admin/users`：真实用户列表，展示邮箱、地区、状态、风险等级。
+  - `/admin/wallet-ledger`：真实钱包流水，展示币种、方向、金额、业务类型、状态和时间。
+  - `/admin/kyc`：真实 KYC 审核队列，展示用户、姓名、状态、原因、更新时间。
+  - `/admin/redemptions`：真实兑换审核队列，展示兑换单、用户、SC、方式、状态和创建时间。
+- 后端新增正式查询接口：
+  - `GET /api/v1/admin/users`
+  - `GET /api/v1/admin/wallet-ledger`
+  - `GET /api/v1/admin/kyc-applications`
+  - `GET /api/v1/admin/redemptions`
+- 浏览器验收确认上述 4 个页面均显示真实表格，不再出现 `Planned` 或 `scheduled` 占位文案。
+- 完整回归已通过：
+  - `backend .\gradlew.bat --no-daemon test`
+  - `frontend npm run test -- --run --pool=threads --maxWorkers=1`
+  - `frontend npm run build`
+  - `frontend npx playwright test`

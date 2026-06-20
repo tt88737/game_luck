@@ -205,6 +205,29 @@ export interface PurchaseOrder {
   createdAt: string
 }
 
+export interface AdminUser {
+  userId: number
+  email: string
+  countryCode: string
+  stateCode: string
+  status: string
+  riskLevel: string
+}
+
+export interface AdminWalletLedger {
+  ledgerId: number
+  userId: number
+  currency: string
+  direction: string
+  amount: string | number
+  balanceAfter: string | number
+  frozenAfter: string | number
+  businessType: string
+  businessId: string
+  status: string
+  createdAt: string
+}
+
 export interface KycStatus {
   userId: number
   status: 'not_started' | 'reviewing' | 'approved' | 'rejected'

@@ -88,6 +88,18 @@ public class P1Controller {
         return p1Service.operations();
     }
 
+    @GetMapping("/admin/kyc-applications")
+    public List<KycStatusDto> adminKycApplications(HttpServletRequest servletRequest) {
+        AdminOperatorContext.from(servletRequest).require("kyc.read");
+        return p1Service.adminKycApplications();
+    }
+
+    @GetMapping("/admin/redemptions")
+    public List<RedemptionDto> adminRedemptions(HttpServletRequest servletRequest) {
+        AdminOperatorContext.from(servletRequest).require("redemption.read");
+        return p1Service.adminRedemptions();
+    }
+
     @PostMapping("/admin/purchase-orders/{orderId}/mark-paid")
     public PurchaseOrderDto markOrderPaid(@PathVariable String orderId, @RequestBody MarkPurchaseOrderPaidRequest request, HttpServletRequest servletRequest) {
         var operator = AdminOperatorContext.from(servletRequest);
