@@ -46,4 +46,17 @@ describe('http api client', () => {
       message: 'This feature is not available in your region.',
     } satisfies Partial<ApiError>)
   })
+
+  it('surfaces a readable error when backend error body is missing', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response('', { status: 500 }),
+    )
+
+    await expect(apiGet('/admin/dashboard/summary')).rejects.toMatchObject({
+      code: 'HTTP_500',
+      message: 'HTTP 500 request failed.',
+      traceId: '',
+      details: {},
+    } satisfies Partial<ApiError>)
+  })
 })

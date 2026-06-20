@@ -8,11 +8,11 @@ export class ApiError extends Error {
   details: Record<string, unknown>
 
   constructor(body: ApiErrorBody) {
-    super(body.message)
+    super(body.message || 'Request failed.')
     this.name = 'ApiError'
-    this.code = body.code
-    this.traceId = body.trace_id
-    this.details = body.details
+    this.code = body.code || 'REQUEST_FAILED'
+    this.traceId = body.trace_id || ''
+    this.details = body.details || {}
   }
 }
 
@@ -51,7 +51,27 @@ async function request<T>(path: string, init: RequestInit): Promise<T> {
   const response = await fetch(`${API_BASE}${path}`, { ...init, headers })
   const payload = await response.json().catch(() => undefined)
   if (!response.ok) {
-    throw new ApiError(payload as ApiErrorBody)
+    throw new ApiError(normalizeErrorBody(payload, response.status))
   }
   return payload as T
+}
+
+function normalizeErrorBody(payload: unknown, status: number): ApiErrorBody {
+  if (payload && typeof payload === 'object') {
+    const body = payload as Partial<ApiErrorBody>
+    if (typeof body.message === 'string') {
+      return {
+        code: typeof body.code === 'string' ? body.code : `HTTP_${status}`,
+        message: body.message,
+        trace_id: typeof body.trace_id === 'string' ? body.trace_id : '',
+        details: body.details && typeof body.details === 'object' ? body.details : {},
+      }
+    }
+  }
+  return {
+    code: `HTTP_${status}`,
+    message: `HTTP ${status} request failed.`,
+    trace_id: '',
+    details: {},
+  }
 }
