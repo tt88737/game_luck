@@ -186,6 +186,10 @@ export interface ProductPackage {
   priceCurrency: string
   gcAmount: string | number
   sandboxOnly: boolean
+  status: string
+  provider: string
+  sortOrder: number
+  legalApprovalId: string | null
 }
 
 export interface PurchaseOrder {

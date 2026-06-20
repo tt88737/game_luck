@@ -19,7 +19,23 @@ public final class P1Dtos {
             BigDecimal priceAmount,
             String priceCurrency,
             BigDecimal gcAmount,
-            boolean sandboxOnly
+            boolean sandboxOnly,
+            String status,
+            String provider,
+            int sortOrder,
+            String legalApprovalId
+    ) {
+    }
+
+    public record UpdateProductPackageRequest(
+            @NotBlank String name,
+            @NotNull BigDecimal priceAmount,
+            @NotBlank String priceCurrency,
+            @NotNull BigDecimal gcAmount,
+            @NotBlank String status,
+            @NotBlank String provider,
+            int sortOrder,
+            String legalApprovalId
     ) {
     }
 
@@ -38,6 +54,9 @@ public final class P1Dtos {
             BigDecimal amountGranted,
             Instant createdAt
     ) {
+    }
+
+    public record MarkPurchaseOrderPaidRequest(String providerReference) {
     }
 
     public record KycApplicationRequest(

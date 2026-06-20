@@ -4,6 +4,8 @@ import AppStore from './AppStore.vue'
 import AppKyc from './AppKyc.vue'
 import AppRedemption from './AppRedemption.vue'
 import AdminP1Operations from '../admin/AdminP1Operations.vue'
+import AdminPackages from '../admin/AdminPackages.vue'
+import AdminOrders from '../admin/AdminOrders.vue'
 import { i18n } from '../../i18n'
 import { createPinia, setActivePinia } from 'pinia'
 
@@ -42,7 +44,7 @@ describe('P1 production pages', () => {
         return json([{ packageCode: 'gc_499', name: 'GC 5,000 Pack', priceAmount: '4.9900', priceCurrency: 'USD', gcAmount: '5000.0000', sandboxOnly: false }])
       }
       if (url.endsWith('/purchase/orders') && init?.method === 'POST') {
-        return json({ orderId: 'ord_1001', userId: 1, packageCode: 'gc_499', priceAmount: '4.9900', priceCurrency: 'USD', status: 'paid', provider: 'manual', currencyGranted: 'GC', amountGranted: '5000.0000', createdAt: '2026-06-19T00:00:00Z' })
+        return json({ orderId: 'ord_1001', userId: 1, packageCode: 'gc_499', priceAmount: '4.9900', priceCurrency: 'USD', status: 'payment_pending', provider: 'manual', currencyGranted: 'GC', amountGranted: '0', createdAt: '2026-06-19T00:00:00Z' })
       }
       return json({})
     })
@@ -52,9 +54,9 @@ describe('P1 production pages', () => {
     await wrapper.get('[data-test="buy-gc_499"]').trigger('click')
     await flushPromises()
 
-    expect(wrapper.text()).toContain('Order paid')
+    expect(wrapper.text()).toContain('payment_pending')
     expect(wrapper.text()).toContain('ord_1001')
-    expect(wrapper.text()).toContain('5,000 GC')
+    expect(wrapper.text()).toContain('0 GC')
   })
 
   it('submits KYC for manual review', async () => {
@@ -130,5 +132,56 @@ describe('P1 production pages', () => {
     await flushPromises()
 
     expect(wrapper.text()).toContain('P1 User')
+  })
+
+  it('lets admins pause product packages', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation((input, init) => {
+      const url = String(input)
+      if (url.endsWith('/admin/product-packages') && init?.method !== 'PATCH') {
+        return json([{ packageCode: 'gc_999', name: 'GC 12,000 Pack', priceAmount: '9.9900', priceCurrency: 'USD', gcAmount: '12000.0000', sandboxOnly: false, status: 'active', provider: 'manual', sortOrder: 20, legalApprovalId: 'LEGAL-PACKAGE-GC' }])
+      }
+      if (url.endsWith('/admin/product-packages/gc_999') && init?.method === 'PATCH') {
+        return json({ packageCode: 'gc_999', name: 'GC 12,000 Pack', priceAmount: '9.9900', priceCurrency: 'USD', gcAmount: '12000.0000', sandboxOnly: false, status: 'paused', provider: 'manual', sortOrder: 20, legalApprovalId: 'LEGAL-PACKAGE-GC' })
+      }
+      return json({})
+    })
+
+    const wrapper = mount(AdminPackages, { global })
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('GC 12,000 Pack')
+    await wrapper.get('[data-test="pause-package-gc_999"]').trigger('click')
+    await flushPromises()
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/v1/admin/product-packages/gc_999', expect.objectContaining({ method: 'PATCH' }))
+    expect(wrapper.text()).toContain('paused')
+  })
+
+  it('lets admins mark pending purchase orders as paid', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation((input, init) => {
+      const url = String(input)
+      if (url.endsWith('/admin/p1/operations')) {
+        return json({
+          purchaseOrders: [{ orderId: 'ord_1001', userId: 1, packageCode: 'gc_499', priceAmount: '4.9900', priceCurrency: 'USD', status: 'payment_pending', provider: 'manual', currencyGranted: 'GC', amountGranted: '0', createdAt: '2026-06-19T00:00:00Z' }],
+          kycApplications: [],
+          redemptionRequests: [],
+        })
+      }
+      if (url.endsWith('/admin/purchase-orders/ord_1001/mark-paid') && init?.method === 'POST') {
+        return json({ orderId: 'ord_1001', userId: 1, packageCode: 'gc_499', priceAmount: '4.9900', priceCurrency: 'USD', status: 'paid', provider: 'manual', currencyGranted: 'GC', amountGranted: '5000.0000', createdAt: '2026-06-19T00:00:00Z' })
+      }
+      return json({})
+    })
+
+    const wrapper = mount(AdminOrders, { global })
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('payment_pending')
+    await wrapper.get('[data-test="mark-paid-ord_1001"]').trigger('click')
+    await flushPromises()
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/v1/admin/purchase-orders/ord_1001/mark-paid', expect.objectContaining({ method: 'POST' }))
+    expect(wrapper.text()).toContain('paid')
+    expect(wrapper.text()).toContain('5,000')
   })
 })

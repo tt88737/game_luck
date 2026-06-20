@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ProductPackageRepository extends JpaRepository<ProductPackage, Long> {
-    List<ProductPackage> findByStatusOrderByPriceAmountAsc(String status);
+    List<ProductPackage> findByStatusOrderBySortOrderAscPriceAmountAsc(String status);
 
     Optional<ProductPackage> findByPackageCodeAndStatus(String packageCode, String status);
+
+    Optional<ProductPackage> findByPackageCode(String packageCode);
 }

@@ -4,6 +4,7 @@ import com.tangluck.admin.AdminOperatorContext;
 import jakarta.validation.Valid;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,10 +18,12 @@ import static com.tangluck.p1.P1Dtos.CreatePurchaseOrderRequest;
 import static com.tangluck.p1.P1Dtos.CreateRedemptionRequest;
 import static com.tangluck.p1.P1Dtos.KycApplicationRequest;
 import static com.tangluck.p1.P1Dtos.KycStatusDto;
+import static com.tangluck.p1.P1Dtos.MarkPurchaseOrderPaidRequest;
 import static com.tangluck.p1.P1Dtos.P1OperationsDto;
 import static com.tangluck.p1.P1Dtos.ProductPackageDto;
 import static com.tangluck.p1.P1Dtos.PurchaseOrderDto;
 import static com.tangluck.p1.P1Dtos.RedemptionDto;
+import static com.tangluck.p1.P1Dtos.UpdateProductPackageRequest;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -34,6 +37,19 @@ public class P1Controller {
     @GetMapping("/purchase/packages")
     public List<ProductPackageDto> packages() {
         return p1Service.packages();
+    }
+
+    @GetMapping("/admin/product-packages")
+    public List<ProductPackageDto> adminPackages(HttpServletRequest servletRequest) {
+        AdminOperatorContext.from(servletRequest).require("package.read");
+        return p1Service.adminPackages();
+    }
+
+    @PatchMapping("/admin/product-packages/{packageCode}")
+    public ProductPackageDto updatePackage(@PathVariable String packageCode, @Valid @RequestBody UpdateProductPackageRequest request, HttpServletRequest servletRequest) {
+        var operator = AdminOperatorContext.from(servletRequest);
+        operator.require("package.write");
+        return p1Service.updatePackage(packageCode, request, operator);
     }
 
     @PostMapping("/purchase/orders")
@@ -70,6 +86,13 @@ public class P1Controller {
     @GetMapping("/admin/p1/operations")
     public P1OperationsDto operations() {
         return p1Service.operations();
+    }
+
+    @PostMapping("/admin/purchase-orders/{orderId}/mark-paid")
+    public PurchaseOrderDto markOrderPaid(@PathVariable String orderId, @RequestBody MarkPurchaseOrderPaidRequest request, HttpServletRequest servletRequest) {
+        var operator = AdminOperatorContext.from(servletRequest);
+        operator.require("order.settle");
+        return p1Service.markOrderPaid(orderId, request, operator);
     }
 
     @PostMapping("/admin/kyc/{userId}/approve")

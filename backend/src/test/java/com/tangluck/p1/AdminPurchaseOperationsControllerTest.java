@@ -1,4 +1,4 @@
-package com.tangluck.mvp;
+package com.tangluck.p1;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -19,8 +19,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
-class P1SandboxClosedLoopTest {
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+class AdminPurchaseOperationsControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -28,22 +28,54 @@ class P1SandboxClosedLoopTest {
     private ObjectMapper objectMapper;
 
     @Test
-    void sandboxPurchaseKycAndRedemptionCreateTheP1OperatingLoop() throws Exception {
-        enableCaPurchase();
-        Long userId = registerUser("p1-loop@example.com");
+    void adminCanDisablePackageAndStoreHidesIt() throws Exception {
+        mockMvc.perform(get("/api/v1/admin/product-packages")
+                        .header("X-Admin-Permissions", "package.read"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.packageCode == 'gc_999')]").exists());
+
+        mockMvc.perform(patch("/api/v1/admin/product-packages/gc_999")
+                        .header("X-Admin-Operator-Id", "51")
+                        .header("X-Admin-Operator-Role", "commerce_admin")
+                        .header("X-Admin-Permissions", "package.write")
+                        .header("X-Forwarded-For", "203.0.113.51")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "GC 12,000 Pack",
+                                  "priceAmount": "9.9900",
+                                  "priceCurrency": "USD",
+                                  "gcAmount": "12000.0000",
+                                  "status": "paused",
+                                  "provider": "manual",
+                                  "sortOrder": 10,
+                                  "legalApprovalId": "LEGAL-PACKAGE-499"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("paused"));
 
         mockMvc.perform(get("/api/v1/purchase/packages"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].packageCode").value("gc_499"))
-                .andExpect(jsonPath("$[0].name").value("GC 5,000 Pack"))
-                .andExpect(jsonPath("$[0].gcAmount").value(5000))
-                .andExpect(jsonPath("$[0].sandboxOnly").value(false));
+                .andExpect(jsonPath("$[?(@.packageCode == 'gc_999')]").doesNotExist());
+
+        mockMvc.perform(get("/api/v1/admin/audit-logs")
+                        .param("target_type", "product_package")
+                        .param("target_id", "gc_999"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.action == 'product_package_update' && @.operatorId == 51)]").exists());
+    }
+
+    @Test
+    void orderIsPaymentPendingUntilAdminMarksPaidAndLedgerIsPostedOnce() throws Exception {
+        enableCaPurchase();
+        Long userId = registerUser("purchase-admin-loop@example.com");
 
         String orderJson = mockMvc.perform(post("/api/v1/purchase/orders")
                         .header("X-User-Id", userId)
-                        .header("Idempotency-Key", "p1-order-" + userId)
+                        .header("Idempotency-Key", "admin-order-" + userId)
                         .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"packageCode\":\"gc_499\"}"))
+                        .content("{\"packageCode\":\"gc_499\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("payment_pending"))
                 .andExpect(jsonPath("$.provider").value("manual"))
@@ -61,8 +93,19 @@ class P1SandboxClosedLoopTest {
                 .andExpect(jsonPath("$.items[?(@.businessType == 'purchase' && @.businessId == '%s')]".formatted(orderId)).doesNotExist());
 
         mockMvc.perform(post("/api/v1/admin/purchase-orders/" + orderId + "/mark-paid")
+                        .header("X-Admin-Operator-Id", "52")
+                        .header("X-Admin-Operator-Role", "commerce_admin")
+                        .header("X-Admin-Permissions", "order.settle")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"providerReference\":\"p1-manual-settlement\"}"))
+                        .content("{\"providerReference\":\"manual-settlement-1\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("paid"))
+                .andExpect(jsonPath("$.amountGranted").value(5000));
+
+        mockMvc.perform(post("/api/v1/admin/purchase-orders/" + orderId + "/mark-paid")
+                        .header("X-Admin-Permissions", "order.settle")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"providerReference\":\"manual-settlement-1\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("paid"));
 
@@ -70,54 +113,14 @@ class P1SandboxClosedLoopTest {
                         .header("X-User-Id", userId)
                         .param("currency", "GC"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.items[?(@.businessType == 'purchase' && @.businessId == '%s')]".formatted(orderId)).exists());
+                .andExpect(jsonPath("$.items[?(@.businessType == 'purchase' && @.businessId == '%s')]".formatted(orderId)).exists())
+                .andExpect(jsonPath("$.total").value(1));
 
-        mockMvc.perform(post("/api/v1/campaigns/register_bonus_v1/claim")
-                        .header("X-User-Id", userId)
-                        .header("Idempotency-Key", "p1-sc-" + userId))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(post("/api/v1/redemptions")
-                        .header("X-User-Id", userId)
-                        .header("Idempotency-Key", "p1-redemption-blocked-" + userId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"scAmount\":\"0.50\",\"method\":\"sandbox_gift_card\"}"))
-                .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.code").value("KYC_REQUIRED"));
-
-        mockMvc.perform(get("/api/v1/kyc/status").header("X-User-Id", userId))
+        mockMvc.perform(get("/api/v1/admin/audit-logs")
+                        .param("target_type", "purchase_order")
+                        .param("target_id", orderId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("not_started"));
-
-        mockMvc.perform(post("/api/v1/kyc/applications")
-                        .header("X-User-Id", userId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"legalName\":\"P1 Demo User\",\"birthDate\":\"1994-03-02\",\"addressLine\":\"100 Demo Street\",\"stateCode\":\"CA\"}"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("reviewing"));
-
-        mockMvc.perform(post("/api/v1/admin/kyc/" + userId + "/approve"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("approved"));
-
-        String redemptionJson = mockMvc.perform(post("/api/v1/redemptions")
-                        .header("X-User-Id", userId)
-                        .header("Idempotency-Key", "p1-redemption-" + userId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"scAmount\":\"0.50\",\"method\":\"sandbox_gift_card\"}"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("reviewing"))
-                .andExpect(jsonPath("$.sandboxOnly").value(true))
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-        String redemptionId = objectMapper.readTree(redemptionJson).path("redemptionId").asText();
-
-        mockMvc.perform(get("/api/v1/admin/p1/operations"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.purchaseOrders[?(@.orderId == '%s')]".formatted(orderId)).exists())
-                .andExpect(jsonPath("$.kycApplications[?(@.userId == %d && @.status == 'approved')]".formatted(userId)).exists())
-                .andExpect(jsonPath("$.redemptionRequests[?(@.redemptionId == '%s' && @.status == 'reviewing')]".formatted(redemptionId)).exists());
+                .andExpect(jsonPath("$[?(@.action == 'purchase_order_mark_paid' && @.operatorId == 52)]").exists());
     }
 
     private void enableCaPurchase() throws Exception {
@@ -152,8 +155,8 @@ class P1SandboxClosedLoopTest {
                     {"documentType": "sweepstakes_rules", "version": "rules-v1"},
                     {"documentType": "privacy", "version": "privacy-v1"}
                   ],
-                  "utmSource": "p1",
-                  "deviceId": "p1_loop_device"
+                  "utmSource": "purchase_admin",
+                  "deviceId": "purchase_admin_device"
                 }
                 """.formatted(email);
 

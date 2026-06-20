@@ -37,7 +37,9 @@ async function buyPackage(item: ProductPackage) {
       `web-purchase-${item.packageCode}-${Date.now()}`,
     )
     lastOrder.value = order
-    success.value = i18n.t('store.purchaseSuccess', { amount: format(order.amountGranted, 0) })
+    success.value = order.status === 'paid'
+      ? i18n.t('store.purchaseSuccess', { amount: format(order.amountGranted, 0) })
+      : 'Order is waiting for payment confirmation.'
   } catch (err) {
     error.value = messageFrom(err)
   } finally {
@@ -96,12 +98,13 @@ function format(value: string | number, digits: number) {
       <section v-if="lastOrder" class="section-block">
         <div class="section-title">
           <h2>{{ $t('common.latestOrder') }}</h2>
-          <span class="status-tag active">{{ lastOrder.status }}</span>
+          <span class="status-tag" :class="{ active: lastOrder.status === 'paid', pending: lastOrder.status !== 'paid' }">{{ lastOrder.status }}</span>
         </div>
         <div class="source-list">
           <span>{{ $t('common.order') }}: {{ lastOrder.orderId }}</span>
           <span>{{ $t('common.provider') }}: {{ lastOrder.provider }}</span>
           <span>{{ $t('common.credited') }}: {{ format(lastOrder.amountGranted, 0) }} {{ lastOrder.currencyGranted }}</span>
+          <span v-if="lastOrder.status !== 'paid'">Payment confirmation required before GC is credited.</span>
         </div>
       </section>
     </template>

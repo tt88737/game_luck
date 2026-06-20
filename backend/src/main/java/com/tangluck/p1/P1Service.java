@@ -19,10 +19,12 @@ import static com.tangluck.p1.P1Dtos.CreatePurchaseOrderRequest;
 import static com.tangluck.p1.P1Dtos.CreateRedemptionRequest;
 import static com.tangluck.p1.P1Dtos.KycApplicationRequest;
 import static com.tangluck.p1.P1Dtos.KycStatusDto;
+import static com.tangluck.p1.P1Dtos.MarkPurchaseOrderPaidRequest;
 import static com.tangluck.p1.P1Dtos.P1OperationsDto;
 import static com.tangluck.p1.P1Dtos.ProductPackageDto;
 import static com.tangluck.p1.P1Dtos.PurchaseOrderDto;
 import static com.tangluck.p1.P1Dtos.RedemptionDto;
+import static com.tangluck.p1.P1Dtos.UpdateProductPackageRequest;
 
 @Service
 public class P1Service {
@@ -59,9 +61,25 @@ public class P1Service {
 
     @Transactional(readOnly = true)
     public List<ProductPackageDto> packages() {
-        return packageRepository.findByStatusOrderByPriceAmountAsc("active").stream()
+        return packageRepository.findByStatusOrderBySortOrderAscPriceAmountAsc("active").stream()
                 .map(this::toDto)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductPackageDto> adminPackages() {
+        return packageRepository.findAll().stream().map(this::toDto).toList();
+    }
+
+    @Transactional
+    public ProductPackageDto updatePackage(String packageCode, UpdateProductPackageRequest request, AdminOperatorContext operator) {
+        var productPackage = packageRepository.findByPackageCode(packageCode)
+                .orElseThrow(() -> new BusinessException(ErrorCode.PAYMENT_NOT_ALLOWED, "Product package is not available.", Map.of("packageCode", packageCode)));
+        var before = packageJson(productPackage);
+        productPackage.update(request.name(), request.priceAmount(), request.priceCurrency(), request.gcAmount(), request.status(), request.provider(), request.sortOrder(), request.legalApprovalId());
+        var saved = packageRepository.save(productPackage);
+        adminAuditService.write(operator, "product_package_update", "product_package", packageCode, before, packageJson(saved), null);
+        return toDto(saved);
     }
 
     @Transactional
@@ -130,6 +148,21 @@ public class P1Service {
         );
     }
 
+    @Transactional
+    public PurchaseOrderDto markOrderPaid(String orderId, MarkPurchaseOrderPaidRequest request, AdminOperatorContext operator) {
+        var order = orderRepository.findByOrderId(orderId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.PAYMENT_NOT_ALLOWED, "Purchase order does not exist.", Map.of("orderId", orderId)));
+        if ("paid".equals(order.getStatus())) {
+            return toDto(order);
+        }
+        var before = orderJson(order);
+        var ledger = walletService.credit(order.getUserId(), "GC", order.getGcAmount(), "purchase", order.getOrderId(), "purchase:" + order.getOrderId());
+        order.markPaid(request.providerReference(), ledger.ledgerId(), clock.instant());
+        var saved = orderRepository.save(order);
+        adminAuditService.write(operator, "purchase_order_mark_paid", "purchase_order", orderId, before, orderJson(saved), request.providerReference());
+        return toDto(saved);
+    }
+
     private PurchaseOrderDto createNewOrder(Long userId, String idempotencyKey, CreatePurchaseOrderRequest request) {
         var user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.AUTH_INVALID_CREDENTIALS, "User does not exist.", Map.of("userId", userId)));
@@ -137,8 +170,6 @@ public class P1Service {
         var productPackage = packageRepository.findByPackageCodeAndStatus(request.packageCode(), "active")
                 .orElseThrow(() -> new BusinessException(ErrorCode.PAYMENT_NOT_ALLOWED, "Product package is not available.", Map.of("packageCode", request.packageCode())));
         var order = orderRepository.save(new PurchaseOrder("ord_" + UUID.randomUUID().toString().replace("-", "").substring(0, 16), userId, productPackage, idempotencyKey, clock.instant()));
-        var ledger = walletService.credit(userId, "GC", order.getGcAmount(), "purchase", order.getOrderId(), "purchase:" + order.getOrderId());
-        order.attachLedger(ledger.ledgerId(), clock.instant());
         return toDto(orderRepository.save(order));
     }
 
@@ -160,7 +191,11 @@ public class P1Service {
                 productPackage.getPriceAmount(),
                 productPackage.getPriceCurrency(),
                 productPackage.getGcAmount(),
-                productPackage.isSandboxOnly()
+                productPackage.isSandboxOnly(),
+                productPackage.getStatus(),
+                productPackage.getProvider(),
+                productPackage.getSortOrder(),
+                productPackage.getLegalApprovalId()
         );
     }
 
@@ -174,9 +209,17 @@ public class P1Service {
                 order.getStatus(),
                 order.getProvider(),
                 "GC",
-                order.getGcAmount(),
+                "paid".equals(order.getStatus()) ? order.getGcAmount() : java.math.BigDecimal.ZERO,
                 order.getCreatedAt()
         );
+    }
+
+    private String packageJson(ProductPackage productPackage) {
+        return "{\"status\":\"" + productPackage.getStatus() + "\",\"provider\":\"" + productPackage.getProvider() + "\"}";
+    }
+
+    private String orderJson(PurchaseOrder order) {
+        return "{\"status\":\"" + order.getStatus() + "\",\"provider\":\"" + order.getProvider() + "\"}";
     }
 
     private KycStatusDto toDto(KycApplication application) {

@@ -35,6 +35,15 @@ public class ProductPackage {
     @Column(nullable = false)
     private String status;
 
+    @Column(nullable = false)
+    private String provider;
+
+    @Column(name = "sort_order", nullable = false)
+    private Integer sortOrder;
+
+    @Column(name = "legal_approval_id")
+    private String legalApprovalId;
+
     @Column(name = "sandbox_only", nullable = false)
     private boolean sandboxOnly;
 
@@ -42,6 +51,17 @@ public class ProductPackage {
     private Instant createdAt;
 
     protected ProductPackage() {
+    }
+
+    public void update(String name, BigDecimal priceAmount, String priceCurrency, BigDecimal gcAmount, String status, String provider, Integer sortOrder, String legalApprovalId) {
+        this.name = name;
+        this.priceAmount = priceAmount;
+        this.priceCurrency = priceCurrency;
+        this.gcAmount = gcAmount;
+        this.status = status;
+        this.provider = provider;
+        this.sortOrder = sortOrder;
+        this.legalApprovalId = legalApprovalId;
     }
 
     public String getPackageCode() {
@@ -66,5 +86,21 @@ public class ProductPackage {
 
     public boolean isSandboxOnly() {
         return sandboxOnly;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public String getProvider() {
+        return provider;
+    }
+
+    public Integer getSortOrder() {
+        return sortOrder;
+    }
+
+    public String getLegalApprovalId() {
+        return legalApprovalId;
     }
 }

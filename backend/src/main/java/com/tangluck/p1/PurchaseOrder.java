@@ -41,6 +41,9 @@ public class PurchaseOrder {
     @Column(nullable = false)
     private String provider;
 
+    @Column(name = "provider_reference")
+    private String providerReference;
+
     @Column(name = "idempotency_key", nullable = false)
     private String idempotencyKey;
 
@@ -63,8 +66,8 @@ public class PurchaseOrder {
         this.priceAmount = productPackage.getPriceAmount();
         this.priceCurrency = productPackage.getPriceCurrency();
         this.gcAmount = productPackage.getGcAmount();
-        this.status = "paid";
-        this.provider = "manual";
+        this.status = "payment_pending";
+        this.provider = productPackage.getProvider();
         this.idempotencyKey = idempotencyKey;
         this.createdAt = now;
         this.updatedAt = now;
@@ -106,8 +109,18 @@ public class PurchaseOrder {
         return createdAt;
     }
 
-    public void attachLedger(Long ledgerId, Instant now) {
+    public void markPaid(String providerReference, Long ledgerId, Instant now) {
+        this.status = "paid";
+        this.providerReference = providerReference;
         this.ledgerId = ledgerId;
         this.updatedAt = now;
+    }
+
+    public Long getLedgerId() {
+        return ledgerId;
+    }
+
+    public String getProviderReference() {
+        return providerReference;
     }
 }

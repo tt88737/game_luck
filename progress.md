@@ -79,3 +79,27 @@
   - `frontend npm run build`
   - `frontend npx playwright test`
   - 新增页面截图验收：`frontend/test-results/sprint3-app-lobby-desktop.png`、`sprint3-app-lobby-mobile.png`、`sprint3-admin-lobby-desktop.png`、`sprint3-admin-lobby-mobile.png`
+
+## 2026-06-20 Sprint 4
+- Sprint 4 完成：商品包与购买订单运营闭环。
+- 后端新增/调整：
+  - `product_packages` 扩展 `provider`、`sort_order`、`legal_approval_id`，公开商店只返回 active 商品包并按运营顺序排序。
+  - 新增后台接口：`GET /api/v1/admin/product-packages`、`PATCH /api/v1/admin/product-packages/{packageCode}`、`POST /api/v1/admin/purchase-orders/{orderId}/mark-paid`。
+  - 购买下单改为 `payment_pending`，创建订单不再立即入账；后台标记已支付后写入 GC 钱包流水，并对重复结算保持幂等。
+  - 商品包更新与订单标记已支付均写入统一 `audit_logs`。
+- 前端新增/调整：
+  - 新增 `/admin/packages` 商品包配置页，支持 active/paused 上下架操作。
+  - 新增 `/admin/orders` 购买订单运营页，支持 pending 订单后台标记已支付。
+  - C 端商店展示 pending 订单、0 GC 入账和“等待支付确认”提示。
+  - 后台移动端表格改为记录卡片式展示，订单页移动端能直接看到并操作 `Mark paid`。
+- 浏览器截图验收：
+  - `frontend/test-results/sprint4-store-desktop.png`
+  - `frontend/test-results/sprint4-store-mobile.png`
+  - `frontend/test-results/sprint4-admin-packages-desktop.png`
+  - `frontend/test-results/sprint4-admin-orders-desktop.png`
+  - `frontend/test-results/sprint4-admin-orders-mobile.png`
+- 完整回归已通过：
+  - `backend .\gradlew.bat --no-daemon test`
+  - `frontend npm run test -- --run --pool=threads --maxWorkers=1`
+  - `frontend npm run build`
+  - `frontend npx playwright test`
