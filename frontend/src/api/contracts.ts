@@ -244,6 +244,8 @@ export interface RedemptionRequest {
   status: string
   sandboxOnly: boolean
   createdAt: string
+  reviewReason: string | null
+  providerReference: string | null
 }
 
 export interface P1Operations {

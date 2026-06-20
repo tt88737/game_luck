@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { ApiError, apiGet } from '../../api/http'
+import { ApiError, apiGet, apiPost } from '../../api/http'
 import type { KycStatus } from '../../api/contracts'
 import AdminLayout from '../../components/AdminLayout.vue'
 
 const rows = ref<KycStatus[]>([])
 const loading = ref(true)
 const error = ref('')
+const notice = ref('')
 
 onMounted(loadKyc)
 
@@ -19,6 +20,19 @@ async function loadKyc() {
     error.value = messageFrom(err)
   } finally {
     loading.value = false
+  }
+}
+
+async function reviewKyc(row: KycStatus, action: 'approve' | 'reject') {
+  error.value = ''
+  notice.value = ''
+  try {
+    const payload = action === 'reject' ? { reason: 'Document image is unreadable.' } : {}
+    const updated = await apiPost<KycStatus>(`/admin/kyc/${row.userId}/${action}`, payload)
+    rows.value = rows.value.map((item) => item.userId === updated.userId ? updated : item)
+    notice.value = `KYC ${row.userId} ${updated.status}.`
+  } catch (err) {
+    error.value = messageFrom(err)
   }
 }
 
@@ -41,6 +55,7 @@ function messageFrom(err: unknown) {
     <section v-else-if="error && !rows.length" class="status-panel danger">{{ error }}</section>
 
     <template v-else>
+      <p v-if="notice" class="notice success">{{ notice }}</p>
       <p v-if="error" class="notice danger">{{ error }}</p>
       <div class="table-wrap">
         <table>
@@ -51,6 +66,7 @@ function messageFrom(err: unknown) {
               <th>Status</th>
               <th>Reason</th>
               <th>Updated</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -60,8 +76,14 @@ function messageFrom(err: unknown) {
               <td data-label="Status"><span class="status-tag" :class="{ active: row.status === 'approved', pending: row.status !== 'approved' }">{{ row.status }}</span></td>
               <td data-label="Reason">{{ row.reviewReason || 'Manual review required' }}</td>
               <td data-label="Updated">{{ row.updatedAt ? new Date(row.updatedAt).toLocaleString() : '-' }}</td>
+              <td data-label="Actions">
+                <div class="action-group">
+                  <button :data-test="`approve-kyc-${row.userId}`" :disabled="row.status === 'approved'" @click="reviewKyc(row, 'approve')">Approve</button>
+                  <button :data-test="`reject-kyc-${row.userId}`" :disabled="row.status === 'rejected'" @click="reviewKyc(row, 'reject')">Reject</button>
+                </div>
+              </td>
             </tr>
-            <tr v-if="!rows.length"><td colspan="5">No KYC applications.</td></tr>
+            <tr v-if="!rows.length"><td colspan="6">No KYC applications.</td></tr>
           </tbody>
         </table>
       </div>

@@ -79,4 +79,21 @@ public class WalletAccount {
         this.frozenBalance = this.frozenBalance.add(amount);
         this.updatedAt = now;
     }
+
+    public void unfreeze(BigDecimal amount, Instant now) {
+        if (this.frozenBalance.compareTo(amount) < 0) {
+            throw new IllegalArgumentException("Insufficient frozen balance.");
+        }
+        this.frozenBalance = this.frozenBalance.subtract(amount);
+        this.updatedAt = now;
+    }
+
+    public void redeemFrozen(BigDecimal amount, Instant now) {
+        if (this.frozenBalance.compareTo(amount) < 0) {
+            throw new IllegalArgumentException("Insufficient frozen balance.");
+        }
+        this.frozenBalance = this.frozenBalance.subtract(amount);
+        this.balance = this.balance.subtract(amount);
+        this.updatedAt = now;
+    }
 }

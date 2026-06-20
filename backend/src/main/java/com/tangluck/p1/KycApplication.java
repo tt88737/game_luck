@@ -95,4 +95,10 @@ public class KycApplication {
         this.reviewReason = "approved by ops";
         this.updatedAt = now;
     }
+
+    public void reject(String reason, Instant now) {
+        this.status = "rejected";
+        this.reviewReason = reason;
+        this.updatedAt = now;
+    }
 }

@@ -16,9 +16,11 @@ import java.util.List;
 
 import static com.tangluck.p1.P1Dtos.CreatePurchaseOrderRequest;
 import static com.tangluck.p1.P1Dtos.CreateRedemptionRequest;
+import static com.tangluck.p1.P1Dtos.AdminReviewRequest;
 import static com.tangluck.p1.P1Dtos.KycApplicationRequest;
 import static com.tangluck.p1.P1Dtos.KycStatusDto;
 import static com.tangluck.p1.P1Dtos.MarkPurchaseOrderPaidRequest;
+import static com.tangluck.p1.P1Dtos.MarkRedemptionPaidRequest;
 import static com.tangluck.p1.P1Dtos.P1OperationsDto;
 import static com.tangluck.p1.P1Dtos.ProductPackageDto;
 import static com.tangluck.p1.P1Dtos.PurchaseOrderDto;
@@ -112,5 +114,33 @@ public class P1Controller {
         var operator = AdminOperatorContext.from(servletRequest);
         operator.require("kyc.review");
         return p1Service.approveKyc(userId, operator);
+    }
+
+    @PostMapping("/admin/kyc/{userId}/reject")
+    public KycStatusDto rejectKyc(@PathVariable Long userId, @RequestBody AdminReviewRequest request, HttpServletRequest servletRequest) {
+        var operator = AdminOperatorContext.from(servletRequest);
+        operator.require("kyc.review");
+        return p1Service.rejectKyc(userId, request, operator);
+    }
+
+    @PostMapping("/admin/redemptions/{redemptionId}/approve")
+    public RedemptionDto approveRedemption(@PathVariable String redemptionId, @RequestBody AdminReviewRequest request, HttpServletRequest servletRequest) {
+        var operator = AdminOperatorContext.from(servletRequest);
+        operator.require("redemption.review");
+        return p1Service.approveRedemption(redemptionId, request, operator);
+    }
+
+    @PostMapping("/admin/redemptions/{redemptionId}/reject")
+    public RedemptionDto rejectRedemption(@PathVariable String redemptionId, @RequestBody AdminReviewRequest request, HttpServletRequest servletRequest) {
+        var operator = AdminOperatorContext.from(servletRequest);
+        operator.require("redemption.review");
+        return p1Service.rejectRedemption(redemptionId, request, operator);
+    }
+
+    @PostMapping("/admin/redemptions/{redemptionId}/mark-paid")
+    public RedemptionDto markRedemptionPaid(@PathVariable String redemptionId, @RequestBody MarkRedemptionPaidRequest request, HttpServletRequest servletRequest) {
+        var operator = AdminOperatorContext.from(servletRequest);
+        operator.require("redemption.payout");
+        return p1Service.markRedemptionPaid(redemptionId, request, operator);
     }
 }

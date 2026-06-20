@@ -44,6 +44,9 @@ public class RedemptionRequest {
     @Column(name = "review_reason")
     private String reviewReason;
 
+    @Column(name = "provider_reference")
+    private String providerReference;
+
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
@@ -93,8 +96,34 @@ public class RedemptionRequest {
         return createdAt;
     }
 
+    public String getReviewReason() {
+        return reviewReason;
+    }
+
+    public String getProviderReference() {
+        return providerReference;
+    }
+
     public void attachFreezeLedger(Long ledgerId, Instant now) {
         this.freezeLedgerId = ledgerId;
+        this.updatedAt = now;
+    }
+
+    public void approve(String reason, Instant now) {
+        this.status = "payout_pending";
+        this.reviewReason = reason;
+        this.updatedAt = now;
+    }
+
+    public void reject(String reason, Instant now) {
+        this.status = "rejected";
+        this.reviewReason = reason;
+        this.updatedAt = now;
+    }
+
+    public void markPaid(String providerReference, Instant now) {
+        this.status = "paid";
+        this.providerReference = providerReference;
         this.updatedAt = now;
     }
 }

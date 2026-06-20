@@ -17,9 +17,11 @@ import java.util.UUID;
 
 import static com.tangluck.p1.P1Dtos.CreatePurchaseOrderRequest;
 import static com.tangluck.p1.P1Dtos.CreateRedemptionRequest;
+import static com.tangluck.p1.P1Dtos.AdminReviewRequest;
 import static com.tangluck.p1.P1Dtos.KycApplicationRequest;
 import static com.tangluck.p1.P1Dtos.KycStatusDto;
 import static com.tangluck.p1.P1Dtos.MarkPurchaseOrderPaidRequest;
+import static com.tangluck.p1.P1Dtos.MarkRedemptionPaidRequest;
 import static com.tangluck.p1.P1Dtos.P1OperationsDto;
 import static com.tangluck.p1.P1Dtos.ProductPackageDto;
 import static com.tangluck.p1.P1Dtos.PurchaseOrderDto;
@@ -133,6 +135,26 @@ public class P1Service {
     }
 
     @Transactional
+    public KycStatusDto rejectKyc(Long userId, AdminReviewRequest request, AdminOperatorContext operator) {
+        var application = kycRepository.findByUserId(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.VALIDATION_FAILED, "KYC application does not exist.", Map.of("userId", userId)));
+        var before = "{\"status\":\"" + application.getStatus() + "\"}";
+        var reason = reasonOrDefault(request.reason(), "rejected by ops");
+        application.reject(reason, clock.instant());
+        var saved = kycRepository.save(application);
+        adminAuditService.write(
+                operator,
+                "kyc_reject",
+                "kyc_application",
+                String.valueOf(userId),
+                before,
+                "{\"status\":\"" + saved.getStatus() + "\"}",
+                reason
+        );
+        return toDto(saved);
+    }
+
+    @Transactional
     public RedemptionDto createRedemption(Long userId, String idempotencyKey, CreateRedemptionRequest request) {
         return redemptionRepository.findByIdempotencyKey(idempotencyKey)
                 .map(this::toDto)
@@ -174,6 +196,55 @@ public class P1Service {
         order.markPaid(request.providerReference(), ledger.ledgerId(), clock.instant());
         var saved = orderRepository.save(order);
         adminAuditService.write(operator, "purchase_order_mark_paid", "purchase_order", orderId, before, orderJson(saved), request.providerReference());
+        return toDto(saved);
+    }
+
+    @Transactional
+    public RedemptionDto approveRedemption(String redemptionId, AdminReviewRequest request, AdminOperatorContext operator) {
+        var redemption = redemptionRepository.findByRedemptionId(redemptionId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.REDEMPTION_NOT_ALLOWED, "Redemption does not exist.", Map.of("redemptionId", redemptionId)));
+        if ("payout_pending".equals(redemption.getStatus()) || "paid".equals(redemption.getStatus())) {
+            return toDto(redemption);
+        }
+        var before = redemptionJson(redemption);
+        var reason = reasonOrDefault(request.reason(), "approved for payout");
+        redemption.approve(reason, clock.instant());
+        var saved = redemptionRepository.save(redemption);
+        adminAuditService.write(operator, "redemption_approve", "redemption_request", redemptionId, before, redemptionJson(saved), reason);
+        return toDto(saved);
+    }
+
+    @Transactional
+    public RedemptionDto rejectRedemption(String redemptionId, AdminReviewRequest request, AdminOperatorContext operator) {
+        var redemption = redemptionRepository.findByRedemptionId(redemptionId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.REDEMPTION_NOT_ALLOWED, "Redemption does not exist.", Map.of("redemptionId", redemptionId)));
+        if ("rejected".equals(redemption.getStatus())) {
+            return toDto(redemption);
+        }
+        var before = redemptionJson(redemption);
+        var reason = reasonOrDefault(request.reason(), "rejected by ops");
+        walletService.unfreeze(redemption.getUserId(), "SC", redemption.getScAmount(), "redemption_reject", redemption.getRedemptionId(), "redemption:reject:" + redemption.getRedemptionId());
+        redemption.reject(reason, clock.instant());
+        var saved = redemptionRepository.save(redemption);
+        adminAuditService.write(operator, "redemption_reject", "redemption_request", redemptionId, before, redemptionJson(saved), reason);
+        return toDto(saved);
+    }
+
+    @Transactional
+    public RedemptionDto markRedemptionPaid(String redemptionId, MarkRedemptionPaidRequest request, AdminOperatorContext operator) {
+        var redemption = redemptionRepository.findByRedemptionId(redemptionId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.REDEMPTION_NOT_ALLOWED, "Redemption does not exist.", Map.of("redemptionId", redemptionId)));
+        if ("paid".equals(redemption.getStatus())) {
+            return toDto(redemption);
+        }
+        if (!"payout_pending".equals(redemption.getStatus())) {
+            throw new BusinessException(ErrorCode.REDEMPTION_NOT_ALLOWED, "Redemption must be approved before payout.", Map.of("status", redemption.getStatus()));
+        }
+        var before = redemptionJson(redemption);
+        walletService.redeemFrozen(redemption.getUserId(), "SC", redemption.getScAmount(), "redemption_payout", redemption.getRedemptionId(), "redemption:payout:" + redemption.getRedemptionId());
+        redemption.markPaid(request.providerReference(), clock.instant());
+        var saved = redemptionRepository.save(redemption);
+        adminAuditService.write(operator, "redemption_mark_paid", "redemption_request", redemptionId, before, redemptionJson(saved), request.providerReference());
         return toDto(saved);
     }
 
@@ -236,6 +307,14 @@ public class P1Service {
         return "{\"status\":\"" + order.getStatus() + "\",\"provider\":\"" + order.getProvider() + "\"}";
     }
 
+    private String redemptionJson(RedemptionRequest redemption) {
+        return "{\"status\":\"" + redemption.getStatus() + "\",\"method\":\"" + redemption.getMethod() + "\"}";
+    }
+
+    private String reasonOrDefault(String reason, String fallback) {
+        return reason == null || reason.isBlank() ? fallback : reason;
+    }
+
     private KycStatusDto toDto(KycApplication application) {
         return new KycStatusDto(
                 application.getUserId(),
@@ -254,7 +333,9 @@ public class P1Service {
                 redemption.getMethod(),
                 redemption.getStatus(),
                 redemption.isSandboxOnly(),
-                redemption.getCreatedAt()
+                redemption.getCreatedAt(),
+                redemption.getReviewReason(),
+                redemption.getProviderReference()
         );
     }
 }

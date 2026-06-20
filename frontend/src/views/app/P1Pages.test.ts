@@ -238,4 +238,67 @@ describe('P1 production pages', () => {
     expect(redemptions.text()).toContain('paypal')
     expect(redemptions.text()).not.toContain('scheduled')
   })
+
+  it('lets admins reject KYC applications with a reason', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation((input, init) => {
+      const url = String(input)
+      if (url.endsWith('/admin/kyc-applications')) {
+        return json([{ userId: 8, status: 'reviewing', legalName: 'Review User', reviewReason: null, updatedAt: '2026-06-20T00:00:00Z' }])
+      }
+      if (url.endsWith('/admin/kyc/8/reject') && init?.method === 'POST') {
+        return json({ userId: 8, status: 'rejected', legalName: 'Review User', reviewReason: 'Document image is unreadable.', updatedAt: '2026-06-20T00:00:01Z' })
+      }
+      return json({})
+    })
+
+    const wrapper = mount(AdminKycReview, { global })
+    await flushPromises()
+    await wrapper.get('[data-test="reject-kyc-8"]').trigger('click')
+    await flushPromises()
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/v1/admin/kyc/8/reject', expect.objectContaining({ method: 'POST' }))
+    expect(wrapper.text()).toContain('rejected')
+    expect(wrapper.text()).toContain('Document image is unreadable.')
+  })
+
+  it('lets admins approve, reject, and mark redemption payouts paid', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation((input, init) => {
+      const url = String(input)
+      if (url.endsWith('/admin/redemptions')) {
+        return json([
+          { redemptionId: 'red_1001', userId: 8, scAmount: '0.0100', method: 'paypal', status: 'reviewing', sandboxOnly: true, createdAt: '2026-06-20T00:00:00Z', reviewReason: null, providerReference: null },
+          { redemptionId: 'red_1002', userId: 9, scAmount: '0.0200', method: 'paypal', status: 'payout_pending', sandboxOnly: true, createdAt: '2026-06-20T00:00:00Z', reviewReason: 'Approved for payout.', providerReference: null },
+          { redemptionId: 'red_1003', userId: 10, scAmount: '0.0300', method: 'paypal', status: 'reviewing', sandboxOnly: true, createdAt: '2026-06-20T00:00:00Z', reviewReason: null, providerReference: null },
+        ])
+      }
+      if (url.endsWith('/admin/redemptions/red_1001/approve') && init?.method === 'POST') {
+        return json({ redemptionId: 'red_1001', userId: 8, scAmount: '0.0100', method: 'paypal', status: 'payout_pending', sandboxOnly: true, createdAt: '2026-06-20T00:00:00Z', reviewReason: 'Approved for payout.', providerReference: null })
+      }
+      if (url.endsWith('/admin/redemptions/red_1003/reject') && init?.method === 'POST') {
+        return json({ redemptionId: 'red_1003', userId: 10, scAmount: '0.0300', method: 'paypal', status: 'rejected', sandboxOnly: true, createdAt: '2026-06-20T00:00:00Z', reviewReason: 'Payment account mismatch.', providerReference: null })
+      }
+      if (url.endsWith('/admin/redemptions/red_1002/mark-paid') && init?.method === 'POST') {
+        return json({ redemptionId: 'red_1002', userId: 9, scAmount: '0.0200', method: 'paypal', status: 'paid', sandboxOnly: true, createdAt: '2026-06-20T00:00:00Z', reviewReason: 'Approved for payout.', providerReference: 'manual-red_1002' })
+      }
+      return json({})
+    })
+
+    const wrapper = mount(AdminRedemptions, { global })
+    await flushPromises()
+
+    await wrapper.get('[data-test="approve-redemption-red_1001"]').trigger('click')
+    await flushPromises()
+    expect(fetchMock).toHaveBeenCalledWith('/api/v1/admin/redemptions/red_1001/approve', expect.objectContaining({ method: 'POST' }))
+    expect(wrapper.text()).toContain('payout_pending')
+
+    await wrapper.get('[data-test="reject-redemption-red_1003"]').trigger('click')
+    await flushPromises()
+    expect(fetchMock).toHaveBeenCalledWith('/api/v1/admin/redemptions/red_1003/reject', expect.objectContaining({ method: 'POST' }))
+    expect(wrapper.text()).toContain('Payment account mismatch.')
+
+    await wrapper.get('[data-test="mark-paid-redemption-red_1002"]').trigger('click')
+    await flushPromises()
+    expect(fetchMock).toHaveBeenCalledWith('/api/v1/admin/redemptions/red_1002/mark-paid', expect.objectContaining({ method: 'POST' }))
+    expect(wrapper.text()).toContain('manual-red_1002')
+  })
 })

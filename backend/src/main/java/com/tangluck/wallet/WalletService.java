@@ -44,6 +44,20 @@ public class WalletService {
                 .orElseGet(() -> createFreeze(userId, currency, amount, businessType, businessId, idempotencyKey));
     }
 
+    @Transactional
+    public LedgerDto unfreeze(Long userId, String currency, BigDecimal amount, String businessType, String businessId, String idempotencyKey) {
+        return ledgerRepository.findByIdempotencyKey(idempotencyKey)
+                .map(this::toDto)
+                .orElseGet(() -> createUnfreeze(userId, currency, amount, businessType, businessId, idempotencyKey));
+    }
+
+    @Transactional
+    public LedgerDto redeemFrozen(Long userId, String currency, BigDecimal amount, String businessType, String businessId, String idempotencyKey) {
+        return ledgerRepository.findByIdempotencyKey(idempotencyKey)
+                .map(this::toDto)
+                .orElseGet(() -> createRedeemFrozen(userId, currency, amount, businessType, businessId, idempotencyKey));
+    }
+
     @Transactional(readOnly = true)
     public WalletSummaryResponse summary(Long userId) {
         var gc = accountRepository.findByUserIdAndCurrency(userId, "GC").orElseThrow();
@@ -121,6 +135,60 @@ public class WalletService {
                 account.getId(),
                 currency,
                 "freeze",
+                amount,
+                account.getBalance(),
+                account.getFrozenBalance(),
+                businessType,
+                businessId,
+                idempotencyKey,
+                clock.instant()
+        ));
+
+        return toDto(ledger);
+    }
+
+    private LedgerDto createUnfreeze(Long userId, String currency, BigDecimal amount, String businessType, String businessId, String idempotencyKey) {
+        var account = accountRepository.findByUserIdAndCurrency(userId, currency)
+                .orElseThrow(() -> new BusinessException(ErrorCode.INTERNAL_ERROR, "Wallet account does not exist.", Map.of("currency", currency)));
+        try {
+            account.unfreeze(amount, clock.instant());
+        } catch (IllegalArgumentException exception) {
+            throw new BusinessException(ErrorCode.REDEMPTION_NOT_ALLOWED, "Insufficient frozen balance.", Map.of("currency", currency));
+        }
+        accountRepository.save(account);
+
+        var ledger = ledgerRepository.save(new WalletLedger(
+                userId,
+                account.getId(),
+                currency,
+                "unfreeze",
+                amount,
+                account.getBalance(),
+                account.getFrozenBalance(),
+                businessType,
+                businessId,
+                idempotencyKey,
+                clock.instant()
+        ));
+
+        return toDto(ledger);
+    }
+
+    private LedgerDto createRedeemFrozen(Long userId, String currency, BigDecimal amount, String businessType, String businessId, String idempotencyKey) {
+        var account = accountRepository.findByUserIdAndCurrency(userId, currency)
+                .orElseThrow(() -> new BusinessException(ErrorCode.INTERNAL_ERROR, "Wallet account does not exist.", Map.of("currency", currency)));
+        try {
+            account.redeemFrozen(amount, clock.instant());
+        } catch (IllegalArgumentException exception) {
+            throw new BusinessException(ErrorCode.REDEMPTION_NOT_ALLOWED, "Insufficient frozen balance.", Map.of("currency", currency));
+        }
+        accountRepository.save(account);
+
+        var ledger = ledgerRepository.save(new WalletLedger(
+                userId,
+                account.getId(),
+                currency,
+                "debit",
                 amount,
                 account.getBalance(),
                 account.getFrozenBalance(),

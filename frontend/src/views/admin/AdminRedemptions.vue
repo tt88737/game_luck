@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { ApiError, apiGet } from '../../api/http'
+import { ApiError, apiGet, apiPost } from '../../api/http'
 import type { RedemptionRequest } from '../../api/contracts'
 import AdminLayout from '../../components/AdminLayout.vue'
 
 const rows = ref<RedemptionRequest[]>([])
 const loading = ref(true)
 const error = ref('')
+const notice = ref('')
 
 onMounted(loadRedemptions)
 
@@ -19,6 +20,23 @@ async function loadRedemptions() {
     error.value = messageFrom(err)
   } finally {
     loading.value = false
+  }
+}
+
+async function reviewRedemption(row: RedemptionRequest, action: 'approve' | 'reject' | 'mark-paid') {
+  error.value = ''
+  notice.value = ''
+  try {
+    const payload = action === 'approve'
+      ? { reason: 'Approved for payout.' }
+      : action === 'reject'
+        ? { reason: 'Payment account mismatch.' }
+        : { providerReference: `manual-${row.redemptionId}` }
+    const updated = await apiPost<RedemptionRequest>(`/admin/redemptions/${row.redemptionId}/${action}`, payload)
+    rows.value = rows.value.map((item) => item.redemptionId === updated.redemptionId ? updated : item)
+    notice.value = `${updated.redemptionId} ${updated.status}.`
+  } catch (err) {
+    error.value = messageFrom(err)
   }
 }
 
@@ -45,6 +63,7 @@ function messageFrom(err: unknown) {
     <section v-else-if="error && !rows.length" class="status-panel danger">{{ error }}</section>
 
     <template v-else>
+      <p v-if="notice" class="notice success">{{ notice }}</p>
       <p v-if="error" class="notice danger">{{ error }}</p>
       <div class="table-wrap">
         <table>
@@ -56,7 +75,10 @@ function messageFrom(err: unknown) {
               <th>Method</th>
               <th>Status</th>
               <th>Scope</th>
+              <th>Reason</th>
+              <th>Provider Ref</th>
               <th>Created</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -67,9 +89,18 @@ function messageFrom(err: unknown) {
               <td data-label="Method">{{ row.method }}</td>
               <td data-label="Status"><span class="status-tag pending">{{ row.status }}</span></td>
               <td data-label="Scope">{{ row.sandboxOnly ? 'sandbox' : 'production' }}</td>
+              <td data-label="Reason">{{ row.reviewReason || 'Manual review required' }}</td>
+              <td data-label="Provider Ref">{{ row.providerReference || '-' }}</td>
               <td data-label="Created">{{ new Date(row.createdAt).toLocaleString() }}</td>
+              <td data-label="Actions">
+                <div class="action-group">
+                  <button :data-test="`approve-redemption-${row.redemptionId}`" :disabled="row.status !== 'reviewing'" @click="reviewRedemption(row, 'approve')">Approve</button>
+                  <button :data-test="`reject-redemption-${row.redemptionId}`" :disabled="row.status !== 'reviewing'" @click="reviewRedemption(row, 'reject')">Reject</button>
+                  <button :data-test="`mark-paid-redemption-${row.redemptionId}`" :disabled="row.status !== 'payout_pending'" @click="reviewRedemption(row, 'mark-paid')">Mark paid</button>
+                </div>
+              </td>
             </tr>
-            <tr v-if="!rows.length"><td colspan="7">No redemptions.</td></tr>
+            <tr v-if="!rows.length"><td colspan="10">No redemptions.</td></tr>
           </tbody>
         </table>
       </div>

@@ -122,3 +122,25 @@
   - `frontend npm run test -- --run --pool=threads --maxWorkers=1`
   - `frontend npm run build`
   - `frontend npx playwright test`
+
+## 2026-06-20 Sprint 5
+- Sprint 5 完成：KYC 与兑换审核结算闭环。
+- 后端新增/调整：
+  - `POST /api/v1/admin/kyc/{userId}/reject`，KYC 可拒绝并写入审核原因；C 端重新提交后回到 `reviewing`。
+  - `POST /api/v1/admin/redemptions/{redemptionId}/approve`，兑换从 `reviewing` 进入 `payout_pending`。
+  - `POST /api/v1/admin/redemptions/{redemptionId}/reject`，兑换拒绝并通过 `wallet_ledger` 写入 `redemption_reject` 解冻流水。
+  - `POST /api/v1/admin/redemptions/{redemptionId}/mark-paid`，出款成功后通过 `wallet_ledger` 写入 `redemption_payout` 扣减流水，重复调用保持幂等。
+  - `redemption_requests` 增加 `provider_reference`，兑换 DTO 返回 `reviewReason` 与 `providerReference`。
+  - KYC 拒绝、兑换批准、拒绝、出款均写入 `audit_logs`。
+- 前端新增/调整：
+  - `/admin/kyc` 增加 Approve/Reject 操作按钮和审核原因展示。
+  - `/admin/redemptions` 增加 Approve/Reject/Mark paid 操作按钮、审核原因和 provider reference 展示。
+- 浏览器验收：
+  - `frontend/test-results/sprint5-kyc-desktop.png`
+  - `frontend/test-results/sprint5-redemptions-desktop.png`
+  - `frontend/test-results/sprint5-redemptions-mobile.png`
+- 完整回归已通过：
+  - `backend .\gradlew.bat --no-daemon test`
+  - `frontend npm run test -- --run --pool=threads --maxWorkers=1`
+  - `frontend npm run build`
+  - `frontend npx playwright test`

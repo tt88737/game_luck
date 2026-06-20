@@ -59,6 +59,12 @@ public final class P1Dtos {
     public record MarkPurchaseOrderPaidRequest(String providerReference) {
     }
 
+    public record AdminReviewRequest(String reason) {
+    }
+
+    public record MarkRedemptionPaidRequest(String providerReference) {
+    }
+
     public record KycApplicationRequest(
             @NotBlank String legalName,
             @NotNull LocalDate birthDate,
@@ -89,7 +95,9 @@ public final class P1Dtos {
             String method,
             String status,
             boolean sandboxOnly,
-            Instant createdAt
+            Instant createdAt,
+            String reviewReason,
+            String providerReference
     ) {
     }
 
