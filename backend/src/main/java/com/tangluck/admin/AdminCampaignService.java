@@ -12,26 +12,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.Clock;
-
 @Service
 public class AdminCampaignService {
     private final PromotionCampaignRepository campaignRepository;
-    private final AuditLogRepository auditLogRepository;
+    private final AdminAuditService adminAuditService;
     private final UserRepository userRepository;
     private final PromotionClaimRepository claimRepository;
     private final WalletLedgerRepository ledgerRepository;
     private final ObjectMapper objectMapper;
-    private final Clock clock;
 
-    public AdminCampaignService(PromotionCampaignRepository campaignRepository, AuditLogRepository auditLogRepository, UserRepository userRepository, PromotionClaimRepository claimRepository, WalletLedgerRepository ledgerRepository, ObjectMapper objectMapper) {
+    public AdminCampaignService(PromotionCampaignRepository campaignRepository, AdminAuditService adminAuditService, UserRepository userRepository, PromotionClaimRepository claimRepository, WalletLedgerRepository ledgerRepository, ObjectMapper objectMapper) {
         this.campaignRepository = campaignRepository;
-        this.auditLogRepository = auditLogRepository;
+        this.adminAuditService = adminAuditService;
         this.userRepository = userRepository;
         this.claimRepository = claimRepository;
         this.ledgerRepository = ledgerRepository;
         this.objectMapper = objectMapper;
-        this.clock = Clock.systemUTC();
     }
 
     @Transactional
@@ -55,22 +51,32 @@ public class AdminCampaignService {
 
     @Transactional
     public AdminCampaignResponse publish(String campaignCode, Long operatorId, String operatorRole, String ip) {
+        return publish(campaignCode, new AdminOperatorContext(operatorId, operatorRole, java.util.Set.of("*"), ip));
+    }
+
+    @Transactional
+    public AdminCampaignResponse publish(String campaignCode, AdminOperatorContext operator) {
         var campaign = campaignRepository.findByCampaignCode(campaignCode).orElseThrow();
         validatePublish(campaign);
         var before = statusJson(campaign.getStatus());
         campaign.publish();
         campaignRepository.save(campaign);
-        writeAudit(operatorId, operatorRole, "campaign_publish", campaignCode, before, statusJson(campaign.getStatus()), ip);
+        writeAudit(operator, "campaign_publish", campaignCode, before, statusJson(campaign.getStatus()));
         return new AdminCampaignResponse(campaign.getCampaignCode(), campaign.getStatus());
     }
 
     @Transactional
     public AdminCampaignResponse pause(String campaignCode, Long operatorId, String operatorRole, String ip) {
+        return pause(campaignCode, new AdminOperatorContext(operatorId, operatorRole, java.util.Set.of("*"), ip));
+    }
+
+    @Transactional
+    public AdminCampaignResponse pause(String campaignCode, AdminOperatorContext operator) {
         var campaign = campaignRepository.findByCampaignCode(campaignCode).orElseThrow();
         var before = statusJson(campaign.getStatus());
         campaign.pause();
         campaignRepository.save(campaign);
-        writeAudit(operatorId, operatorRole, "campaign_pause", campaignCode, before, statusJson(campaign.getStatus()), ip);
+        writeAudit(operator, "campaign_pause", campaignCode, before, statusJson(campaign.getStatus()));
         return new AdminCampaignResponse(campaign.getCampaignCode(), campaign.getStatus());
     }
 
@@ -92,8 +98,8 @@ public class AdminCampaignService {
         }
     }
 
-    private void writeAudit(Long operatorId, String operatorRole, String action, String targetId, String beforeJson, String afterJson, String ip) {
-        auditLogRepository.save(new AuditLog(operatorId, operatorRole, action, "promotion_campaign", targetId, beforeJson, afterJson, null, ip, clock.instant()));
+    private void writeAudit(AdminOperatorContext operator, String action, String targetId, String beforeJson, String afterJson) {
+        adminAuditService.write(operator, action, "promotion_campaign", targetId, beforeJson, afterJson, null);
     }
 
     private String statusJson(String status) {

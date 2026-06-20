@@ -1,5 +1,7 @@
 package com.tangluck.p1;
 
+import com.tangluck.admin.AdminAuditService;
+import com.tangluck.admin.AdminOperatorContext;
 import com.tangluck.common.api.BusinessException;
 import com.tangluck.common.api.ErrorCode;
 import com.tangluck.wallet.WalletService;
@@ -27,6 +29,7 @@ public class P1Service {
     private final KycApplicationRepository kycRepository;
     private final RedemptionRequestRepository redemptionRepository;
     private final WalletService walletService;
+    private final AdminAuditService adminAuditService;
     private final Clock clock;
 
     public P1Service(
@@ -34,13 +37,15 @@ public class P1Service {
             PurchaseOrderRepository orderRepository,
             KycApplicationRepository kycRepository,
             RedemptionRequestRepository redemptionRepository,
-            WalletService walletService
+            WalletService walletService,
+            AdminAuditService adminAuditService
     ) {
         this.packageRepository = packageRepository;
         this.orderRepository = orderRepository;
         this.kycRepository = kycRepository;
         this.redemptionRepository = redemptionRepository;
         this.walletService = walletService;
+        this.adminAuditService = adminAuditService;
         this.clock = Clock.systemUTC();
     }
 
@@ -79,10 +84,26 @@ public class P1Service {
 
     @Transactional
     public KycStatusDto approveKyc(Long userId) {
+        return approveKyc(userId, new AdminOperatorContext(1L, "ops_admin", java.util.Set.of("*"), "127.0.0.1"));
+    }
+
+    @Transactional
+    public KycStatusDto approveKyc(Long userId, AdminOperatorContext operator) {
         var application = kycRepository.findByUserId(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.VALIDATION_FAILED, "KYC application does not exist.", Map.of("userId", userId)));
+        var before = "{\"status\":\"" + application.getStatus() + "\"}";
         application.approve(clock.instant());
-        return toDto(kycRepository.save(application));
+        var saved = kycRepository.save(application);
+        adminAuditService.write(
+                operator,
+                "kyc_approve",
+                "kyc_application",
+                String.valueOf(userId),
+                before,
+                "{\"status\":\"" + saved.getStatus() + "\"}",
+                saved.getReviewReason()
+        );
+        return toDto(saved);
     }
 
     @Transactional

@@ -69,7 +69,7 @@ public class GlobalExceptionHandler {
     private HttpStatus statusFor(ErrorCode code) {
         return switch (code) {
             case REGION_BLOCKED, AGE_NOT_ALLOWED, SC_POLICY_BLOCKED, PAYMENT_NOT_ALLOWED,
-                    KYC_REQUIRED, REDEMPTION_NOT_ALLOWED -> HttpStatus.FORBIDDEN;
+                    KYC_REQUIRED, REDEMPTION_NOT_ALLOWED, ADMIN_PERMISSION_DENIED -> HttpStatus.FORBIDDEN;
             case AUTH_INVALID_CREDENTIALS -> HttpStatus.UNAUTHORIZED;
             case EMAIL_EXISTS, CLAIM_DUPLICATED, BUDGET_EXHAUSTED, IDEMPOTENCY_CONFLICT -> HttpStatus.CONFLICT;
             case RISK_REVIEW_REQUIRED -> HttpStatus.ACCEPTED;

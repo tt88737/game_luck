@@ -1,6 +1,8 @@
 package com.tangluck.p1;
 
+import com.tangluck.admin.AdminOperatorContext;
 import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -71,7 +73,9 @@ public class P1Controller {
     }
 
     @PostMapping("/admin/kyc/{userId}/approve")
-    public KycStatusDto approveKyc(@PathVariable Long userId) {
-        return p1Service.approveKyc(userId);
+    public KycStatusDto approveKyc(@PathVariable Long userId, HttpServletRequest servletRequest) {
+        var operator = AdminOperatorContext.from(servletRequest);
+        operator.require("kyc.review");
+        return p1Service.approveKyc(userId, operator);
     }
 }

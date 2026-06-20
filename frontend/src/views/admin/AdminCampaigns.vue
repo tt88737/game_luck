@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { RouterLink } from 'vue-router'
 import { ApiError, apiPost } from '../../api/http'
 import type { AdminCampaignRequest, AdminCampaignResponse } from '../../api/contracts'
+import AdminLayout from '../../components/AdminLayout.vue'
 
 interface CampaignRow extends AdminCampaignRequest {
   status: string
@@ -86,16 +86,7 @@ function toRequest(row: CampaignRow): AdminCampaignRequest {
 </script>
 
 <template>
-  <main class="admin-shell">
-    <aside class="admin-nav">
-      <strong>Tang Luck Ops</strong>
-      <RouterLink to="/admin">Dashboard</RouterLink>
-      <RouterLink to="/admin/campaigns">Campaigns</RouterLink>
-      <RouterLink to="/admin/p1">P1 Ops</RouterLink>
-      <RouterLink to="/admin/audit-logs">Audit logs</RouterLink>
-    </aside>
-
-    <section class="admin-content">
+  <AdminLayout>
       <header class="admin-header">
         <div>
           <p class="eyebrow">Promotion operations</p>
@@ -154,6 +145,5 @@ function toRequest(row: CampaignRow): AdminCampaignRequest {
           </tbody>
         </table>
       </div>
-    </section>
-  </main>
+  </AdminLayout>
 </template>

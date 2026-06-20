@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
 
@@ -27,18 +28,23 @@ public class AdminController {
     }
 
     @PostMapping("/campaigns")
-    public AdminCampaignResponse createCampaign(@RequestBody AdminCampaignRequest request) {
+    public AdminCampaignResponse createCampaign(@RequestBody AdminCampaignRequest request, HttpServletRequest servletRequest) {
+        AdminOperatorContext.from(servletRequest).require("campaign.write");
         return adminCampaignService.createCampaign(request);
     }
 
     @PostMapping("/campaigns/{campaignCode}/publish")
-    public AdminCampaignResponse publish(@PathVariable String campaignCode) {
-        return adminCampaignService.publish(campaignCode, 1L, "ops_admin", "127.0.0.1");
+    public AdminCampaignResponse publish(@PathVariable String campaignCode, HttpServletRequest servletRequest) {
+        var operator = AdminOperatorContext.from(servletRequest);
+        operator.require("campaign.publish");
+        return adminCampaignService.publish(campaignCode, operator);
     }
 
     @PostMapping("/campaigns/{campaignCode}/pause")
-    public AdminCampaignResponse pause(@PathVariable String campaignCode) {
-        return adminCampaignService.pause(campaignCode, 1L, "ops_admin", "127.0.0.1");
+    public AdminCampaignResponse pause(@PathVariable String campaignCode, HttpServletRequest servletRequest) {
+        var operator = AdminOperatorContext.from(servletRequest);
+        operator.require("campaign.publish");
+        return adminCampaignService.pause(campaignCode, operator);
     }
 
     @GetMapping("/audit-logs")

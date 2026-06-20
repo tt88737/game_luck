@@ -35,6 +35,30 @@ describe('admin pages', () => {
     expect(wrapper.text()).toContain('LEGAL-2026-0618-SC')
   })
 
+  it('uses the formal admin navigation across operations modules', async () => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation((input) => {
+      const url = String(input)
+      if (url.endsWith('/admin/dashboard/summary')) {
+        return json({ registrations: 12, claims: 8, scGranted: '3.5000', riskEvents: 1 })
+      }
+      return json({})
+    })
+
+    const wrapper = mount(AdminDashboard, { global: { stubs } })
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('Regions')
+    expect(wrapper.text()).toContain('Legal Docs')
+    expect(wrapper.text()).toContain('Lobby')
+    expect(wrapper.text()).toContain('Packages')
+    expect(wrapper.text()).toContain('Orders')
+    expect(wrapper.text()).toContain('KYC Review')
+    expect(wrapper.text()).toContain('Redemptions')
+    expect(wrapper.text()).toContain('Wallet Ledger')
+    expect(wrapper.text()).toContain('AMOE')
+    expect(wrapper.text()).toContain('Support')
+  })
+
   it('creates campaign draft only when the operator clicks create draft', async () => {
     const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation(() => json({ campaignCode: 'OPS_SC_BONUS', status: 'draft' }))
 

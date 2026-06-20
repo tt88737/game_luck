@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { RouterLink } from 'vue-router'
 import { ApiError, apiGet } from '../../api/http'
 import type { DashboardSummary } from '../../api/contracts'
+import AdminLayout from '../../components/AdminLayout.vue'
 
 const loading = ref(true)
 const error = ref('')
@@ -24,16 +24,7 @@ function amount(value: string | number | undefined) {
 </script>
 
 <template>
-  <main class="admin-shell">
-    <aside class="admin-nav">
-      <strong>Tang Luck Ops</strong>
-      <RouterLink to="/admin">Dashboard</RouterLink>
-      <RouterLink to="/admin/campaigns">Campaigns</RouterLink>
-      <RouterLink to="/admin/p1">P1 Ops</RouterLink>
-      <RouterLink to="/admin/audit-logs">Audit logs</RouterLink>
-    </aside>
-
-    <section class="admin-content">
+  <AdminLayout>
       <header class="admin-header">
         <div>
           <p class="eyebrow">Operations</p>
@@ -50,6 +41,5 @@ function amount(value: string | number | undefined) {
         <div><span>SC granted</span><strong>{{ amount(summary?.scGranted) }}</strong></div>
         <div><span>Risk events</span><strong>{{ summary?.riskEvents }}</strong></div>
       </section>
-    </section>
-  </main>
+  </AdminLayout>
 </template>

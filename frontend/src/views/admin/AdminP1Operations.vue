@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { RouterLink } from 'vue-router'
 import { ApiError, apiGet, apiPost } from '../../api/http'
 import type { KycStatus, P1Operations } from '../../api/contracts'
 import { i18n } from '../../i18n'
+import AdminLayout from '../../components/AdminLayout.vue'
 
 const loading = ref(true)
 const approving = ref<number | null>(null)
@@ -54,16 +54,7 @@ function amount(value: string | number, digits = 2) {
 </script>
 
 <template>
-  <main class="admin-shell">
-    <aside class="admin-nav">
-      <strong>Tang Luck Ops</strong>
-      <RouterLink to="/admin">{{ $t('admin.dashboard') }}</RouterLink>
-      <RouterLink to="/admin/campaigns">{{ $t('admin.campaigns') }}</RouterLink>
-      <RouterLink to="/admin/p1">{{ $t('admin.p1Ops') }}</RouterLink>
-      <RouterLink to="/admin/audit-logs">{{ $t('admin.auditLogs') }}</RouterLink>
-    </aside>
-
-    <section class="admin-content">
+  <AdminLayout>
       <header class="admin-header">
         <div>
           <p class="eyebrow">{{ $t('admin.operations') }}</p>
@@ -180,6 +171,5 @@ function amount(value: string | number, digits = 2) {
           </div>
         </section>
       </template>
-    </section>
-  </main>
+  </AdminLayout>
 </template>

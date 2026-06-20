@@ -1,27 +1,38 @@
-# Tang Luck 开发进度
+# Tang Luck 前后台配套重编排进度
 
-## 2026-06-18
-- 盘点当前目录，确认交付文档齐全但暂无源码工程。
-- 阅读总入口、接口草案、数据库设计说明、页面原型说明、15 天冲刺表和 QA 测试矩阵。
-- 建立 `task_plan.md`、`findings.md`、`progress.md` 作为后续落地开发记录。
-- 用户确认采用 `Java Spring Boot + Vue 3 + MySQL`。
-- 检查本地环境：Java 17 可用，Node 22/npm 11 可用，未安装 Maven，因此后端采用 Gradle Wrapper。
-- 写入设计文档 `TangLuck-P0A-落地设计.md`。
-- 写入实施计划 `TangLuck-P0A-实施计划.md`，覆盖后端骨架、数据库、注册钱包、活动发奖、后台审计、前端 C 端/后台和 E2E 验证。
-- 用户要求交付文档放在当前目录根下，已从 `docs/superpowers/` 移动到根目录。
-- 创建开发分支 `develop/p0a`，开始执行 `TangLuck-P0A-实施计划.md`。
-- 新增 `docker-compose.yml`，定义本地 MySQL 8 开发服务。
-- 生成 Spring Boot 3.5.15 后端骨架和 Vite/Vue 3 前端骨架；原计划中的 Spring Boot 3.3.6 已被 Spring Initializr 拒绝。
-- 后端骨架测试首次失败，根因是默认 `@SpringBootTest` 连接本地 MySQL 账号失败；新增 H2 测试 profile 让基线测试独立运行。
-- 完成 P0-A 核心数据库迁移和演示种子数据，包含 13 张核心表、地区/合规文档/活动/Coupon 初始数据。
-- 验证通过：`backend .\gradlew.bat test`，`frontend npm run build`。
-- 完成统一 API 错误模型、业务错误码、业务异常和全局异常处理；覆盖 `REGION_BLOCKED` 等 P0-A 错误码到 HTTP 状态映射。
-- 验证通过：`backend .\gradlew.bat test`，`frontend npm run build`。
-- 完成注册服务、合规地区校验、条款确认日志、GC/SC 钱包创建、合规文档查询接口和基础 Security 配置。
-- 验证通过：`backend .\gradlew.bat test`，`frontend npm run build`。
-- 完成钱包入账服务、`wallet_ledger` 写入、幂等 key 防重复、钱包汇总、SC 来源汇总和流水查询接口。
-- 验证通过：`backend .\gradlew.bat test`，`frontend npm run build`。
-- 完成注册赠送、每日登录、每日任务、Coupon 的领取服务和 C 端 API；包含重复领取拦截、地区拦截、风险用户只发 GC、发奖流水写入。
-- 验证通过：`backend .\gradlew.bat test`，`frontend npm run build`。
-- 完成后台活动新建、发布、暂停、发布阻断、审计日志写入/查询和基础看板摘要接口。
-- 验证通过：`backend .\gradlew.bat test`，`frontend npm run build`。
+## 2026-06-20
+- 用户指出当前实现“前后台配置没有配套”，要求以技术总监视角重新分析文档并编排开发计划。
+- 启用 `planning-with-files`、`brainstorming`、`writing-plans` 相关流程；当前阶段只做分析和计划，不直接开发。
+- 已读取：
+  - `TangLuck-V1-正式上线设计.md`
+  - `TangLuck-V1-实施计划.md`
+  - `TangLuck最终交付包/TangLuckP0-A活动配置参数表.md`
+  - `TangLuck最终交付包/TangLuck页面原型说明.md`
+  - `TangLuck最终交付包/TangLuck接口OpenAPI草案.md`
+  - `TangLuck最终交付包/TangLuck交付包验收检查清单.md`
+  - `TangLuck最终交付包/TangLuck数据库设计说明.md`
+- 已读取当前代码：
+  - 后端 migration、`AdminController`、`AdminCampaignService`、`P1Controller`、`P1Service`
+  - 前端 router、`AdminCampaigns.vue`、`AdminP1Operations.vue`、`AppStore.vue`、`AppRedemption.vue`
+- 结论：当前实现偏“C 端可跑 + 后台聚合演示”，缺正式产品所需的后台配置、审核、审计和状态机闭环。
+- 已重写 `task_plan.md`、`findings.md`、`progress.md` 作为本次重编排的工作记忆。
+- 用户确认“开始编排”，进入开发排期和执行顺序编排阶段。
+- 已新增 `TangLuck-V1-前后台配套开发编排总表.md`，按 Sprint 1-10 编排执行顺序、并行策略、验收门槛和第一步建议。
+- 用户确认“继续”，开始执行 Sprint 1。
+- 已完成 Sprint 1 第一批改动：
+  - 后端新增 `AdminOperatorContext`，从 admin header 读取 operator、role、permissions、ip。
+  - 后端新增 `AdminAuditService`，统一写 `audit_logs`。
+  - 活动发布/暂停和 KYC approve 接入权限校验与统一审计。
+  - 前端新增 `AdminLayout`、`AdminNav`，现有后台页面接入统一导航。
+  - 新增后台正式模块占位路由：Users、Regions、Legal Docs、Lobby、Packages、Orders、KYC Review、Redemptions、Wallet Ledger、AMOE、Support。
+- Sprint 1 目标测试已通过：
+  - `backend .\gradlew.bat --no-daemon test --tests com.tangluck.admin.AdminControllerTest --tests com.tangluck.admin.AdminCampaignServiceTest`
+  - `frontend npm run test -- --run src/views/admin/AdminCampaigns.test.ts src/views/app/P1Pages.test.ts --pool=threads --maxWorkers=1`
+- Sprint 1 完整验证已通过：
+  - `backend .\gradlew.bat --no-daemon test`
+  - `frontend npm run test -- --run --pool=threads --maxWorkers=1`
+  - `frontend npm run build`
+  - `frontend npx playwright test`
+- 浏览器截图验收：
+  - `frontend/test-results/admin-desktop.png`
+  - `frontend/test-results/admin-mobile.png`
