@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 import { ApiError, apiGet, apiPatch } from '../../api/http'
 import type { LobbyCard } from '../../api/contracts'
 import AdminLayout from '../../components/AdminLayout.vue'
+import { i18n } from '../../i18n'
 
 const rows = ref<LobbyCard[]>([])
 const loading = ref(true)
@@ -29,7 +30,7 @@ async function setStatus(row: LobbyCard, status: string) {
   try {
     const updated = await apiPatch<LobbyCard>(`/admin/lobby-cards/${row.cardCode}`, { ...row, status })
     rows.value = rows.value.map((item) => item.cardCode === updated.cardCode ? updated : item)
-    notice.value = `${updated.cardCode} updated. Audit log created.`
+    notice.value = i18n.t('admin.lobbyCardUpdated', { code: updated.cardCode })
   } catch (err) {
     error.value = messageFrom(err)
   }
@@ -37,7 +38,7 @@ async function setStatus(row: LobbyCard, status: string) {
 
 function messageFrom(err: unknown) {
   if (err instanceof ApiError || err instanceof Error) return err.message
-  return 'Lobby card request failed.'
+  return i18n.t('admin.lobbyCardRequestFailed')
 }
 </script>
 
@@ -45,12 +46,12 @@ function messageFrom(err: unknown) {
   <AdminLayout>
     <header class="admin-header">
       <div>
-        <p class="eyebrow">Lobby configuration</p>
-        <h1>Lobby</h1>
+        <p class="eyebrow">{{ $t('admin.lobbyConfiguration') }}</p>
+        <h1>{{ $t('admin.lobby') }}</h1>
       </div>
     </header>
 
-    <section v-if="loading" class="status-panel">Loading lobby cards...</section>
+    <section v-if="loading" class="status-panel">{{ $t('admin.loadingLobby') }}</section>
     <section v-else-if="error && !rows.length" class="status-panel danger">{{ error }}</section>
 
     <template v-else>
@@ -60,12 +61,12 @@ function messageFrom(err: unknown) {
         <table>
           <thead>
             <tr>
-              <th>Card</th>
-              <th>Status</th>
-              <th>Target</th>
-              <th>Sort</th>
-              <th>Asset</th>
-              <th>Actions</th>
+              <th>{{ $t('admin.card') }}</th>
+              <th>{{ $t('common.status') }}</th>
+              <th>{{ $t('common.target') }}</th>
+              <th>{{ $t('common.sort') }}</th>
+              <th>{{ $t('common.asset') }}</th>
+              <th>{{ $t('common.actions') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -77,12 +78,12 @@ function messageFrom(err: unknown) {
               <td><code>{{ row.imageUrl }}</code></td>
               <td>
                 <div class="action-group">
-                  <button :data-test="`activate-card-${row.cardCode}`" :disabled="row.status === 'active'" @click="setStatus(row, 'active')">Activate</button>
-                  <button :data-test="`pause-card-${row.cardCode}`" :disabled="row.status === 'paused'" @click="setStatus(row, 'paused')">Pause</button>
+                  <button :data-test="`activate-card-${row.cardCode}`" :disabled="row.status === 'active'" @click="setStatus(row, 'active')">{{ $t('common.activate') }}</button>
+                  <button :data-test="`pause-card-${row.cardCode}`" :disabled="row.status === 'paused'" @click="setStatus(row, 'paused')">{{ $t('common.pause') }}</button>
                 </div>
               </td>
             </tr>
-            <tr v-if="!rows.length"><td colspan="6">No lobby cards.</td></tr>
+            <tr v-if="!rows.length"><td colspan="6">{{ $t('admin.noLobbyCards') }}</td></tr>
           </tbody>
         </table>
       </div>

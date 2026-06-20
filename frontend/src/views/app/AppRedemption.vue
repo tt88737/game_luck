@@ -88,13 +88,13 @@ function amount(value: string | number | undefined, digits = 2) {
     <section v-if="loading" class="status-panel">{{ $t('redemption.loading') }}</section>
     <section v-else-if="!session.userId" class="status-panel">
       <strong>{{ $t('register.heading') }}</strong>
-      <span>Create an account before requesting redemption.</span>
+      <span>{{ $t('redemption.signInRequired') }}</span>
       <RouterLink class="plain-link" to="/app/register">{{ $t('register.submit') }}</RouterLink>
       <RouterLink class="plain-link" to="/app/login">{{ $t('login.submit') }}</RouterLink>
     </section>
     <section v-else>
       <section class="wallet-band">
-        <div><span>SC balance</span><strong>{{ amount(wallet?.wallet.scBalance) }}</strong></div>
+        <div><span>{{ $t('wallet.scBalance') }}</span><strong>{{ amount(wallet?.wallet.scBalance) }}</strong></div>
         <div><span>{{ $t('common.frozen') }}</span><strong>{{ amount(wallet?.wallet.scFrozen) }}</strong></div>
         <div><span>{{ $t('common.redeemable') }}</span><strong>{{ amount(wallet?.wallet.scRedeemable) }}</strong></div>
         <div><span>{{ $t('common.kyc') }}</span><strong>{{ kyc?.status ?? 'not_started' }}</strong></div>
@@ -119,7 +119,7 @@ function amount(value: string | number | undefined, digits = 2) {
           <label>
             {{ $t('common.method') }}
             <select v-model="form.method">
-              <option value="gift_card">Gift card</option>
+              <option value="gift_card">{{ $t('redemption.giftCard') }}</option>
               <option value="manual_review">{{ $t('admin.manualApproval') }}</option>
             </select>
           </label>

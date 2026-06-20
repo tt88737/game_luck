@@ -6,6 +6,7 @@ import AdminAuditLogs from './AdminAuditLogs.vue'
 import AdminRegions from './AdminRegions.vue'
 import AdminLegalDocuments from './AdminLegalDocuments.vue'
 import AdminLobby from './AdminLobby.vue'
+import { i18n } from '../../i18n'
 
 function json(data: unknown, status = 200) {
   return Promise.resolve(new Response(JSON.stringify(data), {
@@ -18,10 +19,18 @@ const stubs = {
   RouterLink: { props: ['to'], template: '<a :href="to"><slot /></a>' },
 }
 
+const global = {
+  stubs,
+  mocks: {
+    $t: i18n.t,
+  },
+}
+
 describe('admin pages', () => {
   afterEach(() => {
     vi.restoreAllMocks()
     localStorage.clear()
+    i18n.setLocale('en')
   })
 
   it('renders campaign table with filters, status tags, SC strategy, budget, and legal approval', async () => {
@@ -44,7 +53,7 @@ describe('admin pages', () => {
       return json({})
     })
 
-    const wrapper = mount(AdminCampaigns, { global: { stubs } })
+    const wrapper = mount(AdminCampaigns, { global })
     await flushPromises()
 
     expect(wrapper.text()).toContain('Status')
@@ -64,7 +73,7 @@ describe('admin pages', () => {
       return json({})
     })
 
-    const wrapper = mount(AdminDashboard, { global: { stubs } })
+    const wrapper = mount(AdminDashboard, { global })
     await flushPromises()
 
     expect(wrapper.text()).toContain('Regions')
@@ -72,17 +81,38 @@ describe('admin pages', () => {
     expect(wrapper.text()).toContain('Lobby')
     expect(wrapper.text()).toContain('Packages')
     expect(wrapper.text()).toContain('Orders')
-    expect(wrapper.text()).toContain('KYC Review')
-    expect(wrapper.text()).toContain('Redemptions')
+    expect(wrapper.text()).toContain('KYC applications')
+    expect(wrapper.text()).toContain('Redemption requests')
     expect(wrapper.text()).toContain('Wallet Ledger')
     expect(wrapper.text()).toContain('AMOE')
     expect(wrapper.text()).toContain('Support')
   })
 
+  it('localizes admin shell and dashboard copy when Chinese is selected', async () => {
+    i18n.setLocale('zh-CN')
+    vi.spyOn(globalThis, 'fetch').mockImplementation((input) => {
+      if (String(input).endsWith('/admin/dashboard/summary')) {
+        return json({ registrations: 12, claims: 8, scGranted: '3.5000', riskEvents: 1 })
+      }
+      return json({})
+    })
+
+    const wrapper = mount(AdminDashboard, { global })
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('运营后台')
+    expect(wrapper.text()).toContain('地区配置')
+    expect(wrapper.text()).toContain('法务文档')
+    expect(wrapper.text()).toContain('看板')
+    expect(wrapper.text()).toContain('风险事件')
+    expect(wrapper.text()).not.toContain('Dashboard')
+    expect(wrapper.text()).not.toContain('Legal Docs')
+  })
+
   it('creates campaign draft only when the operator clicks create draft', async () => {
     const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation(() => json({ campaignCode: 'OPS_SC_BONUS', status: 'draft' }))
 
-    const wrapper = mount(AdminCampaigns, { global: { stubs } })
+    const wrapper = mount(AdminCampaigns, { global })
     await flushPromises()
     await wrapper.get('[data-test="create-campaign"]').trigger('click')
     await flushPromises()
@@ -119,7 +149,7 @@ describe('admin pages', () => {
       return json({})
     })
 
-    const wrapper = mount(AdminCampaigns, { global: { stubs } })
+    const wrapper = mount(AdminCampaigns, { global })
     await flushPromises()
     await wrapper.get('[data-test="publish-campaign"]').trigger('click')
     await flushPromises()
@@ -150,13 +180,13 @@ describe('admin pages', () => {
       return json({})
     })
 
-    const dashboard = mount(AdminDashboard, { global: { stubs } })
+    const dashboard = mount(AdminDashboard, { global })
     await flushPromises()
     expect(dashboard.text()).toContain('12')
     expect(dashboard.text()).toContain('3.50')
     expect(dashboard.text()).toContain('Risk events')
 
-    const audit = mount(AdminAuditLogs, { global: { stubs } })
+    const audit = mount(AdminAuditLogs, { global })
     await flushPromises()
     expect(audit.text()).toContain('ops_admin')
     expect(audit.text()).toContain('campaign_publish')
@@ -176,7 +206,7 @@ describe('admin pages', () => {
       return json({})
     })
 
-    const wrapper = mount(AdminRegions, { global: { stubs } })
+    const wrapper = mount(AdminRegions, { global })
     await flushPromises()
 
     expect(wrapper.text()).toContain('US-CA')
@@ -203,7 +233,7 @@ describe('admin pages', () => {
       return json({})
     })
 
-    const wrapper = mount(AdminLegalDocuments, { global: { stubs } })
+    const wrapper = mount(AdminLegalDocuments, { global })
     await flushPromises()
 
     expect(wrapper.text()).toContain('Privacy Policy')
@@ -229,7 +259,7 @@ describe('admin pages', () => {
       return json({})
     })
 
-    const wrapper = mount(AdminLobby, { global: { stubs } })
+    const wrapper = mount(AdminLobby, { global })
     await flushPromises()
 
     expect(wrapper.text()).toContain('Lucky Slots')

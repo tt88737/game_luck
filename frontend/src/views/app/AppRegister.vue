@@ -75,7 +75,7 @@ async function register() {
 function messageFrom(err: unknown) {
   if (err instanceof ApiError) return err.message
   if (err instanceof Error) return err.message
-  return 'Registration failed.'
+  return i18n.t('register.failed')
 }
 </script>
 

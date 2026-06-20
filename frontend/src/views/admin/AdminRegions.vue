@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 import { ApiError, apiGet, apiPatch } from '../../api/http'
 import type { AdminRegion } from '../../api/contracts'
 import AdminLayout from '../../components/AdminLayout.vue'
+import { i18n } from '../../i18n'
 
 const rows = ref<AdminRegion[]>([])
 const loading = ref(true)
@@ -35,7 +36,7 @@ async function togglePurchase(row: AdminRegion) {
       legalApprovalId: row.purchaseAllowed ? `${row.legalApprovalId ?? 'LEGAL'}-OFF` : row.legalApprovalId,
     })
     rows.value = rows.value.map((item) => key(item) === key(updated) ? updated : item)
-    notice.value = `${key(updated)} updated. Audit log created.`
+    notice.value = i18n.t('admin.regionUpdated', { region: key(updated) })
   } catch (err) {
     error.value = messageFrom(err)
   } finally {
@@ -49,7 +50,7 @@ function key(row: AdminRegion) {
 
 function messageFrom(err: unknown) {
   if (err instanceof ApiError || err instanceof Error) return err.message
-  return 'Region request failed.'
+  return i18n.t('admin.regionRequestFailed')
 }
 </script>
 
@@ -57,13 +58,13 @@ function messageFrom(err: unknown) {
   <AdminLayout>
     <header class="admin-header">
       <div>
-        <p class="eyebrow">Compliance configuration</p>
-        <h1>Regions</h1>
+        <p class="eyebrow">{{ $t('admin.complianceConfiguration') }}</p>
+        <h1>{{ $t('admin.regions') }}</h1>
       </div>
-      <button :disabled="loading" @click="loadRegions">Refresh</button>
+      <button :disabled="loading" @click="loadRegions">{{ $t('common.refresh') }}</button>
     </header>
 
-    <section v-if="loading" class="status-panel">Loading regions...</section>
+    <section v-if="loading" class="status-panel">{{ $t('admin.loadingRegions') }}</section>
     <section v-else-if="error && !rows.length" class="status-panel danger">{{ error }}</section>
 
     <template v-else>
@@ -73,34 +74,34 @@ function messageFrom(err: unknown) {
         <table>
           <thead>
             <tr>
-              <th>Region</th>
-              <th>Status</th>
-              <th>Register</th>
-              <th>Purchase</th>
+              <th>{{ $t('common.region') }}</th>
+              <th>{{ $t('common.status') }}</th>
+              <th>{{ $t('common.register') }}</th>
+              <th>{{ $t('common.buy') }}</th>
               <th>SC grant</th>
-              <th>Redeem</th>
+              <th>{{ $t('nav.redeem') }}</th>
               <th>AMOE</th>
-              <th>Legal approval</th>
-              <th>Action</th>
+              <th>{{ $t('admin.legalApproval') }}</th>
+              <th>{{ $t('common.action') }}</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="row in rows" :key="key(row)">
               <td><strong>{{ key(row) }}</strong></td>
               <td><span class="status-tag" :class="{ active: row.status === 'active', paused: row.status !== 'active' }">{{ row.status }}</span></td>
-              <td>{{ row.registrationAllowed ? 'Allowed' : 'Blocked' }}</td>
-              <td>{{ row.purchaseAllowed ? 'Allowed' : 'Blocked' }}</td>
-              <td>{{ row.scGrantAllowed ? 'Allowed' : 'Blocked' }}</td>
-              <td>{{ row.redemptionAllowed ? 'Allowed' : 'Blocked' }}</td>
-              <td>{{ row.amoeAllowed ? 'Allowed' : 'Blocked' }}</td>
+              <td>{{ row.registrationAllowed ? $t('common.allowed') : $t('common.blocked') }}</td>
+              <td>{{ row.purchaseAllowed ? $t('common.allowed') : $t('common.blocked') }}</td>
+              <td>{{ row.scGrantAllowed ? $t('common.allowed') : $t('common.blocked') }}</td>
+              <td>{{ row.redemptionAllowed ? $t('common.allowed') : $t('common.blocked') }}</td>
+              <td>{{ row.amoeAllowed ? $t('common.allowed') : $t('common.blocked') }}</td>
               <td>{{ row.legalApprovalId ?? '-' }}</td>
               <td>
                 <button :data-test="`toggle-purchase-${key(row)}`" :disabled="saving === key(row)" @click="togglePurchase(row)">
-                  {{ row.purchaseAllowed ? 'Block Purchase' : 'Allow Purchase' }}
+                  {{ row.purchaseAllowed ? $t('common.blockPurchase') : $t('common.allowPurchase') }}
                 </button>
               </td>
             </tr>
-            <tr v-if="!rows.length"><td colspan="9">No region configuration.</td></tr>
+            <tr v-if="!rows.length"><td colspan="9">{{ $t('admin.noRegionConfiguration') }}</td></tr>
           </tbody>
         </table>
       </div>

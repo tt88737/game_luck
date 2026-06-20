@@ -45,7 +45,7 @@ async function approveKyc(userId: number) {
 
 function messageFrom(err: unknown) {
   if (err instanceof ApiError || err instanceof Error) return err.message
-  return 'P1 operations request failed.'
+  return i18n.t('admin.p1OperationsRequestFailed')
 }
 
 function amount(value: string | number, digits = 2) {
@@ -144,7 +144,7 @@ function amount(value: string | number, digits = 2) {
         <section class="section-block">
           <div class="section-title">
             <h2>{{ $t('admin.purchaseOrders') }}</h2>
-            <span>GC only</span>
+            <span>GC</span>
           </div>
           <div class="table-wrap">
             <table>

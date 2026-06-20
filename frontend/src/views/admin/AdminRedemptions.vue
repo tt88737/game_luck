@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 import { ApiError, apiGet, apiPost } from '../../api/http'
 import type { RedemptionRequest } from '../../api/contracts'
 import AdminLayout from '../../components/AdminLayout.vue'
+import { i18n } from '../../i18n'
 
 const rows = ref<RedemptionRequest[]>([])
 const loading = ref(true)
@@ -28,9 +29,9 @@ async function reviewRedemption(row: RedemptionRequest, action: 'approve' | 'rej
   notice.value = ''
   try {
     const payload = action === 'approve'
-      ? { reason: 'Approved for payout.' }
+      ? { reason: i18n.t('admin.redemptionApprovedDefaultReason') }
       : action === 'reject'
-        ? { reason: 'Payment account mismatch.' }
+        ? { reason: i18n.t('admin.redemptionRejectedDefaultReason') }
         : { providerReference: `manual-${row.redemptionId}` }
     const updated = await apiPost<RedemptionRequest>(`/admin/redemptions/${row.redemptionId}/${action}`, payload)
     rows.value = rows.value.map((item) => item.redemptionId === updated.redemptionId ? updated : item)
@@ -46,7 +47,7 @@ function money(value: string | number, digits = 2) {
 
 function messageFrom(err: unknown) {
   if (err instanceof ApiError || err instanceof Error) return err.message
-  return 'Redemption request failed.'
+  return i18n.t('admin.redemptionRequestFailed')
 }
 </script>
 
@@ -54,12 +55,12 @@ function messageFrom(err: unknown) {
   <AdminLayout>
     <header class="admin-header">
       <div>
-        <p class="eyebrow">Prize operations</p>
-        <h1>Redemptions</h1>
+        <p class="eyebrow">{{ $t('admin.prizeOperations') }}</p>
+        <h1>{{ $t('admin.redemptionRequests') }}</h1>
       </div>
     </header>
 
-    <section v-if="loading" class="status-panel">Loading redemptions...</section>
+    <section v-if="loading" class="status-panel">{{ $t('admin.loadingRedemptions') }}</section>
     <section v-else-if="error && !rows.length" class="status-panel danger">{{ error }}</section>
 
     <template v-else>
@@ -69,16 +70,16 @@ function messageFrom(err: unknown) {
         <table>
           <thead>
             <tr>
-              <th>Redemption</th>
-              <th>User</th>
+              <th>{{ $t('common.request') }}</th>
+              <th>{{ $t('admin.user') }}</th>
               <th>SC</th>
-              <th>Method</th>
-              <th>Status</th>
-              <th>Scope</th>
-              <th>Reason</th>
-              <th>Provider Ref</th>
-              <th>Created</th>
-              <th>Actions</th>
+              <th>{{ $t('common.method') }}</th>
+              <th>{{ $t('common.status') }}</th>
+              <th>{{ $t('admin.scope') }}</th>
+              <th>{{ $t('common.reason') }}</th>
+              <th>{{ $t('admin.providerRef') }}</th>
+              <th>{{ $t('admin.created') }}</th>
+              <th>{{ $t('common.actions') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -89,18 +90,18 @@ function messageFrom(err: unknown) {
               <td data-label="Method">{{ row.method }}</td>
               <td data-label="Status"><span class="status-tag pending">{{ row.status }}</span></td>
               <td data-label="Scope">{{ row.sandboxOnly ? 'sandbox' : 'production' }}</td>
-              <td data-label="Reason">{{ row.reviewReason || 'Manual review required' }}</td>
+              <td data-label="Reason">{{ row.reviewReason || $t('admin.reviewReasonDefault') }}</td>
               <td data-label="Provider Ref">{{ row.providerReference || '-' }}</td>
               <td data-label="Created">{{ new Date(row.createdAt).toLocaleString() }}</td>
               <td data-label="Actions">
                 <div class="action-group">
-                  <button :data-test="`approve-redemption-${row.redemptionId}`" :disabled="row.status !== 'reviewing'" @click="reviewRedemption(row, 'approve')">Approve</button>
-                  <button :data-test="`reject-redemption-${row.redemptionId}`" :disabled="row.status !== 'reviewing'" @click="reviewRedemption(row, 'reject')">Reject</button>
-                  <button :data-test="`mark-paid-redemption-${row.redemptionId}`" :disabled="row.status !== 'payout_pending'" @click="reviewRedemption(row, 'mark-paid')">Mark paid</button>
+                  <button :data-test="`approve-redemption-${row.redemptionId}`" :disabled="row.status !== 'reviewing'" @click="reviewRedemption(row, 'approve')">{{ $t('common.approve') }}</button>
+                  <button :data-test="`reject-redemption-${row.redemptionId}`" :disabled="row.status !== 'reviewing'" @click="reviewRedemption(row, 'reject')">{{ $t('common.reject') }}</button>
+                  <button :data-test="`mark-paid-redemption-${row.redemptionId}`" :disabled="row.status !== 'payout_pending'" @click="reviewRedemption(row, 'mark-paid')">{{ $t('admin.markPaid') }}</button>
                 </div>
               </td>
             </tr>
-            <tr v-if="!rows.length"><td colspan="10">No redemptions.</td></tr>
+            <tr v-if="!rows.length"><td colspan="10">{{ $t('admin.noRedemptionRequests') }}</td></tr>
           </tbody>
         </table>
       </div>

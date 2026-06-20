@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 import { ApiError, apiGet, apiPost } from '../../api/http'
 import type { P1Operations, PurchaseOrder } from '../../api/contracts'
 import AdminLayout from '../../components/AdminLayout.vue'
+import { i18n } from '../../i18n'
 
 const rows = ref<PurchaseOrder[]>([])
 const loading = ref(true)
@@ -30,7 +31,7 @@ async function markPaid(row: PurchaseOrder) {
   try {
     const updated = await apiPost<PurchaseOrder>(`/admin/purchase-orders/${row.orderId}/mark-paid`, { providerReference: `manual-${row.orderId}` })
     rows.value = rows.value.map((item) => item.orderId === updated.orderId ? updated : item)
-    notice.value = `${updated.orderId} marked paid. GC ledger posted.`
+    notice.value = i18n.t('admin.orderMarkedPaid', { orderId: updated.orderId })
   } catch (err) {
     error.value = messageFrom(err)
   }
@@ -42,7 +43,7 @@ function money(value: string | number, digits = 0) {
 
 function messageFrom(err: unknown) {
   if (err instanceof ApiError || err instanceof Error) return err.message
-  return 'Purchase order request failed.'
+  return i18n.t('admin.purchaseOrderRequestFailed')
 }
 </script>
 
@@ -50,12 +51,12 @@ function messageFrom(err: unknown) {
   <AdminLayout>
     <header class="admin-header">
       <div>
-        <p class="eyebrow">Commerce operations</p>
-        <h1>Orders</h1>
+        <p class="eyebrow">{{ $t('admin.commerceOperations') }}</p>
+        <h1>{{ $t('admin.orders') }}</h1>
       </div>
     </header>
 
-    <section v-if="loading" class="status-panel">Loading purchase orders...</section>
+    <section v-if="loading" class="status-panel">{{ $t('admin.loadingOrders') }}</section>
     <section v-else-if="error && !rows.length" class="status-panel danger">{{ error }}</section>
 
     <template v-else>
@@ -65,14 +66,14 @@ function messageFrom(err: unknown) {
         <table>
           <thead>
             <tr>
-              <th>Order</th>
-              <th>User</th>
-              <th>Status</th>
-              <th>Package</th>
-              <th>Price</th>
-              <th>Granted</th>
-              <th>Provider</th>
-              <th>Actions</th>
+              <th>{{ $t('common.order') }}</th>
+              <th>{{ $t('admin.user') }}</th>
+              <th>{{ $t('common.status') }}</th>
+              <th>{{ $t('common.package') }}</th>
+              <th>{{ $t('common.price') }}</th>
+              <th>{{ $t('common.granted') }}</th>
+              <th>{{ $t('common.provider') }}</th>
+              <th>{{ $t('common.actions') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -85,10 +86,10 @@ function messageFrom(err: unknown) {
               <td data-label="Granted">{{ money(row.amountGranted) }} {{ row.currencyGranted }}</td>
               <td data-label="Provider">{{ row.provider }}</td>
               <td data-label="Actions">
-                <button :data-test="`mark-paid-${row.orderId}`" :disabled="row.status === 'paid'" @click="markPaid(row)">Mark paid</button>
+                <button :data-test="`mark-paid-${row.orderId}`" :disabled="row.status === 'paid'" @click="markPaid(row)">{{ $t('admin.markPaid') }}</button>
               </td>
             </tr>
-            <tr v-if="!rows.length"><td colspan="8">No purchase orders.</td></tr>
+            <tr v-if="!rows.length"><td colspan="8">{{ $t('admin.noPurchaseOrders') }}</td></tr>
           </tbody>
         </table>
       </div>

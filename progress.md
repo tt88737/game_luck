@@ -104,6 +104,27 @@
   - `frontend npm run build`
   - `frontend npx playwright test`
 
+## 2026-06-20 Sprint 6
+- Sprint 6 完成：C 端与 B 端中英文多语言全局补齐。
+- 前端 i18n 调整：
+  - 扩展 `frontend/src/i18n/messages.ts`，补齐后台导航、看板、用户、地区、法务、Lobby、活动、商品包、订单、KYC、赎回、钱包流水、审计、占位模块等关键文案。
+  - 保持默认英语，浏览器语言以 `zh*` 开头时自动使用中文；后续语言切换继续复用 `i18n.setLocale(...)`。
+  - 修正 e2e 中文断言，确保 C 端和 B 端在 `zh-CN` 浏览器语言下都渲染中文。
+- C 端已接入多语言：
+  - 活动中心、KYC 未登录提示、兑换未登录提示、兑换钱包状态、礼品卡选项、AMOE 链接等静态文案。
+- B 端已接入多语言：
+  - 全局后台导航、Dashboard、Campaigns、Regions、Legal Docs、Lobby、Packages、Orders、KYC Review、Redemptions、Wallet Ledger、Audit Logs、Users、Placeholder。
+  - 高风险操作按钮和默认审核原因支持当前语言输出。
+- 浏览器截图验收：
+  - `frontend/test-results/i18n-admin-en.png`
+  - `frontend/test-results/i18n-admin-zh-mobile.png`
+  - `frontend/test-results/i18n-app-zh-mobile.png`
+- 完整回归已通过：
+  - `backend .\gradlew.bat --no-daemon test`
+  - `frontend npm run test -- --run --pool=threads --maxWorkers=1`
+  - `frontend npm run build`
+  - `frontend npx playwright test`
+
 ## 2026-06-20 后台占位模块修复
 - 用户指出后台多个菜单仍是 `Planned` 占位页，不符合正式上线产品要求。
 - 已将已有数据源可支撑的模块接入真实后台：

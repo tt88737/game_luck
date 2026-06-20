@@ -141,7 +141,7 @@ function formatAmount(value: string | number, digits: number) {
     </section>
 
     <template v-else>
-      <section class="wallet-band" aria-label="Wallet balance">
+      <section class="wallet-band" :aria-label="$t('home.walletBalance')">
         <div>
           <span>{{ $t('home.goldCoins') }}</span>
           <strong>{{ gcBalance }}</strong>
@@ -270,7 +270,7 @@ function formatAmount(value: string | number, digits: number) {
         </div>
         <div class="legal-list">
           <a v-for="doc in documents" :key="doc.documentType" :href="doc.contentUrl">{{ doc.title }}</a>
-          <a v-if="!documents.some((doc) => doc.documentType === 'amoe')" href="/legal/amoe-v1">AMOE / No Purchase Necessary</a>
+          <a v-if="!documents.some((doc) => doc.documentType === 'amoe')" href="/legal/amoe-v1">{{ $t('home.amoeNoPurchase') }}</a>
         </div>
       </section>
     </template>

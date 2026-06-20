@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 import { ApiError, apiGet, apiPost } from '../../api/http'
 import type { AdminCampaign, AdminCampaignResponse } from '../../api/contracts'
 import AdminLayout from '../../components/AdminLayout.vue'
+import { i18n } from '../../i18n'
 
 interface CampaignRow extends AdminCampaign {
   budgetLabel: string
@@ -26,7 +27,7 @@ async function loadCampaigns() {
     const items = await apiGet<AdminCampaign[]>('/admin/campaigns')
     rows.value = items.map(toRow)
   } catch (err) {
-    error.value = err instanceof ApiError || err instanceof Error ? err.message : 'Campaign list failed.'
+    error.value = err instanceof ApiError || err instanceof Error ? err.message : i18n.t('admin.campaignListFailed')
   } finally {
     loading.value = false
   }
@@ -49,10 +50,10 @@ async function createDraft() {
       legalApprovalId: '',
       riskAction: 'pass',
     })
-    notice.value = `${response.campaignCode} draft created.`
+    notice.value = i18n.t('admin.legalDocumentDraftCreated', { version: response.campaignCode })
     await loadCampaigns()
   } catch (err) {
-    error.value = err instanceof ApiError || err instanceof Error ? err.message : 'Campaign setup failed.'
+    error.value = err instanceof ApiError || err instanceof Error ? err.message : i18n.t('admin.campaignSetupFailed')
   } finally {
     loading.value = false
   }
@@ -64,9 +65,9 @@ async function publish(row: CampaignRow) {
   try {
     const response = await apiPost<AdminCampaignResponse>(`/admin/campaigns/${row.campaignCode}/publish`)
     row.status = response.status
-    notice.value = `${row.campaignCode} published. Audit log created by backend.`
+    notice.value = i18n.t('admin.campaignPublished', { code: row.campaignCode })
   } catch (err) {
-    error.value = err instanceof ApiError || err instanceof Error ? err.message : 'Publish failed.'
+    error.value = err instanceof ApiError || err instanceof Error ? err.message : i18n.t('admin.publishFailed')
   }
 }
 
@@ -76,9 +77,9 @@ async function pause(row: CampaignRow) {
   try {
     const response = await apiPost<AdminCampaignResponse>(`/admin/campaigns/${row.campaignCode}/pause`)
     row.status = response.status
-    notice.value = `${row.campaignCode} paused.`
+    notice.value = i18n.t('admin.campaignPaused', { code: row.campaignCode })
   } catch (err) {
-    error.value = err instanceof ApiError || err instanceof Error ? err.message : 'Pause failed.'
+    error.value = err instanceof ApiError || err instanceof Error ? err.message : i18n.t('admin.pauseFailed')
   }
 }
 
@@ -116,23 +117,23 @@ function parseStrings(value: string | null) {
   <AdminLayout>
       <header class="admin-header">
         <div>
-          <p class="eyebrow">Promotion operations</p>
-          <h1>Campaigns</h1>
+          <p class="eyebrow">{{ $t('admin.contentOperations') }}</p>
+          <h1>{{ $t('admin.campaigns') }}</h1>
         </div>
-        <button data-test="create-campaign" :disabled="loading" @click="createDraft">Create draft</button>
+        <button data-test="create-campaign" :disabled="loading" @click="createDraft">{{ $t('admin.createDraft') }}</button>
       </header>
 
       <div class="filter-bar">
         <label>
-          Status
+          {{ $t('admin.campaignStatusFilter') }}
           <select v-model="statusFilter">
-            <option value="all">All</option>
-            <option value="draft">Draft</option>
-            <option value="active">Active</option>
-            <option value="paused">Paused</option>
+            <option value="all">{{ $t('admin.filterAll') }}</option>
+            <option value="draft">draft</option>
+            <option value="active">active</option>
+            <option value="paused">paused</option>
           </select>
         </label>
-        <span>Publishing SC campaigns requires rules version and legal approval ID.</span>
+        <span>{{ $t('admin.campaignPublishHint') }}</span>
       </div>
 
       <p v-if="notice" class="notice success">{{ notice }}</p>
@@ -142,13 +143,13 @@ function parseStrings(value: string | null) {
         <table>
           <thead>
             <tr>
-              <th>Campaign</th>
-              <th>Status</th>
+              <th>{{ $t('common.campaign') }}</th>
+              <th>{{ $t('common.status') }}</th>
               <th>SC strategy</th>
               <th>Budget</th>
-              <th>Legal approval ID</th>
-              <th>Regions</th>
-              <th>Actions</th>
+              <th>{{ $t('admin.legalApproval') }} ID</th>
+              <th>{{ $t('admin.regions') }}</th>
+              <th>{{ $t('common.actions') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -160,12 +161,12 @@ function parseStrings(value: string | null) {
               <td><span class="status-tag" :class="row.status">{{ row.status }}</span></td>
               <td>{{ row.scStrategy }}</td>
               <td>{{ row.budgetLabel }}</td>
-              <td>{{ row.legalApprovalId || 'Missing' }}</td>
+              <td>{{ row.legalApprovalId || $t('common.missing') }}</td>
               <td>{{ row.eligibleRegions.join(', ') }}</td>
               <td>
                 <div class="action-group">
-                  <button data-test="publish-campaign" :disabled="loading || row.status === 'active'" @click="publish(row)">Publish</button>
-                  <button :disabled="loading || row.status !== 'active'" @click="pause(row)">Pause</button>
+                  <button data-test="publish-campaign" :disabled="loading || row.status === 'active'" @click="publish(row)">{{ $t('admin.publish') }}</button>
+                  <button :disabled="loading || row.status !== 'active'" @click="pause(row)">{{ $t('common.pause') }}</button>
                 </div>
               </td>
             </tr>

@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import { ApiError, apiGet, apiPost } from '../../api/http'
 import type { Campaign, ClaimResponse, DailyTask } from '../../api/contracts'
+import { i18n } from '../../i18n'
 
 const campaigns = ref<Campaign[]>([])
 const tasks = ref<DailyTask[]>([])
@@ -25,7 +26,7 @@ async function loadActivity() {
     campaigns.value = campaignList
     tasks.value = taskList
   } catch (err) {
-    error.value = err instanceof ApiError || err instanceof Error ? err.message : 'Activity request failed.'
+    error.value = err instanceof ApiError || err instanceof Error ? err.message : i18n.t('activity.requestFailed')
   } finally {
     loading.value = false
   }
@@ -52,9 +53,12 @@ async function claim(key: string, action: () => Promise<ClaimResponse>) {
   message.value = ''
   try {
     const result = await action()
-    message.value = `${result.campaignCode} issued ${result.rewards.map((item) => `${Number(item.amount).toLocaleString()} ${item.currency}`).join(' + ')}`
+    message.value = i18n.t('activity.rewardIssued', {
+      code: result.campaignCode,
+      rewards: result.rewards.map((item) => `${Number(item.amount).toLocaleString()} ${item.currency}`).join(' + '),
+    })
   } catch (err) {
-    error.value = err instanceof ApiError || err instanceof Error ? err.message : 'Claim failed.'
+    error.value = err instanceof ApiError || err instanceof Error ? err.message : i18n.t('activity.claimFailed')
   } finally {
     processing.value = ''
   }
@@ -65,21 +69,21 @@ async function claim(key: string, action: () => Promise<ClaimResponse>) {
   <main class="app-screen">
     <header class="app-header">
       <div>
-        <p class="eyebrow">Activity center</p>
-        <h1>Claimable rewards</h1>
+        <p class="eyebrow">{{ $t('activity.center') }}</p>
+        <h1>{{ $t('activity.claimableRewards') }}</h1>
       </div>
-      <RouterLink class="plain-link" to="/app">Home</RouterLink>
+      <RouterLink class="plain-link" to="/app">{{ $t('nav.home') }}</RouterLink>
     </header>
 
-    <section v-if="loading" class="status-panel">Loading activity...</section>
+    <section v-if="loading" class="status-panel">{{ $t('activity.loading') }}</section>
     <p v-if="message" class="notice success">{{ message }}</p>
     <p v-if="error" class="notice danger">{{ error }}</p>
 
     <template v-if="!loading">
       <section class="section-block">
         <div class="section-title">
-          <h2>Campaigns</h2>
-          <span>{{ campaigns.length }} records</span>
+          <h2>{{ $t('nav.campaigns') }}</h2>
+          <span>{{ $t('activity.records', { count: campaigns.length }) }}</span>
         </div>
         <article v-for="campaign in campaigns" :key="campaign.campaignCode" class="reward-row">
           <div>
@@ -87,49 +91,49 @@ async function claim(key: string, action: () => Promise<ClaimResponse>) {
             <span>{{ campaign.campaignType }} · {{ campaign.status }}</span>
           </div>
           <button :disabled="processing === campaign.campaignCode || campaign.status !== 'active'" @click="claimCampaign(campaign.campaignCode)">
-            {{ processing === campaign.campaignCode ? 'Claiming' : 'Claim' }}
+            {{ processing === campaign.campaignCode ? $t('common.claiming') : $t('common.claim') }}
           </button>
         </article>
-        <p v-if="!campaigns.length" class="empty-state">No campaign available.</p>
+        <p v-if="!campaigns.length" class="empty-state">{{ $t('activity.noCampaign') }}</p>
       </section>
 
       <section class="section-block">
         <div class="section-title">
-          <h2>Daily tasks</h2>
-          <span>Cooldown: daily</span>
+          <h2>{{ $t('activity.dailyTasks') }}</h2>
+          <span>{{ $t('activity.cooldownDaily') }}</span>
         </div>
         <article v-for="task in tasks" :key="task.taskCode" class="reward-row">
           <div>
             <strong>{{ task.taskCode }}</strong>
-            <span>Target {{ task.target }} · {{ task.status }}</span>
+            <span>{{ $t('activity.targetStatus', { target: task.target, status: task.status }) }}</span>
           </div>
           <button :disabled="processing === task.taskCode" @click="claimTask(task.taskCode)">
-            {{ processing === task.taskCode ? 'Claiming' : 'Check in' }}
+            {{ processing === task.taskCode ? $t('common.claiming') : $t('home.checkIn') }}
           </button>
         </article>
-        <p v-if="!tasks.length" class="empty-state">No daily task available.</p>
+        <p v-if="!tasks.length" class="empty-state">{{ $t('activity.noDailyTask') }}</p>
       </section>
 
       <section class="section-block">
         <div class="section-title">
-          <h2>Coupon</h2>
-          <span>One use per account</span>
+          <h2>{{ $t('activity.coupon') }}</h2>
+          <span>{{ $t('activity.oneUsePerAccount') }}</span>
         </div>
         <div class="coupon-row">
-          <input v-model="coupon" aria-label="Coupon code" />
+          <input v-model="coupon" :aria-label="$t('activity.couponCode')" />
           <button :disabled="processing === 'coupon' || !coupon" @click="claimCoupon">
-            {{ processing === 'coupon' ? 'Applying' : 'Apply' }}
+            {{ processing === 'coupon' ? $t('activity.applying') : $t('activity.apply') }}
           </button>
         </div>
       </section>
     </template>
 
     <nav class="bottom-nav" aria-label="App navigation">
-      <RouterLink to="/app">Home</RouterLink>
-      <RouterLink to="/app/store">Store</RouterLink>
-      <RouterLink to="/app/kyc">KYC</RouterLink>
-      <RouterLink to="/app/redemption">Redeem</RouterLink>
-      <RouterLink to="/app/wallet">Wallet</RouterLink>
+      <RouterLink to="/app">{{ $t('nav.home') }}</RouterLink>
+      <RouterLink to="/app/store">{{ $t('nav.store') }}</RouterLink>
+      <RouterLink to="/app/kyc">{{ $t('nav.kyc') }}</RouterLink>
+      <RouterLink to="/app/redemption">{{ $t('nav.redeem') }}</RouterLink>
+      <RouterLink to="/app/wallet">{{ $t('common.wallet') }}</RouterLink>
     </nav>
   </main>
 </template>

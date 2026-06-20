@@ -69,7 +69,7 @@ function messageFrom(err: unknown) {
     <section v-if="loading" class="status-panel">{{ $t('kyc.loading') }}</section>
     <section v-else-if="!session.userId" class="status-panel">
       <strong>{{ $t('register.heading') }}</strong>
-      <span>Create an account before submitting identity verification.</span>
+      <span>{{ $t('kyc.signInRequired') }}</span>
       <RouterLink class="plain-link" to="/app/register">{{ $t('register.submit') }}</RouterLink>
       <RouterLink class="plain-link" to="/app/login">{{ $t('login.submit') }}</RouterLink>
     </section>

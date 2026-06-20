@@ -10,6 +10,7 @@ import AdminUsers from '../admin/AdminUsers.vue'
 import AdminWalletLedger from '../admin/AdminWalletLedger.vue'
 import AdminKycReview from '../admin/AdminKycReview.vue'
 import AdminRedemptions from '../admin/AdminRedemptions.vue'
+import AppActivity from './AppActivity.vue'
 import { i18n } from '../../i18n'
 import { createPinia, setActivePinia } from 'pinia'
 
@@ -39,6 +40,27 @@ describe('P1 production pages', () => {
   afterEach(() => {
     vi.restoreAllMocks()
     localStorage.clear()
+    i18n.setLocale('en')
+  })
+
+  it('localizes C-side activity workflow when Chinese is selected', async () => {
+    i18n.setLocale('zh-CN')
+    vi.spyOn(globalThis, 'fetch').mockImplementation((input) => {
+      const url = String(input)
+      if (url.endsWith('/campaigns')) return json([])
+      if (url.endsWith('/tasks/daily')) return json([])
+      return json({})
+    })
+
+    const wrapper = mount(AppActivity, { global })
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('活动中心')
+    expect(wrapper.text()).toContain('可领取奖励')
+    expect(wrapper.text()).toContain('活动')
+    expect(wrapper.text()).toContain('每日任务')
+    expect(wrapper.text()).not.toContain('Activity center')
+    expect(wrapper.text()).not.toContain('Claimable rewards')
   })
 
   it('creates a GC purchase order from the store', async () => {

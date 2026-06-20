@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 import { ApiError, apiGet, apiPost } from '../../api/http'
 import type { AdminLegalDocument } from '../../api/contracts'
 import AdminLayout from '../../components/AdminLayout.vue'
+import { i18n } from '../../i18n'
 
 const rows = ref<AdminLegalDocument[]>([])
 const loading = ref(true)
@@ -37,7 +38,7 @@ async function createPrivacyDraft() {
       legalApprovalId: 'LEGAL-V2',
     })
     rows.value = [created, ...rows.value.filter((row) => row.documentType !== created.documentType || row.version !== created.version)]
-    notice.value = `${created.version} draft created.`
+    notice.value = i18n.t('admin.legalDocumentDraftCreated', { version: created.version })
   } catch (err) {
     error.value = messageFrom(err)
   } finally {
@@ -54,7 +55,7 @@ async function publish(row: AdminLegalDocument) {
     rows.value = rows.value.map((item) => item.documentType === updated.documentType
       ? { ...item, status: item.version === updated.version ? updated.status : 'archived' }
       : item)
-    notice.value = `${updated.version} published. Audit log created.`
+    notice.value = i18n.t('admin.legalDocumentPublished', { version: updated.version })
   } catch (err) {
     error.value = messageFrom(err)
   } finally {
@@ -72,7 +73,7 @@ function versionKey(row: AdminLegalDocument) {
 
 function messageFrom(err: unknown) {
   if (err instanceof ApiError || err instanceof Error) return err.message
-  return 'Legal document request failed.'
+  return i18n.t('admin.legalDocumentRequestFailed')
 }
 </script>
 
@@ -80,13 +81,13 @@ function messageFrom(err: unknown) {
   <AdminLayout>
     <header class="admin-header">
       <div>
-        <p class="eyebrow">Legal configuration</p>
-        <h1>Legal Docs</h1>
+        <p class="eyebrow">{{ $t('admin.legalConfiguration') }}</p>
+        <h1>{{ $t('admin.legalDocs') }}</h1>
       </div>
-      <button data-test="create-legal-document" :disabled="busy === 'create'" @click="createPrivacyDraft">Create privacy v2</button>
+      <button data-test="create-legal-document" :disabled="busy === 'create'" @click="createPrivacyDraft">{{ $t('admin.createPrivacyV2') }}</button>
     </header>
 
-    <section v-if="loading" class="status-panel">Loading legal documents...</section>
+    <section v-if="loading" class="status-panel">{{ $t('admin.loadingLegalDocuments') }}</section>
     <section v-else-if="error && !rows.length" class="status-panel danger">{{ error }}</section>
 
     <template v-else>
@@ -96,12 +97,12 @@ function messageFrom(err: unknown) {
         <table>
           <thead>
             <tr>
-              <th>Document</th>
-              <th>Version</th>
-              <th>Status</th>
-              <th>URL</th>
-              <th>Legal approval</th>
-              <th>Action</th>
+              <th>{{ $t('common.document') }}</th>
+              <th>{{ $t('common.version') }}</th>
+              <th>{{ $t('common.status') }}</th>
+              <th>{{ $t('admin.url') }}</th>
+              <th>{{ $t('admin.legalApproval') }}</th>
+              <th>{{ $t('common.action') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -113,11 +114,11 @@ function messageFrom(err: unknown) {
               <td>{{ row.legalApprovalId ?? '-' }}</td>
               <td>
                 <button :data-test="`publish-${versionKey(row)}`" :disabled="row.status === 'active' || busy === key(row)" @click="publish(row)">
-                  Publish
+                  {{ $t('admin.publish') }}
                 </button>
               </td>
             </tr>
-            <tr v-if="!rows.length"><td colspan="6">No legal documents.</td></tr>
+            <tr v-if="!rows.length"><td colspan="6">{{ $t('admin.noLegalDocuments') }}</td></tr>
           </tbody>
         </table>
       </div>
