@@ -15,6 +15,7 @@ const AdminP1Operations = () => import('../views/admin/AdminP1Operations.vue')
 const AdminPlaceholder = () => import('../views/admin/AdminPlaceholder.vue')
 const AdminRegions = () => import('../views/admin/AdminRegions.vue')
 const AdminLegalDocuments = () => import('../views/admin/AdminLegalDocuments.vue')
+const AdminLobby = () => import('../views/admin/AdminLobby.vue')
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -32,7 +33,7 @@ export const router = createRouter({
     { path: '/admin/users', component: AdminPlaceholder, props: { title: 'Users' } },
     { path: '/admin/regions', component: AdminRegions },
     { path: '/admin/legal-documents', component: AdminLegalDocuments },
-    { path: '/admin/lobby', component: AdminPlaceholder, props: { title: 'Lobby' } },
+    { path: '/admin/lobby', component: AdminLobby },
     { path: '/admin/campaigns', component: AdminCampaigns },
     { path: '/admin/packages', component: AdminPlaceholder, props: { title: 'Packages' } },
     { path: '/admin/orders', component: AdminPlaceholder, props: { title: 'Orders' } },

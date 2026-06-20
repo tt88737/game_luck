@@ -52,3 +52,8 @@
 - `V2__seed_demo_data.sql` 中 CA/TX/NJ 的 `purchase_allowed=false` 与 P1 商店购买闭环冲突；已通过 `V6__enable_purchase_in_allowed_regions.sql` 将允许运营州的购买开关设为 true。
 - 后台合规配置测试会真实修改 `compliance_regions`，必须隔离测试上下文，否则后续 P1 购买回归会被 CA purchase=false 污染。
 - 法务文档发布需要同时处理旧 active 版本归档、公开文档接口返回新 active 版本、后台审计落点三个验收点。
+
+## Sprint 3 发现
+- `AppHome` 原先同时请求 `/campaigns` 和 `/tasks/daily`，且 Featured games 在前端写死；正式产品需要由 `/lobby` 聚合接口提供页面运营内容。
+- `/admin/campaigns` 原后台页面使用前端硬编码 `OPS_SC_BONUS`，已改为读取真实后台活动列表。
+- 修改全局配置类测试容易污染共享 H2 context；P1 闭环测试已在执行前刷新上下文，避免被其它后台配置测试影响。

@@ -27,6 +27,12 @@ public class AdminController {
         return adminCampaignService.dashboardSummary();
     }
 
+    @GetMapping("/campaigns")
+    public List<AdminCampaignDto> campaigns(HttpServletRequest servletRequest) {
+        AdminOperatorContext.from(servletRequest).require("campaign.read");
+        return adminCampaignService.campaigns();
+    }
+
     @PostMapping("/campaigns")
     public AdminCampaignResponse createCampaign(@RequestBody AdminCampaignRequest request, HttpServletRequest servletRequest) {
         AdminOperatorContext.from(servletRequest).require("campaign.write");

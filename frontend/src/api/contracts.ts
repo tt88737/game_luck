@@ -47,6 +47,22 @@ export interface DailyTask {
   status: string
 }
 
+export interface LobbyCard {
+  cardCode: string
+  title: string
+  subtitle: string
+  imageUrl: string
+  targetUrl: string
+  status: string
+  sortOrder: number
+}
+
+export interface LobbyResponse {
+  cards: LobbyCard[]
+  campaigns: Campaign[]
+  tasks: DailyTask[]
+}
+
 export interface Reward {
   currency: string
   amount: string | number
@@ -134,6 +150,20 @@ export interface AdminCampaignRequest {
 export interface AdminCampaignResponse {
   campaignCode: string
   status: string
+}
+
+export interface AdminCampaign {
+  campaignCode: string
+  name: string
+  campaignType: string
+  status: string
+  scStrategy: string
+  rulesVersion: string
+  legalApprovalId: string | null
+  riskAction: string
+  eligibleRegionsJson: string
+  blockedRegionsJson: string | null
+  rewardPolicyJson: string
 }
 
 export interface AuditLog {

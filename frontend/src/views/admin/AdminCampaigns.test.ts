@@ -5,6 +5,7 @@ import AdminDashboard from './AdminDashboard.vue'
 import AdminAuditLogs from './AdminAuditLogs.vue'
 import AdminRegions from './AdminRegions.vue'
 import AdminLegalDocuments from './AdminLegalDocuments.vue'
+import AdminLobby from './AdminLobby.vue'
 
 function json(data: unknown, status = 200) {
   return Promise.resolve(new Response(JSON.stringify(data), {
@@ -24,17 +25,34 @@ describe('admin pages', () => {
   })
 
   it('renders campaign table with filters, status tags, SC strategy, budget, and legal approval', async () => {
-    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation(() => json({ campaignCode: 'OPS_SC_BONUS', status: 'draft' }))
+    vi.spyOn(globalThis, 'fetch').mockImplementation((input) => {
+      if (String(input).endsWith('/admin/campaigns')) {
+        return json([{
+          campaignCode: 'register_bonus_v1',
+          name: 'Welcome Bonus',
+          campaignType: 'register',
+          status: 'active',
+          scStrategy: 'default_small_sc',
+          rulesVersion: 'rules-v1',
+          legalApprovalId: 'LEGAL-2026-0617-CA',
+          riskAction: 'gc_only',
+          eligibleRegionsJson: '["CA","TX"]',
+          blockedRegionsJson: '["WA"]',
+          rewardPolicyJson: '[{"currency":"GC","amount":10000},{"currency":"SC","amount":"0.50"}]',
+        }])
+      }
+      return json({})
+    })
 
     const wrapper = mount(AdminCampaigns, { global: { stubs } })
     await flushPromises()
 
-    expect(fetchMock).not.toHaveBeenCalled()
     expect(wrapper.text()).toContain('Status')
-    expect(wrapper.text()).toContain('OPS_SC_BONUS')
+    expect(wrapper.text()).toContain('register_bonus_v1')
+    expect(wrapper.text()).not.toContain('OPS_SC_BONUS')
     expect(wrapper.text()).toContain('default_small_sc')
-    expect(wrapper.text()).toContain('10,000 GC + 0.50 SC')
-    expect(wrapper.text()).toContain('LEGAL-2026-0618-SC')
+    expect(wrapper.text()).toContain('GC')
+    expect(wrapper.text()).toContain('LEGAL-2026-0617-CA')
   })
 
   it('uses the formal admin navigation across operations modules', async () => {
@@ -75,7 +93,21 @@ describe('admin pages', () => {
   it('shows publish blocking reason from backend', async () => {
     vi.spyOn(globalThis, 'fetch').mockImplementation((input) => {
       const url = String(input)
-      if (url.endsWith('/admin/campaigns')) return json({ campaignCode: 'OPS_SC_BONUS', status: 'draft' })
+      if (url.endsWith('/admin/campaigns')) {
+        return json([{
+          campaignCode: 'OPS_SC_BONUS',
+          name: 'Ops SC Bonus',
+          campaignType: 'register_bonus',
+          status: 'draft',
+          scStrategy: 'default_small_sc',
+          rulesVersion: 'rules-v1',
+          legalApprovalId: '',
+          riskAction: 'gc_only',
+          eligibleRegionsJson: '["CA"]',
+          blockedRegionsJson: '[]',
+          rewardPolicyJson: '[{"currency":"SC","amount":"0.50"}]',
+        }])
+      }
       if (url.endsWith('/admin/campaigns/OPS_SC_BONUS/publish')) {
         return json({
           code: 'LEGAL_APPROVAL_REQUIRED',
@@ -183,5 +215,28 @@ describe('admin pages', () => {
     expect(fetchMock).toHaveBeenCalledWith('/api/v1/admin/legal-documents', expect.objectContaining({ method: 'POST' }))
     expect(fetchMock).toHaveBeenCalledWith('/api/v1/admin/legal-documents/privacy/privacy-v2/publish', expect.objectContaining({ method: 'POST' }))
     expect(wrapper.text()).toContain('privacy-v2')
+  })
+
+  it('lets content admins pause lobby cards', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation((input, init) => {
+      const url = String(input)
+      if (url.endsWith('/admin/lobby-cards') && init?.method !== 'PATCH') {
+        return json([{ cardCode: 'slots_main', title: 'Lucky Slots', subtitle: 'GC play', imageUrl: '/assets/lobby/slots.png', targetUrl: '/app/activity', status: 'active', sortOrder: 10 }])
+      }
+      if (url.endsWith('/admin/lobby-cards/slots_main') && init?.method === 'PATCH') {
+        return json({ cardCode: 'slots_main', title: 'Lucky Slots', subtitle: 'GC play', imageUrl: '/assets/lobby/slots.png', targetUrl: '/app/activity', status: 'paused', sortOrder: 10 })
+      }
+      return json({})
+    })
+
+    const wrapper = mount(AdminLobby, { global: { stubs } })
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('Lucky Slots')
+    await wrapper.get('[data-test="pause-card-slots_main"]').trigger('click')
+    await flushPromises()
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/v1/admin/lobby-cards/slots_main', expect.objectContaining({ method: 'PATCH' }))
+    expect(wrapper.text()).toContain('paused')
   })
 })

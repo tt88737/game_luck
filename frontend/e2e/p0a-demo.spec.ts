@@ -26,6 +26,18 @@ test.beforeEach(async ({ page }) => {
   await page.route('/api/v1/tasks/daily', async (route) => {
     await route.fulfill({ json: [{ taskId: 'DAILY_LOGIN', taskCode: 'DAILY_LOGIN', target: 1, status: 'in_progress' }] })
   })
+  await page.route('/api/v1/lobby', async (route) => {
+    await route.fulfill({
+      json: {
+        cards: [
+          { cardCode: 'slots_main', title: 'Lucky Slots', subtitle: 'GC play with configured rewards', imageUrl: '/assets/lobby/slots-main.png', targetUrl: '/app/activity', status: 'active', sortOrder: 10 },
+          { cardCode: 'jackpot_events', title: 'Live Events', subtitle: 'Configured bonus events', imageUrl: '/assets/lobby/jackpot-events.png', targetUrl: '/app/activity', status: 'active', sortOrder: 20 },
+        ],
+        campaigns: [{ campaignCode: 'WELCOME_BONUS', campaignType: 'register_bonus', status: 'active' }],
+        tasks: [{ taskId: 'DAILY_LOGIN', taskCode: 'DAILY_LOGIN', target: 1, status: 'in_progress' }],
+      },
+    })
+  })
   await page.route('/api/v1/compliance/documents', async (route) => {
     await route.fulfill({
       json: [
@@ -73,7 +85,21 @@ test.beforeEach(async ({ page }) => {
     await route.fulfill({ json: { registrations: 12, claims: 8, scGranted: '3.5000', riskEvents: 1 } })
   })
   await page.route('/api/v1/admin/campaigns', async (route) => {
-    await route.fulfill({ json: { campaignCode: 'OPS_SC_BONUS', status: 'draft' } })
+    await route.fulfill({
+      json: [{
+        campaignCode: 'register_bonus_v1',
+        name: 'Welcome Bonus',
+        campaignType: 'register_bonus',
+        status: 'active',
+        scStrategy: 'default_small_sc',
+        rulesVersion: 'rules-v1',
+        legalApprovalId: 'LEGAL-2026-0617-CA',
+        riskAction: 'gc_only',
+        eligibleRegionsJson: '["CA","TX"]',
+        blockedRegionsJson: '["WA"]',
+        rewardPolicyJson: '[{"currency":"GC","amount":10000},{"currency":"SC","amount":"0.50"}]',
+      }],
+    })
   })
   await page.route('/api/v1/admin/audit-logs**', async (route) => {
     await route.fulfill({
@@ -143,8 +169,8 @@ test('C-side and admin pages render production workflow', async ({ page }) => {
   await expect(page.getByText('Risk events')).toBeVisible()
 
   await page.goto('/admin/campaigns')
-  await expect(page.getByText('OPS_SC_BONUS')).toBeVisible()
-  await expect(page.getByText('LEGAL-2026-0618-SC')).toBeVisible()
+  await expect(page.getByText('register_bonus_v1')).toBeVisible()
+  await expect(page.getByText('LEGAL-2026-0617-CA')).toBeVisible()
 
   await page.goto('/admin/audit-logs')
   await expect(page.getByText('campaign_publish')).toBeVisible()

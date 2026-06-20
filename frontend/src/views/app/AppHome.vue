@@ -2,7 +2,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 import { ApiError, apiGet, apiPost } from '../../api/http'
-import type { Campaign, ClaimResponse, ComplianceDocument, DailyTask, WalletSummary } from '../../api/contracts'
+import type { Campaign, ClaimResponse, ComplianceDocument, DailyTask, LobbyCard, LobbyResponse, WalletSummary } from '../../api/contracts'
 import { useSessionStore } from '../../stores/session'
 import { i18n } from '../../i18n'
 
@@ -14,6 +14,7 @@ const claiming = ref('')
 const summary = ref<WalletSummary | null>(null)
 const campaigns = ref<Campaign[]>([])
 const tasks = ref<DailyTask[]>([])
+const lobbyCards = ref<LobbyCard[]>([])
 const documents = ref<ComplianceDocument[]>([])
 
 const gcBalance = computed(() => formatAmount(summary.value?.wallet.gcBalance ?? 0, 0))
@@ -21,32 +22,6 @@ const scBalance = computed(() => formatAmount(summary.value?.wallet.scBalance ??
 const welcome = computed(() => campaigns.value.find((item) => item.campaignType === 'register_bonus') ?? campaigns.value[0])
 const dailyLogin = computed(() => tasks.value[0])
 const isRegionRestricted = computed(() => error.value.toLowerCase().includes('region') || error.value.includes('available in your region'))
-const featuredGames = computed(() => [
-  {
-    key: 'slots',
-    title: i18n.t('lobby.luckySlots'),
-    meta: i18n.t('lobby.luckySlotsMeta'),
-    action: i18n.t('lobby.playNow'),
-    to: '/app/activity',
-    status: 'live',
-  },
-  {
-    key: 'tables',
-    title: i18n.t('lobby.tableGames'),
-    meta: i18n.t('lobby.tableGamesMeta'),
-    action: i18n.t('lobby.locked'),
-    to: '/app',
-    status: 'locked',
-  },
-  {
-    key: 'events',
-    title: i18n.t('lobby.liveEvents'),
-    meta: i18n.t('lobby.liveEventsMeta'),
-    action: i18n.t('lobby.playNow'),
-    to: '/app/activity',
-    status: 'event',
-  },
-])
 
 onMounted(() => {
   if (!session.userId) {
@@ -64,15 +39,15 @@ async function loadHome() {
   loading.value = true
   error.value = ''
   try {
-    const [wallet, campaignList, taskList, docs] = await Promise.all([
+    const [wallet, lobby, docs] = await Promise.all([
       apiGet<WalletSummary>('/wallet/summary'),
-      apiGet<Campaign[]>('/campaigns'),
-      apiGet<DailyTask[]>('/tasks/daily'),
+      apiGet<LobbyResponse>('/lobby'),
       apiGet<ComplianceDocument[]>('/compliance/documents'),
     ])
     summary.value = wallet
-    campaigns.value = campaignList
-    tasks.value = taskList
+    lobbyCards.value = lobby.cards
+    campaigns.value = lobby.campaigns
+    tasks.value = lobby.tasks
     documents.value = docs
   } catch (err) {
     error.value = messageFrom(err)
@@ -209,17 +184,18 @@ function formatAmount(value: string | number, digits: number) {
         </div>
         <div class="lobby-game-grid">
           <RouterLink
-            v-for="game in featuredGames"
-            :key="game.key"
+            v-for="card in lobbyCards"
+            :key="card.cardCode"
             class="lobby-game-card"
-            :class="`is-${game.status}`"
-            :to="game.to"
+            :class="`is-${card.status}`"
+            :to="card.targetUrl"
           >
-            <span class="game-symbol">{{ game.key === 'slots' ? '7' : game.key === 'tables' ? 'A' : 'J' }}</span>
-            <strong>{{ game.title }}</strong>
-            <small>{{ game.meta }}</small>
-            <em>{{ game.action }}</em>
+            <span class="game-symbol">{{ card.cardCode.includes('slot') ? '7' : card.cardCode.includes('jackpot') ? 'J' : 'A' }}</span>
+            <strong>{{ card.title }}</strong>
+            <small>{{ card.subtitle }}</small>
+            <em>{{ $t('lobby.playNow') }}</em>
           </RouterLink>
+          <p v-if="!lobbyCards.length" class="empty-state">{{ $t('home.allActivity') }}</p>
         </div>
       </section>
 

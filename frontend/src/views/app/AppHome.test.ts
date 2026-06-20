@@ -33,11 +33,14 @@ describe('AppHome', () => {
           notices: ['SC is promotional and not sold.'],
         })
       }
-      if (url.endsWith('/campaigns')) {
-        return json([{ campaignCode: 'WELCOME_BONUS', campaignType: 'register_bonus', status: 'active' }])
-      }
-      if (url.endsWith('/tasks/daily')) {
-        return json([{ taskId: 'DAILY_LOGIN', taskCode: 'DAILY_LOGIN', target: 1, status: 'in_progress' }])
+      if (url.endsWith('/lobby')) {
+        return json({
+          cards: [
+            { cardCode: 'slots_main', title: 'Configured Slots', subtitle: 'From admin lobby', imageUrl: '/assets/lobby/slots.png', targetUrl: '/app/activity', status: 'active', sortOrder: 10 },
+          ],
+          campaigns: [{ campaignCode: 'WELCOME_BONUS', campaignType: 'register_bonus', status: 'active' }],
+          tasks: [{ taskId: 'DAILY_LOGIN', taskCode: 'DAILY_LOGIN', target: 1, status: 'in_progress' }],
+        })
       }
       if (url.endsWith('/compliance/documents')) {
         return json([
@@ -59,7 +62,8 @@ describe('AppHome', () => {
     expect(wrapper.text()).toContain('WELCOME500')
     expect(wrapper.text()).toContain('Lobby')
     expect(wrapper.text()).toContain('Featured games')
-    expect(wrapper.text()).toContain('Lucky Slots')
+    expect(wrapper.text()).toContain('Configured Slots')
+    expect(wrapper.text()).toContain('From admin lobby')
     expect(wrapper.text()).toContain('KYC required')
     expect(wrapper.text()).toContain('Daily bonus')
     expect(wrapper.text()).toContain('Terms of Use')
@@ -99,8 +103,7 @@ describe('AppHome', () => {
           notices: [],
         })
       }
-      if (url.endsWith('/campaigns')) return json([{ campaignCode: 'WELCOME_BONUS', campaignType: 'register_bonus', status: 'active' }])
-      if (url.endsWith('/tasks/daily')) return json([])
+      if (url.endsWith('/lobby')) return json({ cards: [], campaigns: [{ campaignCode: 'WELCOME_BONUS', campaignType: 'register_bonus', status: 'active' }], tasks: [] })
       if (url.endsWith('/compliance/documents')) return json([])
       if (url.endsWith('/campaigns/WELCOME_BONUS/claim') && init?.method === 'POST') {
         return json({
@@ -131,8 +134,7 @@ describe('AppHome', () => {
           notices: [],
         })
       }
-      if (url.endsWith('/campaigns')) return json([])
-      if (url.endsWith('/tasks/daily')) return json([])
+      if (url.endsWith('/lobby')) return json({ cards: [], campaigns: [], tasks: [] })
       if (url.endsWith('/compliance/documents')) return json([])
       return json({})
     })
@@ -144,7 +146,7 @@ describe('AppHome', () => {
     session.setSession('local-user-9', '9')
     await flushPromises()
 
-    expect(fetchMock).toHaveBeenCalledWith('/api/v1/wallet/summary', expect.anything())
+    expect(fetchMock).toHaveBeenCalledWith('/api/v1/lobby', expect.anything())
     expect(wrapper.text()).toContain('7,500')
   })
 })

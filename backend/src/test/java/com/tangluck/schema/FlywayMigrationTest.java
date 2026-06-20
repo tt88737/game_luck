@@ -38,10 +38,11 @@ class FlywayMigrationTest {
                     'daily_task_progress',
                     'coupon_codes',
                     'risk_events',
-                    'audit_logs'
+                    'audit_logs',
+                    'lobby_cards'
                   )
                 """, Integer.class);
 
-        assertThat(tableCount).isEqualTo(13);
+        assertThat(tableCount).isEqualTo(14);
     }
 }

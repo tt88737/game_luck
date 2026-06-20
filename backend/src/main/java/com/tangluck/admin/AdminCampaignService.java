@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
+import java.util.List;
+
 @Service
 public class AdminCampaignService {
     private final PromotionCampaignRepository campaignRepository;
@@ -28,6 +31,26 @@ public class AdminCampaignService {
         this.claimRepository = claimRepository;
         this.ledgerRepository = ledgerRepository;
         this.objectMapper = objectMapper;
+    }
+
+    @Transactional(readOnly = true)
+    public List<AdminCampaignDto> campaigns() {
+        return campaignRepository.findAll().stream()
+                .sorted(Comparator.comparing(PromotionCampaign::getCampaignCode))
+                .map(campaign -> new AdminCampaignDto(
+                        campaign.getCampaignCode(),
+                        campaign.getName(),
+                        campaign.getCampaignType(),
+                        campaign.getStatus(),
+                        campaign.getScStrategy(),
+                        campaign.getRulesVersion(),
+                        campaign.getLegalApprovalId(),
+                        campaign.getRiskAction(),
+                        campaign.getEligibleRegionsJson(),
+                        campaign.getBlockedRegionsJson(),
+                        campaign.getRewardPolicyJson()
+                ))
+                .toList();
     }
 
     @Transactional

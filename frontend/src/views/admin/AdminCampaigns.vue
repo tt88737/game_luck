@@ -1,43 +1,56 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { ApiError, apiPost } from '../../api/http'
-import type { AdminCampaignRequest, AdminCampaignResponse } from '../../api/contracts'
+import { onMounted, ref } from 'vue'
+import { ApiError, apiGet, apiPost } from '../../api/http'
+import type { AdminCampaign, AdminCampaignResponse } from '../../api/contracts'
 import AdminLayout from '../../components/AdminLayout.vue'
 
-interface CampaignRow extends AdminCampaignRequest {
-  status: string
+interface CampaignRow extends AdminCampaign {
   budgetLabel: string
+  eligibleRegions: string[]
+  blockedRegions: string[]
+  rewardPolicy: Array<{ currency: string; amount: string }>
 }
 
 const loading = ref(false)
 const error = ref('')
 const notice = ref('')
 const statusFilter = ref('all')
-const rows = ref<CampaignRow[]>([
-  {
-    campaignCode: 'OPS_SC_BONUS',
-    name: 'Ops SC Bonus',
-    campaignType: 'register_bonus',
-    eligibleRegions: ['US-CA', 'US-TX'],
-    blockedRegions: ['US-WA'],
-    rewardPolicy: [{ currency: 'GC', amount: '10000' }, { currency: 'SC', amount: '0.50' }],
-    scStrategy: 'default_small_sc',
-    rulesVersion: 'rules-v1',
-    legalApprovalId: 'LEGAL-2026-0618-SC',
-    riskAction: 'gc_only',
-    status: 'draft',
-    budgetLabel: '10,000 GC + 0.50 SC',
-  },
-])
+const rows = ref<CampaignRow[]>([])
+
+onMounted(loadCampaigns)
+
+async function loadCampaigns() {
+  loading.value = true
+  error.value = ''
+  try {
+    const items = await apiGet<AdminCampaign[]>('/admin/campaigns')
+    rows.value = items.map(toRow)
+  } catch (err) {
+    error.value = err instanceof ApiError || err instanceof Error ? err.message : 'Campaign list failed.'
+  } finally {
+    loading.value = false
+  }
+}
 
 async function createDraft() {
   loading.value = true
   error.value = ''
   notice.value = ''
   try {
-    const response = await apiPost<AdminCampaignResponse>('/admin/campaigns', toRequest(rows.value[0]))
-    rows.value[0].status = response.status
-    notice.value = `${rows.value[0].campaignCode} draft created.`
+    const response = await apiPost<AdminCampaignResponse>('/admin/campaigns', {
+      campaignCode: `ops_campaign_${Date.now()}`,
+      name: 'Ops Campaign',
+      campaignType: 'daily_login',
+      eligibleRegions: ['CA'],
+      blockedRegions: ['WA'],
+      rewardPolicy: [{ currency: 'GC', amount: '1000' }],
+      scStrategy: 'gc_only',
+      rulesVersion: 'rules-v1',
+      legalApprovalId: '',
+      riskAction: 'pass',
+    })
+    notice.value = `${response.campaignCode} draft created.`
+    await loadCampaigns()
   } catch (err) {
     error.value = err instanceof ApiError || err instanceof Error ? err.message : 'Campaign setup failed.'
   } finally {
@@ -69,18 +82,32 @@ async function pause(row: CampaignRow) {
   }
 }
 
-function toRequest(row: CampaignRow): AdminCampaignRequest {
+function toRow(item: AdminCampaign): CampaignRow {
+  const rewards = parseRewards(item.rewardPolicyJson)
   return {
-    campaignCode: row.campaignCode,
-    name: row.name,
-    campaignType: row.campaignType,
-    eligibleRegions: row.eligibleRegions,
-    blockedRegions: row.blockedRegions,
-    rewardPolicy: row.rewardPolicy,
-    scStrategy: row.scStrategy,
-    rulesVersion: row.rulesVersion,
-    legalApprovalId: row.legalApprovalId,
-    riskAction: row.riskAction,
+    ...item,
+    eligibleRegions: parseStrings(item.eligibleRegionsJson),
+    blockedRegions: parseStrings(item.blockedRegionsJson),
+    rewardPolicy: rewards,
+    budgetLabel: rewards.map((reward) => `${reward.amount} ${reward.currency}`).join(' + '),
+  }
+}
+
+function parseRewards(value: string) {
+  try {
+    const parsed = JSON.parse(value) as Array<{ currency: string; amount: string | number }>
+    return parsed.map((reward) => ({ currency: reward.currency, amount: String(reward.amount) }))
+  } catch {
+    return []
+  }
+}
+
+function parseStrings(value: string | null) {
+  if (!value) return []
+  try {
+    return JSON.parse(value) as string[]
+  } catch {
+    return []
   }
 }
 </script>

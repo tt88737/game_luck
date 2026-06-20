@@ -60,3 +60,22 @@
   - `frontend npm run build`
   - `frontend npx playwright test`
   - 新增后台页面浏览器截图验收：`frontend/test-results/admin-regions-desktop.png`、`admin-regions-mobile.png`、`admin-legal-docs-desktop.png`、`admin-legal-docs-mobile.png`
+
+## 2026-06-20 Sprint 3
+- Sprint 3 完成：活动与 Lobby 配置化闭环。
+- 后端新增：
+  - `lobby_cards` 配置表与种子数据。
+  - `GET /api/v1/lobby` 聚合返回 active Lobby 卡片、active 活动、daily task。
+  - `GET /api/v1/admin/lobby-cards`、`PATCH /api/v1/admin/lobby-cards/{cardCode}`。
+  - `GET /api/v1/admin/campaigns` 返回真实活动配置列表。
+  - Lobby 卡片更新写入 `audit_logs`，target type 为 `lobby_card`。
+- 前端新增/改造：
+  - `AppHome.vue` 不再写死 Featured games，改为从 `/lobby` 渲染卡片、活动和任务。
+  - `AdminCampaigns.vue` 不再使用前端内置 `OPS_SC_BONUS` 假数据，改为读取 `/admin/campaigns`。
+  - 新增 `AdminLobby.vue`，接入 `/admin/lobby` 管理卡片上下线。
+- 完整验证通过：
+  - `backend .\gradlew.bat --no-daemon test`
+  - `frontend npm run test -- --run --pool=threads --maxWorkers=1`
+  - `frontend npm run build`
+  - `frontend npx playwright test`
+  - 新增页面截图验收：`frontend/test-results/sprint3-app-lobby-desktop.png`、`sprint3-app-lobby-mobile.png`、`sprint3-admin-lobby-desktop.png`、`sprint3-admin-lobby-mobile.png`
