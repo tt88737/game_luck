@@ -9,6 +9,7 @@ const AppStore = () => import('../views/app/AppStore.vue')
 const AppKyc = () => import('../views/app/AppKyc.vue')
 const AppRedemption = () => import('../views/app/AppRedemption.vue')
 const AppSlots = () => import('../views/app/AppSlots.vue')
+const AppInbox = () => import('../views/app/AppInbox.vue')
 const AdminDashboard = () => import('../views/admin/AdminDashboard.vue')
 const AdminCampaigns = () => import('../views/admin/AdminCampaigns.vue')
 const AdminAuditLogs = () => import('../views/admin/AdminAuditLogs.vue')
@@ -26,6 +27,7 @@ const AdminWalletLedger = () => import('../views/admin/AdminWalletLedger.vue')
 const AdminGames = () => import('../views/admin/AdminGames.vue')
 const AdminGameRounds = () => import('../views/admin/AdminGameRounds.vue')
 const AdminActivityDashboard = () => import('../views/admin/AdminActivityDashboard.vue')
+const AdminNotifications = () => import('../views/admin/AdminNotifications.vue')
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -40,6 +42,7 @@ export const router = createRouter({
     { path: '/app/kyc', component: AppKyc },
     { path: '/app/redemption', component: AppRedemption },
     { path: '/app/slots/:gameCode', component: AppSlots },
+    { path: '/app/inbox', component: AppInbox },
     { path: '/admin', component: AdminDashboard },
     { path: '/admin/users', component: AdminUsers },
     { path: '/admin/regions', component: AdminRegions },
@@ -54,6 +57,7 @@ export const router = createRouter({
     { path: '/admin/games', component: AdminGames },
     { path: '/admin/game-rounds', component: AdminGameRounds },
     { path: '/admin/activity-dashboard', component: AdminActivityDashboard },
+    { path: '/admin/notifications', component: AdminNotifications },
     { path: '/admin/amoe', component: AdminPlaceholder, props: { title: 'AMOE' } },
     { path: '/admin/support', component: AdminPlaceholder, props: { title: 'Support' } },
     { path: '/admin/audit-logs', component: AdminAuditLogs },

@@ -9,6 +9,7 @@ import AdminLobby from './AdminLobby.vue'
 import AdminGames from './AdminGames.vue'
 import AdminGameRounds from './AdminGameRounds.vue'
 import AdminActivityDashboard from './AdminActivityDashboard.vue'
+import AdminNotifications from './AdminNotifications.vue'
 import { i18n } from '../../i18n'
 
 function json(data: unknown, status = 200) {
@@ -150,6 +151,29 @@ describe('admin pages', () => {
     expect(wrapper.text()).toContain('2,000')
     expect(wrapper.text()).toContain('daily_spin_10')
     expect(wrapper.text()).toContain('spin_count')
+  })
+
+  it('lets admins issue manual notification rewards', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation((input, init) => {
+      const url = String(input)
+      if (url.endsWith('/admin/notifications') && init?.method !== 'POST') {
+        return json([{ id: 9, userId: 1, title: 'Retention bonus', message: 'Claim your GC reward.', rewardCurrency: 'GC', rewardAmount: '750.0000', status: 'claimable', sourceType: 'manual_grant', sourceId: 'crm-ticket-1001', ledgerId: null, createdAt: '2026-06-21T00:00:00Z', expiresAt: null, claimedAt: null }])
+      }
+      if (url.endsWith('/admin/notifications/manual-grant') && init?.method === 'POST') {
+        return json({ id: 10, userId: 2, title: 'Manual bonus', message: 'Ops grant.', rewardCurrency: 'GC', rewardAmount: '500.0000', status: 'claimable', sourceType: 'manual_grant', sourceId: 'manual-web', ledgerId: null, createdAt: '2026-06-21T00:00:00Z', expiresAt: null, claimedAt: null })
+      }
+      return json({})
+    })
+
+    const wrapper = mount(AdminNotifications, { global })
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('Retention bonus')
+    await wrapper.get('[data-test="manual-grant"]').trigger('submit')
+    await flushPromises()
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/v1/admin/notifications/manual-grant', expect.objectContaining({ method: 'POST' }))
+    expect(wrapper.text()).toContain('Manual bonus')
   })
 
   it('localizes admin shell and dashboard copy when Chinese is selected', async () => {

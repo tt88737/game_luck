@@ -348,3 +348,19 @@ export interface AdminActivityDashboard {
     rewardAmount: string | number
   }>
 }
+
+export interface RewardInboxItem {
+  id: number
+  userId: number
+  title: string
+  message: string
+  rewardCurrency: string
+  rewardAmount: string | number
+  status: string
+  sourceType: string
+  sourceId: string
+  ledgerId: number | null
+  createdAt: string
+  expiresAt: string | null
+  claimedAt: string | null
+}

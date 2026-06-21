@@ -12,6 +12,7 @@ import AdminKycReview from '../admin/AdminKycReview.vue'
 import AdminRedemptions from '../admin/AdminRedemptions.vue'
 import AppActivity from './AppActivity.vue'
 import AppSlots from './AppSlots.vue'
+import AppInbox from './AppInbox.vue'
 import { i18n } from '../../i18n'
 import { createPinia, setActivePinia } from 'pinia'
 
@@ -146,6 +147,31 @@ describe('P1 production pages', () => {
 
     expect(fetchMock).toHaveBeenCalledWith('/api/v1/player/tasks/daily_spin_10/claim', expect.objectContaining({ method: 'POST' }))
     expect(wrapper.text()).toContain('1,000 GC')
+  })
+
+  it('claims a reward from the inbox', async () => {
+    localStorage.setItem('tangluck_user_id', '1')
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation((input, init) => {
+      const url = String(input)
+      if (url.endsWith('/player/notifications') && init?.method !== 'POST') {
+        return json([{ id: 9, userId: 1, title: 'Retention bonus', message: 'Claim your GC reward.', rewardCurrency: 'GC', rewardAmount: '750.0000', status: 'claimable', sourceType: 'manual_grant', sourceId: 'crm-ticket-1001', ledgerId: null, createdAt: '2026-06-21T00:00:00Z', expiresAt: null, claimedAt: null }])
+      }
+      if (url.endsWith('/player/notifications/9/claim') && init?.method === 'POST') {
+        return json({ id: 9, userId: 1, title: 'Retention bonus', message: 'Claim your GC reward.', rewardCurrency: 'GC', rewardAmount: '750.0000', status: 'claimed', sourceType: 'manual_grant', sourceId: 'crm-ticket-1001', ledgerId: 99, createdAt: '2026-06-21T00:00:00Z', expiresAt: null, claimedAt: '2026-06-21T00:01:00Z' })
+      }
+      return json({})
+    })
+
+    const wrapper = mount(AppInbox, { global })
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('Retention bonus')
+    await wrapper.get('[data-test="claim-inbox-9"]').trigger('click')
+    await flushPromises()
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/v1/player/notifications/9/claim', expect.objectContaining({ method: 'POST' }))
+    expect(wrapper.text()).toContain('claimed')
+    expect(wrapper.text()).toContain('ledger 99')
   })
 
   it('submits KYC for manual review', async () => {
