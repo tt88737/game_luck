@@ -38,6 +38,13 @@ public class WalletService {
     }
 
     @Transactional
+    public LedgerDto debit(Long userId, String currency, BigDecimal amount, String businessType, String businessId, String idempotencyKey) {
+        return ledgerRepository.findByIdempotencyKey(idempotencyKey)
+                .map(this::toDto)
+                .orElseGet(() -> createDebit(userId, currency, amount, businessType, businessId, idempotencyKey));
+    }
+
+    @Transactional
     public LedgerDto freeze(Long userId, String currency, BigDecimal amount, String businessType, String businessId, String idempotencyKey) {
         return ledgerRepository.findByIdempotencyKey(idempotencyKey)
                 .map(this::toDto)
@@ -108,6 +115,33 @@ public class WalletService {
                 account.getId(),
                 currency,
                 "credit",
+                amount,
+                account.getBalance(),
+                account.getFrozenBalance(),
+                businessType,
+                businessId,
+                idempotencyKey,
+                clock.instant()
+        ));
+
+        return toDto(ledger);
+    }
+
+    private LedgerDto createDebit(Long userId, String currency, BigDecimal amount, String businessType, String businessId, String idempotencyKey) {
+        var account = accountRepository.findByUserIdAndCurrency(userId, currency)
+                .orElseThrow(() -> new BusinessException(ErrorCode.INTERNAL_ERROR, "Wallet account does not exist.", Map.of("currency", currency)));
+        try {
+            account.debit(amount, clock.instant());
+        } catch (IllegalArgumentException exception) {
+            throw new BusinessException(ErrorCode.VALIDATION_FAILED, "Insufficient balance.", Map.of("currency", currency));
+        }
+        accountRepository.save(account);
+
+        var ledger = ledgerRepository.save(new WalletLedger(
+                userId,
+                account.getId(),
+                currency,
+                "debit",
                 amount,
                 account.getBalance(),
                 account.getFrozenBalance(),

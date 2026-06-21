@@ -72,6 +72,14 @@ public class WalletAccount {
         this.updatedAt = now;
     }
 
+    public void debit(BigDecimal amount, Instant now) {
+        if (this.balance.subtract(this.frozenBalance).compareTo(amount) < 0) {
+            throw new IllegalArgumentException("Insufficient available balance.");
+        }
+        this.balance = this.balance.subtract(amount);
+        this.updatedAt = now;
+    }
+
     public void freeze(BigDecimal amount, Instant now) {
         if (this.balance.subtract(this.frozenBalance).compareTo(amount) < 0) {
             throw new IllegalArgumentException("Insufficient available balance.");
