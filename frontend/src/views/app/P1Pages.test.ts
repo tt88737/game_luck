@@ -99,6 +99,7 @@ describe('P1 production pages', () => {
 
     expect(fetchMock).toHaveBeenCalledWith('/api/v1/auth/guest', expect.objectContaining({ method: 'POST' }))
     expect(wrapper.text()).toContain('Guest')
+    expect(wrapper.text()).not.toContain('User ')
     expect(wrapper.text()).toContain('Bind account')
     expect(wrapper.text()).toContain('Sign in')
     expect(wrapper.text()).toContain('Home')
@@ -107,6 +108,30 @@ describe('P1 production pages', () => {
     expect(wrapper.text()).toContain('Inbox')
     expect(wrapper.text()).toContain('Wallet')
     expect(wrapper.find('.bottom-nav').text()).not.toContain('Register')
+  })
+
+  it('shows retry when guest session boot fails', async () => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation(() => json({ message: 'guest failed' }, 500))
+
+    const wrapper = mount(AppShell, {
+      global: {
+        plugins: [createRouter({
+          history: createMemoryHistory(),
+          routes: [{ path: '/app', component: { template: '<div />' } }],
+        })],
+        mocks: { $t: i18n.t },
+        stubs: {
+          RouterLink: { props: ['to'], template: `<a :href="typeof to === 'string' ? to : to.path"><slot /></a>` },
+          RouterView: { template: '<section data-test="route-outlet">Lobby content</section>' },
+          AuthModal: true,
+        },
+      },
+    })
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('Session could not start')
+    expect(wrapper.text()).toContain('Retry')
+    expect(wrapper.text()).not.toContain('User ')
   })
 
   it('creates a GC purchase order from the store', async () => {

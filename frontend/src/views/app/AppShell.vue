@@ -3,6 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
 import AuthModal from '../../components/AuthModal.vue'
 import { useSessionStore } from '../../stores/session'
+import { i18n } from '../../i18n'
 
 const route = useRoute()
 const router = useRouter()
@@ -10,8 +11,15 @@ const session = useSessionStore()
 const authOpen = ref(false)
 const authMode = ref<'register' | 'login'>('register')
 const bootError = ref('')
+const booting = ref(false)
 
-const accountLabel = computed(() => session.isGuest ? 'Guest' : session.email || `User ${session.userId}`)
+const accountLabel = computed(() => {
+  if (booting.value && !session.userId) return i18n.t('account.loading')
+  if (session.isGuest) return i18n.t('account.guest')
+  if (session.email) return session.email
+  if (session.userId) return `${i18n.t('account.formal')} ${session.userId}`
+  return i18n.t('account.loading')
+})
 
 onMounted(() => {
   void bootGuest()
@@ -27,11 +35,14 @@ watch(() => route.query.auth, (value) => {
 }, { immediate: true })
 
 async function bootGuest() {
+  booting.value = true
   bootError.value = ''
   try {
     await session.ensureGuestSession()
-  } catch (err) {
-    bootError.value = err instanceof Error ? err.message : 'Guest session failed.'
+  } catch {
+    bootError.value = i18n.t('account.sessionError')
+  } finally {
+    booting.value = false
   }
 }
 
@@ -63,8 +74,9 @@ async function onModalChange(open: boolean) {
         <span v-if="session.userId" class="account-id">ID {{ session.userId }}</span>
       </div>
       <div class="account-actions">
-        <button v-if="session.isGuest" type="button" class="small-action" @click="openAuth('register')">Bind account</button>
-        <button type="button" class="small-action ghost" @click="openAuth('login')">Sign in</button>
+        <button v-if="bootError" type="button" class="small-action" @click="bootGuest">{{ $t('account.retry') }}</button>
+        <button v-if="session.isGuest" type="button" class="small-action" @click="openAuth('register')">{{ $t('auth.bindAccount') }}</button>
+        <button type="button" class="small-action ghost" @click="openAuth('login')">{{ $t('auth.signIn') }}</button>
       </div>
     </header>
 
@@ -75,7 +87,7 @@ async function onModalChange(open: boolean) {
       <RouterLink to="/app">{{ $t('nav.home') }}</RouterLink>
       <RouterLink to="/app/slots/lucky_slots">{{ $t('nav.slots') }}</RouterLink>
       <RouterLink to="/app/activity">{{ $t('nav.activity') }}</RouterLink>
-      <RouterLink to="/app/inbox">Inbox</RouterLink>
+      <RouterLink to="/app/inbox">{{ $t('nav.inbox') }}</RouterLink>
       <RouterLink to="/app/wallet">{{ $t('common.wallet') }}</RouterLink>
     </nav>
 
