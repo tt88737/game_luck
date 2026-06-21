@@ -10,6 +10,7 @@ const primaryItems = [
   { to: '/admin/campaigns', key: 'admin.campaigns' },
   { to: '/admin/games', key: 'admin.games' },
   { to: '/admin/game-rounds', key: 'admin.gameRounds' },
+  { to: '/admin/activity-dashboard', key: 'admin.activityCenter' },
   { to: '/admin/packages', key: 'admin.packages' },
   { to: '/admin/orders', key: 'admin.orders' },
   { to: '/admin/kyc', key: 'admin.kycApplications' },

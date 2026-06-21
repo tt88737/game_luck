@@ -99,6 +99,9 @@ describe('P1 production pages', () => {
       if (url.endsWith('/slots/rounds')) {
         return json({ items: [{ roundId: 'round_1001', userId: 1, gameCode: 'lucky_slots', currency: 'GC', betAmount: '10.0000', payoutAmount: '20.0000', multiplier: '2.0000', reels: [['coin', 'seven', 'coin'], ['coin', 'seven', 'coin'], ['coin', 'seven', 'coin'], ['coin', 'seven', 'coin'], ['coin', 'seven', 'coin']], status: 'settled', debitLedgerId: 10, creditLedgerId: 11, createdAt: '2026-06-21T00:00:00Z' }], page: 1, pageSize: 20, total: 1 })
       }
+      if (url.endsWith('/player/activity-summary')) {
+        return json({ tasks: [{ taskCode: 'daily_spin_10', name: 'Spin 10 times', targetType: 'spin_count', progress: '2.0000', target: '10.0000', status: 'in_progress', rewardCurrency: 'GC', rewardAmount: '1000.0000' }], claimableCount: 0 })
+      }
       if (url.endsWith('/slots/lucky_slots/spin') && init?.method === 'POST') {
         return json({ roundId: 'round_1002', userId: 1, gameCode: 'lucky_slots', currency: 'GC', betAmount: '10.0000', payoutAmount: '20.0000', multiplier: '2.0000', reels: [['coin', 'seven', 'coin'], ['coin', 'seven', 'coin'], ['coin', 'seven', 'coin'], ['coin', 'seven', 'coin'], ['coin', 'seven', 'coin']], status: 'settled', debitLedgerId: 12, creditLedgerId: 13, createdAt: '2026-06-21T00:01:00Z' })
       }
@@ -110,12 +113,39 @@ describe('P1 production pages', () => {
 
     expect(wrapper.text()).toContain('Lucky Slots')
     expect(wrapper.text()).toContain('round_1001')
+    expect(wrapper.text()).toContain('daily_spin_10')
     await wrapper.get('[data-test="spin-slots"]').trigger('click')
     await flushPromises()
 
     expect(fetchMock).toHaveBeenCalledWith('/api/v1/slots/lucky_slots/spin', expect.objectContaining({ method: 'POST' }))
     expect(wrapper.text()).toContain('20 GC')
     expect(wrapper.text()).toContain('round_1002')
+  })
+
+  it('claims a completed Slots task from the activity center', async () => {
+    localStorage.setItem('tangluck_user_id', '1')
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation((input, init) => {
+      const url = String(input)
+      if (url.endsWith('/player/activity-summary')) {
+        return json({ tasks: [{ taskCode: 'daily_spin_10', name: 'Spin 10 times', targetType: 'spin_count', progress: '10.0000', target: '10.0000', status: 'claimable', rewardCurrency: 'GC', rewardAmount: '1000.0000' }], claimableCount: 1 })
+      }
+      if (url.endsWith('/player/tasks/daily_spin_10/claim') && init?.method === 'POST') {
+        return json({ taskCode: 'daily_spin_10', status: 'completed', rewardCurrency: 'GC', rewardAmount: '1000.0000', ledgerId: 88 })
+      }
+      if (url.endsWith('/campaigns')) return json([])
+      if (url.endsWith('/tasks/daily')) return json([])
+      return json({})
+    })
+
+    const wrapper = mount(AppActivity, { global })
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('Spin 10 times')
+    await wrapper.get('[data-test="claim-activity-task-daily_spin_10"]').trigger('click')
+    await flushPromises()
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/v1/player/tasks/daily_spin_10/claim', expect.objectContaining({ method: 'POST' }))
+    expect(wrapper.text()).toContain('1,000 GC')
   })
 
   it('submits KYC for manual review', async () => {

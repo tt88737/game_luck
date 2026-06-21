@@ -2,11 +2,12 @@
 import { onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import { ApiError, apiGet, apiPost } from '../../api/http'
-import type { Campaign, ClaimResponse, DailyTask } from '../../api/contracts'
+import type { ActivitySummary, ActivityTaskClaim, Campaign, ClaimResponse, DailyTask } from '../../api/contracts'
 import { i18n } from '../../i18n'
 
 const campaigns = ref<Campaign[]>([])
 const tasks = ref<DailyTask[]>([])
+const activitySummary = ref<ActivitySummary | null>(null)
 const error = ref('')
 const message = ref('')
 const loading = ref(true)
@@ -19,12 +20,14 @@ async function loadActivity() {
   loading.value = true
   error.value = ''
   try {
-    const [campaignList, taskList] = await Promise.all([
+    const [campaignList, taskList, activity] = await Promise.all([
       apiGet<Campaign[]>('/campaigns'),
       apiGet<DailyTask[]>('/tasks/daily'),
+      apiGet<ActivitySummary>('/player/activity-summary').catch(() => null),
     ])
     campaigns.value = campaignList
     tasks.value = taskList
+    activitySummary.value = activity
   } catch (err) {
     error.value = err instanceof ApiError || err instanceof Error ? err.message : i18n.t('activity.requestFailed')
   } finally {
@@ -41,6 +44,21 @@ async function claimTask(code: string) {
     await apiPost<DailyTask>(`/tasks/${code}/progress`, { progress: 1 })
     return apiPost<ClaimResponse>(`/tasks/${code}/claim`, undefined, `activity-task-${code}-${Date.now()}`)
   })
+}
+
+async function claimActivityTask(code: string) {
+  processing.value = code
+  error.value = ''
+  message.value = ''
+  try {
+    const result = await apiPost<ActivityTaskClaim>(`/player/tasks/${code}/claim`)
+    message.value = `${result.taskCode} issued ${Number(result.rewardAmount).toLocaleString()} ${result.rewardCurrency}`
+    await loadActivity()
+  } catch (err) {
+    error.value = err instanceof ApiError || err instanceof Error ? err.message : i18n.t('activity.claimFailed')
+  } finally {
+    processing.value = ''
+  }
 }
 
 async function claimCoupon() {
@@ -95,6 +113,27 @@ async function claim(key: string, action: () => Promise<ClaimResponse>) {
           </button>
         </article>
         <p v-if="!campaigns.length" class="empty-state">{{ $t('activity.noCampaign') }}</p>
+      </section>
+
+      <section class="section-block">
+        <div class="section-title">
+          <h2>Slots tasks</h2>
+          <span>{{ activitySummary?.claimableCount || 0 }} claimable</span>
+        </div>
+        <article v-for="task in activitySummary?.tasks || []" :key="task.taskCode" class="reward-row">
+          <div>
+            <strong>{{ task.name }}</strong>
+            <span>{{ task.taskCode }} · {{ Number(task.progress).toLocaleString() }}/{{ Number(task.target).toLocaleString() }} · {{ task.status }}</span>
+          </div>
+          <button
+            :data-test="`claim-activity-task-${task.taskCode}`"
+            :disabled="processing === task.taskCode || task.status !== 'claimable'"
+            @click="claimActivityTask(task.taskCode)"
+          >
+            {{ processing === task.taskCode ? $t('common.claiming') : `${Number(task.rewardAmount).toLocaleString()} ${task.rewardCurrency}` }}
+          </button>
+        </article>
+        <p v-if="!activitySummary?.tasks?.length" class="empty-state">No Slots tasks available.</p>
       </section>
 
       <section class="section-block">

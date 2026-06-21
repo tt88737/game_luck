@@ -8,6 +8,7 @@ import AdminLegalDocuments from './AdminLegalDocuments.vue'
 import AdminLobby from './AdminLobby.vue'
 import AdminGames from './AdminGames.vue'
 import AdminGameRounds from './AdminGameRounds.vue'
+import AdminActivityDashboard from './AdminActivityDashboard.vue'
 import { i18n } from '../../i18n'
 
 function json(data: unknown, status = 200) {
@@ -131,6 +132,24 @@ describe('admin pages', () => {
     expect(wrapper.text()).toContain('20 GC')
     expect(wrapper.text()).toContain('ledger 10')
     expect(wrapper.text()).toContain('settled')
+  })
+
+  it('renders admin activity dashboard metrics and task completion table', async () => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation((input) => {
+      const url = String(input)
+      if (url.endsWith('/admin/activity-dashboard')) {
+        return json({ totalParticipants: 3, completedTasks: 2, gcGranted: '2000.0000', tasks: [{ taskCode: 'daily_spin_10', name: 'Spin 10 times', targetType: 'spin_count', completedCount: 2, rewardAmount: '1000.0000' }] })
+      }
+      return json({})
+    })
+
+    const wrapper = mount(AdminActivityDashboard, { global })
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('3')
+    expect(wrapper.text()).toContain('2,000')
+    expect(wrapper.text()).toContain('daily_spin_10')
+    expect(wrapper.text()).toContain('spin_count')
   })
 
   it('localizes admin shell and dashboard copy when Chinese is selected', async () => {

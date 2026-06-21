@@ -25,6 +25,7 @@ const AdminRedemptions = () => import('../views/admin/AdminRedemptions.vue')
 const AdminWalletLedger = () => import('../views/admin/AdminWalletLedger.vue')
 const AdminGames = () => import('../views/admin/AdminGames.vue')
 const AdminGameRounds = () => import('../views/admin/AdminGameRounds.vue')
+const AdminActivityDashboard = () => import('../views/admin/AdminActivityDashboard.vue')
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -52,6 +53,7 @@ export const router = createRouter({
     { path: '/admin/wallet-ledger', component: AdminWalletLedger },
     { path: '/admin/games', component: AdminGames },
     { path: '/admin/game-rounds', component: AdminGameRounds },
+    { path: '/admin/activity-dashboard', component: AdminActivityDashboard },
     { path: '/admin/amoe', component: AdminPlaceholder, props: { title: 'AMOE' } },
     { path: '/admin/support', component: AdminPlaceholder, props: { title: 'Support' } },
     { path: '/admin/audit-logs', component: AdminAuditLogs },

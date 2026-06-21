@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { ApiError, apiGet, apiPost } from '../../api/http'
-import type { SlotGame, SlotRound, SlotRoundPage, WalletSummary } from '../../api/contracts'
+import type { ActivitySummary, SlotGame, SlotRound, SlotRoundPage, WalletSummary } from '../../api/contracts'
 import { useSessionStore } from '../../stores/session'
 
 const route = useRoute()
@@ -15,6 +15,7 @@ const result = ref<SlotRound | null>(null)
 const game = ref<SlotGame | null>(null)
 const wallet = ref<WalletSummary | null>(null)
 const rounds = ref<SlotRound[]>([])
+const activity = ref<ActivitySummary | null>(null)
 const betAmount = ref('10.0000')
 
 const gcBalance = computed(() => Number(wallet.value?.wallet.gcBalance ?? 0))
@@ -35,6 +36,7 @@ async function loadSlots() {
     game.value = games.find((item) => item.gameCode === gameCode.value) ?? games[0] ?? null
     wallet.value = summary
     rounds.value = history.items
+    activity.value = await apiGet<ActivitySummary>('/player/activity-summary').catch(() => null)
   } catch (err) {
     error.value = messageFrom(err)
   } finally {
@@ -53,7 +55,7 @@ async function spin() {
     }, `web-slot-${game.value.gameCode}-${Date.now()}`)
     result.value = round
     rounds.value = [round, ...rounds.value.filter((item) => item.roundId !== round.roundId)].slice(0, 10)
-    await refreshWallet()
+    await Promise.all([refreshWallet(), refreshActivity()])
   } catch (err) {
     error.value = messageFrom(err)
   } finally {
@@ -63,6 +65,10 @@ async function spin() {
 
 async function refreshWallet() {
   wallet.value = await apiGet<WalletSummary>('/wallet/summary')
+}
+
+async function refreshActivity() {
+  activity.value = await apiGet<ActivitySummary>('/player/activity-summary').catch(() => activity.value)
 }
 
 function messageFrom(err: unknown) {
@@ -157,6 +163,21 @@ function defaultReels() {
           </div>
           <strong>{{ money(result.payoutAmount) }} GC</strong>
         </article>
+      </section>
+
+      <section class="section-block">
+        <div class="section-title">
+          <h2>Task progress</h2>
+          <RouterLink to="/app/activity">Activity</RouterLink>
+        </div>
+        <article v-for="task in activity?.tasks || []" :key="task.taskCode" class="reward-row">
+          <div>
+            <strong>{{ task.taskCode }}</strong>
+            <span>{{ task.name }} · {{ money(task.progress) }}/{{ money(task.target) }} · {{ task.status }}</span>
+          </div>
+          <strong>{{ money(task.rewardAmount) }} {{ task.rewardCurrency }}</strong>
+        </article>
+        <p v-if="!activity?.tasks?.length" class="empty-state">No task progress yet.</p>
       </section>
 
       <section class="section-block">

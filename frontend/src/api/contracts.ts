@@ -311,3 +311,40 @@ export interface SlotRoundPage {
   pageSize: number
   total: number
 }
+
+export interface ActivityTask {
+  taskCode: string
+  name: string
+  targetType: string
+  progress: string | number
+  target: string | number
+  status: string
+  rewardCurrency: string
+  rewardAmount: string | number
+}
+
+export interface ActivitySummary {
+  tasks: ActivityTask[]
+  claimableCount: number
+}
+
+export interface ActivityTaskClaim {
+  taskCode: string
+  status: string
+  rewardCurrency: string
+  rewardAmount: string | number
+  ledgerId: number
+}
+
+export interface AdminActivityDashboard {
+  totalParticipants: number
+  completedTasks: number
+  gcGranted: string | number
+  tasks: Array<{
+    taskCode: string
+    name: string
+    targetType: string
+    completedCount: number
+    rewardAmount: string | number
+  }>
+}
