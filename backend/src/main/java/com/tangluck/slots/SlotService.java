@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tangluck.admin.AdminAuditService;
 import com.tangluck.admin.AdminOperatorContext;
+import com.tangluck.activity.ActivityService;
 import com.tangluck.common.api.BusinessException;
 import com.tangluck.common.api.ErrorCode;
 import com.tangluck.wallet.WalletService;
@@ -44,14 +45,16 @@ public class SlotService {
     private final SlotGameRepository gameRepository;
     private final SlotRoundRepository roundRepository;
     private final WalletService walletService;
+    private final ActivityService activityService;
     private final AdminAuditService adminAuditService;
     private final ObjectMapper objectMapper;
     private final Clock clock;
 
-    public SlotService(SlotGameRepository gameRepository, SlotRoundRepository roundRepository, WalletService walletService, AdminAuditService adminAuditService, ObjectMapper objectMapper) {
+    public SlotService(SlotGameRepository gameRepository, SlotRoundRepository roundRepository, WalletService walletService, ActivityService activityService, AdminAuditService adminAuditService, ObjectMapper objectMapper) {
         this.gameRepository = gameRepository;
         this.roundRepository = roundRepository;
         this.walletService = walletService;
+        this.activityService = activityService;
         this.adminAuditService = adminAuditService;
         this.objectMapper = objectMapper;
         this.clock = Clock.systemUTC();
@@ -134,6 +137,7 @@ public class SlotService {
                 ? walletService.credit(userId, "GC", payout, "slot_payout", round.getRoundId(), "slot:payout:" + idempotencyKey).ledgerId()
                 : null;
         round.attachLedgers(debit.ledgerId(), creditLedgerId);
+        activityService.recordSpin(userId, request.betAmount(), payout);
         return toDto(roundRepository.save(round));
     }
 

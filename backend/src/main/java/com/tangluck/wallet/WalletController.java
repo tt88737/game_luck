@@ -28,9 +28,10 @@ public class WalletController {
             @RequestHeader("X-User-Id") Long userId,
             @RequestParam String currency,
             @RequestParam(required = false, name = "business_type") String businessType,
+            @RequestParam(required = false, name = "businessType") String businessTypeCamel,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20", name = "page_size") int pageSize
     ) {
-        return walletService.ledger(userId, currency, businessType, page, pageSize);
+        return walletService.ledger(userId, currency, businessType == null ? businessTypeCamel : businessType, page, pageSize);
     }
 }
