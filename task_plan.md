@@ -44,3 +44,8 @@
 - 当前 P1 purchase/KYC/redemption 表结构偏简化，需要迁移扩展。
 - 当前后台缺 RBAC 与管理员会话，计划阶段需先定义最小权限模型。
 - 当前 C/B 端核心静态文案已接入中英文 i18n；后续新增模块必须同步补齐 key，并补浏览器语言验收。
+## 2026-06-21 B1-B3 Slots Productization
+- [x] B1 Slots 核心游戏闭环：C 端 `/app/slots/lucky_slots`，B 端 `/admin/games`、`/admin/game-rounds`，后端 spin/wallet ledger/round history。
+- [x] B2 活动任务联动：spin_count、bet_amount、win_amount 进度，任务领取，B 端 Activity Dashboard。
+- [x] B3 Reward Inbox：C 端 `/app/inbox`，B 端 `/admin/notifications`，人工发放、过期、领取、账变和审计。
+- [x] 全量验收：后端测试、前端测试、build、Playwright、真实浏览器桌面/移动截图。

@@ -81,3 +81,10 @@
 - 当前 `messages.ts` 中文资源本身是 UTF-8 正常中文；PowerShell 默认输出会显示乱码，判断源文件内容应以 Node/构建/浏览器渲染为准。
 - 业务状态值、订单号、活动 code、供应商返回原因、法务文档标题属于后端或运营数据，不应强行前端翻译；静态 UI 文案必须进入 i18n。
 - Playwright 已覆盖默认英语、`zh-CN` 下 C 端注册页和 B 端看板；后续新增模块需要同步增加中英文浏览器语言断言。
+## 2026-06-21 B1-B3 Slots Productization 发现
+- Slots 下注需要普通 GC debit 能力，原钱包服务只有 credit/freeze/unfreeze/redeemFrozen；已补 `WalletService.debit(...)` 并保持幂等账变。
+- 本地 H2 对 `json` 列和 JPA String 读取会出现字符串包装差异；Slots reels 读取已兼容 textual JSON 和数组 JSON。
+- 活动任务进度返回 BigDecimal，前端和测试都应按数值/金额型处理，不按整数假设。
+- 钱包 ledger 查询历史参数使用 `business_type`，前端和测试更常用 `businessType`；已在后端兼容两种参数名。
+- 浏览器验收不能用伪 token，否则会触发 401；应通过真实注册接口创建测试用户并注入 `tangluck_user_id`。
+- 8092 页面真实验收必须同时检查网络 4xx/5xx、页面可见错误和截图，而不是只看页面是否能打开。

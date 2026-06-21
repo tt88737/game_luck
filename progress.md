@@ -165,3 +165,12 @@
   - `frontend npm run test -- --run --pool=threads --maxWorkers=1`
   - `frontend npm run build`
   - `frontend npx playwright test`
+## 2026-06-21 B1-B3 Slots Productization
+- B1 Slots 核心闭环完成：后端新增 `slot_games`、`slot_rounds`，实现 C 端游戏列表、spin、round history，以及 B 端 games/game-rounds 查询与配置。
+- Spin 使用后端控制结果，GC 真实扣减/派奖，并写入 `wallet_ledger` 与 `slot_rounds`。
+- 前端新增 `/app/slots/lucky_slots`、`/admin/games`、`/admin/game-rounds`。
+- B2 活动任务联动完成：新增 `campaign_tasks`、`campaign_task_progress`，spin 后更新 `spin_count`、`bet_amount`、`win_amount`，支持任务领取派奖和后台 Activity Dashboard。
+- B3 Reward Inbox 完成：新增 `reward_inbox`，支持玩家通知列表/领取、后台人工发放/过期/查询，人工发放写 `audit_logs`。
+- 前端新增 `/app/inbox` 与 `/admin/notifications`。
+- 验证通过：`backend .\gradlew.bat --no-daemon test`、`frontend npm run test -- --run --pool=threads --maxWorkers=1`、`frontend npm run build`、`frontend npx playwright test`。
+- 浏览器截图验收通过：`artifacts/verification-b1-b3/`。
