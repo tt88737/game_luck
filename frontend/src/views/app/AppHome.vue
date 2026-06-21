@@ -24,11 +24,7 @@ const dailyLogin = computed(() => tasks.value[0])
 const isRegionRestricted = computed(() => error.value.toLowerCase().includes('region') || error.value.includes('available in your region'))
 
 onMounted(() => {
-  if (!session.userId) {
-    loading.value = false
-    return
-  }
-  void loadHome()
+  if (session.userId) void loadHome()
 })
 
 watch(() => session.userId, (userId) => {
@@ -127,13 +123,6 @@ function formatAmount(value: string | number, digits: number) {
     </header>
 
     <section v-if="loading" class="status-panel">{{ $t('home.loading') }}</section>
-
-    <section v-else-if="!session.userId" class="status-panel">
-      <strong>{{ $t('home.registerTitle') }}</strong>
-      <span>{{ $t('home.registerBody') }}</span>
-      <RouterLink class="plain-link" to="/app/register">{{ $t('home.registerCta') }}</RouterLink>
-      <RouterLink class="plain-link" to="/app/login">{{ $t('login.submit') }}</RouterLink>
-    </section>
 
     <section v-else-if="error && !summary" class="status-panel danger">
       <strong>{{ isRegionRestricted ? $t('home.regionRestricted') : $t('home.unableToLoad') }}</strong>
@@ -274,14 +263,5 @@ function formatAmount(value: string | number, digits: number) {
         </div>
       </section>
     </template>
-
-    <nav class="bottom-nav" aria-label="App navigation">
-      <RouterLink to="/app/register">{{ $t('nav.register') }}</RouterLink>
-      <RouterLink to="/app/login">{{ $t('login.submit') }}</RouterLink>
-      <RouterLink to="/app">{{ $t('nav.home') }}</RouterLink>
-      <RouterLink to="/app/store">{{ $t('nav.store') }}</RouterLink>
-      <RouterLink to="/app/redemption">{{ $t('nav.redeem') }}</RouterLink>
-      <RouterLink to="/app/wallet">{{ $t('common.wallet') }}</RouterLink>
-    </nav>
   </main>
 </template>

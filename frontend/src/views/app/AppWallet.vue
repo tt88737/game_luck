@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 import { ApiError, apiGet } from '../../api/http'
 import type { LedgerPage, WalletSummary } from '../../api/contracts'
@@ -19,6 +19,10 @@ const scFrozen = computed(() => formatAmount(summary.value?.wallet.scFrozen ?? 0
 const scRedeemable = computed(() => formatAmount(summary.value?.wallet.scRedeemable ?? 0, 2))
 
 onMounted(loadWallet)
+
+watch(() => session.userId, (userId) => {
+  if (userId && !summary.value) void loadWallet()
+})
 
 async function loadWallet() {
   if (!session.userId) {
@@ -60,12 +64,6 @@ function formatAmount(value: string | number, digits: number) {
     </header>
 
     <section v-if="loading" class="status-panel">{{ $t('wallet.loadingLedger') }}</section>
-    <section v-else-if="!session.userId" class="status-panel">
-      <strong>{{ $t('wallet.loggedOutTitle') }}</strong>
-      <span>{{ $t('wallet.loggedOutBody') }}</span>
-      <RouterLink class="plain-link" to="/app/register">{{ $t('register.submit') }}</RouterLink>
-      <RouterLink class="plain-link" to="/app/login">{{ $t('login.submit') }}</RouterLink>
-    </section>
     <section v-else-if="error" class="status-panel danger">{{ error }}</section>
 
     <template v-else>
@@ -112,13 +110,5 @@ function formatAmount(value: string | number, digits: number) {
         </div>
       </section>
     </template>
-
-    <nav class="bottom-nav" aria-label="App navigation">
-      <RouterLink to="/app">{{ $t('nav.home') }}</RouterLink>
-      <RouterLink to="/app/store">{{ $t('nav.store') }}</RouterLink>
-      <RouterLink to="/app/kyc">KYC</RouterLink>
-      <RouterLink to="/app/redemption">{{ $t('nav.redeem') }}</RouterLink>
-      <RouterLink to="/app/wallet">{{ $t('common.wallet') }}</RouterLink>
-    </nav>
   </main>
 </template>

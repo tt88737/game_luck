@@ -339,7 +339,7 @@ h2 {
   bottom: 0;
   left: 0;
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 6px;
   width: min(100%, 480px);
   margin: 0 auto;
@@ -347,6 +347,134 @@ h2 {
   border-top: 1px solid rgba(255, 210, 94, 0.3);
   background: linear-gradient(180deg, rgba(68, 38, 101, 0.98), rgba(30, 18, 49, 0.98));
   box-shadow: 0 -10px 26px rgba(0, 0, 0, 0.28);
+}
+
+.app-account-bar {
+  position: fixed;
+  z-index: 30;
+  top: 0;
+  right: 0;
+  left: 0;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  width: min(100%, 480px);
+  min-height: 62px;
+  margin: 0 auto;
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(255, 210, 94, 0.3);
+  background: linear-gradient(180deg, rgba(34, 19, 54, 0.98), rgba(23, 14, 38, 0.98));
+  color: var(--game-ink);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.28);
+}
+
+.app-shell .app-screen {
+  padding-top: 82px;
+}
+
+.brand-mark {
+  color: var(--game-gold);
+  font-weight: 900;
+}
+
+.account-strip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.account-id {
+  color: var(--game-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.account-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.small-action,
+.app-screen .small-action {
+  min-width: 0;
+  min-height: 34px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  box-shadow: none;
+}
+
+.small-action.ghost,
+.app-screen .small-action.ghost {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--game-ink);
+}
+
+.app-boot-error {
+  position: fixed;
+  z-index: 35;
+  top: 66px;
+  left: 50%;
+  width: min(92%, 440px);
+  transform: translateX(-50%);
+}
+
+.auth-modal-backdrop {
+  position: fixed;
+  z-index: 60;
+  inset: 0;
+  display: grid;
+  place-items: end center;
+  padding: 16px;
+  background: rgba(5, 4, 10, 0.64);
+}
+
+.auth-modal {
+  width: min(100%, 440px);
+  max-height: min(92svh, 720px);
+  overflow: auto;
+  padding: 16px;
+  border: 1px solid rgba(255, 210, 94, 0.32);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(52, 31, 82, 0.98), rgba(23, 15, 38, 0.98));
+  color: var(--game-ink);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42);
+}
+
+.auth-modal-header,
+.auth-tabs {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.icon-button {
+  min-width: 34px;
+  width: 34px;
+  min-height: 34px;
+  border-radius: 999px;
+}
+
+.auth-tabs {
+  padding: 4px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.auth-tabs button {
+  flex: 1;
+  min-width: 0;
+  box-shadow: none;
+}
+
+.auth-tabs button:not(.active) {
+  background: transparent;
+  color: var(--game-muted);
+  border-color: transparent;
 }
 
 .bottom-nav a {
@@ -759,7 +887,11 @@ h2 {
 
   .bottom-nav {
     width: min(100%, 860px);
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .app-account-bar {
+    width: min(100%, 860px);
   }
 
   .game-card-grid {

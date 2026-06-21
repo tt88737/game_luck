@@ -1,10 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 const AppHome = () => import('../views/app/AppHome.vue')
+const AppShell = () => import('../views/app/AppShell.vue')
 const AppWallet = () => import('../views/app/AppWallet.vue')
 const AppActivity = () => import('../views/app/AppActivity.vue')
-const AppRegister = () => import('../views/app/AppRegister.vue')
-const AppLogin = () => import('../views/app/AppLogin.vue')
 const AppStore = () => import('../views/app/AppStore.vue')
 const AppKyc = () => import('../views/app/AppKyc.vue')
 const AppRedemption = () => import('../views/app/AppRedemption.vue')
@@ -33,16 +32,22 @@ export const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: '/', redirect: '/app' },
-    { path: '/app/register', component: AppRegister },
-    { path: '/app/login', component: AppLogin },
-    { path: '/app', component: AppHome },
-    { path: '/app/wallet', component: AppWallet },
-    { path: '/app/activity', component: AppActivity },
-    { path: '/app/store', component: AppStore },
-    { path: '/app/kyc', component: AppKyc },
-    { path: '/app/redemption', component: AppRedemption },
-    { path: '/app/slots/:gameCode', component: AppSlots },
-    { path: '/app/inbox', component: AppInbox },
+    {
+      path: '/app',
+      component: AppShell,
+      children: [
+        { path: '', component: AppHome },
+        { path: 'register', redirect: { path: '/app', query: { auth: 'register' } } },
+        { path: 'login', redirect: { path: '/app', query: { auth: 'login' } } },
+        { path: 'wallet', component: AppWallet },
+        { path: 'activity', component: AppActivity },
+        { path: 'store', component: AppStore },
+        { path: 'kyc', component: AppKyc },
+        { path: 'redemption', component: AppRedemption },
+        { path: 'slots/:gameCode', component: AppSlots },
+        { path: 'inbox', component: AppInbox },
+      ],
+    },
     { path: '/admin', component: AdminDashboard },
     { path: '/admin/users', component: AdminUsers },
     { path: '/admin/regions', component: AdminRegions },

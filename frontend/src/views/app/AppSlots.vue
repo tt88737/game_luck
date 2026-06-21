@@ -107,11 +107,6 @@ function defaultReels() {
     </header>
 
     <section v-if="loading" class="status-panel">Loading Slots...</section>
-    <section v-else-if="!session.userId" class="status-panel">
-      <strong>Create your account</strong>
-      <span>Register before playing GC Slots.</span>
-      <RouterLink class="plain-link" to="/app/register">Register</RouterLink>
-    </section>
 
     <template v-else>
       <section class="wallet-band">
@@ -195,13 +190,5 @@ function defaultReels() {
         <p v-if="!rounds.length" class="empty-state">No rounds yet.</p>
       </section>
     </template>
-
-    <nav class="bottom-nav" aria-label="App navigation">
-      <RouterLink to="/app">Home</RouterLink>
-      <RouterLink to="/app/store">Store</RouterLink>
-      <RouterLink to="/app/activity">Activity</RouterLink>
-      <RouterLink to="/app/redemption">Redeem</RouterLink>
-      <RouterLink to="/app/wallet">Wallet</RouterLink>
-    </nav>
   </main>
 </template>

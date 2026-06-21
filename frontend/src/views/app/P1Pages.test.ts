@@ -13,8 +13,10 @@ import AdminRedemptions from '../admin/AdminRedemptions.vue'
 import AppActivity from './AppActivity.vue'
 import AppSlots from './AppSlots.vue'
 import AppInbox from './AppInbox.vue'
+import AppShell from './AppShell.vue'
 import { i18n } from '../../i18n'
 import { createPinia, setActivePinia } from 'pinia'
+import { createMemoryHistory, createRouter } from 'vue-router'
 
 function json(data: unknown, status = 200) {
   return Promise.resolve(new Response(JSON.stringify(data), {
@@ -63,6 +65,48 @@ describe('P1 production pages', () => {
     expect(wrapper.text()).toContain('每日任务')
     expect(wrapper.text()).not.toContain('Activity center')
     expect(wrapper.text()).not.toContain('Claimable rewards')
+  })
+
+  it('renders the C-side shell with guest account actions and production nav', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation((input, init) => {
+      const url = String(input)
+      if (url.endsWith('/auth/guest') && init?.method === 'POST') {
+        return json({
+          user: { userId: 77, email: 'guest_77@guest.tangluck.local', countryCode: 'US', stateCode: 'CA', riskLevel: 'normal', status: 'guest' },
+          wallet: { gcBalance: '10000', scBalance: '0', scFrozen: '0' },
+          token: 'guest-token',
+          accountType: 'guest',
+        })
+      }
+      return json({})
+    })
+
+    const wrapper = mount(AppShell, {
+      global: {
+        plugins: [createRouter({
+          history: createMemoryHistory(),
+          routes: [{ path: '/app', component: { template: '<div />' } }],
+        })],
+        mocks: { $t: i18n.t },
+        stubs: {
+          RouterLink: { props: ['to'], template: `<a :href="typeof to === 'string' ? to : to.path"><slot /></a>` },
+          RouterView: { template: '<section data-test="route-outlet">Lobby content</section>' },
+          AuthModal: true,
+        },
+      },
+    })
+    await flushPromises()
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/v1/auth/guest', expect.objectContaining({ method: 'POST' }))
+    expect(wrapper.text()).toContain('Guest')
+    expect(wrapper.text()).toContain('Bind account')
+    expect(wrapper.text()).toContain('Sign in')
+    expect(wrapper.text()).toContain('Home')
+    expect(wrapper.text()).toContain('Slots')
+    expect(wrapper.text()).toContain('Activity')
+    expect(wrapper.text()).toContain('Inbox')
+    expect(wrapper.text()).toContain('Wallet')
+    expect(wrapper.find('.bottom-nav').text()).not.toContain('Register')
   })
 
   it('creates a GC purchase order from the store', async () => {

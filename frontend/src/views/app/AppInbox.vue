@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 import { ApiError, apiGet, apiPost } from '../../api/http'
 import type { RewardInboxItem } from '../../api/contracts'
@@ -13,6 +13,10 @@ const notice = ref('')
 const processing = ref<number | null>(null)
 
 onMounted(loadInbox)
+
+watch(() => session.userId, (userId) => {
+  if (userId && !rows.value.length) void loadInbox()
+})
 
 async function loadInbox() {
   loading.value = true
@@ -66,11 +70,6 @@ function messageFrom(err: unknown) {
     </header>
 
     <section v-if="loading" class="status-panel">Loading inbox...</section>
-    <section v-else-if="!session.userId" class="status-panel">
-      <strong>Create your account</strong>
-      <span>Register before claiming inbox rewards.</span>
-      <RouterLink class="plain-link" to="/app/register">Register</RouterLink>
-    </section>
 
     <template v-else>
       <p v-if="notice" class="notice success">{{ notice }}</p>
@@ -94,13 +93,5 @@ function messageFrom(err: unknown) {
         <p v-if="!rows.length" class="empty-state">No inbox rewards.</p>
       </section>
     </template>
-
-    <nav class="bottom-nav" aria-label="App navigation">
-      <RouterLink to="/app">Home</RouterLink>
-      <RouterLink to="/app/slots/lucky_slots">Slots</RouterLink>
-      <RouterLink to="/app/activity">Activity</RouterLink>
-      <RouterLink to="/app/inbox">Inbox</RouterLink>
-      <RouterLink to="/app/wallet">Wallet</RouterLink>
-    </nav>
   </main>
 </template>

@@ -166,13 +166,5 @@ async function claim(key: string, action: () => Promise<ClaimResponse>) {
         </div>
       </section>
     </template>
-
-    <nav class="bottom-nav" aria-label="App navigation">
-      <RouterLink to="/app">{{ $t('nav.home') }}</RouterLink>
-      <RouterLink to="/app/store">{{ $t('nav.store') }}</RouterLink>
-      <RouterLink to="/app/kyc">{{ $t('nav.kyc') }}</RouterLink>
-      <RouterLink to="/app/redemption">{{ $t('nav.redeem') }}</RouterLink>
-      <RouterLink to="/app/wallet">{{ $t('common.wallet') }}</RouterLink>
-    </nav>
   </main>
 </template>
