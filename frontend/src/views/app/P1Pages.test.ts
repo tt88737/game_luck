@@ -170,7 +170,8 @@ describe('P1 production pages', () => {
     const wrapper = mount(AppStore, { global })
     await flushPromises()
 
-    expect(wrapper.text()).toContain('Bind account')
+    expect(wrapper.text()).toContain('Bind account before purchase')
+    expect(wrapper.text()).toContain('Guest play is available')
     expect(wrapper.find('[data-test="buy-gc_499"]').attributes('disabled')).toBeDefined()
   })
 
@@ -288,7 +289,8 @@ describe('P1 production pages', () => {
     const wrapper = mount(AppKyc, { global })
     await flushPromises()
 
-    expect(wrapper.text()).toContain('Bind account')
+    expect(wrapper.text()).toContain('Bind account before identity review')
+    expect(wrapper.text()).toContain('Identity verification is tied to a formal account')
     expect(wrapper.find('[data-test="submit-kyc"]').exists()).toBe(false)
     expect(fetchMock).not.toHaveBeenCalled()
   })
@@ -319,7 +321,8 @@ describe('P1 production pages', () => {
     const wrapper = mount(AppRedemption, { global })
     await flushPromises()
 
-    expect(wrapper.text()).toContain('Bind account')
+    expect(wrapper.text()).toContain('Bind account before redemption')
+    expect(wrapper.text()).toContain('Redemption requests require a formal account')
     expect(wrapper.find('[data-test="submit-redemption"]').exists()).toBe(false)
     expect(fetchMock).not.toHaveBeenCalled()
   })

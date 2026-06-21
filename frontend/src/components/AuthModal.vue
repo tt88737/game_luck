@@ -130,9 +130,9 @@ function messageFrom(err: unknown, fallback: string) {
         <header class="auth-modal-header">
           <div>
             <p class="eyebrow">Tang Luck</p>
-            <h2>{{ mode === 'register' ? 'Bind account' : $t('login.submit') }}</h2>
+            <h2>{{ mode === 'register' ? $t('auth.bindAccount') : $t('auth.signIn') }}</h2>
           </div>
-          <button type="button" class="icon-button" aria-label="Close" @click="close">x</button>
+          <button type="button" class="icon-button" :aria-label="$t('auth.close')" @click="close">x</button>
         </header>
 
         <div class="auth-tabs" role="tablist">
@@ -142,7 +142,7 @@ function messageFrom(err: unknown, fallback: string) {
             :class="{ active: mode === 'register' }"
             @click="selectMode('register')"
           >
-            Bind account
+            {{ $t('auth.bindAccount') }}
           </button>
           <button
             type="button"
@@ -150,7 +150,7 @@ function messageFrom(err: unknown, fallback: string) {
             :class="{ active: mode === 'login' }"
             @click="selectMode('login')"
           >
-            {{ $t('login.submit') }}
+            {{ $t('auth.signIn') }}
           </button>
         </div>
 
@@ -186,12 +186,13 @@ function messageFrom(err: unknown, fallback: string) {
             </section>
             <p v-if="error" class="notice danger">{{ error }}</p>
             <button data-test="auth-bind-submit" :disabled="submitting || !requiredAccepted">
-              {{ submitting ? $t('common.submitting') : 'Bind account' }}
+              {{ submitting ? $t('common.submitting') : $t('auth.bindAccount') }}
             </button>
           </form>
         </section>
 
         <form v-else class="form-stack" @submit.prevent="login">
+          <p class="notice">{{ $t('auth.signInSwitchHint') }}</p>
           <label>
             {{ $t('common.email') }}
             <input v-model="loginForm.email" type="email" required autocomplete="email" />

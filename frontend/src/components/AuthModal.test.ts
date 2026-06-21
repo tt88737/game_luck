@@ -48,6 +48,7 @@ describe('AuthModal', () => {
     await wrapper.get('[data-test="auth-login-tab"]').trigger('click')
 
     expect(wrapper.find('[data-test="auth-login-submit"]').exists()).toBe(true)
+    expect(wrapper.text()).toContain('Sign in switches to your existing account.')
   })
 
   it('submits bind email through the guest session', async () => {

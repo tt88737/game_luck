@@ -84,10 +84,10 @@ function format(value: string | number, digits: number) {
       <p class="notice">{{ $t('store.notice') }}</p>
       <section v-if="session.isGuest" class="guest-gate">
         <div>
-          <strong>Bind account</strong>
-          <span>Guest play is available, but purchases require a verified account before payment can start.</span>
+          <strong>{{ $t('guestGate.storeTitle') }}</strong>
+          <span>{{ $t('guestGate.storeBody') }}</span>
         </div>
-        <button type="button" class="small-action" @click="openBindAccount">Bind account</button>
+        <button type="button" class="small-action" @click="openBindAccount">{{ $t('auth.bindAccount') }}</button>
       </section>
       <p v-if="success" class="notice success">{{ success }}</p>
       <p v-if="error" class="notice danger">{{ error }}</p>

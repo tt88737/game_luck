@@ -76,9 +76,9 @@ function messageFrom(err: unknown) {
 
     <section v-if="loading" class="status-panel">{{ $t('kyc.loading') }}</section>
     <section v-else-if="!session.userId || session.isGuest" class="status-panel">
-      <strong>{{ $t('register.heading') }}</strong>
-      <span>{{ session.isGuest ? 'Bind account before submitting identity verification.' : $t('kyc.signInRequired') }}</span>
-      <button v-if="session.isGuest" type="button" class="small-action" @click="openBindAccount">Bind account</button>
+      <strong>{{ session.isGuest ? $t('guestGate.kycTitle') : $t('register.heading') }}</strong>
+      <span>{{ session.isGuest ? $t('guestGate.kycBody') : $t('kyc.signInRequired') }}</span>
+      <button v-if="session.isGuest" type="button" class="small-action" @click="openBindAccount">{{ $t('auth.bindAccount') }}</button>
       <RouterLink v-else class="plain-link" to="/app?auth=register">{{ $t('register.submit') }}</RouterLink>
     </section>
     <section v-else>
