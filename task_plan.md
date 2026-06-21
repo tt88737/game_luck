@@ -49,3 +49,14 @@
 - [x] B2 活动任务联动：spin_count、bet_amount、win_amount 进度，任务领取，B 端 Activity Dashboard。
 - [x] B3 Reward Inbox：C 端 `/app/inbox`，B 端 `/admin/notifications`，人工发放、过期、领取、账变和审计。
 - [x] 全量验收：后端测试、前端测试、build、Playwright、真实浏览器桌面/移动截图。
+
+## 2026-06-21 Guest-first C-side Auth
+- [x] Backend guest session: `POST /api/v1/auth/guest`.
+- [x] Backend bind email: `POST /api/v1/auth/bind-email`, same userId upgraded from guest to formal.
+- [x] Frontend session store: `accountType`, `isGuest`, `ensureGuestSession`, `bindEmail`.
+- [x] C-side `AuthModal`: bind account and sign in tabs, legal document acceptance, API-backed submit states.
+- [x] C-side `AppShell`: global account bar, modal auth, nested routes, bottom nav without Register/Login.
+- [x] Routes: `/app/register` -> `/app?auth=register`, `/app/login` -> `/app?auth=login`.
+- [x] Guest-first pages: Home, Slots, Activity, Inbox, Wallet use shell session instead of page-level logged-out gates.
+- [x] Formal-only actions: Store purchase, KYC submission, Redemption request require binding for guests.
+- [x] Verification: backend test, frontend test, build, Playwright desktop/mobile, browser screenshot acceptance.

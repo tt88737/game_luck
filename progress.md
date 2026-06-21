@@ -174,3 +174,17 @@
 - 前端新增 `/app/inbox` 与 `/admin/notifications`。
 - 验证通过：`backend .\gradlew.bat --no-daemon test`、`frontend npm run test -- --run --pool=threads --maxWorkers=1`、`frontend npm run build`、`frontend npx playwright test`。
 - 浏览器截图验收通过：`artifacts/verification-b1-b3/`。
+
+## 2026-06-21 Guest-first C-side Auth
+- 完成 C 端游客优先闭环：`/` 与 `/app` 默认进入大厅，`/app/register` 和 `/app/login` 改为兼容跳转到 `auth=register/login` 弹窗。
+- 完成游客账号后端与前端会话：`POST /api/v1/auth/guest` 创建游客并初始化钱包，`POST /api/v1/auth/bind-email` 绑定邮箱后同一 userId 转正式账号。
+- 新增 `AppShell` 统一承载 C 端账号栏、游客绑定入口、登录弹窗、底部导航；底部导航保留 Home / Slots / Activity / Inbox / Wallet。
+- Store / KYC / Redemption 已加正式用户守卫：游客可浏览核心内容，但购买、KYC、兑换请求前必须绑定账号。
+- 更新 Playwright e2e 到新产品链路：默认大厅、绑定弹窗、登录弹窗、Store/KYC/Redemption 运营闭环、桌面和移动端。
+- 验证通过：
+  - `backend .\gradlew.bat --no-daemon test`
+  - `frontend npm run test -- --run --pool=threads --maxWorkers=1`
+  - `frontend npm run build`
+  - `frontend npx playwright test`
+- 浏览器验收通过并生成截图：`artifacts/guest-first/`。
+- 本地可查看地址：前端 `http://127.0.0.1:8093/app`，后端 `http://127.0.0.1:8080`。
