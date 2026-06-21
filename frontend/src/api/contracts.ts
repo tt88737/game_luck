@@ -100,6 +100,22 @@ export interface RegisterRequest {
   deviceId: string
 }
 
+export interface GuestRequest {
+  deviceId: string
+  countryCode: string
+  stateCode: string
+  utmSource: string
+}
+
+export interface BindEmailRequest {
+  email: string
+  password: string
+  birthDate: string
+  countryCode: string
+  stateCode: string
+  acceptedDocuments: AcceptedDocument[]
+}
+
 export interface RegisterResponse {
   user: {
     userId: number
@@ -115,6 +131,7 @@ export interface RegisterResponse {
     scFrozen: string | number
   }
   token: string
+  accountType: 'guest' | 'formal'
 }
 
 export interface LoginRequest {
