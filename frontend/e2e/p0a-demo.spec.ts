@@ -54,6 +54,28 @@ test.beforeEach(async ({ page }) => {
         user: { userId: 1, email: 'player.ca@example.com', countryCode: 'US', stateCode: 'CA', riskLevel: 'normal', status: 'active' },
         wallet: { gcBalance: '0', scBalance: '0', scFrozen: '0' },
         token: 'user-token',
+        accountType: 'formal',
+      },
+    })
+  })
+  await page.route('/api/v1/auth/guest', async (route) => {
+    await route.fulfill({
+      json: {
+        user: { userId: 77, email: 'guest_77@guest.tangluck.local', countryCode: 'US', stateCode: 'CA', riskLevel: 'normal', status: 'guest' },
+        wallet: { gcBalance: '10000', scBalance: '0', scFrozen: '0' },
+        token: 'guest-token',
+        accountType: 'guest',
+      },
+    })
+  })
+  await page.route('/api/v1/auth/bind-email', async (route) => {
+    const request = route.request().postDataJSON() as { email?: string }
+    await route.fulfill({
+      json: {
+        user: { userId: 77, email: request.email ?? 'player.ca@example.com', countryCode: 'US', stateCode: 'CA', riskLevel: 'normal', status: 'active' },
+        wallet: { gcBalance: '10000', scBalance: '0.5000', scFrozen: '0' },
+        token: 'formal-token',
+        accountType: 'formal',
       },
     })
   })
@@ -64,6 +86,7 @@ test.beforeEach(async ({ page }) => {
         user: { userId: 1, email: request.email ?? 'player.ca@example.com', countryCode: 'US', stateCode: 'CA', riskLevel: 'normal', status: 'active' },
         wallet: { gcBalance: '0', scBalance: '0', scFrozen: '0' },
         token: 'user-token',
+        accountType: 'formal',
       },
     })
   })
@@ -73,6 +96,7 @@ test.beforeEach(async ({ page }) => {
         user: { userId: 1, email: 'player.ca@example.com', countryCode: 'US', stateCode: 'CA', riskLevel: 'normal', status: 'active' },
         wallet: { gcBalance: '0', scBalance: '0', scFrozen: '0' },
         token: 'user-token',
+        accountType: 'formal',
       },
     })
   })
@@ -143,12 +167,19 @@ test.beforeEach(async ({ page }) => {
 })
 
 test('C-side and admin pages render production workflow', async ({ page }) => {
-  await page.goto('/app/register')
-  await expect(page.getByRole('heading', { name: 'Create your account' })).toBeVisible()
+  await page.goto('/app')
+  await expect(page.getByRole('heading', { name: 'Lobby', level: 1 })).toBeVisible()
+  await expect(page.getByText('Guest')).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Bind account' })).toBeVisible()
+
+  await page.goto('/app?auth=register')
+  await expect(page.getByRole('heading', { name: 'Bind account' })).toBeVisible()
+  await page.locator('input[type="email"]').fill(`bind.${Date.now()}@example.com`)
+  await page.locator('input[type="password"]').fill('Password123!')
   await page.getByLabel('Terms of Use terms-v1').check()
   await page.getByLabel('Sweepstakes Rules rules-v1').check()
   await page.getByLabel('Privacy Policy privacy-v1').check()
-  await page.getByRole('button', { name: 'Register and continue' }).click()
+  await page.locator('[data-test="auth-bind-submit"]').click()
 
   await expect(page.getByRole('heading', { name: 'Lobby', level: 1 })).toBeVisible()
   await expect(page.getByText('Featured games')).toBeVisible()
@@ -179,37 +210,41 @@ test('C-side and admin pages render production workflow', async ({ page }) => {
 
 test('store, KYC, redemption, and ops pages render operating loop', async ({ page }) => {
   const email = `e2e.${Date.now()}@example.com`
-  await page.goto('/app/register')
+  await page.goto('/app?auth=register')
+  await expect(page.getByRole('heading', { name: 'Bind account' })).toBeVisible()
   await page.locator('input[type="email"]').fill(email)
+  await page.locator('input[type="password"]').fill('Password123!')
   await page.getByLabel('Terms of Use terms-v1').check()
   await page.getByLabel('Sweepstakes Rules rules-v1').check()
   await page.getByLabel('Privacy Policy privacy-v1').check()
-  await page.getByRole('button', { name: 'Register and continue' }).click()
+  await page.locator('[data-test="auth-bind-submit"]').click()
 
   await page.evaluate(() => {
     localStorage.removeItem('tangluck_token')
     localStorage.removeItem('tangluck_user_id')
+    localStorage.removeItem('tangluck_account_type')
   })
   await page.goto('/app/login')
+  await expect(page.getByRole('heading', { name: 'Sign in' })).toBeVisible()
   await page.locator('input[type="email"]').fill(email)
   await page.locator('input[type="password"]').fill('Password123!')
-  await page.locator('[data-test="login-submit"]').click()
+  await page.locator('[data-test="auth-login-submit"]').click()
   await expect(page.getByRole('heading', { name: 'Lobby', level: 1 })).toBeVisible()
 
-  await page.getByLabel('App navigation').getByRole('link', { name: 'Store' }).click()
+  await page.goto('/app/store')
   await expect(page.getByText('GC 5,000 Pack')).toBeVisible()
   await page.getByRole('button', { name: 'Buy' }).click()
   await expect(page.getByText('Order paid')).toBeVisible()
   await expect(page.getByText('ord_1001')).toBeVisible()
 
-  await page.getByRole('link', { name: 'KYC' }).click()
+  await page.goto('/app/kyc')
   await expect(page.getByText('not_started')).toBeVisible()
   await page.getByLabel('Legal name').fill('P1 User')
   await page.getByLabel('Address').fill('100 Main Street')
   await page.locator('[data-test="submit-kyc"]').click()
   await expect(page.getByText('reviewing')).toBeVisible()
 
-  await page.getByLabel('App navigation').getByRole('link', { name: 'Redeem' }).click()
+  await page.goto('/app/redemption')
   await expect(page.getByText('KYC approval is required')).toBeVisible()
 
   await page.goto('/admin/p1')
@@ -226,14 +261,14 @@ test('store, KYC, redemption, and ops pages render operating loop', async ({ pag
 test('uses English by default and Chinese for zh browser language', async ({ browser }) => {
   const englishContext = await browser.newContext({ locale: 'en-US' })
   const englishPage = await englishContext.newPage()
-  await englishPage.goto('/app/register')
-  await expect(englishPage.getByRole('heading', { name: 'Create your account' })).toBeVisible()
+  await englishPage.goto('/app')
+  await expect(englishPage.getByRole('heading', { name: 'Lobby', level: 1 })).toBeVisible()
   await englishContext.close()
 
   const chineseContext = await browser.newContext({ locale: 'zh-CN' })
   const chinesePage = await chineseContext.newPage()
-  await chinesePage.goto('/app/register')
-  await expect(chinesePage.getByRole('heading', { name: '创建你的账号' })).toBeVisible()
+  await chinesePage.goto('/app')
+  await expect(chinesePage.getByRole('heading', { level: 1 })).toBeVisible()
   await chinesePage.goto('/admin')
   await expect(chinesePage.getByRole('heading', { name: '看板' })).toBeVisible()
   await expect(chinesePage.getByText('地区配置')).toBeVisible()
