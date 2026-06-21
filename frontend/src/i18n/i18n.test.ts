@@ -34,4 +34,21 @@ describe('i18n', () => {
     expect(i18n.t('test.englishOnly')).toBe('English only')
     expect(i18n.t('missing.key')).toBe('missing.key')
   })
+
+  it('contains C-side account and auth polish keys in both locales', () => {
+    const i18n = createI18n(['en-US'])
+
+    for (const locale of ['en', 'zh-CN'] as const) {
+      i18n.setLocale(locale)
+      expect(i18n.t('account.guest')).not.toBe('account.guest')
+      expect(i18n.t('account.loading')).not.toBe('account.loading')
+      expect(i18n.t('account.retry')).not.toBe('account.retry')
+      expect(i18n.t('auth.bindAccount')).not.toBe('auth.bindAccount')
+      expect(i18n.t('auth.signInSwitchHint')).not.toBe('auth.signInSwitchHint')
+      expect(i18n.t('guestGate.storeTitle')).not.toBe('guestGate.storeTitle')
+      expect(i18n.t('guestGate.kycBody')).not.toBe('guestGate.kycBody')
+      expect(i18n.t('guestGate.redemptionBody')).not.toBe('guestGate.redemptionBody')
+      expect(i18n.t('nav.inbox')).not.toBe('nav.inbox')
+    }
+  })
 })
