@@ -60,3 +60,11 @@
 - [x] Guest-first pages: Home, Slots, Activity, Inbox, Wallet use shell session instead of page-level logged-out gates.
 - [x] Formal-only actions: Store purchase, KYC submission, Redemption request require binding for guests.
 - [x] Verification: backend test, frontend test, build, Playwright desktop/mobile, browser screenshot acceptance.
+
+## 2026-06-21 C-side Product Polish
+- [x] 补齐 C 端账号、认证弹窗、游客门禁、Inbox 导航 i18n key。
+- [x] `AppShell` 显式展示启动中、游客、正式账号、失败重试状态。
+- [x] `AuthModal` 文案接入 i18n，并增加登录切换账号提示。
+- [x] Store/KYC/Redemption 游客门禁统一产品文案并保持高风险接口阻断。
+- [x] Playwright 更新断言，覆盖游客、弹窗、中文游客状态和 Store 游客门禁。
+- [x] 后端测试、前端测试、构建、Playwright、浏览器截图验收全部通过。

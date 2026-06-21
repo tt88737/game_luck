@@ -188,3 +188,16 @@
   - `frontend npx playwright test`
 - 浏览器验收通过并生成截图：`artifacts/guest-first/`。
 - 本地可查看地址：前端 `http://127.0.0.1:8093/app`，后端 `http://127.0.0.1:8080`。
+
+## 2026-06-21 C-side Product Polish
+- 完成 C 端产品化细化：账号栏、AuthModal、Store/KYC/Redemption 游客门禁和底部 Inbox 导航已接入中英文 i18n。
+- `AppShell` 已改为显式会话状态：启动中、游客、正式账号、启动失败重试；不再显示泛化 `User` fallback。
+- AuthModal 增加“登录会切换到已有正式账号”的明确提示，并保留稳定 `data-test` 选择器。
+- Store/KYC/Redemption 游客态统一为“可浏览，但高风险动作需绑定账号”的产品文案，并继续阻止游客调用高风险接口。
+- 验证通过：
+  - `backend .\gradlew.bat --no-daemon test`
+  - `frontend npm run test -- --run --pool=threads --maxWorkers=1`
+  - `frontend npm run build`
+  - `frontend npx playwright test`
+- 浏览器验收通过并生成截图：`artifacts/cside-polish/`。
+- 本次验收使用最新前端端口 `http://127.0.0.1:8094/app`。
