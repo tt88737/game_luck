@@ -104,6 +104,152 @@ class AuthControllerTest {
     }
 
     @Test
+    void guestAccountGetsWalletAndCanBeHydrated() throws Exception {
+        var guestResponse = mockMvc.perform(post("/api/v1/auth/guest")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "deviceId": "guest_device_1",
+                                  "countryCode": "US",
+                                  "stateCode": "CA",
+                                  "utmSource": "guest_lobby"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.accountType").value("guest"))
+                .andExpect(jsonPath("$.user.status").value("guest"))
+                .andExpect(jsonPath("$.user.email").value(org.hamcrest.Matchers.startsWith("guest_")))
+                .andExpect(jsonPath("$.wallet.gcBalance").value(0))
+                .andExpect(jsonPath("$.wallet.scBalance").value(0))
+                .andExpect(jsonPath("$.token").isNotEmpty())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        var token = objectMapper.readTree(guestResponse).path("token").asText();
+
+        mockMvc.perform(get("/api/v1/me").header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.accountType").value("guest"))
+                .andExpect(jsonPath("$.user.status").value("guest"))
+                .andExpect(jsonPath("$.token").value(token));
+    }
+
+    @Test
+    void bindEmailUpgradesGuestWithoutChangingUserId() throws Exception {
+        var guestResponse = mockMvc.perform(post("/api/v1/auth/guest")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "deviceId": "guest_device_bind",
+                                  "countryCode": "US",
+                                  "stateCode": "CA",
+                                  "utmSource": "guest_lobby"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        var userId = objectMapper.readTree(guestResponse).path("user").path("userId").asLong();
+
+        mockMvc.perform(post("/api/v1/auth/bind-email")
+                        .header("X-User-Id", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "email": "bound-guest@example.com",
+                                  "password": "StrongPass123!",
+                                  "birthDate": "1996-04-12",
+                                  "countryCode": "US",
+                                  "stateCode": "CA",
+                                  "acceptedDocuments": [
+                                    {"documentType": "terms", "version": "terms-v1"},
+                                    {"documentType": "sweepstakes_rules", "version": "rules-v1"},
+                                    {"documentType": "privacy", "version": "privacy-v1"}
+                                  ]
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.accountType").value("formal"))
+                .andExpect(jsonPath("$.user.userId").value(userId))
+                .andExpect(jsonPath("$.user.email").value("bound-guest@example.com"))
+                .andExpect(jsonPath("$.user.status").value("active"))
+                .andExpect(jsonPath("$.wallet.gcBalance").value(0));
+
+        mockMvc.perform(post("/api/v1/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "email": "bound-guest@example.com",
+                                  "password": "StrongPass123!"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.accountType").value("formal"))
+                .andExpect(jsonPath("$.user.userId").value(userId));
+    }
+
+    @Test
+    void bindEmailRejectsDuplicateFormalEmail() throws Exception {
+        mockMvc.perform(post("/api/v1/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "email": "duplicate-bind@example.com",
+                                  "password": "StrongPass123!",
+                                  "birthDate": "1996-04-12",
+                                  "countryCode": "US",
+                                  "stateCode": "CA",
+                                  "acceptedDocuments": [
+                                    {"documentType": "terms", "version": "terms-v1"},
+                                    {"documentType": "sweepstakes_rules", "version": "rules-v1"},
+                                    {"documentType": "privacy", "version": "privacy-v1"}
+                                  ],
+                                  "utmSource": "web",
+                                  "deviceId": "duplicate_formal"
+                                }
+                                """))
+                .andExpect(status().isOk());
+
+        var guestResponse = mockMvc.perform(post("/api/v1/auth/guest")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "deviceId": "guest_duplicate_bind",
+                                  "countryCode": "US",
+                                  "stateCode": "CA",
+                                  "utmSource": "guest_lobby"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        var userId = objectMapper.readTree(guestResponse).path("user").path("userId").asLong();
+
+        mockMvc.perform(post("/api/v1/auth/bind-email")
+                        .header("X-User-Id", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "email": "duplicate-bind@example.com",
+                                  "password": "StrongPass123!",
+                                  "birthDate": "1996-04-12",
+                                  "countryCode": "US",
+                                  "stateCode": "CA",
+                                  "acceptedDocuments": [
+                                    {"documentType": "terms", "version": "terms-v1"},
+                                    {"documentType": "sweepstakes_rules", "version": "rules-v1"},
+                                    {"documentType": "privacy", "version": "privacy-v1"}
+                                  ]
+                                }
+                                """))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.code").value("EMAIL_EXISTS"));
+    }
+
+    @Test
     void meReturnsCurrentUserForBearerSessionToken() throws Exception {
         var registerResponse = mockMvc.perform(post("/api/v1/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)

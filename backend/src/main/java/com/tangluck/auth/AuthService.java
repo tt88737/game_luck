@@ -15,7 +15,10 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
+import static com.tangluck.auth.AuthDtos.BindEmailRequest;
+import static com.tangluck.auth.AuthDtos.GuestRequest;
 import static com.tangluck.auth.AuthDtos.RegisterResponse;
 import static com.tangluck.auth.AuthDtos.UserDto;
 import static com.tangluck.auth.AuthDtos.WalletDto;
@@ -56,12 +59,7 @@ public class AuthService {
             throw new BusinessException(ErrorCode.AGE_NOT_ALLOWED, "User must be at least 18 years old.");
         }
 
-        var acceptedTypes = request.acceptedDocuments().stream()
-                .map(AcceptedDocument::documentType)
-                .collect(java.util.stream.Collectors.toSet());
-        if (!acceptedTypes.containsAll(REQUIRED_DOCUMENT_TYPES)) {
-            throw new BusinessException(ErrorCode.CONSENT_REQUIRED, "Required compliance documents must be accepted.");
-        }
+        validateAcceptedDocuments(request.acceptedDocuments());
 
         complianceService.requireFeatureAllowed(request.countryCode(), request.stateCode(), "registration");
 
@@ -92,6 +90,55 @@ public class AuthService {
         return sessionResponse(user, sessionToken(user.getId()));
     }
 
+    @Transactional
+    public RegisterResponse createGuest(GuestRequest request) {
+        var now = clock.instant();
+        var countryCode = blankToDefault(request.countryCode(), "US");
+        var stateCode = blankToDefault(request.stateCode(), "CA");
+        complianceService.requireFeatureAllowed(countryCode, stateCode, "registration");
+        var user = userRepository.save(User.guest(
+                "guest_" + UUID.randomUUID().toString().replace("-", "") + "@guest.tangluck.local",
+                passwordEncoder.encode(UUID.randomUUID().toString()),
+                countryCode,
+                stateCode,
+                blankToDefault(request.deviceId(), "guest_web"),
+                now
+        ));
+        walletAccountRepository.save(new WalletAccount(user.getId(), "GC", now));
+        walletAccountRepository.save(new WalletAccount(user.getId(), "SC", now));
+        return sessionResponse(user, sessionToken(user.getId()));
+    }
+
+    @Transactional
+    public RegisterResponse bindEmail(Long userId, BindEmailRequest request) {
+        var user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.AUTH_INVALID_CREDENTIALS, "User does not exist.", Map.of("userId", userId)));
+        if (!"guest".equals(user.getStatus())) {
+            throw new BusinessException(ErrorCode.VALIDATION_FAILED, "Only guest users can bind email.", Map.of("userId", userId));
+        }
+        if (userRepository.existsByEmail(request.email())) {
+            throw new BusinessException(ErrorCode.EMAIL_EXISTS, "Email already exists.", Map.of("email", request.email()));
+        }
+        if (Period.between(request.birthDate(), LocalDate.now(clock)).getYears() < 18) {
+            throw new BusinessException(ErrorCode.AGE_NOT_ALLOWED, "User must be at least 18 years old.");
+        }
+        validateAcceptedDocuments(request.acceptedDocuments());
+        complianceService.requireFeatureAllowed(request.countryCode(), request.stateCode(), "registration");
+        var now = clock.instant();
+        user.bindEmail(request.email(), passwordEncoder.encode(request.password()), request.birthDate(), request.countryCode(), request.stateCode(), now);
+        var saved = userRepository.save(user);
+        request.acceptedDocuments().forEach(document ->
+                consentLogRepository.save(new UserConsentLog(
+                        saved.getId(),
+                        document.documentType(),
+                        document.version(),
+                        now,
+                        "bind_email"
+                ))
+        );
+        return sessionResponse(saved, sessionToken(saved.getId()));
+    }
+
     @Transactional(readOnly = true)
     public RegisterResponse login(LoginRequest request) {
         var user = userRepository.findByEmail(request.email())
@@ -115,8 +162,22 @@ public class AuthService {
         return new RegisterResponse(
                 new UserDto(user.getId(), user.getEmail(), user.getCountryCode(), user.getStateCode(), user.getRiskLevel(), user.getStatus()),
                 new WalletDto(gcWallet.getBalance(), scWallet.getBalance(), scWallet.getFrozenBalance()),
-                token
+                token,
+                "guest".equals(user.getStatus()) ? "guest" : "formal"
         );
+    }
+
+    private void validateAcceptedDocuments(java.util.List<AcceptedDocument> acceptedDocuments) {
+        var acceptedTypes = acceptedDocuments.stream()
+                .map(AcceptedDocument::documentType)
+                .collect(java.util.stream.Collectors.toSet());
+        if (!acceptedTypes.containsAll(REQUIRED_DOCUMENT_TYPES)) {
+            throw new BusinessException(ErrorCode.CONSENT_REQUIRED, "Required compliance documents must be accepted.");
+        }
+    }
+
+    private String blankToDefault(String value, String fallback) {
+        return value == null || value.isBlank() ? fallback : value;
     }
 
     private BusinessException invalidCredentials() {

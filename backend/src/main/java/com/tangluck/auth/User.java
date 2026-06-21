@@ -66,6 +66,22 @@ public class User {
         this.updatedAt = now;
     }
 
+    public static User guest(String email, String passwordHash, String countryCode, String stateCode, String deviceId, Instant now) {
+        var user = new User(email, passwordHash, LocalDate.of(1970, 1, 1), countryCode, stateCode, deviceId, now);
+        user.status = "guest";
+        return user;
+    }
+
+    public void bindEmail(String email, String passwordHash, LocalDate birthDate, String countryCode, String stateCode, Instant now) {
+        this.email = email;
+        this.passwordHash = passwordHash;
+        this.birthDate = birthDate;
+        this.countryCode = countryCode;
+        this.stateCode = stateCode;
+        this.status = "active";
+        this.updatedAt = now;
+    }
+
     public Long getId() {
         return id;
     }

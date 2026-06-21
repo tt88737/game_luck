@@ -26,7 +26,26 @@ public final class AuthDtos {
     public record RegisterResponse(
             UserDto user,
             WalletDto wallet,
-            String token
+            String token,
+            String accountType
+    ) {
+    }
+
+    public record GuestRequest(
+            String deviceId,
+            String countryCode,
+            String stateCode,
+            String utmSource
+    ) {
+    }
+
+    public record BindEmailRequest(
+            String email,
+            String password,
+            java.time.LocalDate birthDate,
+            String countryCode,
+            String stateCode,
+            java.util.List<AcceptedDocument> acceptedDocuments
     ) {
     }
 }

@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static com.tangluck.auth.AuthDtos.BindEmailRequest;
+import static com.tangluck.auth.AuthDtos.GuestRequest;
 import static com.tangluck.auth.AuthDtos.RegisterResponse;
 
 @RestController
@@ -33,6 +35,19 @@ public class AuthController {
     @PostMapping("/auth/login")
     public RegisterResponse login(@Valid @RequestBody LoginRequest request) {
         return authService.login(request);
+    }
+
+    @PostMapping("/auth/guest")
+    public RegisterResponse guest(@RequestBody GuestRequest request) {
+        return authService.createGuest(request);
+    }
+
+    @PostMapping("/auth/bind-email")
+    public RegisterResponse bindEmail(
+            @RequestHeader("X-User-Id") Long userId,
+            @Valid @RequestBody BindEmailRequest request
+    ) {
+        return authService.bindEmail(userId, request);
     }
 
     @GetMapping("/me")
