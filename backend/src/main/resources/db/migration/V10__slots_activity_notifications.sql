@@ -73,3 +73,21 @@ values
   ('daily_spin_10', 'Spin 10 times', 'spin_count', 10.0000, 'GC', 1000.0000, 'active', 10, current_timestamp, null),
   ('bet_5000_gc', 'Bet 5,000 GC', 'bet_amount', 5000.0000, 'GC', 2500.0000, 'active', 20, current_timestamp, null),
   ('win_1000_gc', 'Win 1,000 GC', 'win_amount', 1000.0000, 'GC', 1500.0000, 'active', 30, current_timestamp, null);
+
+create table reward_inbox (
+  id bigint auto_increment primary key,
+  user_id bigint not null,
+  title varchar(255) not null,
+  message varchar(512) not null,
+  reward_currency varchar(8) not null,
+  reward_amount decimal(20,4) not null,
+  status varchar(32) not null,
+  source_type varchar(64) not null,
+  source_id varchar(128) not null,
+  ledger_id bigint,
+  created_at timestamp not null,
+  expires_at timestamp,
+  claimed_at timestamp
+);
+create index idx_reward_inbox_user on reward_inbox(user_id, status, created_at);
+create index idx_reward_inbox_source on reward_inbox(source_type, source_id);
