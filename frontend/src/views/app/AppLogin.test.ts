@@ -51,7 +51,7 @@ describe('AppLogin', () => {
     expect(fetchMock).toHaveBeenCalledWith('/api/v1/auth/login', expect.objectContaining({ method: 'POST' }))
     expect(localStorage.getItem('tangluck_token')).toBe('login-token')
     expect(localStorage.getItem('tangluck_user_id')).toBe('9')
-    expect(push).toHaveBeenCalledWith('/app')
+    expect(push).toHaveBeenCalledWith('/lobby')
   })
 
   it('shows invalid credential errors', async () => {

@@ -68,3 +68,13 @@
 - [x] Store/KYC/Redemption 游客门禁统一产品文案并保持高风险接口阻断。
 - [x] Playwright 更新断言，覆盖游客、弹窗、中文游客状态和 Store 游客门禁。
 - [x] 后端测试、前端测试、构建、Playwright、浏览器截图验收全部通过。
+
+## 2026-06-21 C-side Route Layout Gates
+- [x] Write and commit design spec: `docs/superpowers/specs/2026-06-21-cside-route-layout-gates-design.md`.
+- [x] Write and commit implementation plan: `docs/superpowers/plans/2026-06-21-cside-route-layout-gates-implementation.md`.
+- [x] Add route tests for `/`, canonical C-side routes, and legacy `/app/*` redirects.
+- [x] Replace C-side bottom tabs with `Store | Promo | Lobby | Inbox | Me`.
+- [x] Add `AppMe.vue` as the account aggregation page.
+- [x] Move Wallet, Redeem, KYC, AMOE, Rules, and Support entry points under `Me` or `Promo`.
+- [x] Update Playwright flows and add route layout browser verification screenshots.
+- [x] Pass backend tests, frontend tests, build, and Playwright.

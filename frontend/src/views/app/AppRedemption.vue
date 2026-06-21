@@ -90,7 +90,7 @@ function amount(value: string | number | undefined, digits = 2) {
         <p class="eyebrow">{{ $t('nav.redeem') }}</p>
         <h1>{{ $t('redemption.heading') }}</h1>
       </div>
-      <RouterLink class="plain-link" to="/app/kyc">{{ $t('nav.kyc') }}</RouterLink>
+      <RouterLink class="plain-link" to="/me/kyc">{{ $t('nav.kyc') }}</RouterLink>
     </header>
 
     <section v-if="loading" class="status-panel">{{ $t('redemption.loading') }}</section>
@@ -98,7 +98,7 @@ function amount(value: string | number | undefined, digits = 2) {
       <strong>{{ session.isGuest ? $t('guestGate.redemptionTitle') : $t('register.heading') }}</strong>
       <span>{{ session.isGuest ? $t('guestGate.redemptionBody') : $t('redemption.signInRequired') }}</span>
       <button v-if="session.isGuest" type="button" class="small-action" @click="openBindAccount">{{ $t('auth.bindAccount') }}</button>
-      <RouterLink v-else class="plain-link" to="/app?auth=register">{{ $t('register.submit') }}</RouterLink>
+      <RouterLink v-else class="plain-link" to="/lobby?auth=register">{{ $t('register.submit') }}</RouterLink>
     </section>
     <section v-else>
       <section class="wallet-band">

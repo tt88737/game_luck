@@ -9,6 +9,7 @@ const AppKyc = () => import('../views/app/AppKyc.vue')
 const AppRedemption = () => import('../views/app/AppRedemption.vue')
 const AppSlots = () => import('../views/app/AppSlots.vue')
 const AppInbox = () => import('../views/app/AppInbox.vue')
+const AppMe = () => import('../views/app/AppMe.vue')
 const AdminDashboard = () => import('../views/admin/AdminDashboard.vue')
 const AdminCampaigns = () => import('../views/admin/AdminCampaigns.vue')
 const AdminAuditLogs = () => import('../views/admin/AdminAuditLogs.vue')
@@ -31,23 +32,33 @@ const AdminNotifications = () => import('../views/admin/AdminNotifications.vue')
 export const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { path: '/', redirect: '/app' },
+    { path: '/', redirect: '/lobby' },
     {
-      path: '/app',
+      path: '/',
       component: AppShell,
       children: [
-        { path: '', component: AppHome },
-        { path: 'register', redirect: { path: '/app', query: { auth: 'register' } } },
-        { path: 'login', redirect: { path: '/app', query: { auth: 'login' } } },
-        { path: 'wallet', component: AppWallet },
-        { path: 'activity', component: AppActivity },
         { path: 'store', component: AppStore },
-        { path: 'kyc', component: AppKyc },
-        { path: 'redemption', component: AppRedemption },
-        { path: 'slots/:gameCode', component: AppSlots },
+        { path: 'promo', component: AppActivity },
+        { path: 'promo/amoe', component: AppActivity },
+        { path: 'lobby', component: AppHome },
+        { path: 'lobby/slots/:gameCode', component: AppSlots },
         { path: 'inbox', component: AppInbox },
+        { path: 'me', component: AppMe },
+        { path: 'me/wallet', component: AppWallet },
+        { path: 'me/redeem', component: AppRedemption },
+        { path: 'me/kyc', component: AppKyc },
       ],
     },
+    { path: '/app', redirect: '/lobby' },
+    { path: '/app/register', redirect: { path: '/lobby', query: { auth: 'register' } } },
+    { path: '/app/login', redirect: { path: '/lobby', query: { auth: 'login' } } },
+    { path: '/app/store', redirect: '/store' },
+    { path: '/app/activity', redirect: '/promo' },
+    { path: '/app/wallet', redirect: '/me/wallet' },
+    { path: '/app/redemption', redirect: '/me/redeem' },
+    { path: '/app/kyc', redirect: '/me/kyc' },
+    { path: '/app/inbox', redirect: '/inbox' },
+    { path: '/app/slots/:gameCode', redirect: (to) => `/lobby/slots/${String(to.params.gameCode)}` },
     { path: '/admin', component: AdminDashboard },
     { path: '/admin/users', component: AdminUsers },
     { path: '/admin/regions', component: AdminRegions },

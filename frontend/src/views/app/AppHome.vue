@@ -119,7 +119,7 @@ function formatAmount(value: string | number, digits: number) {
         <p class="eyebrow">{{ $t('home.eyebrow') }}</p>
         <h1>{{ $t('home.heading') }}</h1>
       </div>
-      <RouterLink class="plain-link" to="/app/wallet">{{ $t('nav.ledger') }}</RouterLink>
+      <RouterLink class="plain-link" to="/me/wallet">{{ $t('nav.ledger') }}</RouterLink>
     </header>
 
     <section v-if="loading" class="status-panel">{{ $t('home.loading') }}</section>
@@ -148,15 +148,15 @@ function formatAmount(value: string | number, digits: number) {
       </section>
 
       <nav class="quick-actions" aria-label="Quick actions">
-        <RouterLink to="/app/store">
+        <RouterLink to="/store">
           {{ $t('nav.store') }}
           <span>{{ $t('lobby.storeCta') }}</span>
         </RouterLink>
-        <RouterLink to="/app/activity">
-          {{ $t('nav.activity') }}
+        <RouterLink to="/promo">
+          {{ $t('nav.promo') }}
           <span>{{ $t('home.allActivity') }}</span>
         </RouterLink>
-        <RouterLink to="/app/redemption">
+        <RouterLink to="/me/redeem">
           {{ $t('nav.redeem') }}
           <span>{{ $t('lobby.redeemCta') }}</span>
         </RouterLink>
@@ -195,7 +195,7 @@ function formatAmount(value: string | number, digits: number) {
             <strong>{{ $t('lobby.kycRequired') }}</strong>
             <small>{{ $t('lobby.kycRequiredBody') }}</small>
           </div>
-          <RouterLink class="plain-link" to="/app/kyc">{{ $t('common.kyc') }}</RouterLink>
+          <RouterLink class="plain-link" to="/me/kyc">{{ $t('common.kyc') }}</RouterLink>
         </article>
 
         <article class="status-tile daily-tile">
@@ -211,14 +211,14 @@ function formatAmount(value: string | number, digits: number) {
           >
             {{ claiming === dailyLogin.taskCode ? $t('home.claiming') : $t('home.checkIn') }}
           </button>
-          <RouterLink v-else class="plain-link" to="/app/activity">{{ $t('home.allActivity') }}</RouterLink>
+          <RouterLink v-else class="plain-link" to="/promo">{{ $t('home.allActivity') }}</RouterLink>
         </article>
       </section>
 
       <section class="section-block">
         <div class="section-title">
           <h2>{{ $t('home.availableRewards') }}</h2>
-          <RouterLink to="/app/activity">{{ $t('home.allActivity') }}</RouterLink>
+          <RouterLink to="/promo">{{ $t('home.allActivity') }}</RouterLink>
         </div>
 
         <article v-if="welcome" class="reward-row">

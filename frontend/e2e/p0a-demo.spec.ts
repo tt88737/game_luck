@@ -30,8 +30,8 @@ test.beforeEach(async ({ page }) => {
     await route.fulfill({
       json: {
         cards: [
-          { cardCode: 'slots_main', title: 'Lucky Slots', subtitle: 'GC play with configured rewards', imageUrl: '/assets/lobby/slots-main.png', targetUrl: '/app/activity', status: 'active', sortOrder: 10 },
-          { cardCode: 'jackpot_events', title: 'Live Events', subtitle: 'Configured bonus events', imageUrl: '/assets/lobby/jackpot-events.png', targetUrl: '/app/activity', status: 'active', sortOrder: 20 },
+          { cardCode: 'slots_main', title: 'Lucky Slots', subtitle: 'GC play with configured rewards', imageUrl: '/assets/lobby/slots-main.png', targetUrl: '/lobby/slots/lucky_slots', status: 'active', sortOrder: 10 },
+          { cardCode: 'jackpot_events', title: 'Live Events', subtitle: 'Configured bonus events', imageUrl: '/assets/lobby/jackpot-events.png', targetUrl: '/promo', status: 'active', sortOrder: 20 },
         ],
         campaigns: [{ campaignCode: 'WELCOME_BONUS', campaignType: 'register_bonus', status: 'active' }],
         tasks: [{ taskId: 'DAILY_LOGIN', taskCode: 'DAILY_LOGIN', target: 1, status: 'in_progress' }],
@@ -167,12 +167,17 @@ test.beforeEach(async ({ page }) => {
 })
 
 test('C-side and admin pages render production workflow', async ({ page }) => {
-  await page.goto('/app')
+  await page.goto('/lobby')
   await expect(page.getByRole('heading', { name: 'Lobby', level: 1 })).toBeVisible()
   await expect(page.getByText('Guest')).toBeVisible()
   await expect(page.getByRole('button', { name: 'Bind account' })).toBeVisible()
+  await expect(page.locator('.bottom-nav')).toContainText('Store')
+  await expect(page.locator('.bottom-nav')).toContainText('Promo')
+  await expect(page.locator('.bottom-nav')).toContainText('Lobby')
+  await expect(page.locator('.bottom-nav')).toContainText('Inbox')
+  await expect(page.locator('.bottom-nav')).toContainText('Me')
 
-  await page.goto('/app?auth=register')
+  await page.goto('/lobby?auth=register')
   await expect(page.getByRole('heading', { name: 'Bind account' })).toBeVisible()
   await expect(page.locator('[data-test="auth-bind-submit"]')).toBeVisible()
   await page.locator('input[type="email"]').fill(`bind.${Date.now()}@example.com`)
@@ -192,7 +197,9 @@ test('C-side and admin pages render production workflow', async ({ page }) => {
   await page.getByRole('button', { name: 'Claim' }).click()
   await expect(page.getByText('Claimed 10,000 GC + 0.50 SC')).toBeVisible()
 
-  await page.getByRole('link', { name: 'Wallet' }).click()
+  await page.getByRole('link', { name: 'Me' }).click()
+  await expect(page.getByRole('heading', { name: 'Me' })).toBeVisible()
+  await page.locator('a[href="/me/wallet"]').click()
   await expect(page.getByText('Balances and ledger')).toBeVisible()
   await expect(page.getByText('register_bonus: 0.50 SC')).toBeVisible()
 
@@ -211,7 +218,7 @@ test('C-side and admin pages render production workflow', async ({ page }) => {
 
 test('store, KYC, redemption, and ops pages render operating loop', async ({ page }) => {
   const email = `e2e.${Date.now()}@example.com`
-  await page.goto('/app?auth=register')
+  await page.goto('/lobby?auth=register')
   await expect(page.getByRole('heading', { name: 'Bind account' })).toBeVisible()
   await page.locator('input[type="email"]').fill(email)
   await page.locator('input[type="password"]').fill('Password123!')
@@ -225,7 +232,7 @@ test('store, KYC, redemption, and ops pages render operating loop', async ({ pag
     localStorage.removeItem('tangluck_user_id')
     localStorage.removeItem('tangluck_account_type')
   })
-  await page.goto('/app/login')
+  await page.goto('/lobby?auth=login')
   await expect(page.getByRole('heading', { name: 'Sign in' })).toBeVisible()
   await expect(page.locator('[data-test="auth-login-submit"]')).toBeVisible()
   await page.locator('input[type="email"]').fill(email)
@@ -233,20 +240,20 @@ test('store, KYC, redemption, and ops pages render operating loop', async ({ pag
   await page.locator('[data-test="auth-login-submit"]').click()
   await expect(page.getByRole('heading', { name: 'Lobby', level: 1 })).toBeVisible()
 
-  await page.goto('/app/store')
+  await page.goto('/store')
   await expect(page.getByText('GC 5,000 Pack')).toBeVisible()
   await page.getByRole('button', { name: 'Buy' }).click()
   await expect(page.getByText('Order paid')).toBeVisible()
   await expect(page.getByText('ord_1001')).toBeVisible()
 
-  await page.goto('/app/kyc')
+  await page.goto('/me/kyc')
   await expect(page.getByText('not_started')).toBeVisible()
   await page.getByLabel('Legal name').fill('P1 User')
   await page.getByLabel('Address').fill('100 Main Street')
   await page.locator('[data-test="submit-kyc"]').click()
   await expect(page.getByText('reviewing')).toBeVisible()
 
-  await page.goto('/app/redemption')
+  await page.goto('/me/redeem')
   await expect(page.getByText('KYC approval is required')).toBeVisible()
 
   await page.goto('/admin/p1')
@@ -255,7 +262,7 @@ test('store, KYC, redemption, and ops pages render operating loop', async ({ pag
   await page.getByRole('button', { name: 'Approve' }).click()
   await expect(page.getByText('KYC approved for user 1.')).toBeVisible()
 
-  await page.goto('/app/redemption')
+  await page.goto('/me/redeem')
   await page.locator('[data-test="submit-redemption"]').click()
   await expect(page.getByText('Request red_1001 is waiting for manual review.')).toBeVisible()
 })
@@ -263,16 +270,16 @@ test('store, KYC, redemption, and ops pages render operating loop', async ({ pag
 test('uses English by default and Chinese for zh browser language', async ({ browser }) => {
   const englishContext = await browser.newContext({ locale: 'en-US' })
   const englishPage = await englishContext.newPage()
-  await englishPage.goto('/app')
+  await englishPage.goto('/lobby')
   await expect(englishPage.getByRole('heading', { name: 'Lobby', level: 1 })).toBeVisible()
   await englishContext.close()
 
   const chineseContext = await browser.newContext({ locale: 'zh-CN' })
   const chinesePage = await chineseContext.newPage()
-  await chinesePage.goto('/app')
+  await chinesePage.goto('/lobby')
   await expect(chinesePage.getByRole('heading', { level: 1 })).toBeVisible()
   await expect(chinesePage.getByText('游客')).toBeVisible()
-  await chinesePage.goto('/app/store')
+  await chinesePage.goto('/store')
   await expect(chinesePage.getByText('购买前请先绑定账号')).toBeVisible()
   await chinesePage.goto('/admin')
   await expect(chinesePage.getByRole('heading', { name: '看板' })).toBeVisible()

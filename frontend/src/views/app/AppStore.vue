@@ -74,7 +74,7 @@ function format(value: string | number, digits: number) {
         <p class="eyebrow">{{ $t('store.gcPackages') }}</p>
         <h1>{{ $t('store.heading') }}</h1>
       </div>
-      <RouterLink class="plain-link" to="/app/wallet">{{ $t('nav.ledger') }}</RouterLink>
+      <RouterLink class="plain-link" to="/me/wallet">{{ $t('nav.ledger') }}</RouterLink>
     </header>
 
     <section v-if="loading" class="status-panel">{{ $t('store.loading') }}</section>

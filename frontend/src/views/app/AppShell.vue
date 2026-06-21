@@ -68,7 +68,7 @@ async function onModalChange(open: boolean) {
 <template>
   <div class="app-shell">
     <header class="app-account-bar">
-      <RouterLink class="brand-mark" to="/app">Tang Luck</RouterLink>
+      <RouterLink class="brand-mark" to="/lobby">Tang Luck</RouterLink>
       <div class="account-strip">
         <span class="status-tag" :class="{ active: !session.isGuest }">{{ accountLabel }}</span>
         <span v-if="session.userId" class="account-id">ID {{ session.userId }}</span>
@@ -84,11 +84,11 @@ async function onModalChange(open: boolean) {
     <RouterView />
 
     <nav class="bottom-nav" aria-label="App navigation">
-      <RouterLink to="/app">{{ $t('nav.home') }}</RouterLink>
-      <RouterLink to="/app/slots/lucky_slots">{{ $t('nav.slots') }}</RouterLink>
-      <RouterLink to="/app/activity">{{ $t('nav.activity') }}</RouterLink>
-      <RouterLink to="/app/inbox">{{ $t('nav.inbox') }}</RouterLink>
-      <RouterLink to="/app/wallet">{{ $t('common.wallet') }}</RouterLink>
+      <RouterLink to="/store">{{ $t('nav.store') }}</RouterLink>
+      <RouterLink to="/promo">{{ $t('nav.promo') }}</RouterLink>
+      <RouterLink to="/lobby">{{ $t('nav.lobby') }}</RouterLink>
+      <RouterLink to="/inbox">{{ $t('nav.inbox') }}</RouterLink>
+      <RouterLink to="/me">{{ $t('nav.me') }}</RouterLink>
     </nav>
 
     <AuthModal

@@ -64,7 +64,7 @@ describe('AppRegister', () => {
     expect(fetchMock).toHaveBeenCalledWith('/api/v1/auth/register', expect.objectContaining({ method: 'POST' }))
     expect(localStorage.getItem('tangluck_token')).toBe('jwt-token')
     expect(localStorage.getItem('tangluck_user_id')).toBe('7')
-    expect(push).toHaveBeenCalledWith('/app')
+    expect(push).toHaveBeenCalledWith('/lobby')
   })
 
   it('shows backend region restriction errors', async () => {

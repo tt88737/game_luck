@@ -87,10 +87,10 @@ async function claim(key: string, action: () => Promise<ClaimResponse>) {
   <main class="app-screen">
     <header class="app-header">
       <div>
-        <p class="eyebrow">{{ $t('activity.center') }}</p>
+        <p class="eyebrow">{{ $t('nav.promo') }}</p>
         <h1>{{ $t('activity.claimableRewards') }}</h1>
       </div>
-      <RouterLink class="plain-link" to="/app">{{ $t('nav.home') }}</RouterLink>
+      <RouterLink class="plain-link" to="/lobby">{{ $t('nav.lobby') }}</RouterLink>
     </header>
 
     <section v-if="loading" class="status-panel">{{ $t('activity.loading') }}</section>
@@ -164,6 +164,14 @@ async function claim(key: string, action: () => Promise<ClaimResponse>) {
             {{ processing === 'coupon' ? $t('activity.applying') : $t('activity.apply') }}
           </button>
         </div>
+      </section>
+
+      <section class="section-block">
+        <div class="section-title">
+          <h2>AMOE</h2>
+          <span>{{ $t('home.amoeNoPurchase') }}</span>
+        </div>
+        <p class="empty-state">{{ $t('me.legalHint') }}</p>
       </section>
     </template>
   </main>

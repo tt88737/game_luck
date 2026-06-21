@@ -36,7 +36,7 @@ describe('AppHome', () => {
       if (url.endsWith('/lobby')) {
         return json({
           cards: [
-            { cardCode: 'slots_main', title: 'Configured Slots', subtitle: 'From admin lobby', imageUrl: '/assets/lobby/slots.png', targetUrl: '/app/activity', status: 'active', sortOrder: 10 },
+            { cardCode: 'slots_main', title: 'Configured Slots', subtitle: 'From admin lobby', imageUrl: '/assets/lobby/slots.png', targetUrl: '/lobby/slots/lucky_slots', status: 'active', sortOrder: 10 },
           ],
           campaigns: [{ campaignCode: 'WELCOME_BONUS', campaignType: 'register_bonus', status: 'active' }],
           tasks: [{ taskId: 'DAILY_LOGIN', taskCode: 'DAILY_LOGIN', target: 1, status: 'in_progress' }],
@@ -68,6 +68,10 @@ describe('AppHome', () => {
     expect(wrapper.text()).toContain('Daily bonus')
     expect(wrapper.text()).toContain('Terms of Use')
     expect(wrapper.text()).toContain('AMOE / No Purchase Necessary')
+    expect(wrapper.find('a[href="/store"]').exists()).toBe(true)
+    expect(wrapper.find('a[href="/promo"]').exists()).toBe(true)
+    expect(wrapper.find('a[href="/me/redeem"]').exists()).toBe(true)
+    expect(wrapper.find('a[href="/me/kyc"]').exists()).toBe(true)
     expect(wrapper.text()).not.toContain('P0-A')
   })
 

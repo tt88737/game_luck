@@ -71,7 +71,7 @@ function messageFrom(err: unknown) {
         <p class="eyebrow">{{ $t('common.kyc') }}</p>
         <h1>{{ $t('kyc.heading') }}</h1>
       </div>
-      <RouterLink class="plain-link" to="/app/redemption">{{ $t('nav.redeem') }}</RouterLink>
+      <RouterLink class="plain-link" to="/me/redeem">{{ $t('nav.redeem') }}</RouterLink>
     </header>
 
     <section v-if="loading" class="status-panel">{{ $t('kyc.loading') }}</section>
@@ -79,7 +79,7 @@ function messageFrom(err: unknown) {
       <strong>{{ session.isGuest ? $t('guestGate.kycTitle') : $t('register.heading') }}</strong>
       <span>{{ session.isGuest ? $t('guestGate.kycBody') : $t('kyc.signInRequired') }}</span>
       <button v-if="session.isGuest" type="button" class="small-action" @click="openBindAccount">{{ $t('auth.bindAccount') }}</button>
-      <RouterLink v-else class="plain-link" to="/app?auth=register">{{ $t('register.submit') }}</RouterLink>
+      <RouterLink v-else class="plain-link" to="/lobby?auth=register">{{ $t('register.submit') }}</RouterLink>
     </section>
     <section v-else>
       <div class="section-block">

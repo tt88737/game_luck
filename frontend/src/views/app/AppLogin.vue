@@ -21,7 +21,7 @@ async function login() {
   try {
     const response = await apiPost<RegisterResponse>('/auth/login', form)
     session.applyAuthResponse(response)
-    await router.push('/app')
+    await router.push('/lobby')
   } catch (err) {
     error.value = messageFrom(err)
   } finally {
@@ -42,7 +42,7 @@ function messageFrom(err: unknown) {
         <p class="eyebrow">{{ $t('login.heading') }}</p>
         <h1>{{ $t('login.heading') }}</h1>
       </div>
-      <RouterLink class="plain-link" to="/app/register">{{ $t('login.noAccount') }}</RouterLink>
+      <RouterLink class="plain-link" to="/lobby?auth=register">{{ $t('login.noAccount') }}</RouterLink>
     </header>
 
     <section class="lobby-hero auth-hero">
@@ -68,11 +68,11 @@ function messageFrom(err: unknown) {
     </form>
 
     <nav class="bottom-nav" aria-label="App navigation">
-      <RouterLink to="/app/register">{{ $t('nav.register') }}</RouterLink>
-      <RouterLink to="/app/login">{{ $t('login.submit') }}</RouterLink>
-      <RouterLink to="/app">{{ $t('nav.home') }}</RouterLink>
-      <RouterLink to="/app/store">{{ $t('nav.store') }}</RouterLink>
-      <RouterLink to="/app/wallet">{{ $t('common.wallet') }}</RouterLink>
+      <RouterLink to="/lobby?auth=register">{{ $t('nav.register') }}</RouterLink>
+      <RouterLink to="/lobby?auth=login">{{ $t('login.submit') }}</RouterLink>
+      <RouterLink to="/lobby">{{ $t('nav.lobby') }}</RouterLink>
+      <RouterLink to="/store">{{ $t('nav.store') }}</RouterLink>
+      <RouterLink to="/me">{{ $t('nav.me') }}</RouterLink>
     </nav>
   </main>
 </template>

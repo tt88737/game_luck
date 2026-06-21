@@ -101,3 +101,10 @@
 - `AppShell` 不应在会话失败时显示 `User` fallback；失败状态需要明确文案和 Retry 操作。
 - 浏览器验收中 PowerShell 管道会影响中文字符串传递；中文页面验收应以实际页面文本和截图为准，避免脚本字符串编码误判。
 - 继续使用新端口做验收可以规避旧 Vite/Node 服务带来的假阳性。
+
+## 2026-06-21 C-side Route Layout Gates Findings
+- The previous `Home | Slots | Activity | Inbox | Wallet` bottom nav conflicted with the product routing document and made redemption/wallet too prominent for a sweeps product.
+- `Redeem` should remain reachable, but through `Me > Redeem`; this keeps eligibility explanation, KYC, region, risk, playthrough, and threshold gates visible before action.
+- Keeping `/app/*` as compatibility redirects avoids breaking old links while making `/store`, `/promo`, `/lobby`, `/inbox`, and `/me` the canonical user-facing routes.
+- `AppActivity.vue` can remain the implementation file temporarily, but user-facing route and copy must say `Promo`; a mechanical filename rename is lower priority than product route correctness.
+- Browser verification needs to assert both desktop and mobile bottom tabs because this layout is fixed-position and easy to regress.

@@ -103,7 +103,7 @@ function defaultReels() {
         <p class="eyebrow">Slots</p>
         <h1>{{ game?.name || 'Lucky Slots' }}</h1>
       </div>
-      <RouterLink class="plain-link" to="/app">Lobby</RouterLink>
+      <RouterLink class="plain-link" to="/lobby">Lobby</RouterLink>
     </header>
 
     <section v-if="loading" class="status-panel">Loading Slots...</section>
@@ -163,7 +163,7 @@ function defaultReels() {
       <section class="section-block">
         <div class="section-title">
           <h2>Task progress</h2>
-          <RouterLink to="/app/activity">Activity</RouterLink>
+          <RouterLink to="/promo">Promo</RouterLink>
         </div>
         <article v-for="task in activity?.tasks || []" :key="task.taskCode" class="reward-row">
           <div>
@@ -178,7 +178,7 @@ function defaultReels() {
       <section class="section-block">
         <div class="section-title">
           <h2>Recent rounds</h2>
-          <RouterLink to="/app/wallet">Ledger</RouterLink>
+          <RouterLink to="/me/wallet">Ledger</RouterLink>
         </div>
         <article v-for="round in rounds" :key="round.roundId" class="reward-row">
           <div>

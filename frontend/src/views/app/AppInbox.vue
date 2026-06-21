@@ -66,7 +66,7 @@ function messageFrom(err: unknown) {
         <p class="eyebrow">Reward inbox</p>
         <h1>Notifications</h1>
       </div>
-      <RouterLink class="plain-link" to="/app">Lobby</RouterLink>
+      <RouterLink class="plain-link" to="/lobby">Lobby</RouterLink>
     </header>
 
     <section v-if="loading" class="status-panel">Loading inbox...</section>

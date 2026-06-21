@@ -60,7 +60,7 @@ function formatAmount(value: string | number, digits: number) {
         <p class="eyebrow">{{ $t('common.wallet') }}</p>
         <h1>{{ $t('wallet.heading') }}</h1>
       </div>
-      <RouterLink class="plain-link" to="/app">{{ $t('nav.home') }}</RouterLink>
+      <RouterLink class="plain-link" to="/lobby">{{ $t('nav.lobby') }}</RouterLink>
     </header>
 
     <section v-if="loading" class="status-panel">{{ $t('wallet.loadingLedger') }}</section>

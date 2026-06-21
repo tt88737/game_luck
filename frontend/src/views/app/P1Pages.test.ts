@@ -14,6 +14,7 @@ import AppActivity from './AppActivity.vue'
 import AppSlots from './AppSlots.vue'
 import AppInbox from './AppInbox.vue'
 import AppShell from './AppShell.vue'
+import AppMe from './AppMe.vue'
 import { i18n } from '../../i18n'
 import { createPinia, setActivePinia } from 'pinia'
 import { createMemoryHistory, createRouter } from 'vue-router'
@@ -59,7 +60,7 @@ describe('P1 production pages', () => {
     const wrapper = mount(AppActivity, { global })
     await flushPromises()
 
-    expect(wrapper.text()).toContain('活动中心')
+    expect(wrapper.text()).toContain('促销')
     expect(wrapper.text()).toContain('可领取奖励')
     expect(wrapper.text()).toContain('活动')
     expect(wrapper.text()).toContain('每日任务')
@@ -102,12 +103,36 @@ describe('P1 production pages', () => {
     expect(wrapper.text()).not.toContain('User ')
     expect(wrapper.text()).toContain('Bind account')
     expect(wrapper.text()).toContain('Sign in')
-    expect(wrapper.text()).toContain('Home')
-    expect(wrapper.text()).toContain('Slots')
-    expect(wrapper.text()).toContain('Activity')
+    expect(wrapper.text()).toContain('Store')
+    expect(wrapper.text()).toContain('Promo')
+    expect(wrapper.text()).toContain('Lobby')
     expect(wrapper.text()).toContain('Inbox')
-    expect(wrapper.text()).toContain('Wallet')
+    expect(wrapper.text()).toContain('Me')
+    expect(wrapper.find('.bottom-nav').text()).not.toContain('Slots')
+    expect(wrapper.find('.bottom-nav').text()).not.toContain('Activity')
+    expect(wrapper.find('.bottom-nav').text()).not.toContain('Wallet')
+    expect(wrapper.find('.bottom-nav').text()).not.toContain('Redeem')
+    expect(wrapper.find('a[href="/lobby"]').exists()).toBe(true)
     expect(wrapper.find('.bottom-nav').text()).not.toContain('Register')
+  })
+
+  it('renders Me as account wallet compliance aggregation for guests', async () => {
+    localStorage.setItem('tangluck_user_id', '77')
+    localStorage.setItem('tangluck_account_type', 'guest')
+
+    const wrapper = mount(AppMe, { global })
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('Guest mode')
+    expect(wrapper.text()).toContain('Bind account')
+    expect(wrapper.text()).toContain('Wallet')
+    expect(wrapper.text()).toContain('Redeem')
+    expect(wrapper.text()).toContain('KYC')
+    expect(wrapper.text()).toContain('AMOE')
+    expect(wrapper.find('a[href="/me/wallet"]').exists()).toBe(true)
+    expect(wrapper.find('a[href="/me/redeem"]').exists()).toBe(true)
+    expect(wrapper.find('a[href="/me/kyc"]').exists()).toBe(true)
+    expect(wrapper.find('a[href="/promo/amoe"]').exists()).toBe(true)
   })
 
   it('shows retry when guest session boot fails', async () => {
