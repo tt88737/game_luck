@@ -131,6 +131,24 @@ describe('P1 production pages', () => {
     expect(wrapper.text()).toContain('0 GC')
   })
 
+  it('asks guest users to bind before purchasing GC packages', async () => {
+    localStorage.setItem('tangluck_user_id', '77')
+    localStorage.setItem('tangluck_account_type', 'guest')
+    vi.spyOn(globalThis, 'fetch').mockImplementation((input) => {
+      const url = String(input)
+      if (url.endsWith('/purchase/packages')) {
+        return json([{ packageCode: 'gc_499', name: 'GC 5,000 Pack', priceAmount: '4.9900', priceCurrency: 'USD', gcAmount: '5000.0000', sandboxOnly: false }])
+      }
+      return json({})
+    })
+
+    const wrapper = mount(AppStore, { global })
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('Bind account')
+    expect(wrapper.find('[data-test="buy-gc_499"]').attributes('disabled')).toBeDefined()
+  })
+
   it('spins Lucky Slots and renders settled round history', async () => {
     localStorage.setItem('tangluck_user_id', '1')
     const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation((input, init) => {
@@ -237,6 +255,19 @@ describe('P1 production pages', () => {
     expect(wrapper.text()).toContain('reviewing')
   })
 
+  it('asks guest users to bind before KYC submission', async () => {
+    localStorage.setItem('tangluck_user_id', '77')
+    localStorage.setItem('tangluck_account_type', 'guest')
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation(() => json({}))
+
+    const wrapper = mount(AppKyc, { global })
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('Bind account')
+    expect(wrapper.find('[data-test="submit-kyc"]').exists()).toBe(false)
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
   it('shows KYC blocking state on redemption page', async () => {
     localStorage.setItem('tangluck_user_id', '1')
     vi.spyOn(globalThis, 'fetch').mockImplementation((input) => {
@@ -253,6 +284,19 @@ describe('P1 production pages', () => {
 
     expect(wrapper.text()).toContain('KYC approval is required')
     expect(wrapper.get('[data-test="submit-redemption"]').attributes('disabled')).toBeDefined()
+  })
+
+  it('asks guest users to bind before redemption requests', async () => {
+    localStorage.setItem('tangluck_user_id', '77')
+    localStorage.setItem('tangluck_account_type', 'guest')
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation(() => json({}))
+
+    const wrapper = mount(AppRedemption, { global })
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('Bind account')
+    expect(wrapper.find('[data-test="submit-redemption"]').exists()).toBe(false)
+    expect(fetchMock).not.toHaveBeenCalled()
   })
 
   it('does not call user-scoped APIs when the user is not registered', async () => {

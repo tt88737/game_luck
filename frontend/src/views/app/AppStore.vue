@@ -4,7 +4,9 @@ import { RouterLink } from 'vue-router'
 import { ApiError, apiGet, apiPost } from '../../api/http'
 import type { ProductPackage, PurchaseOrder } from '../../api/contracts'
 import { i18n } from '../../i18n'
+import { useSessionStore } from '../../stores/session'
 
+const session = useSessionStore()
 const loading = ref(true)
 const buying = ref('')
 const error = ref('')
@@ -27,6 +29,10 @@ async function loadPackages() {
 }
 
 async function buyPackage(item: ProductPackage) {
+  if (session.isGuest) {
+    openBindAccount()
+    return
+  }
   buying.value = item.packageCode
   error.value = ''
   success.value = ''
@@ -45,6 +51,10 @@ async function buyPackage(item: ProductPackage) {
   } finally {
     buying.value = ''
   }
+}
+
+function openBindAccount() {
+  window.dispatchEvent(new CustomEvent('open-auth-modal', { detail: { mode: 'register' } }))
 }
 
 function messageFrom(err: unknown) {
@@ -72,6 +82,13 @@ function format(value: string | number, digits: number) {
 
     <template v-else>
       <p class="notice">{{ $t('store.notice') }}</p>
+      <section v-if="session.isGuest" class="guest-gate">
+        <div>
+          <strong>Bind account</strong>
+          <span>Guest play is available, but purchases require a verified account before payment can start.</span>
+        </div>
+        <button type="button" class="small-action" @click="openBindAccount">Bind account</button>
+      </section>
       <p v-if="success" class="notice success">{{ success }}</p>
       <p v-if="error" class="notice danger">{{ error }}</p>
 
@@ -87,7 +104,7 @@ function format(value: string | number, digits: number) {
                 <strong>{{ item.name }}</strong>
                 <span>{{ format(item.gcAmount, 0) }} GC · {{ format(item.priceAmount, 2) }} {{ item.priceCurrency }}</span>
               </div>
-              <button :data-test="`buy-${item.packageCode}`" :disabled="buying === item.packageCode" @click="buyPackage(item)">
+              <button :data-test="`buy-${item.packageCode}`" :disabled="session.isGuest || buying === item.packageCode" @click="buyPackage(item)">
                 {{ buying === item.packageCode ? $t('store.buying') : $t('common.buy') }}
               </button>
             </div>
@@ -108,13 +125,5 @@ function format(value: string | number, digits: number) {
         </div>
       </section>
     </template>
-
-    <nav class="bottom-nav" aria-label="App navigation">
-      <RouterLink to="/app">{{ $t('nav.home') }}</RouterLink>
-      <RouterLink to="/app/store">{{ $t('nav.store') }}</RouterLink>
-      <RouterLink to="/app/kyc">{{ $t('nav.kyc') }}</RouterLink>
-      <RouterLink to="/app/redemption">{{ $t('nav.redeem') }}</RouterLink>
-      <RouterLink to="/app/wallet">{{ $t('common.wallet') }}</RouterLink>
-    </nav>
   </main>
 </template>

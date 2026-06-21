@@ -23,7 +23,7 @@ const statusLabel = computed(() => status.value?.status ?? 'not_started')
 onMounted(loadStatus)
 
 async function loadStatus() {
-  if (!session.userId) {
+  if (!session.userId || session.isGuest) {
     loading.value = false
     return
   }
@@ -39,6 +39,10 @@ async function loadStatus() {
 }
 
 async function submitKyc() {
+  if (session.isGuest) {
+    openBindAccount()
+    return
+  }
   submitting.value = true
   error.value = ''
   try {
@@ -48,6 +52,10 @@ async function submitKyc() {
   } finally {
     submitting.value = false
   }
+}
+
+function openBindAccount() {
+  window.dispatchEvent(new CustomEvent('open-auth-modal', { detail: { mode: 'register' } }))
 }
 
 function messageFrom(err: unknown) {
@@ -67,11 +75,11 @@ function messageFrom(err: unknown) {
     </header>
 
     <section v-if="loading" class="status-panel">{{ $t('kyc.loading') }}</section>
-    <section v-else-if="!session.userId" class="status-panel">
+    <section v-else-if="!session.userId || session.isGuest" class="status-panel">
       <strong>{{ $t('register.heading') }}</strong>
-      <span>{{ $t('kyc.signInRequired') }}</span>
-      <RouterLink class="plain-link" to="/app/register">{{ $t('register.submit') }}</RouterLink>
-      <RouterLink class="plain-link" to="/app/login">{{ $t('login.submit') }}</RouterLink>
+      <span>{{ session.isGuest ? 'Bind account before submitting identity verification.' : $t('kyc.signInRequired') }}</span>
+      <button v-if="session.isGuest" type="button" class="small-action" @click="openBindAccount">Bind account</button>
+      <RouterLink v-else class="plain-link" to="/app?auth=register">{{ $t('register.submit') }}</RouterLink>
     </section>
     <section v-else>
       <div class="section-block">
@@ -115,13 +123,5 @@ function messageFrom(err: unknown) {
         </form>
       </section>
     </section>
-
-    <nav class="bottom-nav" aria-label="App navigation">
-      <RouterLink to="/app">{{ $t('nav.home') }}</RouterLink>
-      <RouterLink to="/app/store">{{ $t('nav.store') }}</RouterLink>
-      <RouterLink to="/app/kyc">{{ $t('nav.kyc') }}</RouterLink>
-      <RouterLink to="/app/redemption">{{ $t('nav.redeem') }}</RouterLink>
-      <RouterLink to="/app/wallet">{{ $t('common.wallet') }}</RouterLink>
-    </nav>
   </main>
 </template>
