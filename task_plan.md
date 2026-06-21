@@ -78,3 +78,13 @@
 - [x] Move Wallet, Redeem, KYC, AMOE, Rules, and Support entry points under `Me` or `Promo`.
 - [x] Update Playwright flows and add route layout browser verification screenshots.
 - [x] Pass backend tests, frontend tests, build, and Playwright.
+
+## 2026-06-21 Admin Ops Navigation Grouping
+- [x] Write and commit design spec: `docs/superpowers/specs/2026-06-21-admin-ops-navigation-and-cside-states-design.md`.
+- [x] Write and commit implementation plan: `docs/superpowers/plans/2026-06-21-admin-ops-navigation-and-cside-states-implementation.md`.
+- [x] Add failing tests for grouped admin navigation and Chinese grouped labels.
+- [x] Implement grouped `AdminNav` metadata with live and planned items.
+- [x] Add English and Chinese i18n keys for groups and C-side impact labels.
+- [x] Add grouped admin nav CSS for desktop and mobile.
+- [x] Add Playwright screenshot verification for grouped admin navigation.
+- [x] Pass backend tests, frontend tests, build, and Playwright.

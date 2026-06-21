@@ -108,3 +108,9 @@
 - Keeping `/app/*` as compatibility redirects avoids breaking old links while making `/store`, `/promo`, `/lobby`, `/inbox`, and `/me` the canonical user-facing routes.
 - `AppActivity.vue` can remain the implementation file temporarily, but user-facing route and copy must say `Promo`; a mechanical filename rename is lower priority than product route correctness.
 - Browser verification needs to assert both desktop and mobile bottom tabs because this layout is fixed-position and easy to regress.
+
+## 2026-06-21 Admin Ops Navigation Grouping Findings
+- A flat admin menu hides the relationship between B-side operations and C-side product surfaces; grouped navigation makes the Store/Promo/Lobby/Inbox/Me control model visible.
+- Planned modules should be visible enough to show the operating roadmap, but must not be styled as live links unless the route has a real working page.
+- Mobile admin navigation can become unusable if every module is a top-level tab; grouped scrollable sections keep the page usable without pretending mobile is the primary B-side workflow.
+- C-side impact labels are a low-cost way to prevent future drift between backend configuration modules and customer-facing routes.

@@ -212,3 +212,12 @@
 - Browser verification screenshots generated under `artifacts/cside-route-layout/`.
 - Local frontend is running at `http://127.0.0.1:8092/lobby`.
 - Verification passed: `backend .\gradlew.bat --no-daemon test`, `frontend npm run test -- --run --pool=threads --maxWorkers=1`, `frontend npm run build`, `frontend npx playwright test`.
+
+## 2026-06-21 Admin Ops Navigation Grouping
+- Completed B-side operations navigation grouping by production business domain.
+- Admin nav now groups Dashboard, User & Guest, Store & Packages, Promo & Rewards, Game Lobby, Inbox & Notification, Wallet & Ledger, Redemption, KYC & Risk, Compliance, CMS / Rules / AMOE, Support, Audit Logs, and System / RBAC.
+- Each group displays C-side impact labels such as `Impacts Store`, `Impacts Promo`, `Impacts Lobby`, `Impacts Inbox`, and `Impacts Me > Wallet`.
+- Planned modules are visually marked with `planned` labels instead of appearing as completed live links.
+- English and Chinese i18n keys were added for group names, impact labels, and planned module labels.
+- Browser screenshots generated under `artifacts/admin-ops-navigation/`.
+- Verification passed: `backend .\gradlew.bat --no-daemon test`, `frontend npm run test -- --run --pool=threads --maxWorkers=1`, `frontend npm run build`, `frontend npx playwright test`.
