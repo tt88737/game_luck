@@ -11,6 +11,7 @@ import AdminWalletLedger from '../admin/AdminWalletLedger.vue'
 import AdminKycReview from '../admin/AdminKycReview.vue'
 import AdminRedemptions from '../admin/AdminRedemptions.vue'
 import AppActivity from './AppActivity.vue'
+import AppSlots from './AppSlots.vue'
 import { i18n } from '../../i18n'
 import { createPinia, setActivePinia } from 'pinia'
 
@@ -83,6 +84,38 @@ describe('P1 production pages', () => {
     expect(wrapper.text()).toContain('payment_pending')
     expect(wrapper.text()).toContain('ord_1001')
     expect(wrapper.text()).toContain('0 GC')
+  })
+
+  it('spins Lucky Slots and renders settled round history', async () => {
+    localStorage.setItem('tangluck_user_id', '1')
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation((input, init) => {
+      const url = String(input)
+      if (url.endsWith('/slots/games')) {
+        return json([{ gameCode: 'lucky_slots', name: 'Lucky Slots', status: 'active', reelCount: 5, rowCount: 3, minBet: '1.0000', maxBet: '100.0000', currency: 'GC', sortOrder: 10, legalApprovalId: 'LEGAL-SLOTS-001' }])
+      }
+      if (url.endsWith('/wallet/summary')) {
+        return json({ wallet: { gcBalance: '100.0000', scBalance: '0', scFrozen: '0', scRedeemable: '0' }, scSourceSummary: [], notices: [] })
+      }
+      if (url.endsWith('/slots/rounds')) {
+        return json({ items: [{ roundId: 'round_1001', userId: 1, gameCode: 'lucky_slots', currency: 'GC', betAmount: '10.0000', payoutAmount: '20.0000', multiplier: '2.0000', reels: [['coin', 'seven', 'coin'], ['coin', 'seven', 'coin'], ['coin', 'seven', 'coin'], ['coin', 'seven', 'coin'], ['coin', 'seven', 'coin']], status: 'settled', debitLedgerId: 10, creditLedgerId: 11, createdAt: '2026-06-21T00:00:00Z' }], page: 1, pageSize: 20, total: 1 })
+      }
+      if (url.endsWith('/slots/lucky_slots/spin') && init?.method === 'POST') {
+        return json({ roundId: 'round_1002', userId: 1, gameCode: 'lucky_slots', currency: 'GC', betAmount: '10.0000', payoutAmount: '20.0000', multiplier: '2.0000', reels: [['coin', 'seven', 'coin'], ['coin', 'seven', 'coin'], ['coin', 'seven', 'coin'], ['coin', 'seven', 'coin'], ['coin', 'seven', 'coin']], status: 'settled', debitLedgerId: 12, creditLedgerId: 13, createdAt: '2026-06-21T00:01:00Z' })
+      }
+      return json({})
+    })
+
+    const wrapper = mount(AppSlots, { global })
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('Lucky Slots')
+    expect(wrapper.text()).toContain('round_1001')
+    await wrapper.get('[data-test="spin-slots"]').trigger('click')
+    await flushPromises()
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/v1/slots/lucky_slots/spin', expect.objectContaining({ method: 'POST' }))
+    expect(wrapper.text()).toContain('20 GC')
+    expect(wrapper.text()).toContain('round_1002')
   })
 
   it('submits KYC for manual review', async () => {

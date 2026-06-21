@@ -8,6 +8,8 @@ const primaryItems = [
   { to: '/admin/legal-documents', key: 'admin.legalDocs' },
   { to: '/admin/lobby', key: 'admin.lobby' },
   { to: '/admin/campaigns', key: 'admin.campaigns' },
+  { to: '/admin/games', key: 'admin.games' },
+  { to: '/admin/game-rounds', key: 'admin.gameRounds' },
   { to: '/admin/packages', key: 'admin.packages' },
   { to: '/admin/orders', key: 'admin.orders' },
   { to: '/admin/kyc', key: 'admin.kycApplications' },

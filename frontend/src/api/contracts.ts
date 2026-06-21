@@ -276,3 +276,38 @@ export interface AdminLegalDocument {
   status: string
   legalApprovalId: string | null
 }
+
+export interface SlotGame {
+  gameCode: string
+  name: string
+  status: string
+  reelCount: number
+  rowCount: number
+  minBet: string | number
+  maxBet: string | number
+  currency: string
+  sortOrder: number
+  legalApprovalId: string | null
+}
+
+export interface SlotRound {
+  roundId: string
+  userId: number
+  gameCode: string
+  currency: string
+  betAmount: string | number
+  payoutAmount: string | number
+  multiplier: string | number
+  reels: string[][]
+  status: string
+  debitLedgerId: number | null
+  creditLedgerId: number | null
+  createdAt: string
+}
+
+export interface SlotRoundPage {
+  items: SlotRound[]
+  page: number
+  pageSize: number
+  total: number
+}

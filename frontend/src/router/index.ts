@@ -8,6 +8,7 @@ const AppLogin = () => import('../views/app/AppLogin.vue')
 const AppStore = () => import('../views/app/AppStore.vue')
 const AppKyc = () => import('../views/app/AppKyc.vue')
 const AppRedemption = () => import('../views/app/AppRedemption.vue')
+const AppSlots = () => import('../views/app/AppSlots.vue')
 const AdminDashboard = () => import('../views/admin/AdminDashboard.vue')
 const AdminCampaigns = () => import('../views/admin/AdminCampaigns.vue')
 const AdminAuditLogs = () => import('../views/admin/AdminAuditLogs.vue')
@@ -22,6 +23,8 @@ const AdminUsers = () => import('../views/admin/AdminUsers.vue')
 const AdminKycReview = () => import('../views/admin/AdminKycReview.vue')
 const AdminRedemptions = () => import('../views/admin/AdminRedemptions.vue')
 const AdminWalletLedger = () => import('../views/admin/AdminWalletLedger.vue')
+const AdminGames = () => import('../views/admin/AdminGames.vue')
+const AdminGameRounds = () => import('../views/admin/AdminGameRounds.vue')
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -35,6 +38,7 @@ export const router = createRouter({
     { path: '/app/store', component: AppStore },
     { path: '/app/kyc', component: AppKyc },
     { path: '/app/redemption', component: AppRedemption },
+    { path: '/app/slots/:gameCode', component: AppSlots },
     { path: '/admin', component: AdminDashboard },
     { path: '/admin/users', component: AdminUsers },
     { path: '/admin/regions', component: AdminRegions },
@@ -46,6 +50,8 @@ export const router = createRouter({
     { path: '/admin/kyc', component: AdminKycReview },
     { path: '/admin/redemptions', component: AdminRedemptions },
     { path: '/admin/wallet-ledger', component: AdminWalletLedger },
+    { path: '/admin/games', component: AdminGames },
+    { path: '/admin/game-rounds', component: AdminGameRounds },
     { path: '/admin/amoe', component: AdminPlaceholder, props: { title: 'AMOE' } },
     { path: '/admin/support', component: AdminPlaceholder, props: { title: 'Support' } },
     { path: '/admin/audit-logs', component: AdminAuditLogs },

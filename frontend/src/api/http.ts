@@ -23,6 +23,7 @@ export async function apiGet<T>(path: string): Promise<T> {
 export async function apiPost<T>(path: string, body?: unknown, idempotencyKey?: string): Promise<T> {
   const headers: Record<string, string> = {}
   if (idempotencyKey) headers['Idempotency-Key'] = idempotencyKey
+  if (idempotencyKey) headers['X-Idempotency-Key'] = idempotencyKey
   return request<T>(path, {
     method: 'POST',
     headers,

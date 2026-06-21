@@ -6,6 +6,8 @@ import AdminAuditLogs from './AdminAuditLogs.vue'
 import AdminRegions from './AdminRegions.vue'
 import AdminLegalDocuments from './AdminLegalDocuments.vue'
 import AdminLobby from './AdminLobby.vue'
+import AdminGames from './AdminGames.vue'
+import AdminGameRounds from './AdminGameRounds.vue'
 import { i18n } from '../../i18n'
 
 function json(data: unknown, status = 200) {
@@ -86,6 +88,49 @@ describe('admin pages', () => {
     expect(wrapper.text()).toContain('Wallet Ledger')
     expect(wrapper.text()).toContain('AMOE')
     expect(wrapper.text()).toContain('Support')
+    expect(wrapper.text()).toContain('Games')
+    expect(wrapper.text()).toContain('Game Rounds')
+  })
+
+  it('lets game admins pause active Slots games', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation((input, init) => {
+      const url = String(input)
+      if (url.endsWith('/admin/games') && init?.method !== 'PATCH') {
+        return json([{ gameCode: 'lucky_slots', name: 'Lucky Slots', status: 'active', reelCount: 5, rowCount: 3, minBet: '1.0000', maxBet: '100.0000', currency: 'GC', sortOrder: 10, legalApprovalId: 'LEGAL-SLOTS-001' }])
+      }
+      if (url.endsWith('/admin/games/lucky_slots') && init?.method === 'PATCH') {
+        return json({ gameCode: 'lucky_slots', name: 'Lucky Slots', status: 'paused', reelCount: 5, rowCount: 3, minBet: '1.0000', maxBet: '100.0000', currency: 'GC', sortOrder: 10, legalApprovalId: 'LEGAL-SLOTS-001' })
+      }
+      return json({})
+    })
+
+    const wrapper = mount(AdminGames, { global })
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('Lucky Slots')
+    await wrapper.get('[data-test="pause-game-lucky_slots"]').trigger('click')
+    await flushPromises()
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/v1/admin/games/lucky_slots', expect.objectContaining({ method: 'PATCH' }))
+    expect(wrapper.text()).toContain('paused')
+  })
+
+  it('renders admin game round ledger and payout audit table', async () => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation((input) => {
+      const url = String(input)
+      if (url.endsWith('/admin/game-rounds')) {
+        return json({ items: [{ roundId: 'round_1001', userId: 1, gameCode: 'lucky_slots', currency: 'GC', betAmount: '10.0000', payoutAmount: '20.0000', multiplier: '2.0000', reels: [], status: 'settled', debitLedgerId: 10, creditLedgerId: 11, createdAt: '2026-06-21T00:00:00Z' }], page: 1, pageSize: 50, total: 1 })
+      }
+      return json({})
+    })
+
+    const wrapper = mount(AdminGameRounds, { global })
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('round_1001')
+    expect(wrapper.text()).toContain('20 GC')
+    expect(wrapper.text()).toContain('ledger 10')
+    expect(wrapper.text()).toContain('settled')
   })
 
   it('localizes admin shell and dashboard copy when Chinese is selected', async () => {
