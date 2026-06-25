@@ -1,21 +1,21 @@
-#!/bin/sh
-# ./ry.sh start 启动 stop 停止 restart 重启 status 状态
-AppName=ruoyi-admin.jar
+﻿#!/bin/sh
+# ./ry.sh start 鍚姩 stop 鍋滄 restart 閲嶅惎 status 鐘舵€?
+AppName=gameluck-admin.jar
 
-# JVM参数
+# JVM鍙傛暟
 JVM_OPTS="-Dname=$AppName  -Duser.timezone=Asia/Shanghai -Xms512m -Xmx1024m -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError -XX:+UseZGC"
 APP_HOME=`pwd`
 LOG_PATH=$APP_HOME/logs/$AppName.log
 
 if [ "$1" = "" ];
 then
-    echo -e "\033[0;31m 未输入操作名 \033[0m  \033[0;34m {start|stop|restart|status} \033[0m"
+    echo -e "\033[0;31m 鏈緭鍏ユ搷浣滃悕 \033[0m  \033[0;34m {start|stop|restart|status} \033[0m"
     exit 1
 fi
 
 if [ "$AppName" = "" ];
 then
-    echo -e "\033[0;31m 未输入应用名 \033[0m"
+    echo -e "\033[0;31m 鏈緭鍏ュ簲鐢ㄥ悕 \033[0m"
     exit 1
 fi
 

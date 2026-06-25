@@ -8,9 +8,9 @@
     <artifactId>ruoyi-vue-plus</artifactId>
     <version>${revision}</version>
 
-    <name>RuoYi-Vue-Plus</name>
-    <url>https://gitee.com/dromara/RuoYi-Vue-Plus</url>
-    <description>Dromara RuoYi-Vue-Plus多租户管理系统</description>
+    <name>GameLuck</name>
+    <url>https://github.com/tt88737/game_luck</url>
+    <description>GameLuck package network platform</description>
 
     <properties>
         <revision>5.6.2</revision>
@@ -361,7 +361,7 @@
     </dependencyManagement>
 
     <modules>
-        <module>ruoyi-admin</module>
+        <module>gameluck-admin</module>
         <module>ruoyi-common</module>
         <module>ruoyi-extend</module>
         <module>ruoyi-modules</module>
