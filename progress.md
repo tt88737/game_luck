@@ -36,3 +36,8 @@
 - 创建上游记录文件：`docs/upstream/ruoyi-vue-plus.md`。
 - 验证 `backend/pom.xml`、`backend/ruoyi-admin`、`backend/ruoyi-common`、`backend/ruoyi-modules` 存在。
 - 当前环境未安装 `mvn` 命令，暂时无法执行 Maven 构建验证。
+- 用户同意执行后端环境基线检查。
+- 检查结果：Java 17 可用，Maven 不可用，Docker 可用但 Compose 不可用，MySQL 8.0.46 客户端可用，Redis 端口 6379 可访问但未配置密码。
+- 检查 RuoYi dev 配置：默认 MySQL `localhost:3306/ry-vue root/root`，Redis 密码 `ruoyi123`，Spring Boot Admin Client 和 SnailJob 默认启用。
+- 当前 `ry-vue` 数据库不存在，`9090`、`17888`、`8800`、`9000` 端口未运行相关服务。
+- 创建环境基线文档：`docs/implementation/backend-environment-baseline.md`。
