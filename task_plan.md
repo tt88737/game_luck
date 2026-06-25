@@ -22,8 +22,8 @@
 | 1. 技术路线确认 | complete | 明确底座组合和各端边界 | 本文件、findings.md |
 | 2. 架构设计文档 | complete | 固化模块边界、钱包模型、渠道开关、AI 规则 | docs/superpowers/specs/2026-06-25-platform-architecture-design.md |
 | 3. 设计自查 | complete | 检查范围、矛盾、遗漏和模糊项 | 已确认无 TODO/TBD 占位符，文档编码正常 |
-| 4. 用户评审 | in_progress | 等待业务方确认设计方向 | 评审意见 |
-| 5. 实施计划 | pending | 拆分第一阶段 MVP 开发任务 | 实施计划文档 |
+| 4. 用户评审 | complete | 等待业务方确认设计方向 | 用户已确认继续生成第一阶段实施计划 |
+| 5. 实施计划 | in_progress | 拆分第一阶段 MVP 开发任务 | docs/superpowers/plans/2026-06-25-phase-1-mvp.md |
 
 ## 关键决策
 

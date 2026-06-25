@@ -18,3 +18,11 @@
 - 创建架构设计文档：`docs/superpowers/specs/2026-06-25-platform-architecture-design.md`。
 - 完成设计自查：未发现 TODO/TBD 占位符；UTF-8 内容读取正常。
 - 更新 `task_plan.md`，当前进入用户评审阶段。
+- 用户确认继续生成第一阶段 MVP 实施计划。
+- 创建 `AI_RULES.md`。
+- 创建实施文档：
+  - `docs/implementation/phase-1-mvp-plan.md`
+  - `docs/implementation/module-breakdown.md`
+  - `docs/implementation/db-draft.md`
+  - `docs/implementation/api-draft.md`
+- 创建执行计划：`docs/superpowers/plans/2026-06-25-phase-1-mvp.md`。
