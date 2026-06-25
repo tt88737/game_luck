@@ -21,11 +21,11 @@ Spring profile: local
 - Redis `localhost:6379` 可连接，但无密码。
 - Docker 可用，但 Docker Compose 不可用。
 
-仍需处理：
+已处理：
 
-- Maven 不可用，需要安装或加入 PATH。
-- 数据库 `ry-vue` 尚未创建。
-- 基础 SQL 尚未导入。
+- Maven 3.9.16 已下载并解压到 `C:\tools\apache-maven-3.9.16`。
+- 数据库 `ry-vue` 已创建。
+- 基础 SQL 已导入。
 
 ## 3. 安装 Maven
 
@@ -36,6 +36,14 @@ mvn -version
 ```
 
 期望看到 Maven 版本、Java 17 路径。
+
+当前会话临时配置方式：
+
+```powershell
+$env:MAVEN_HOME='C:\tools\apache-maven-3.9.16'
+$env:Path="$env:MAVEN_HOME\bin;$env:Path"
+mvn -version
+```
 
 ## 4. 创建数据库
 
@@ -114,6 +122,13 @@ mvn clean package -Plocal -DskipTests
 
 ```text
 BUILD SUCCESS
+```
+
+已验证结果：
+
+```text
+BUILD SUCCESS
+Total time: 02:10 min
 ```
 
 ## 8. 启动后端
@@ -199,7 +214,7 @@ Table 'ry-vue.sys_user' doesn't exist
 
 ## 11. 下一步
 
-后端构建和启动通过后，再继续：
+后端构建已通过。下一步先启动后端并验证 `8080`，通过后再继续：
 
 1. 创建 `backend/docs/business-modules.md`。
 2. 添加钱包 SQL 草案到 `backend/script/sql/package_wallet_001.sql`。

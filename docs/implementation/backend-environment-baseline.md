@@ -6,13 +6,13 @@
 
 ## 2. 当前结论
 
-当前机器可以作为 RuoYi-Vue-Plus 后端开发环境，但还不能直接构建和启动。
+当前机器可以作为 RuoYi-Vue-Plus 后端开发环境，后端已经完成 Maven 构建验证。
 
 主要阻塞：
 
-- Maven 未安装或未加入 PATH。
-- RuoYi 默认数据库 `ry-vue` 尚不存在。
-- Redis 服务在 `6379` 端口可访问，但当前 Redis 未配置密码；RuoYi dev 配置要求密码 `ruoyi123`。
+- Maven 已安装到 `C:\tools\apache-maven-3.9.16`，当前会话配置 PATH 后可用。
+- RuoYi 默认数据库 `ry-vue` 已创建并导入基础 SQL。
+- Redis 服务在 `6379` 端口可访问，但当前 Redis 未配置密码；本项目 `application-local.yml` 已覆盖为空密码。
 - Docker 已安装，但没有 `docker compose` / `docker-compose` 命令。
 - RuoYi dev 配置默认启用 Spring Boot Admin Client 和 SnailJob，但本机 `9090`、`17888`、`8800` 端口未运行对应服务。
 
@@ -21,7 +21,7 @@
 | 工具 | 状态 | 结果 |
 | --- | --- | --- |
 | Java | 可用 | OpenJDK 17.0.9 |
-| Maven | 不可用 | `mvn` 命令不存在 |
+| Maven | 可用 | Apache Maven 3.9.16，路径 `C:\tools\apache-maven-3.9.16` |
 | Docker | 可用 | Docker 29.5.2 |
 | Docker Compose v2 | 不可用 | `docker compose` 不存在 |
 | Docker Compose v1 | 不可用 | `docker-compose` 不存在 |
@@ -34,7 +34,7 @@
 | 服务 / 端口 | 状态 | 说明 |
 | --- | --- | --- |
 | MySQL `localhost:3306` | 可连接 | `root/root` 可执行 `SELECT VERSION()` |
-| 数据库 `ry-vue` | 不存在 | `SHOW DATABASES LIKE 'ry-vue'` 无结果 |
+| 数据库 `ry-vue` | 已创建 | 已导入 RuoYi 基础 SQL |
 | Redis `localhost:6379` | 可连接 | TCP 可连接，RESP `PING` 返回 `PONG` |
 | Redis 密码 | 不匹配 | 当前 Redis 未配置密码，RuoYi dev 配置要求 `ruoyi123` |
 | 后端 `localhost:8080` | 未运行 | 端口不通 |
@@ -73,63 +73,66 @@ backend/pom.xml
 | Spring Boot Admin Client | enabled |
 | SnailJob | enabled |
 
-## 6. 最短启动路径
+## 6. 已完成的启动前置工作
 
-### 6.1 必须先解决
-
-1. 安装 Maven 或配置 Maven 到 PATH。
-2. 创建并初始化 MySQL 数据库 `ry-vue`。
-3. 处理 Redis 密码不一致问题。
-
-### 6.2 推荐本地处理方式
-
-优先本地直接跑，不依赖 Docker Compose：
-
-1. 安装 Maven。
-2. 创建数据库：
-
-```powershell
-mysql -uroot -proot -e "CREATE DATABASE IF NOT EXISTS `ry-vue` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
-```
-
-3. 导入基础 SQL：
+- 下载 Apache Maven 3.9.16 binary zip。
+- 校验 Maven zip 的 SHA512。
+- 解压 Maven 到 `C:\tools\apache-maven-3.9.16`。
+- 当前会话中配置 `MAVEN_HOME` 和 PATH 后，`mvn -version` 可用。
+- 创建数据库 `ry-vue`。
+- 导入：
+  - `backend/script/sql/ry_vue_5.X.sql`
+  - `backend/script/sql/ry_job.sql`
+  - `backend/script/sql/ry_workflow.sql`
+- 验证核心表存在：
+  - `sys_user`
+  - `sys_tenant`
+  - `sj_group_config`
+  - `flow_definition`
+- 执行后端构建：
 
 ```powershell
-mysql -uroot -proot ry-vue < backend\script\sql\ry_vue_5.X.sql
-mysql -uroot -proot ry-vue < backend\script\sql\ry_job.sql
-mysql -uroot -proot ry-vue < backend\script\sql\ry_workflow.sql
+mvn clean package -Plocal -DskipTests
 ```
 
-4. 二选一处理 Redis：
+构建结果：
 
-方案 A：给本地 Redis 配置密码 `ruoyi123`。
-
-方案 B：新增本地 profile 覆盖 Redis 密码为空，不直接改上游 `application-dev.yml`。
-
-5. 如果暂时不启动监控中心和 SnailJob，建议新增本地 profile 覆盖：
-
-```yaml
-spring.boot.admin.client:
-  enabled: false
-
-snail-job:
-  enabled: false
+```text
+BUILD SUCCESS
+Total time: 02:10 min
 ```
 
-6. 构建：
+产物：
+
+```text
+backend/ruoyi-admin/target/ruoyi-admin.jar
+```
+
+## 7. 最短启动路径
+
+### 7.1 当前会话设置 Maven
+
+如果新开 PowerShell 后 `mvn` 不可用，先执行：
+
+```powershell
+$env:MAVEN_HOME='C:\tools\apache-maven-3.9.16'
+$env:Path="$env:MAVEN_HOME\bin;$env:Path"
+```
+
+### 7.2 构建
 
 ```powershell
 cd backend
-mvn clean package -Pdev -DskipTests
+mvn clean package -Plocal -DskipTests
 ```
 
-7. 启动：
+### 7.3 启动
 
 ```powershell
-mvn -pl ruoyi-admin spring-boot:run -Pdev
+mvn -pl ruoyi-admin spring-boot:run -Plocal
 ```
 
-## 7. 建议下一步
+## 8. 建议下一步
 
 下一步不要直接修改 `application-dev.yml`。建议新增项目本地配置：
 
@@ -146,13 +149,17 @@ backend/ruoyi-admin/src/main/resources/application-local.yml
 - 禁用 SnailJob。
 - 保留 MySQL `localhost:3306/ry-vue root/root`。
 
-## 8. 当前不可验证项
+## 9. 当前不可验证项
 
-由于 Maven 不可用，暂时不能验证：
+当前已验证：
 
 - Maven 依赖解析。
 - 后端编译。
-- 单元测试。
-- `ruoyi-admin` 启动。
 
-这些需要在 Maven 可用后重新验证。
+仍未验证：
+
+- `ruoyi-admin` 启动。
+- `localhost:8080` 应用响应。
+- 登录流程。
+
+这些需要在下一步启动后端后验证。

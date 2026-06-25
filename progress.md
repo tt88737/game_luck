@@ -44,3 +44,8 @@
 - 用户确认新增本地启动配置。
 - 创建 `backend/ruoyi-admin/src/main/resources/application-local.yml`，用于本机最小启动，禁用 Spring Boot Admin Client 和 SnailJob，并覆盖 Redis 空密码。
 - 创建 `docs/implementation/backend-local-startup.md`，记录 Maven、数据库、SQL 导入、构建和启动步骤。
+- 用户选择自动处理环境。
+- 下载并校验 Apache Maven 3.9.16，解压到 `C:\tools\apache-maven-3.9.16`。
+- 创建数据库 `ry-vue`，导入 `ry_vue_5.X.sql`、`ry_job.sql`、`ry_workflow.sql`。
+- 验证核心表 `sys_user`、`sys_tenant`、`sj_group_config`、`flow_definition` 存在。
+- 执行 `mvn clean package -Plocal -DskipTests`，构建成功，产物为 `backend/ruoyi-admin/target/ruoyi-admin.jar`。
