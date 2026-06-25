@@ -49,3 +49,10 @@
 - 创建数据库 `ry-vue`，导入 `ry_vue_5.X.sql`、`ry_job.sql`、`ry_workflow.sql`。
 - 验证核心表 `sys_user`、`sys_tenant`、`sj_group_config`、`flow_definition` 存在。
 - 执行 `mvn clean package -Plocal -DskipTests`，构建成功，产物为 `backend/ruoyi-admin/target/ruoyi-admin.jar`。
+- 用户反馈 `localhost:8080` 未启动。
+- 首次 Maven `spring-boot:run` 失败原因：未使用 `-am`，导致无法解析本仓库内模块依赖。
+- Jar 启动首次失败原因：本机 Redis 无密码，而应用配置要求 `ruoyi123`。
+- 将 `application-local.yml` 的 Redis 密码明确设为 `ruoyi123`，并给当前 Redis 实例设置临时密码。
+- 补充 `snail-job.port: 28080`，避免示例 Job 读取占位符失败。
+- 使用 `java -jar ruoyi-admin\target\ruoyi-admin.jar --spring.profiles.active=local` 启动成功。
+- 验证 `localhost:8080` TCP 连接成功，`GET /` 返回 200。

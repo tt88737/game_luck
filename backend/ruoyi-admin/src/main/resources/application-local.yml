@@ -5,6 +5,7 @@ spring.boot.admin.client:
 --- # Disable SnailJob for the first local backend startup
 snail-job:
   enabled: false
+  port: 28080
 
 --- # Local MySQL and Redis
 spring:
@@ -20,7 +21,7 @@ spring:
       host: localhost
       port: 6379
       database: 0
-      password:
+      password: ruoyi123
       timeout: 10s
       ssl.enabled: false
 

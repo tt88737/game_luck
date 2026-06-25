@@ -29,6 +29,7 @@
 | 8. 后端环境基线检查 | complete | 检查 JDK、Maven、Docker、MySQL、Redis 和 RuoYi 配置 | docs/implementation/backend-environment-baseline.md |
 | 9. 本地启动配置 | complete | 新增 local profile 配置和本地启动说明 | application-local.yml、docs/implementation/backend-local-startup.md |
 | 10. 后端构建验证 | complete | 安装 Maven、初始化数据库、构建 backend | Maven 3.9.16、ry-vue、BUILD SUCCESS |
+| 11. 后端启动验证 | complete | 启动 ruoyi-admin 并验证 8080 | java -jar 启动成功，GET / 返回 200 |
 
 ## 关键决策
 

@@ -94,7 +94,7 @@ backend/ruoyi-admin/src/main/resources/application-local.yml
 - 禁用 Spring Boot Admin Client。
 - 禁用 SnailJob。
 - 使用本机 MySQL：`localhost:3306/ry-vue root/root`。
-- 使用本机 Redis：`localhost:6379`，空密码。
+- 使用本机 Redis：`localhost:6379`，密码 `ruoyi123`。
 
 这样可以避开本机未启动的服务：
 
@@ -136,10 +136,19 @@ Total time: 02:10 min
 方式一：Maven 启动
 
 ```powershell
-mvn -pl ruoyi-admin spring-boot:run -Plocal
+mvn -pl ruoyi-admin -am spring-boot:run -Plocal
 ```
 
-方式二：IDE 启动
+注意：直接执行 `mvn -pl ruoyi-admin spring-boot:run -Plocal` 会因为没有 `-am` 而找不到本仓库内的兄弟模块依赖。
+
+方式二：Jar 启动，当前推荐
+
+```powershell
+cd C:\codex\project\backend
+java -jar ruoyi-admin\target\ruoyi-admin.jar --spring.profiles.active=local
+```
+
+方式三：IDE 启动
 
 启动类：
 
@@ -165,6 +174,14 @@ curl http://localhost:8080
 
 如果返回登录相关页面、接口响应或 401/404 等应用级响应，说明后端进程已经启动。
 
+已验证结果：
+
+```text
+localhost:8080 TCP 连接成功
+GET http://localhost:8080 返回 200
+响应内容：欢迎使用RuoYi-Vue-Plus后台管理框架，请通过前端地址访问。
+```
+
 ## 10. 常见问题
 
 ### 10.1 Maven 不存在
@@ -184,9 +201,27 @@ mvn : The term 'mvn' is not recognized
 
 ### 10.2 Redis 密码错误
 
-本项目本地配置已将 Redis 密码设置为空。
+本项目本地配置使用 Redis 密码 `ruoyi123`。
 
-如果仍看到 Redis AUTH 错误，确认启动使用的是 `local` profile，而不是 `dev` profile。
+如果本机 Redis 没有密码，会看到类似：
+
+```text
+ERR AUTH <password> called without any password configured
+```
+
+处理方式：
+
+```powershell
+# 用 TCP RESP 给当前 Redis 实例设置临时密码
+$client = [System.Net.Sockets.TcpClient]::new('127.0.0.1', 6379)
+$stream = $client.GetStream()
+$payload = "*4`r`n`$6`r`nCONFIG`r`n`$3`r`nSET`r`n`$11`r`nrequirepass`r`n`$8`r`nruoyi123`r`n"
+$bytes = [System.Text.Encoding]::ASCII.GetBytes($payload)
+$stream.Write($bytes,0,$bytes.Length)
+$client.Close()
+```
+
+这是当前运行实例的设置；Redis 重启后是否保留取决于 Redis 自身配置。
 
 ### 10.3 数据库不存在
 
@@ -214,7 +249,7 @@ Table 'ry-vue.sys_user' doesn't exist
 
 ## 11. 下一步
 
-后端构建已通过。下一步先启动后端并验证 `8080`，通过后再继续：
+后端构建和启动已通过。下一步继续：
 
 1. 创建 `backend/docs/business-modules.md`。
 2. 添加钱包 SQL 草案到 `backend/script/sql/package_wallet_001.sql`。

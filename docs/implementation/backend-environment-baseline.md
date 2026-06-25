@@ -36,8 +36,8 @@
 | MySQL `localhost:3306` | 可连接 | `root/root` 可执行 `SELECT VERSION()` |
 | 数据库 `ry-vue` | 已创建 | 已导入 RuoYi 基础 SQL |
 | Redis `localhost:6379` | 可连接 | TCP 可连接，RESP `PING` 返回 `PONG` |
-| Redis 密码 | 不匹配 | 当前 Redis 未配置密码，RuoYi dev 配置要求 `ruoyi123` |
-| 后端 `localhost:8080` | 未运行 | 端口不通 |
+| Redis 密码 | 已处理 | 当前 Redis 已设置临时密码 `ruoyi123` |
+| 后端 `localhost:8080` | 已运行 | TCP 连接成功，根路径返回 200 |
 | Spring Boot Admin `localhost:9090` | 未运行 | 端口不通 |
 | SnailJob `localhost:17888` | 未运行 | 端口不通 |
 | SnailJob UI `localhost:8800` | 未运行 | 端口不通 |
@@ -108,6 +108,15 @@ Total time: 02:10 min
 backend/ruoyi-admin/target/ruoyi-admin.jar
 ```
 
+- 设置当前 Redis 实例密码为 `ruoyi123`。
+- 使用 jar 启动后端：
+
+```powershell
+java -jar ruoyi-admin\target\ruoyi-admin.jar --spring.profiles.active=local
+```
+
+- 验证 `localhost:8080` 端口和根路径响应成功。
+
 ## 7. 最短启动路径
 
 ### 7.1 当前会话设置 Maven
@@ -156,10 +165,13 @@ backend/ruoyi-admin/src/main/resources/application-local.yml
 - Maven 依赖解析。
 - 后端编译。
 
-仍未验证：
+已验证：
 
 - `ruoyi-admin` 启动。
 - `localhost:8080` 应用响应。
+
+仍未验证：
+
 - 登录流程。
 
-这些需要在下一步启动后端后验证。
+登录流程需要前端或 API 登录参数配合验证。
