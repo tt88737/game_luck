@@ -41,3 +41,6 @@
 - 检查 RuoYi dev 配置：默认 MySQL `localhost:3306/ry-vue root/root`，Redis 密码 `ruoyi123`，Spring Boot Admin Client 和 SnailJob 默认启用。
 - 当前 `ry-vue` 数据库不存在，`9090`、`17888`、`8800`、`9000` 端口未运行相关服务。
 - 创建环境基线文档：`docs/implementation/backend-environment-baseline.md`。
+- 用户确认新增本地启动配置。
+- 创建 `backend/ruoyi-admin/src/main/resources/application-local.yml`，用于本机最小启动，禁用 Spring Boot Admin Client 和 SnailJob，并覆盖 Redis 空密码。
+- 创建 `docs/implementation/backend-local-startup.md`，记录 Maven、数据库、SQL 导入、构建和启动步骤。

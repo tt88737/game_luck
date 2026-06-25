@@ -26,7 +26,8 @@
 | 5. 实施计划 | in_progress | 拆分第一阶段 MVP 开发任务 | docs/superpowers/plans/2026-06-25-phase-1-mvp.md |
 | 6. 钱包中心细化设计 | complete | 固化钱包状态机、幂等、冻结/结算/冲正规则 | docs/superpowers/specs/2026-06-25-wallet-center-design.md |
 | 7. 引入 RuoYi-Vue-Plus | complete | 将上游底座导入 backend 并记录来源 | backend/、docs/upstream/ruoyi-vue-plus.md |
-| 8. 后端环境基线检查 | in_progress | 检查 JDK、Maven、Docker、MySQL、Redis 和 RuoYi 配置 | docs/implementation/backend-environment-baseline.md |
+| 8. 后端环境基线检查 | complete | 检查 JDK、Maven、Docker、MySQL、Redis 和 RuoYi 配置 | docs/implementation/backend-environment-baseline.md |
+| 9. 本地启动配置 | in_progress | 新增 local profile 配置和本地启动说明 | application-local.yml、docs/implementation/backend-local-startup.md |
 
 ## 关键决策
 

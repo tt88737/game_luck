@@ -1,0 +1,32 @@
+--- # Local development overrides
+spring.boot.admin.client:
+  enabled: false
+
+--- # Disable SnailJob for the first local backend startup
+snail-job:
+  enabled: false
+
+--- # Local MySQL and Redis
+spring:
+  datasource:
+    dynamic:
+      datasource:
+        master:
+          url: jdbc:mysql://localhost:3306/ry-vue?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
+          username: root
+          password: root
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+      password:
+      timeout: 10s
+      ssl.enabled: false
+
+--- # Keep local startup minimal
+mail:
+  enabled: false
+
+sms:
+  restricted: true
