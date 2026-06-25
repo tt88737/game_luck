@@ -81,18 +81,6 @@
             <artifactId>ruoyi-generator</artifactId>
         </dependency>
 
-        <!--  demo妯″潡  -->
-        <dependency>
-            <groupId>org.dromara</groupId>
-            <artifactId>ruoyi-demo</artifactId>
-        </dependency>
-
-        <!--  宸ヤ綔娴佹ā鍧? -->
-        <dependency>
-            <groupId>org.dromara</groupId>
-            <artifactId>ruoyi-workflow</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>de.codecentric</groupId>
             <artifactId>spring-boot-admin-starter-client</artifactId>
