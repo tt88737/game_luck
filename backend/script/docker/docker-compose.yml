@@ -77,9 +77,9 @@
       # 鏃跺尯涓婃捣
       TZ: Asia/Shanghai
       # 绠＄悊鍚庡彴鐢ㄦ埛鍚?
-      MINIO_ROOT_USER: ruoyi
+      MINIO_ROOT_USER: gameluck
       # 绠＄悊鍚庡彴瀵嗙爜锛屾渶灏?涓瓧绗?
-      MINIO_ROOT_PASSWORD: ruoyi123
+      MINIO_ROOT_PASSWORD: gameluck123
       # https闇€瑕佹寚瀹氬煙鍚?
       #MINIO_SERVER_URL: "https://xxx.com:9000"
       #MINIO_BROWSER_REDIRECT_URL: "https://xxx.com:9001"
@@ -130,21 +130,21 @@
     privileged: true
     network_mode: "host"
 
-  ruoyi-monitor-admin:
-    image: ruoyi/ruoyi-monitor-admin:5.6.2
-    container_name: ruoyi-monitor-admin
+  gameluck-monitor-admin:
+    image: gameluck/gameluck-monitor-admin:5.6.2
+    container_name: gameluck-monitor-admin
     environment:
       # 鏃跺尯涓婃捣
       TZ: Asia/Shanghai
     volumes:
       # 閰嶇疆鏂囦欢
-      - /docker/monitor/logs/:/ruoyi/monitor/logs
+      - /docker/monitor/logs/:/gameluck/monitor/logs
     privileged: true
     network_mode: "host"
 
-  ruoyi-snailjob-server:
-    image: ruoyi/ruoyi-snailjob-server:5.6.2
-    container_name: ruoyi-snailjob-server
+  gameluck-snailjob-server:
+    image: gameluck/gameluck-snailjob-server:5.6.2
+    container_name: gameluck-snailjob-server
     environment:
       # 鏃跺尯涓婃捣
       TZ: Asia/Shanghai
@@ -152,6 +152,6 @@
       - "8800:8800"
       - "17888:17888"
     volumes:
-      - /docker/snailjob/logs/:/ruoyi/snailjob/logs
+      - /docker/snailjob/logs/:/gameluck/snailjob/logs
     privileged: true
     network_mode: "host"

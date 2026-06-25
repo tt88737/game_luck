@@ -6,15 +6,15 @@
 
 ## 2. 当前结论
 
-当前机器可以作为 RuoYi-Vue-Plus 后端开发环境，后端已经完成 Maven 构建验证。
+当前机器可以作为 GameLuck-Vue-Plus 后端开发环境，后端已经完成 Maven 构建验证。
 
 主要阻塞：
 
 - Maven 已安装到 `C:\tools\apache-maven-3.9.16`，当前会话配置 PATH 后可用。
-- RuoYi 默认数据库 `ry-vue` 已创建并导入基础 SQL。
+- GameLuck 默认数据库 `ry-vue` 已创建并导入基础 SQL。
 - Redis 服务在 `6379` 端口可访问，但当前 Redis 未配置密码；本项目 `application-local.yml` 已覆盖为空密码。
 - Docker 已安装，但没有 `docker compose` / `docker-compose` 命令。
-- RuoYi dev 配置默认启用 Spring Boot Admin Client 和 SnailJob，但本机 `9090`、`17888`、`8800` 端口未运行对应服务。
+- GameLuck dev 配置默认启用 Spring Boot Admin Client 和 SnailJob，但本机 `9090`、`17888`、`8800` 端口未运行对应服务。
 
 ## 3. 工具检查结果
 
@@ -34,22 +34,22 @@
 | 服务 / 端口 | 状态 | 说明 |
 | --- | --- | --- |
 | MySQL `localhost:3306` | 可连接 | `root/root` 可执行 `SELECT VERSION()` |
-| 数据库 `ry-vue` | 已创建 | 已导入 RuoYi 基础 SQL |
+| 数据库 `ry-vue` | 已创建 | 已导入 GameLuck 基础 SQL |
 | Redis `localhost:6379` | 可连接 | TCP 可连接，RESP `PING` 返回 `PONG` |
-| Redis 密码 | 已处理 | 当前 Redis 已设置临时密码 `ruoyi123` |
+| Redis 密码 | 已处理 | 当前 Redis 已设置临时密码 `gameluck123` |
 | 后端 `localhost:8080` | 已运行 | TCP 连接成功，根路径返回 200 |
 | Spring Boot Admin `localhost:9090` | 未运行 | 端口不通 |
 | SnailJob `localhost:17888` | 未运行 | 端口不通 |
 | SnailJob UI `localhost:8800` | 未运行 | 端口不通 |
 | MinIO `localhost:9000` | 未运行 | 端口不通 |
 
-## 5. RuoYi 配置摘要
+## 5. GameLuck 配置摘要
 
 配置文件：
 
 ```text
-backend/ruoyi-admin/src/main/resources/application.yml
-backend/ruoyi-admin/src/main/resources/application-dev.yml
+backend/gameluck-admin/src/main/resources/application.yml
+backend/gameluck-admin/src/main/resources/application-dev.yml
 backend/pom.xml
 ```
 
@@ -58,7 +58,7 @@ backend/pom.xml
 | 项 | 值 |
 | --- | --- |
 | Java 版本 | 17 |
-| RuoYi 版本 | 5.6.2 |
+| GameLuck 版本 | 5.6.2 |
 | Spring Boot | 3.5.15 |
 | 默认 profile | Maven profile 决定，dev profile 对应 `application-dev.yml` |
 | HTTP 端口 | 8080 |
@@ -67,7 +67,7 @@ backend/pom.xml
 | MySQL 密码 | `root` |
 | Redis Host | `localhost` |
 | Redis Port | `6379` |
-| Redis Password | `ruoyi123` |
+| Redis Password | `gameluck123` |
 | Tenant | enabled |
 | API decrypt | enabled |
 | Spring Boot Admin Client | enabled |
@@ -105,14 +105,14 @@ Total time: 02:10 min
 产物：
 
 ```text
-backend/ruoyi-admin/target/ruoyi-admin.jar
+backend/gameluck-admin/target/gameluck-admin.jar
 ```
 
-- 设置当前 Redis 实例密码为 `ruoyi123`。
+- 设置当前 Redis 实例密码为 `gameluck123`。
 - 使用 jar 启动后端：
 
 ```powershell
-java -jar ruoyi-admin\target\ruoyi-admin.jar --spring.profiles.active=local
+java -jar gameluck-admin\target\gameluck-admin.jar --spring.profiles.active=local
 ```
 
 - 验证 `localhost:8080` 端口和根路径响应成功。
@@ -138,7 +138,7 @@ mvn clean package -Plocal -DskipTests
 ### 7.3 启动
 
 ```powershell
-mvn -pl ruoyi-admin spring-boot:run -Plocal
+mvn -pl gameluck-admin spring-boot:run -Plocal
 ```
 
 ## 8. 建议下一步
@@ -146,7 +146,7 @@ mvn -pl ruoyi-admin spring-boot:run -Plocal
 下一步不要直接修改 `application-dev.yml`。建议新增项目本地配置：
 
 ```text
-backend/ruoyi-admin/src/main/resources/application-local.yml
+backend/gameluck-admin/src/main/resources/application-local.yml
 ```
 
 并使用 Maven `local` profile 启动，降低对上游 dev 配置的侵入。
@@ -167,7 +167,7 @@ backend/ruoyi-admin/src/main/resources/application-local.yml
 
 已验证：
 
-- `ruoyi-admin` 启动。
+- `gameluck-admin` 启动。
 - `localhost:8080` 应用响应。
 
 仍未验证：

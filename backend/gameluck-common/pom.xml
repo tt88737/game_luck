@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>gameluck-vue-plus</artifactId>
+        <groupId>org.dromara</groupId>
+        <version>${revision}</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <modules>
+        <module>gameluck-common-bom</module>
+        <module>gameluck-common-social</module>
+        <module>gameluck-common-core</module>
+        <module>gameluck-common-doc</module>
+        <module>gameluck-common-excel</module>
+        <module>gameluck-common-idempotent</module>
+        <module>gameluck-common-job</module>
+        <module>gameluck-common-log</module>
+        <module>gameluck-common-mail</module>
+        <module>gameluck-common-mybatis</module>
+        <module>gameluck-common-oss</module>
+        <module>gameluck-common-ratelimiter</module>
+        <module>gameluck-common-redis</module>
+        <module>gameluck-common-satoken</module>
+        <module>gameluck-common-security</module>
+        <module>gameluck-common-sms</module>
+        <module>gameluck-common-web</module>
+        <module>gameluck-common-translation</module>
+        <module>gameluck-common-sensitive</module>
+        <module>gameluck-common-json</module>
+        <module>gameluck-common-encrypt</module>
+        <module>gameluck-common-tenant</module>
+        <module>gameluck-common-websocket</module>
+        <module>gameluck-common-sse</module>
+    </modules>
+
+    <artifactId>gameluck-common</artifactId>
+    <packaging>pom</packaging>
+
+    <description>
+        common 通用模块
+    </description>
+
+</project>

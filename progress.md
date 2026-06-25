@@ -3,10 +3,10 @@
 ## 2026-06-25
 
 - 与用户讨论了单人开发、框架选择和 AI 代码规范风险。
-- 对比了 RuoYi-Vue-Plus、Vue3、Nuxt、uni-app、Flutter、Cocos 的适用边界。
+- 对比了 GameLuck-Vue-Plus、Vue3、Nuxt、uni-app、Flutter、Cocos 的适用边界。
 - 明确用户业务是包网平台，参考 tangluck.com，涉及 Social Casino / Sweepstakes / 真金扩展。
 - 确认底层技术路线：
-  - B 端后台：RuoYi-Vue-Plus
+  - B 端后台：GameLuck-Vue-Plus
   - C 端 H5 / 官网 / 活动页 / PWA：Vue3 + Vite
   - 玩家 App：Flutter
   - 自研游戏 / 活动小游戏：预留 Cocos Creator 接入
@@ -30,31 +30,31 @@
 - 创建钱包中心设计文档：`docs/superpowers/specs/2026-06-25-wallet-center-design.md`。
 - 补充 `docs/implementation/db-draft.md`：新增 `wallet_transaction` 和 `wallet_manual_review`。
 - 补充 `docs/implementation/api-draft.md`：新增钱包交易查询和人工冲正接口草案。
-- 用户确认开始引入 RuoYi-Vue-Plus。
-- 从 `https://github.com/dromara/RuoYi-Vue-Plus` 克隆上游 `5.X` 分支，导入 commit `e49f02f89e17ee5a4cc14048af99cc83d72872a7`。
+- 用户确认开始引入 GameLuck-Vue-Plus。
+- 从 `https://github.com/dromara/GameLuck-Vue-Plus` 克隆上游 `5.X` 分支，导入 commit `e49f02f89e17ee5a4cc14048af99cc83d72872a7`。
 - 将上游源码复制到 `backend/`，未复制上游 `.git` 目录。
-- 创建上游记录文件：`docs/upstream/ruoyi-vue-plus.md`。
-- 验证 `backend/pom.xml`、`backend/ruoyi-admin`、`backend/ruoyi-common`、`backend/ruoyi-modules` 存在。
+- 创建上游记录文件：`docs/upstream/gameluck-vue-plus.md`。
+- 验证 `backend/pom.xml`、`backend/gameluck-admin`、`backend/gameluck-common`、`backend/gameluck-modules` 存在。
 - 当前环境未安装 `mvn` 命令，暂时无法执行 Maven 构建验证。
 - 用户同意执行后端环境基线检查。
 - 检查结果：Java 17 可用，Maven 不可用，Docker 可用但 Compose 不可用，MySQL 8.0.46 客户端可用，Redis 端口 6379 可访问但未配置密码。
-- 检查 RuoYi dev 配置：默认 MySQL `localhost:3306/ry-vue root/root`，Redis 密码 `ruoyi123`，Spring Boot Admin Client 和 SnailJob 默认启用。
+- 检查 GameLuck dev 配置：默认 MySQL `localhost:3306/ry-vue root/root`，Redis 密码 `gameluck123`，Spring Boot Admin Client 和 SnailJob 默认启用。
 - 当前 `ry-vue` 数据库不存在，`9090`、`17888`、`8800`、`9000` 端口未运行相关服务。
 - 创建环境基线文档：`docs/implementation/backend-environment-baseline.md`。
 - 用户确认新增本地启动配置。
-- 创建 `backend/ruoyi-admin/src/main/resources/application-local.yml`，用于本机最小启动，禁用 Spring Boot Admin Client 和 SnailJob，并覆盖 Redis 空密码。
+- 创建 `backend/gameluck-admin/src/main/resources/application-local.yml`，用于本机最小启动，禁用 Spring Boot Admin Client 和 SnailJob，并覆盖 Redis 空密码。
 - 创建 `docs/implementation/backend-local-startup.md`，记录 Maven、数据库、SQL 导入、构建和启动步骤。
 - 用户选择自动处理环境。
 - 下载并校验 Apache Maven 3.9.16，解压到 `C:\tools\apache-maven-3.9.16`。
 - 创建数据库 `ry-vue`，导入 `ry_vue_5.X.sql`、`ry_job.sql`、`ry_workflow.sql`。
 - 验证核心表 `sys_user`、`sys_tenant`、`sj_group_config`、`flow_definition` 存在。
-- 执行 `mvn clean package -Plocal -DskipTests`，构建成功，产物为 `backend/ruoyi-admin/target/ruoyi-admin.jar`。
+- 执行 `mvn clean package -Plocal -DskipTests`，构建成功，产物为 `backend/gameluck-admin/target/gameluck-admin.jar`。
 - 用户反馈 `localhost:8080` 未启动。
 - 首次 Maven `spring-boot:run` 失败原因：未使用 `-am`，导致无法解析本仓库内模块依赖。
-- Jar 启动首次失败原因：本机 Redis 无密码，而应用配置要求 `ruoyi123`。
-- 将 `application-local.yml` 的 Redis 密码明确设为 `ruoyi123`，并给当前 Redis 实例设置临时密码。
+- Jar 启动首次失败原因：本机 Redis 无密码，而应用配置要求 `gameluck123`。
+- 将 `application-local.yml` 的 Redis 密码明确设为 `gameluck123`，并给当前 Redis 实例设置临时密码。
 - 补充 `snail-job.port: 28080`，避免示例 Job 读取占位符失败。
-- 使用 `java -jar ruoyi-admin\target\ruoyi-admin.jar --spring.profiles.active=local` 启动成功。
+- 使用 `java -jar gameluck-admin\target\gameluck-admin.jar --spring.profiles.active=local` 启动成功。
 - 验证 `localhost:8080` TCP 连接成功，`GET /` 返回 200。
 
 ## 2026-06-25 Admin UI

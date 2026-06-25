@@ -2,7 +2,7 @@
 
 ## 1. 目标
 
-启动 RuoYi-Vue-Plus 官方前端 `plus-ui`，用于访问当前后端管理系统。
+启动 GameLuck-Vue-Plus 官方前端 `plus-ui`，用于访问当前后端管理系统。
 
 本地目录：
 
@@ -121,7 +121,7 @@ GET http://localhost:5173/ 返回 200
 
 ```powershell
 cd C:\codex\project\backend
-java -jar ruoyi-admin\target\ruoyi-admin.jar --spring.profiles.active=local
+java -jar gameluck-admin\target\gameluck-admin.jar --spring.profiles.active=local
 ```
 
 已验证：
@@ -166,7 +166,7 @@ Invoke-WebRequest -UseBasicParsing http://localhost:8080/
 如果 Redis 重启过，后端可能因为 Redis 密码不一致启动失败。当前本地后端配置使用 Redis 密码：
 
 ```text
-ruoyi123
+gameluck123
 ```
 
 ### 9.3 端口 5173 被占用

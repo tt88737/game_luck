@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>ruoyi-vue-plus</artifactId>
+        <artifactId>gameluck-vue-plus</artifactId>
         <groupId>org.dromara</groupId>
         <version>${revision}</version>
     </parent>
@@ -47,38 +47,38 @@
 
         <dependency>
             <groupId>org.dromara</groupId>
-            <artifactId>ruoyi-common-doc</artifactId>
+            <artifactId>gameluck-common-doc</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.dromara</groupId>
-            <artifactId>ruoyi-common-social</artifactId>
+            <artifactId>gameluck-common-social</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.dromara</groupId>
-            <artifactId>ruoyi-common-ratelimiter</artifactId>
+            <artifactId>gameluck-common-ratelimiter</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.dromara</groupId>
-            <artifactId>ruoyi-common-mail</artifactId>
+            <artifactId>gameluck-common-mail</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.dromara</groupId>
-            <artifactId>ruoyi-system</artifactId>
+            <artifactId>gameluck-system</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.dromara</groupId>
-            <artifactId>ruoyi-job</artifactId>
+            <artifactId>gameluck-job</artifactId>
         </dependency>
 
         <!-- 浠ｇ爜鐢熸垚-->
         <dependency>
             <groupId>org.dromara</groupId>
-            <artifactId>ruoyi-generator</artifactId>
+            <artifactId>gameluck-generator</artifactId>
         </dependency>
 
         <dependency>

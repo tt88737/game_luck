@@ -2,14 +2,14 @@
 
 ## 1. 目标
 
-用最少依赖启动 `backend/ruoyi-admin`，先验证 RuoYi-Vue-Plus 后端能在本机跑起来。
+用最少依赖启动 `backend/gameluck-admin`，先验证 GameLuck-Vue-Plus 后端能在本机跑起来。
 
 本地启动使用：
 
 ```text
 Maven profile: local
 Spring profile: local
-配置文件: backend/ruoyi-admin/src/main/resources/application-local.yml
+配置文件: backend/gameluck-admin/src/main/resources/application-local.yml
 ```
 
 ## 2. 当前机器状态
@@ -86,7 +86,7 @@ mysql -uroot -proot -N ry-vue -e "SHOW TABLES LIKE 'sys_user'; SHOW TABLES LIKE 
 新增配置文件：
 
 ```text
-backend/ruoyi-admin/src/main/resources/application-local.yml
+backend/gameluck-admin/src/main/resources/application-local.yml
 ```
 
 它覆盖：
@@ -94,7 +94,7 @@ backend/ruoyi-admin/src/main/resources/application-local.yml
 - 禁用 Spring Boot Admin Client。
 - 禁用 SnailJob。
 - 使用本机 MySQL：`localhost:3306/ry-vue root/root`。
-- 使用本机 Redis：`localhost:6379`，密码 `ruoyi123`。
+- 使用本机 Redis：`localhost:6379`，密码 `gameluck123`。
 
 这样可以避开本机未启动的服务：
 
@@ -136,16 +136,16 @@ Total time: 02:10 min
 方式一：Maven 启动
 
 ```powershell
-mvn -pl ruoyi-admin -am spring-boot:run -Plocal
+mvn -pl gameluck-admin -am spring-boot:run -Plocal
 ```
 
-注意：直接执行 `mvn -pl ruoyi-admin spring-boot:run -Plocal` 会因为没有 `-am` 而找不到本仓库内的兄弟模块依赖。
+注意：直接执行 `mvn -pl gameluck-admin spring-boot:run -Plocal` 会因为没有 `-am` 而找不到本仓库内的兄弟模块依赖。
 
 方式二：Jar 启动，当前推荐
 
 ```powershell
 cd C:\codex\project\backend
-java -jar ruoyi-admin\target\ruoyi-admin.jar --spring.profiles.active=local
+java -jar gameluck-admin\target\gameluck-admin.jar --spring.profiles.active=local
 ```
 
 方式三：IDE 启动
@@ -153,7 +153,7 @@ java -jar ruoyi-admin\target\ruoyi-admin.jar --spring.profiles.active=local
 启动类：
 
 ```text
-backend/ruoyi-admin/src/main/java/org/dromara/DromaraApplication.java
+backend/gameluck-admin/src/main/java/org/dromara/DromaraApplication.java
 ```
 
 运行参数需要确保使用 `local` profile。Maven 构建时会把 `@profiles.active@` 替换为 `local`。
@@ -179,7 +179,7 @@ curl http://localhost:8080
 ```text
 localhost:8080 TCP 连接成功
 GET http://localhost:8080 返回 200
-响应内容：欢迎使用RuoYi-Vue-Plus后台管理框架，请通过前端地址访问。
+响应内容：欢迎使用GameLuck-Vue-Plus后台管理框架，请通过前端地址访问。
 ```
 
 ## 10. 常见问题
@@ -201,7 +201,7 @@ mvn : The term 'mvn' is not recognized
 
 ### 10.2 Redis 密码错误
 
-本项目本地配置使用 Redis 密码 `ruoyi123`。
+本项目本地配置使用 Redis 密码 `gameluck123`。
 
 如果本机 Redis 没有密码，会看到类似：
 
@@ -215,7 +215,7 @@ ERR AUTH <password> called without any password configured
 # 用 TCP RESP 给当前 Redis 实例设置临时密码
 $client = [System.Net.Sockets.TcpClient]::new('127.0.0.1', 6379)
 $stream = $client.GetStream()
-$payload = "*4`r`n`$6`r`nCONFIG`r`n`$3`r`nSET`r`n`$11`r`nrequirepass`r`n`$8`r`nruoyi123`r`n"
+$payload = "*4`r`n`$6`r`nCONFIG`r`n`$3`r`nSET`r`n`$11`r`nrequirepass`r`n`$8`r`ngameluck123`r`n"
 $bytes = [System.Text.Encoding]::ASCII.GetBytes($payload)
 $stream.Write($bytes,0,$bytes.Length)
 $client.Close()

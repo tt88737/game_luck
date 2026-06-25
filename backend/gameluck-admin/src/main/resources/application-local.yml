@@ -21,7 +21,7 @@ spring:
       host: localhost
       port: 6379
       database: 0
-      password: ruoyi123
+      password: gameluck123
       timeout: 10s
       ssl.enabled: false
 

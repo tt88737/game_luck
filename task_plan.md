@@ -6,7 +6,7 @@
 
 ## 当前技术路线
 
-- B 端后台：RuoYi-Vue-Plus
+- B 端后台：GameLuck-Vue-Plus
 - C 端 H5 / 官网 / 活动页 / PWA：Vue3 + Vite
 - 玩家 App：Flutter
 - 自研游戏 / 活动小游戏：预留 Cocos Creator 接入
@@ -25,17 +25,17 @@
 | 4. 用户评审 | complete | 等待业务方确认设计方向 | 用户已确认继续生成第一阶段实施计划 |
 | 5. 实施计划 | in_progress | 拆分第一阶段 MVP 开发任务 | docs/superpowers/plans/2026-06-25-phase-1-mvp.md |
 | 6. 钱包中心细化设计 | complete | 固化钱包状态机、幂等、冻结/结算/冲正规则 | docs/superpowers/specs/2026-06-25-wallet-center-design.md |
-| 7. 引入 RuoYi-Vue-Plus | complete | 将上游底座导入 backend 并记录来源 | backend/、docs/upstream/ruoyi-vue-plus.md |
-| 8. 后端环境基线检查 | complete | 检查 JDK、Maven、Docker、MySQL、Redis 和 RuoYi 配置 | docs/implementation/backend-environment-baseline.md |
+| 7. 引入 GameLuck-Vue-Plus | complete | 将上游底座导入 backend 并记录来源 | backend/、docs/upstream/gameluck-vue-plus.md |
+| 8. 后端环境基线检查 | complete | 检查 JDK、Maven、Docker、MySQL、Redis 和 GameLuck 配置 | docs/implementation/backend-environment-baseline.md |
 | 9. 本地启动配置 | complete | 新增 local profile 配置和本地启动说明 | application-local.yml、docs/implementation/backend-local-startup.md |
 | 10. 后端构建验证 | complete | 安装 Maven、初始化数据库、构建 backend | Maven 3.9.16、ry-vue、BUILD SUCCESS |
-| 11. 后端启动验证 | complete | 启动 ruoyi-admin 并验证 8080 | java -jar 启动成功，GET / 返回 200 |
+| 11. 后端启动验证 | complete | 启动 gameluck-admin 并验证 8080 | java -jar 启动成功，GET / 返回 200 |
 
 ## 关键决策
 
 | 决策 | 结论 | 原因 |
 | --- | --- | --- |
-| 后台底座 | RuoYi-Vue-Plus | 权限、菜单、租户、日志、后台基础能力成熟 |
+| 后台底座 | GameLuck-Vue-Plus | 权限、菜单、租户、日志、后台基础能力成熟 |
 | H5 技术 | Vue3 + Vite | 当前团队更容易掌握，适合活动页、官网、PWA、支付页 |
 | App 技术 | Flutter | 长期 App 体验、工程边界、动画和复杂交互更稳 |
 | Web 是否用 Flutter | 不作为主 Web/H5 技术 | SEO、活动页、支付/KYC/追踪脚本、H5 游戏嵌入不如 Vue3 灵活 |

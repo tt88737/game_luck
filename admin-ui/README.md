@@ -1,15 +1,15 @@
 ## 平台简介
 
 - 本仓库为前端技术栈 [Vue3](https://v3.cn.vuejs.org) + [TS](https://www.typescriptlang.org/) + [Element Plus](https://element-plus.org/zh-CN) + [Vite](https://cn.vitejs.dev) 版本。
-- 成员项目: 基于 vben5(ant-design-vue) 的前端项目 [ruoyi-plus-vben5](https://github.com/imdap/ruoyi-plus-vben5)
-- 成员项目: 基于soybean 的前端项目 [ruoyi-plus-soybean](https://gitee.com/xlsea/ruoyi-plus-soybean)
+- 成员项目: 基于 vben5(ant-design-vue) 的前端项目 [gameluck-plus-vben5](https://github.com/imdap/gameluck-plus-vben5)
+- 成员项目: 基于soybean 的前端项目 [gameluck-plus-soybean](https://gitee.com/xlsea/gameluck-plus-soybean)
 
 ## 配套后端代码仓库地址
 
 | 介绍         | 项目名              | 项目地址                                                                                                                                                                           |
 |------------|:-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 🔥 分布式集群框架 | RuoYi-Vue-Plus   | - [Gitee](https://gitee.com/dromara/RuoYi-Vue-Plus)<br> - [GitHub](https://github.com/dromara/RuoYi-Vue-Plus)<br> - [GitCode](https://gitcode.com/dromara/RuoYi-Vue-Plus)      |
-| 🔥 微服务框架   | RuoYi-Cloud-Plus | - [Gitee](https://gitee.com/dromara/RuoYi-Cloud-Plus)<br>- [GitHub](https://github.com/dromara/RuoYi-Cloud-Plus)<br> - [GitCode](https://gitcode.com/dromara/RuoYi-Cloud-Plus) |
+| 🔥 分布式集群框架 | GameLuck-Vue-Plus   | - [Gitee](https://gitee.com/dromara/GameLuck-Vue-Plus)<br> - [GitHub](https://github.com/dromara/GameLuck-Vue-Plus)<br> - [GitCode](https://gitcode.com/dromara/GameLuck-Vue-Plus)      |
+| 🔥 微服务框架   | GameLuck-Cloud-Plus | - [Gitee](https://gitee.com/dromara/GameLuck-Cloud-Plus)<br>- [GitHub](https://github.com/dromara/GameLuck-Cloud-Plus)<br> - [GitCode](https://gitcode.com/dromara/GameLuck-Cloud-Plus) |
 
 ## 分支说明
 
@@ -31,9 +31,9 @@ npm run build:prod
 # 前端访问地址 http://localhost:80
 ```
 
-## 本框架与RuoYi的业务差异
+## 本框架与GameLuck的业务差异
 
-| 业务         | 功能说明                                                      | 本框架 | RuoYi                         |
+| 业务         | 功能说明                                                      | 本框架 | GameLuck                         |
 | ------------ | ------------------------------------------------------------- | ------ | ----------------------------- |
 | 租户管理     | 系统内租户的管理 如:租户套餐、过期时间、用户数量、企业信息等  | 支持   | 无                            |
 | 租户套餐管理 | 系统内租户所能使用的套餐管理 如:套餐内所包含的菜单等          | 支持   | 无                            |

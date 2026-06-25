@@ -388,7 +388,7 @@ POST /api/admin/redemptions/{redemptionNo}/reject
 
 ## 8. 后台配置接口
 
-后台接口跟随 RuoYi-Vue-Plus 风格，P0 至少需要：
+后台接口跟随 GameLuck-Vue-Plus 风格，P0 至少需要：
 
 ```text
 租户品牌配置 CRUD

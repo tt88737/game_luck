@@ -11,7 +11,7 @@
 ## Local Rules
 
 - Keep framework-level changes minimal.
-- Use `admin-ui/` only for RuoYi-Vue-Plus B-side admin frontend.
+- Use `admin-ui/` only for GameLuck-Vue-Plus B-side admin frontend.
 - Do not mix player H5 pages into `admin-ui/`; player H5 belongs in the future `h5/` app.
 - Record backend API URL changes in this file or related implementation docs.
 - Future upstream updates should be reviewed and merged intentionally.

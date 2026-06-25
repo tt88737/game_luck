@@ -4,17 +4,17 @@
 - - -
 ## 平台简介
 
-[![码云Gitee](https://gitee.com/dromara/RuoYi-Vue-Plus/badge/star.svg?theme=blue)](https://gitee.com/dromara/RuoYi-Vue-Plus)
-[![GitHub](https://img.shields.io/github/stars/dromara/RuoYi-Vue-Plus?style=social&label=Github%20Stars)](https://github.com/dromara/RuoYi-Vue-Plus)
-[![Star](https://gitcode.com/dromara/RuoYi-Vue-Plus/star/badge.svg)](https://gitcode.com/dromara/RuoYi-Vue-Plus)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://gitee.com/dromara/RuoYi-Vue-Plus/blob/5.X/LICENSE)
+[![码云Gitee](https://gitee.com/dromara/GameLuck-Vue-Plus/badge/star.svg?theme=blue)](https://gitee.com/dromara/GameLuck-Vue-Plus)
+[![GitHub](https://img.shields.io/github/stars/dromara/GameLuck-Vue-Plus?style=social&label=Github%20Stars)](https://github.com/dromara/GameLuck-Vue-Plus)
+[![Star](https://gitcode.com/dromara/GameLuck-Vue-Plus/star/badge.svg)](https://gitcode.com/dromara/GameLuck-Vue-Plus)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://gitee.com/dromara/GameLuck-Vue-Plus/blob/5.X/LICENSE)
 <br>
-[![RuoYi-Vue-Plus](https://img.shields.io/badge/RuoYi_Vue_Plus-5.6.2-success.svg)](https://gitee.com/dromara/RuoYi-Vue-Plus)
+[![GameLuck-Vue-Plus](https://img.shields.io/badge/GameLuck_Vue_Plus-5.6.2-success.svg)](https://gitee.com/dromara/GameLuck-Vue-Plus)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5-blue.svg)]()
 [![JDK-17](https://img.shields.io/badge/JDK-17-green.svg)]()
 [![JDK-21](https://img.shields.io/badge/JDK-21-green.svg)]()
 
-> Dromara RuoYi-Vue-Plus 是重写 RuoYi-Vue 针对 `分布式集群与多租户` 场景全方位升级(不兼容原框架)
+> Dromara GameLuck-Vue-Plus 是重写 GameLuck-Vue 针对 `分布式集群与多租户` 场景全方位升级(不兼容原框架)
 
 > 项目代码、文档 均开源免费可商用 遵循开源协议在项目中保留开源协议文件即可<br>
 活到老写到老 为兴趣而开源 为学习而开源 为让大家真正可以学到技术而开源
@@ -22,28 +22,28 @@
 > 系统演示: [传送门](https://plus-doc.dromara.org/#/common/demo_system)
 
 > 官方前端项目地址: [gitee](https://gitee.com/JavaLionLi/plus-ui) - [github](https://github.com/JavaLionLi/plus-ui) - [gitcode](https://gitcode.com/dromara/plus-ui)<br>
-> 成员前端项目地址: 基于vben5 [ruoyi-plus-vben5](https://github.com/imdap/ruoyi-plus-vben5)<br>
-> 成员前端项目地址: 基于soybean [ruoyi-plus-soybean](https://gitee.com/xlsea/ruoyi-plus-soybean)<br>
-> 成员项目地址: 删除多租户与工作流 [RuoYi-Vue-Plus-Single](https://gitee.com/ColorDreams/RuoYi-Vue-Plus-Single)<br>
+> 成员前端项目地址: 基于vben5 [gameluck-plus-vben5](https://github.com/imdap/gameluck-plus-vben5)<br>
+> 成员前端项目地址: 基于soybean [gameluck-plus-soybean](https://gitee.com/xlsea/gameluck-plus-soybean)<br>
+> 成员项目地址: 删除多租户与工作流 [GameLuck-Vue-Plus-Single](https://gitee.com/ColorDreams/GameLuck-Vue-Plus-Single)<br>
 
 > 文档地址: [plus-doc](https://plus-doc.dromara.org) 国内加速: [plus-doc.top](https://plus-doc.top)
 
 ## 赞助商
 
 MaxKey 业界领先单点登录产品 - https://gitee.com/dromara/MaxKey <br>
-CCFlow 驰聘低代码-流程-表单 - https://gitee.com/opencc/RuoYi-JFlow <br>
+CCFlow 驰聘低代码-流程-表单 - https://gitee.com/opencc/GameLuck-JFlow <br>
 数舵科技 软件定制开发APP小程序等 - https://www.shuduokeji.com/ <br>
 Mall4J 高质量Java商城系统 - https://www.mall4j.com/cn/?statId=11 <br>
 aizuda flowlong 工作流 - https://gitee.com/aizuda/flowlong <br>
-Ruoyi-Plus-Uniapp - https://ruoyi.plus <br>
+GameLuck-Plus-Uniapp - https://gameluck.plus <br>
 Topiam IAM/IDaaS身份管理平台 - https://www.topiam.cn/ <br>
 稳定低价的大模型中转站 - https://aicodelink.top/register?aff=pHeG <br>
 
 [如何成为赞助商 加群联系作者详谈 每日PV2500-3000 IP1700-2500](https://plus-doc.dromara.org/#/common/add_group)
 
-# 本框架与RuoYi的功能差异
+# 本框架与GameLuck的功能差异
 
-| 功能          | 本框架                                                                                                               | RuoYi                                                                              |
+| 功能          | 本框架                                                                                                               | GameLuck                                                                              |
 |-------------|-------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------|
 | 前端项目        | 采用 Vue3 + TS + ElementPlus 重写                                                                                     | 基于Vue2/Vue3 + JS                                                                   | 
 | 后端项目结构      | 采用插件化 + 扩展包形式 结构解耦 易于扩展                                                                                           | 模块相互注入耦合严重难以扩展                                                                     | 
@@ -93,9 +93,9 @@ Topiam IAM/IDaaS身份管理平台 - https://www.topiam.cn/ <br>
 | Demo案例      | 提供框架功能的实际使用案例 单独一个模块提供了很多很全                                                                                       | 无                                                                                  |
 
 
-## 本框架与RuoYi的业务差异
+## 本框架与GameLuck的业务差异
 
-| 业务     | 功能说明                                                                 | 本框架 | RuoYi            |
+| 业务     | 功能说明                                                                 | 本框架 | GameLuck            |
 |--------|----------------------------------------------------------------------|-----|------------------|
 | 租户管理   | 系统内租户的管理 如:租户套餐、过期时间、用户数量、企业信息等                                      | 支持  | 无                |
 | 租户套餐管理 | 系统内租户所能使用的套餐管理 如:套餐内所包含的菜单等                                          | 支持  | 无                |
@@ -124,14 +124,14 @@ Topiam IAM/IDaaS身份管理平台 - https://www.topiam.cn/ <br>
 
 使用框架前请仔细阅读文档重点注意事项
 <br>
->[初始化项目 必看](https://plus-doc.dromara.org/#/ruoyi-vue-plus/quickstart/init)
->>[https://plus-doc.dromara.org/#/ruoyi-vue-plus/quickstart/init](https://plus-doc.dromara.org/#/ruoyi-vue-plus/quickstart/init)
+>[初始化项目 必看](https://plus-doc.dromara.org/#/gameluck-vue-plus/quickstart/init)
+>>[https://plus-doc.dromara.org/#/gameluck-vue-plus/quickstart/init](https://plus-doc.dromara.org/#/gameluck-vue-plus/quickstart/init)
 >
 >[专栏与视频 入门必看](https://plus-doc.dromara.org/#/common/column)
 >>[https://plus-doc.dromara.org/#/common/column](https://plus-doc.dromara.org/#/common/column)
 >
->[部署项目 必看](https://plus-doc.dromara.org/#/ruoyi-vue-plus/quickstart/deploy)
->>[https://plus-doc.dromara.org/#/ruoyi-vue-plus/quickstart/deploy](https://plus-doc.dromara.org/#/ruoyi-vue-plus/quickstart/deploy)
+>[部署项目 必看](https://plus-doc.dromara.org/#/gameluck-vue-plus/quickstart/deploy)
+>>[https://plus-doc.dromara.org/#/gameluck-vue-plus/quickstart/deploy](https://plus-doc.dromara.org/#/gameluck-vue-plus/quickstart/deploy)
 >
 >[如何加群](https://plus-doc.dromara.org/#/common/add_group)
 >>[https://plus-doc.dromara.org/#/common/add_group](https://plus-doc.dromara.org/#/common/add_group)
