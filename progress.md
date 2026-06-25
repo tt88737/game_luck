@@ -56,3 +56,14 @@
 - 补充 `snail-job.port: 28080`，避免示例 Job 读取占位符失败。
 - 使用 `java -jar ruoyi-admin\target\ruoyi-admin.jar --spring.profiles.active=local` 启动成功。
 - 验证 `localhost:8080` TCP 连接成功，`GET /` 返回 200。
+
+## 2026-06-25 Admin UI
+
+- Imported upstream plus-ui into `admin-ui/` from `https://github.com/JavaLionLi/plus-ui`, branch `5.X`, commit `d0d451967676707021b9857df529c395b27e90a7`.
+- Added upstream record `docs/upstream/plus-ui.md`.
+- Changed `admin-ui/.env.development` dev port from `80` to `5173` to avoid local Windows port permission/conflict issues.
+- Ran `pnpm install` successfully in `admin-ui/`.
+- Started `pnpm dev`; Admin UI is available at `http://localhost:5173/`.
+- Verified `GET http://localhost:5173/` returns 200 and backend `GET http://localhost:8080/` returns 200.
+- Ran `pnpm build:dev` successfully. Only large chunk warnings were reported by Vite.
+- Added `docs/implementation/admin-ui-local-startup.md` for local startup and troubleshooting.
