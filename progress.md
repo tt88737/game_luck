@@ -30,3 +30,9 @@
 - 创建钱包中心设计文档：`docs/superpowers/specs/2026-06-25-wallet-center-design.md`。
 - 补充 `docs/implementation/db-draft.md`：新增 `wallet_transaction` 和 `wallet_manual_review`。
 - 补充 `docs/implementation/api-draft.md`：新增钱包交易查询和人工冲正接口草案。
+- 用户确认开始引入 RuoYi-Vue-Plus。
+- 从 `https://github.com/dromara/RuoYi-Vue-Plus` 克隆上游 `5.X` 分支，导入 commit `e49f02f89e17ee5a4cc14048af99cc83d72872a7`。
+- 将上游源码复制到 `backend/`，未复制上游 `.git` 目录。
+- 创建上游记录文件：`docs/upstream/ruoyi-vue-plus.md`。
+- 验证 `backend/pom.xml`、`backend/ruoyi-admin`、`backend/ruoyi-common`、`backend/ruoyi-modules` 存在。
+- 当前环境未安装 `mvn` 命令，暂时无法执行 Maven 构建验证。

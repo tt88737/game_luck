@@ -24,7 +24,8 @@
 | 3. 设计自查 | complete | 检查范围、矛盾、遗漏和模糊项 | 已确认无 TODO/TBD 占位符，文档编码正常 |
 | 4. 用户评审 | complete | 等待业务方确认设计方向 | 用户已确认继续生成第一阶段实施计划 |
 | 5. 实施计划 | in_progress | 拆分第一阶段 MVP 开发任务 | docs/superpowers/plans/2026-06-25-phase-1-mvp.md |
-| 6. 钱包中心细化设计 | in_progress | 固化钱包状态机、幂等、冻结/结算/冲正规则 | docs/superpowers/specs/2026-06-25-wallet-center-design.md |
+| 6. 钱包中心细化设计 | complete | 固化钱包状态机、幂等、冻结/结算/冲正规则 | docs/superpowers/specs/2026-06-25-wallet-center-design.md |
+| 7. 引入 RuoYi-Vue-Plus | in_progress | 将上游底座导入 backend 并记录来源 | backend/、docs/upstream/ruoyi-vue-plus.md |
 
 ## 关键决策
 
