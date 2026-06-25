@@ -26,3 +26,7 @@
   - `docs/implementation/db-draft.md`
   - `docs/implementation/api-draft.md`
 - 创建执行计划：`docs/superpowers/plans/2026-06-25-phase-1-mvp.md`。
+- 用户选择继续细化钱包设计。
+- 创建钱包中心设计文档：`docs/superpowers/specs/2026-06-25-wallet-center-design.md`。
+- 补充 `docs/implementation/db-draft.md`：新增 `wallet_transaction` 和 `wallet_manual_review`。
+- 补充 `docs/implementation/api-draft.md`：新增钱包交易查询和人工冲正接口草案。

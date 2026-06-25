@@ -175,6 +175,53 @@ GET /api/client/wallet/ledgers?currencyCode=SC&pageNum=1&pageSize=20
 }
 ```
 
+### 4.3 查询钱包交易
+
+```http
+GET /api/admin/wallet/transactions?memberId=20001&currencyCode=SC&pageNum=1&pageSize=20
+```
+
+返回：
+
+```json
+{
+  "records": [
+    {
+      "transactionNo": "WT202606250001",
+      "idempotencyKey": "redemption:RD202606250001:freeze",
+      "operation": "freeze",
+      "amount": "50.00",
+      "status": "success",
+      "bizType": "redemption",
+      "bizNo": "RD202606250001",
+      "createdAt": "2026-06-25T12:00:00Z"
+    }
+  ],
+  "total": 1
+}
+```
+
+### 4.4 人工冲正
+
+```http
+POST /api/admin/wallet/transactions/{transactionNo}/reverse
+```
+
+请求：
+
+```json
+{
+  "reason": "provider callback error",
+  "idempotencyKey": "reverse:WT202606250001"
+}
+```
+
+规则：
+
+- 只能冲正 `success` 状态交易。
+- 同一交易只能冲正一次。
+- 冲正失败且余额不足时进入人工处理队列。
+
 ## 5. 游戏接口
 
 ### 5.1 游戏列表

@@ -117,7 +117,36 @@ tenant_id + member_id + currency_code
 tenant_id + idempotency_key
 ```
 
-### 3.5 `wallet_freeze_record`
+### 3.5 `wallet_transaction`
+
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| id | bigint | 主键 |
+| tenant_id | bigint | 租户 ID |
+| transaction_no | varchar(128) | 钱包交易单号 |
+| idempotency_key | varchar(128) | 幂等键 |
+| member_id | bigint | 会员 ID |
+| currency_code | varchar(32) | 币种 |
+| operation | varchar(32) | credit / debit / freeze / unfreeze / settle / adjust / reverse |
+| amount | decimal(24,8) | 金额 |
+| status | varchar(32) | pending / success / failed / reversed |
+| biz_type | varchar(64) | 业务类型 |
+| biz_no | varchar(128) | 业务单号 |
+| origin_transaction_no | varchar(128) | 原交易单号，冲正时使用 |
+| request_hash | varchar(128) | 请求关键字段哈希 |
+| fail_code | varchar(64) | 失败码 |
+| fail_reason | varchar(512) | 失败原因 |
+| created_at | datetime | 创建时间 |
+| updated_at | datetime | 更新时间 |
+
+唯一约束：
+
+```text
+tenant_id + idempotency_key
+tenant_id + transaction_no
+```
+
+### 3.6 `wallet_freeze_record`
 
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
@@ -130,6 +159,20 @@ tenant_id + idempotency_key
 | status | varchar(32) | frozen / settled / released |
 | source_type | varchar(64) | redemption / risk / manual |
 | source_no | varchar(128) | 来源单号 |
+| created_at | datetime | 创建时间 |
+| updated_at | datetime | 更新时间 |
+
+### 3.7 `wallet_manual_review`
+
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| id | bigint | 主键 |
+| tenant_id | bigint | 租户 ID |
+| review_no | varchar(128) | 人工处理单号 |
+| source_type | varchar(64) | reverse / adjust / reconciliation |
+| source_no | varchar(128) | 来源单号 |
+| reason | varchar(512) | 原因 |
+| status | varchar(32) | pending / processing / resolved / rejected |
 | created_at | datetime | 创建时间 |
 | updated_at | datetime | 更新时间 |
 
