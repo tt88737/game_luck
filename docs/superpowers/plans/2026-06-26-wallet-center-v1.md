@@ -675,7 +675,7 @@ git commit -m "feat(wallet): add wallet admin pages"
 **Files:**
 - Modify if needed: `README.md`
 
-- [ ] **Step 1: Backend compile**
+- [x] **Step 1: Backend compile**
 
 Run:
 
@@ -685,7 +685,7 @@ C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal 
 
 Expected: `BUILD SUCCESS`.
 
-- [ ] **Step 2: Frontend build**
+- [x] **Step 2: Frontend build**
 
 Run:
 
@@ -709,7 +709,7 @@ GET /wallet/freeze/list
 
 Expected: each endpoint returns a normal `R`/table response after login.
 
-- [ ] **Step 4: Document startup and SQL**
+- [x] **Step 4: Document startup and SQL**
 
 If `README.md` does not mention wallet SQL, add:
 
@@ -720,7 +720,7 @@ Wallet Center:
 - Wallet v1 admin pages are query/config only. Manual balance adjustment is intentionally not enabled.
 ```
 
-- [ ] **Step 5: Final commit**
+- [x] **Step 5: Final commit**
 
 ```powershell
 git status --short
