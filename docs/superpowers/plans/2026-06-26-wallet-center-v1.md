@@ -519,7 +519,7 @@ git commit -m "feat(wallet): add wallet admin query APIs"
 - Create: `WalletCoreServiceImpl`
 - Create: `WalletCoreController`
 
-- [ ] **Step 1: Create operation request BOs**
+- [x] **Step 1: Create operation request BOs**
 
 Create:
 
@@ -538,7 +538,7 @@ public class WalletCreditBo {
 
 Create similar `WalletDebitBo` with no release fields. Create `WalletTurnoverBo` with `validTurnoverAmount`.
 
-- [ ] **Step 2: Create core service contract**
+- [x] **Step 2: Create core service contract**
 
 `IWalletCoreService`:
 
@@ -548,7 +548,7 @@ WalletTransactionVo debit(WalletDebitBo bo);
 void addValidTurnover(WalletTurnoverBo bo);
 ```
 
-- [ ] **Step 3: Implement `credit`**
+- [x] **Step 3: Implement `credit`**
 
 Minimum behavior:
 
@@ -561,7 +561,7 @@ Minimum behavior:
 
 `IMMEDIATE` creates `RELEASED`; `AFTER_TURNOVER` creates `LOCKED`; `NEVER` creates `NEVER`; `MANUAL_REVIEW` creates `REVIEWING`.
 
-- [ ] **Step 4: Implement `debit`**
+- [x] **Step 4: Implement `debit`**
 
 Minimum behavior:
 
@@ -571,7 +571,7 @@ Minimum behavior:
 4. Decrease available balance.
 5. Insert transaction.
 
-- [ ] **Step 5: Implement `addValidTurnover`**
+- [x] **Step 5: Implement `addValidTurnover`**
 
 Minimum behavior:
 
@@ -579,11 +579,11 @@ Minimum behavior:
 2. Apply `validTurnoverAmount` until exhausted.
 3. When `completed_turnover >= required_turnover`, set status to `RELEASED` and `released_amount = amount`.
 
-- [ ] **Step 6: Add internal test controller**
+- [x] **Step 6: Add internal test controller**
 
 Create `/wallet/core/credit`, `/wallet/core/debit`, `/wallet/core/turnover` with `@SaCheckPermission("wallet:core:test")`. This is temporary for local verification and must be reviewed before production.
 
-- [ ] **Step 7: Compile**
+- [x] **Step 7: Compile**
 
 Run:
 
@@ -593,7 +593,7 @@ C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal 
 
 Expected: `BUILD SUCCESS`.
 
-- [ ] **Step 8: Commit core service**
+- [x] **Step 8: Commit core service**
 
 ```powershell
 git add backend\gameluck-modules\gameluck-wallet
