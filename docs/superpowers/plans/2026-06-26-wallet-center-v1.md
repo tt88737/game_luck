@@ -56,7 +56,7 @@ Create frontend:
 **Files:**
 - Create: `backend/script/sql/gameluck_wallet.sql`
 
-- [ ] **Step 1: Create wallet SQL script**
+- [x] **Step 1: Create wallet SQL script**
 
 Create `backend/script/sql/gameluck_wallet.sql` with:
 
@@ -188,7 +188,7 @@ VALUES
 ON DUPLICATE KEY UPDATE currency_name = VALUES(currency_name), update_time = NOW();
 ```
 
-- [ ] **Step 2: Apply SQL locally**
+- [x] **Step 2: Apply SQL locally**
 
 Run:
 
@@ -198,7 +198,7 @@ mysql -uroot -proot gameluck_vue < backend\script\sql\gameluck_wallet.sql
 
 Expected: command exits with status `0`, and `SHOW TABLES LIKE 'gl_wallet_%';` returns five wallet tables.
 
-- [ ] **Step 3: Commit database script**
+- [x] **Step 3: Commit database script**
 
 ```powershell
 git add backend\script\sql\gameluck_wallet.sql
