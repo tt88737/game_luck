@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.dromara</groupId>
+    <groupId>com.gameluck</groupId>
     <artifactId>gameluck-vue-plus</artifactId>
     <version>${revision}</version>
 
@@ -118,7 +118,7 @@
 
             <!-- common 的依赖配置-->
             <dependency>
-                <groupId>org.dromara</groupId>
+                <groupId>com.gameluck</groupId>
                 <artifactId>gameluck-common-bom</artifactId>
                 <version>${revision}</version>
                 <type>pom</type>
@@ -313,19 +313,19 @@
             </dependency>
 
             <dependency>
-                <groupId>org.dromara</groupId>
+                <groupId>com.gameluck</groupId>
                 <artifactId>gameluck-system</artifactId>
                 <version>${revision}</version>
             </dependency>
 
             <dependency>
-                <groupId>org.dromara</groupId>
+                <groupId>com.gameluck</groupId>
                 <artifactId>gameluck-job</artifactId>
                 <version>${revision}</version>
             </dependency>
 
             <dependency>
-                <groupId>org.dromara</groupId>
+                <groupId>com.gameluck</groupId>
                 <artifactId>gameluck-generator</artifactId>
                 <version>${revision}</version>
             </dependency>

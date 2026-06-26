@@ -4,14 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>gameluck-vue-plus</artifactId>
-        <groupId>org.dromara</groupId>
+        <groupId>com.gameluck</groupId>
         <version>${revision}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <modules>
         <module>gameluck-common-bom</module>
-        <module>gameluck-common-social</module>
         <module>gameluck-common-core</module>
         <module>gameluck-common-doc</module>
         <module>gameluck-common-excel</module>

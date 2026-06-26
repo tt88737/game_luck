@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>gameluck-vue-plus</artifactId>
-        <groupId>org.dromara</groupId>
+        <groupId>com.gameluck</groupId>
         <version>${revision}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -46,38 +46,38 @@
 <!--        </dependency>-->
 
         <dependency>
-            <groupId>org.dromara</groupId>
+            <groupId>com.gameluck</groupId>
             <artifactId>gameluck-common-doc</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.dromara</groupId>
-            <artifactId>gameluck-common-social</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.dromara</groupId>
+            <groupId>com.gameluck</groupId>
             <artifactId>gameluck-common-ratelimiter</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.dromara</groupId>
+            <groupId>com.gameluck</groupId>
             <artifactId>gameluck-common-mail</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.dromara</groupId>
+            <groupId>me.zhyd.oauth</groupId>
+            <artifactId>JustAuth</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.gameluck</groupId>
             <artifactId>gameluck-system</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.dromara</groupId>
+            <groupId>com.gameluck</groupId>
             <artifactId>gameluck-job</artifactId>
         </dependency>
 
         <!-- 浠ｇ爜鐢熸垚-->
         <dependency>
-            <groupId>org.dromara</groupId>
+            <groupId>com.gameluck</groupId>
             <artifactId>gameluck-generator</artifactId>
         </dependency>
 

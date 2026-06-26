@@ -5,45 +5,6 @@ UPDATE sys_menu SET path = 'powerjob', component = 'monitor/powerjob/index', per
 -- ----------------------------
 -- 第三方平台授权表
 -- ----------------------------
-drop table if exists sys_social;
-create table sys_social
-(
-    id                 bigint           not null        comment '主键',
-    user_id            bigint           not null        comment '用户ID',
-    tenant_id          varchar(20)      default null    comment '租户id',
-    auth_id            varchar(255)     not null        comment '平台+平台唯一id',
-    source             varchar(255)     not null        comment '用户来源',
-    open_id            varchar(255)     default null    comment '平台编号唯一id',
-    user_name          varchar(30)      not null        comment '登录账号',
-    nick_name          varchar(30)      default ''      comment '用户昵称',
-    email              varchar(255)     default ''      comment '用户邮箱',
-    avatar             varchar(500)     default ''      comment '头像地址',
-    access_token       varchar(255)     not null        comment '用户的授权令牌',
-    expire_in          int              default null    comment '用户的授权令牌的有效期，部分平台可能没有',
-    refresh_token      varchar(255)     default null    comment '刷新令牌，部分平台可能没有',
-    access_code        varchar(255)     default null    comment '平台的授权信息，部分平台可能没有',
-    union_id           varchar(255)     default null    comment '用户的 unionid',
-    scope              varchar(255)     default null    comment '授予的权限，部分平台可能没有',
-    token_type         varchar(255)     default null    comment '个别平台的授权信息，部分平台可能没有',
-    id_token           varchar(255)     default null    comment 'id token，部分平台可能没有',
-    mac_algorithm      varchar(255)     default null    comment '小米平台用户的附带属性，部分平台可能没有',
-    mac_key            varchar(255)     default null    comment '小米平台用户的附带属性，部分平台可能没有',
-    code               varchar(255)     default null    comment '用户的授权code，部分平台可能没有',
-    oauth_token        varchar(255)     default null    comment 'Twitter平台用户的附带属性，部分平台可能没有',
-    oauth_token_secret varchar(255)     default null    comment 'Twitter平台用户的附带属性，部分平台可能没有',
-    create_dept        bigint(20)                       comment '创建部门',
-    create_by          bigint(20)                       comment '创建者',
-    create_time        datetime                         comment '创建时间',
-    update_by          bigint(20)                       comment '更新者',
-    update_time        datetime                         comment '更新时间',
-    del_flag           char(1)          default '0'     comment '删除标志（0代表存在 2代表删除）',
-    PRIMARY KEY (id)
-) engine=innodb comment = '社会化关系表';
-
-
--- ----------------------------
--- 系统授权表
--- ----------------------------
 drop table if exists sys_client;
 create table sys_client (
     id                  bigint(20)    not null            comment 'id',
@@ -64,8 +25,8 @@ create table sys_client (
     primary key (id)
 ) engine=innodb comment='系统授权表';
 
-insert into sys_client values (1, 'e5cd7e4891bf95d1d19206ce24a7b32e', 'pc', 'pc123', 'password,social', 'pc', 1800, 604800, 0, 0, 103, 1, sysdate(), 1, sysdate());
-insert into sys_client values (2, '428a8310cd442757ae699df5d894f051', 'app', 'app123', 'password,sms,social', 'android', 1800, 604800, 0, 0, 103, 1, sysdate(), 1, sysdate());
+insert into sys_client values (1, 'e5cd7e4891bf95d1d19206ce24a7b32e', 'pc', 'pc123', 'password', 'pc', 1800, 604800, 0, 0, 103, 1, sysdate(), 1, sysdate());
+insert into sys_client values (2, '428a8310cd442757ae699df5d894f051', 'app', 'app123', 'password,sms', 'android', 1800, 604800, 0, 0, 103, 1, sysdate(), 1, sysdate());
 
 insert into sys_dict_type values(11, '000000', '授权类型', 'sys_grant_type',     103, 1, sysdate(), null, null, '认证授权类型');
 insert into sys_dict_type values(12, '000000', '设备类型', 'sys_device_type',    103, 1, sysdate(), null, null, '客户端设备类型');
@@ -74,7 +35,6 @@ insert into sys_dict_data values(30, '000000', 0,  '密码认证', 'password',  
 insert into sys_dict_data values(31, '000000', 0,  '短信认证', 'sms',        'sys_grant_type',   '',   'default', 'N', 103, 1, sysdate(), null, null, '短信认证');
 insert into sys_dict_data values(32, '000000', 0,  '邮件认证', 'email',      'sys_grant_type',   '',   'default', 'N', 103, 1, sysdate(), null, null, '邮件认证');
 insert into sys_dict_data values(33, '000000', 0,  '小程序认证', 'xcx',      'sys_grant_type',   '',   'default', 'N', 103, 1, sysdate(), null, null, '小程序认证');
-insert into sys_dict_data values(34, '000000', 0,  '三方登录认证', 'social', 'sys_grant_type',   '',   'default', 'N', 103, 1, sysdate(), null, null, '三方登录认证');
 insert into sys_dict_data values(35, '000000', 0,  'PC',    'pc',         'sys_device_type',     '',   'default', 'N', 103, 1, sysdate(), null, null, 'PC');
 insert into sys_dict_data values(36, '000000', 0,  '安卓', 'android',     'sys_device_type',     '',   'default', 'N', 103, 1, sysdate(), null, null, '安卓');
 insert into sys_dict_data values(37, '000000', 0,  'iOS', 'ios',          'sys_device_type',     '',   'default', 'N', 103, 1, sysdate(), null, null, 'iOS');

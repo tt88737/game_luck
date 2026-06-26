@@ -1,5 +1,5 @@
-org.dromara.common.web.config.CaptchaConfig
-org.dromara.common.web.config.FilterConfig
-org.dromara.common.web.config.I18nConfig
-org.dromara.common.web.config.ResourcesConfig
-org.dromara.common.web.config.UndertowConfig
+com.gameluck.common.web.config.CaptchaConfig
+com.gameluck.common.web.config.FilterConfig
+com.gameluck.common.web.config.I18nConfig
+com.gameluck.common.web.config.ResourcesConfig
+com.gameluck.common.web.config.UndertowConfig

@@ -1,2 +1,2 @@
-org.dromara.common.redis.config.RedisConfig
-org.dromara.common.redis.config.CacheConfig
+com.gameluck.common.redis.config.RedisConfig
+com.gameluck.common.redis.config.CacheConfig

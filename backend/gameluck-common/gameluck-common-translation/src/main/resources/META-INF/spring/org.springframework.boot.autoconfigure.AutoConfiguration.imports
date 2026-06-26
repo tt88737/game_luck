@@ -1,6 +1,6 @@
-org.dromara.common.translation.config.TranslationConfig
-org.dromara.common.translation.core.impl.DeptNameTranslationImpl
-org.dromara.common.translation.core.impl.DictTypeTranslationImpl
-org.dromara.common.translation.core.impl.OssUrlTranslationImpl
-org.dromara.common.translation.core.impl.UserNameTranslationImpl
-org.dromara.common.translation.core.impl.NicknameTranslationImpl
+com.gameluck.common.translation.config.TranslationConfig
+com.gameluck.common.translation.core.impl.DeptNameTranslationImpl
+com.gameluck.common.translation.core.impl.DictTypeTranslationImpl
+com.gameluck.common.translation.core.impl.OssUrlTranslationImpl
+com.gameluck.common.translation.core.impl.UserNameTranslationImpl
+com.gameluck.common.translation.core.impl.NicknameTranslationImpl

@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>org.dromara</groupId>
+        <groupId>com.gameluck</groupId>
         <artifactId>gameluck-modules</artifactId>
         <version>${revision}</version>
     </parent>
@@ -18,85 +18,85 @@
     <dependencies>
         <!-- 通用工具-->
         <dependency>
-            <groupId>org.dromara</groupId>
+            <groupId>com.gameluck</groupId>
             <artifactId>gameluck-common-core</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.dromara</groupId>
+            <groupId>com.gameluck</groupId>
             <artifactId>gameluck-common-doc</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.dromara</groupId>
+            <groupId>com.gameluck</groupId>
             <artifactId>gameluck-common-mybatis</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.dromara</groupId>
+            <groupId>com.gameluck</groupId>
             <artifactId>gameluck-common-translation</artifactId>
         </dependency>
 
         <!-- OSS功能模块 -->
         <dependency>
-            <groupId>org.dromara</groupId>
+            <groupId>com.gameluck</groupId>
             <artifactId>gameluck-common-oss</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.dromara</groupId>
+            <groupId>com.gameluck</groupId>
             <artifactId>gameluck-common-log</artifactId>
         </dependency>
 
         <!-- excel-->
         <dependency>
-            <groupId>org.dromara</groupId>
+            <groupId>com.gameluck</groupId>
             <artifactId>gameluck-common-excel</artifactId>
         </dependency>
 
         <!-- SMS功能模块 -->
         <dependency>
-            <groupId>org.dromara</groupId>
+            <groupId>com.gameluck</groupId>
             <artifactId>gameluck-common-sms</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.dromara</groupId>
+            <groupId>com.gameluck</groupId>
             <artifactId>gameluck-common-tenant</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.dromara</groupId>
+            <groupId>com.gameluck</groupId>
             <artifactId>gameluck-common-security</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.dromara</groupId>
+            <groupId>com.gameluck</groupId>
             <artifactId>gameluck-common-web</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.dromara</groupId>
+            <groupId>com.gameluck</groupId>
             <artifactId>gameluck-common-idempotent</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.dromara</groupId>
+            <groupId>com.gameluck</groupId>
             <artifactId>gameluck-common-sensitive</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.dromara</groupId>
+            <groupId>com.gameluck</groupId>
             <artifactId>gameluck-common-encrypt</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.dromara</groupId>
+            <groupId>com.gameluck</groupId>
             <artifactId>gameluck-common-websocket</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.dromara</groupId>
+            <groupId>com.gameluck</groupId>
             <artifactId>gameluck-common-sse</artifactId>
         </dependency>
 

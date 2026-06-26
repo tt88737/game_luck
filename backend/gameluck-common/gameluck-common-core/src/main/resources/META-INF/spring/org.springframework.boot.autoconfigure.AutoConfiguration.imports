@@ -1,4 +1,4 @@
-org.dromara.common.core.config.ApplicationConfig
-org.dromara.common.core.config.ThreadPoolConfig
-org.dromara.common.core.config.ValidatorConfig
-org.dromara.common.core.utils.SpringUtils
+com.gameluck.common.core.config.ApplicationConfig
+com.gameluck.common.core.config.ThreadPoolConfig
+com.gameluck.common.core.config.ValidatorConfig
+com.gameluck.common.core.utils.SpringUtils
