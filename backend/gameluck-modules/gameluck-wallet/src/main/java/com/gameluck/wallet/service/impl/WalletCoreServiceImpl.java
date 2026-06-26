@@ -26,8 +26,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Wallet core balance operations implementation.
@@ -38,6 +41,9 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
 
     private static final BigDecimal ZERO = BigDecimal.ZERO;
     private static final String DEFAULT_TENANT_ID = "000000";
+    private static final int MONEY_SCALE = 6;
+    private static final String RELEASED_COUNT_PREFIX = "releasedCount=";
+    private static final Pattern RELEASED_COUNT_PATTERN = Pattern.compile("(^|[;\\s])releasedCount=(\\d+)([;\\s]|$)");
 
     private final WalletAccountMapper walletAccountMapper;
     private final WalletTransactionMapper walletTransactionMapper;
@@ -49,7 +55,7 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
         String tenantId = currentTenantId();
         WalletReleaseMode releaseMode = parseReleaseMode(bo.getReleaseMode());
         BigDecimal amount = requirePositive(bo.getAmount(), "入账金额必须大于0");
-        BigDecimal requiredTurnover = defaultZero(bo.getRequiredTurnover());
+        BigDecimal requiredTurnover = normalizeAmount(defaultZero(bo.getRequiredTurnover()));
         Date now = new Date();
         WalletTransaction transaction = buildCreditTransaction(tenantId, bo, releaseMode, amount, requiredTurnover,
             ZERO, ZERO, ZERO, now);
@@ -67,15 +73,15 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
 
         BigDecimal balanceBefore = defaultZero(account.getAvailableBalance());
         BigDecimal frozenBefore = defaultZero(account.getFrozenBalance());
-        BigDecimal balanceAfter = balanceBefore.add(amount);
+        BigDecimal balanceAfter = normalizeAmount(balanceBefore.add(amount));
         account.setAvailableBalance(balanceAfter);
         account.setUpdateTime(now);
         walletAccountMapper.updateById(account);
 
-        transaction.setBalanceBefore(balanceBefore);
+        transaction.setBalanceBefore(normalizeAmount(balanceBefore));
         transaction.setBalanceAfter(balanceAfter);
-        transaction.setFrozenBefore(frozenBefore);
-        transaction.setFrozenAfter(frozenBefore);
+        transaction.setFrozenBefore(normalizeAmount(frozenBefore));
+        transaction.setFrozenAfter(normalizeAmount(frozenBefore));
         transaction.setStatus(WalletTransactionStatus.SUCCESS.name());
         transaction.setUpdateTime(now);
         walletTransactionMapper.updateById(transaction);
@@ -109,10 +115,10 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
         BigDecimal balanceBefore = defaultZero(account.getAvailableBalance());
         BigDecimal frozenBefore = defaultZero(account.getFrozenBalance());
         if (balanceBefore.compareTo(amount) < 0) {
-            transaction.setBalanceBefore(balanceBefore);
-            transaction.setBalanceAfter(balanceBefore);
-            transaction.setFrozenBefore(frozenBefore);
-            transaction.setFrozenAfter(frozenBefore);
+            transaction.setBalanceBefore(normalizeAmount(balanceBefore));
+            transaction.setBalanceAfter(normalizeAmount(balanceBefore));
+            transaction.setFrozenBefore(normalizeAmount(frozenBefore));
+            transaction.setFrozenAfter(normalizeAmount(frozenBefore));
             transaction.setStatus(WalletTransactionStatus.FAILED.name());
             transaction.setFailCode("INSUFFICIENT_BALANCE");
             transaction.setFailReason("钱包余额不足");
@@ -121,15 +127,15 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
             return transaction;
         }
 
-        BigDecimal balanceAfter = balanceBefore.subtract(amount);
+        BigDecimal balanceAfter = normalizeAmount(balanceBefore.subtract(amount));
         account.setAvailableBalance(balanceAfter);
         account.setUpdateTime(now);
         walletAccountMapper.updateById(account);
 
-        transaction.setBalanceBefore(balanceBefore);
+        transaction.setBalanceBefore(normalizeAmount(balanceBefore));
         transaction.setBalanceAfter(balanceAfter);
-        transaction.setFrozenBefore(frozenBefore);
-        transaction.setFrozenAfter(frozenBefore);
+        transaction.setFrozenBefore(normalizeAmount(frozenBefore));
+        transaction.setFrozenAfter(normalizeAmount(frozenBefore));
         transaction.setStatus(WalletTransactionStatus.SUCCESS.name());
         transaction.setUpdateTime(now);
         walletTransactionMapper.updateById(transaction);
@@ -140,32 +146,48 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
     @Transactional(rollbackFor = Exception.class)
     public int addValidTurnover(WalletTurnoverBo bo) {
         String tenantId = currentTenantId();
-        BigDecimal remainTurnover = requirePositive(bo.getValidTurnoverAmount(), "有效流水必须大于0");
+        BigDecimal validTurnoverAmount = requirePositive(bo.getValidTurnoverAmount(), "有效流水必须大于0");
+        Date now = new Date();
+        WalletTransaction transaction = buildTurnoverTransaction(tenantId, bo, validTurnoverAmount, now);
+        WalletTransaction exists = walletTransactionMapper.selectByIdempotencyKey(tenantId, bo.getIdempotencyKey());
+        if (exists != null) {
+            return resolveTurnoverIdempotentResult(exists, transaction.getRequestHash());
+        }
+
+        WalletTransaction concurrent = reserveTransaction(transaction);
+        if (concurrent != null) {
+            return resolveTurnoverIdempotentResult(concurrent, transaction.getRequestHash());
+        }
+
+        BigDecimal remainTurnover = validTurnoverAmount;
         List<WalletRelease> lockedList = walletReleaseMapper.selectLockedByMemberForUpdate(
             tenantId, bo.getMemberId(), bo.getCurrencyCode(), WalletReleaseStatus.LOCKED.name());
 
         int releasedCount = 0;
-        Date now = new Date();
         for (WalletRelease release : lockedList) {
-            if (remainTurnover.compareTo(ZERO) <= 0) {
-                break;
-            }
-            BigDecimal completed = defaultZero(release.getCompletedTurnover());
-            BigDecimal required = defaultZero(release.getRequiredTurnover());
+            BigDecimal completed = normalizeAmount(defaultZero(release.getCompletedTurnover()));
+            BigDecimal required = normalizeAmount(defaultZero(release.getRequiredTurnover()));
             BigDecimal need = required.subtract(completed).max(ZERO);
+            if (remainTurnover.compareTo(ZERO) <= 0 && need.compareTo(ZERO) > 0) {
+                continue;
+            }
             BigDecimal applied = remainTurnover.min(need);
-            BigDecimal completedAfter = completed.add(applied);
-            remainTurnover = remainTurnover.subtract(applied);
+            BigDecimal completedAfter = normalizeAmount(completed.add(applied));
+            remainTurnover = normalizeAmount(remainTurnover.subtract(applied));
 
             release.setCompletedTurnover(completedAfter);
             if (completedAfter.compareTo(required) >= 0) {
                 release.setReleaseStatus(WalletReleaseStatus.RELEASED.name());
-                release.setReleasedAmount(release.getAmount());
+                release.setReleasedAmount(normalizeAmount(release.getAmount()));
                 releasedCount++;
             }
             release.setUpdateTime(now);
             walletReleaseMapper.updateById(release);
         }
+        transaction.setStatus(WalletTransactionStatus.SUCCESS.name());
+        transaction.setRemark(turnoverRemark(releasedCount));
+        transaction.setUpdateTime(now);
+        walletTransactionMapper.updateById(transaction);
         return releasedCount;
     }
 
@@ -220,6 +242,13 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
         return exists;
     }
 
+    private int resolveTurnoverIdempotentResult(WalletTransaction exists, String expectedRequestHash) {
+        if (!StringUtils.equals(exists.getRequestHash(), expectedRequestHash)) {
+            throw new ServiceException("幂等请求参数冲突");
+        }
+        return parseReleasedCount(exists.getRemark());
+    }
+
     private WalletTransaction buildCreditTransaction(String tenantId, WalletCreditBo bo, WalletReleaseMode releaseMode,
                                                      BigDecimal amount, BigDecimal requiredTurnover,
                                                      BigDecimal balanceBefore, BigDecimal balanceAfter,
@@ -229,7 +258,7 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
             frozenBefore, bo.getOperatorId(), bo.getRemark(), now);
         transaction.setOperation(WalletOperation.CREDIT.name());
         transaction.setReleaseMode(releaseMode.name());
-        transaction.setRequiredTurnover(requiredTurnover);
+        transaction.setRequiredTurnover(normalizeAmount(requiredTurnover));
         transaction.setRequestHash(requestHash(tenantId, bo.getIdempotencyKey(), bo.getMemberId(), bo.getCurrencyCode(),
             WalletOperation.CREDIT.name(), bo.getSourceType(), bo.getBusinessNo(), amount, releaseMode.name(), requiredTurnover));
         return transaction;
@@ -247,6 +276,15 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
         return transaction;
     }
 
+    private WalletTransaction buildTurnoverTransaction(String tenantId, WalletTurnoverBo bo, BigDecimal amount, Date now) {
+        WalletTransaction transaction = baseTransaction(tenantId, bo.getIdempotencyKey(), bo.getMemberId(),
+            bo.getCurrencyCode(), bo.getSourceType(), bo.getBusinessNo(), amount, ZERO, ZERO, ZERO, null, null, now);
+        transaction.setOperation(WalletOperation.TURNOVER.name());
+        transaction.setRequestHash(requestHash(tenantId, bo.getIdempotencyKey(), bo.getMemberId(), bo.getCurrencyCode(),
+            WalletOperation.TURNOVER.name(), bo.getSourceType(), bo.getBusinessNo(), amount));
+        return transaction;
+    }
+
     private WalletTransaction baseTransaction(String tenantId, String idempotencyKey, Long memberId, String currencyCode,
                                               String sourceType, String businessNo, BigDecimal amount,
                                               BigDecimal balanceBefore, BigDecimal balanceAfter,
@@ -260,11 +298,11 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
         transaction.setCurrencyCode(currencyCode);
         transaction.setSourceType(sourceType);
         transaction.setBusinessNo(businessNo);
-        transaction.setAmount(amount);
-        transaction.setBalanceBefore(balanceBefore);
-        transaction.setBalanceAfter(balanceAfter);
-        transaction.setFrozenBefore(frozenBefore);
-        transaction.setFrozenAfter(frozenBefore);
+        transaction.setAmount(normalizeAmount(amount));
+        transaction.setBalanceBefore(normalizeAmount(balanceBefore));
+        transaction.setBalanceAfter(normalizeAmount(balanceAfter));
+        transaction.setFrozenBefore(normalizeAmount(frozenBefore));
+        transaction.setFrozenAfter(normalizeAmount(frozenBefore));
         transaction.setStatus(WalletTransactionStatus.PENDING.name());
         transaction.setOperatorId(operatorId);
         transaction.setRemark(remark);
@@ -283,13 +321,13 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
         release.setCurrencyCode(bo.getCurrencyCode());
         release.setSourceType(bo.getSourceType());
         release.setBusinessNo(bo.getBusinessNo());
-        release.setAmount(amount);
-        release.setReleasedAmount(WalletReleaseMode.IMMEDIATE == releaseMode ? amount : ZERO);
-        release.setConsumedAmount(ZERO);
-        release.setRequiredTurnover(requiredTurnover);
-        release.setCompletedTurnover(ZERO);
+        release.setAmount(normalizeAmount(amount));
+        release.setReleasedAmount(initialReleasedAmount(releaseMode, amount, requiredTurnover));
+        release.setConsumedAmount(normalizeAmount(ZERO));
+        release.setRequiredTurnover(normalizeAmount(requiredTurnover));
+        release.setCompletedTurnover(normalizeAmount(ZERO));
         release.setReleaseMode(releaseMode.name());
-        release.setReleaseStatus(releaseStatus(releaseMode).name());
+        release.setReleaseStatus(releaseStatus(releaseMode, requiredTurnover).name());
         release.setOperatorId(bo.getOperatorId());
         release.setRemark(bo.getRemark());
         release.setCreateTime(now);
@@ -306,24 +344,38 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
         }
     }
 
-    private WalletReleaseStatus releaseStatus(WalletReleaseMode releaseMode) {
+    private WalletReleaseStatus releaseStatus(WalletReleaseMode releaseMode, BigDecimal requiredTurnover) {
         return switch (releaseMode) {
             case IMMEDIATE -> WalletReleaseStatus.RELEASED;
-            case AFTER_TURNOVER -> WalletReleaseStatus.LOCKED;
+            case AFTER_TURNOVER -> normalizeAmount(requiredTurnover).compareTo(ZERO) <= 0
+                ? WalletReleaseStatus.RELEASED : WalletReleaseStatus.LOCKED;
             case NEVER -> WalletReleaseStatus.NEVER;
             case MANUAL_REVIEW -> WalletReleaseStatus.REVIEWING;
         };
     }
 
+    private BigDecimal initialReleasedAmount(WalletReleaseMode releaseMode, BigDecimal amount, BigDecimal requiredTurnover) {
+        if (WalletReleaseMode.IMMEDIATE == releaseMode
+            || (WalletReleaseMode.AFTER_TURNOVER == releaseMode && normalizeAmount(requiredTurnover).compareTo(ZERO) <= 0)) {
+            return normalizeAmount(amount);
+        }
+        return normalizeAmount(ZERO);
+    }
+
     private BigDecimal requirePositive(BigDecimal value, String message) {
-        if (value == null || value.compareTo(ZERO) <= 0) {
+        BigDecimal normalized = normalizeAmount(value);
+        if (normalized == null || normalized.compareTo(ZERO) <= 0) {
             throw new ServiceException(message);
         }
-        return value;
+        return normalized;
     }
 
     private BigDecimal defaultZero(BigDecimal value) {
         return value == null ? ZERO : value;
+    }
+
+    private BigDecimal normalizeAmount(BigDecimal value) {
+        return value == null ? null : value.setScale(MONEY_SCALE, RoundingMode.HALF_UP);
     }
 
     private String currentTenantId() {
@@ -332,7 +384,37 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
     }
 
     private String requestHash(Object... args) {
-        return DigestUtil.sha256Hex(StringUtils.join(args, "|"));
+        String[] normalizedArgs = new String[args.length];
+        for (int i = 0; i < args.length; i++) {
+            normalizedArgs[i] = hashValue(args[i]);
+        }
+        return DigestUtil.sha256Hex(StringUtils.join(normalizedArgs, "|"));
+    }
+
+    private String hashValue(Object arg) {
+        if (arg instanceof BigDecimal decimal) {
+            return normalizeAmount(decimal).toPlainString();
+        }
+        return arg == null ? "" : String.valueOf(arg);
+    }
+
+    private String turnoverRemark(int releasedCount) {
+        return RELEASED_COUNT_PREFIX + releasedCount;
+    }
+
+    private int parseReleasedCount(String remark) {
+        if (StringUtils.isBlank(remark)) {
+            return 0;
+        }
+        Matcher matcher = RELEASED_COUNT_PATTERN.matcher(remark);
+        if (!matcher.find()) {
+            return 0;
+        }
+        try {
+            return Integer.parseInt(matcher.group(2));
+        } catch (NumberFormatException ex) {
+            return 0;
+        }
     }
 
 }

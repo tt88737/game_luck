@@ -6,6 +6,7 @@ package com.gameluck.wallet.enums;
 public enum WalletOperation {
     CREDIT,
     DEBIT,
+    TURNOVER,
     FREEZE,
     UNFREEZE,
     SETTLE,

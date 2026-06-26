@@ -19,6 +19,15 @@ public class WalletTurnoverBo {
     @NotBlank(message = "币种不能为空")
     private String currencyCode;
 
+    @NotBlank(message = "来源类型不能为空")
+    private String sourceType;
+
+    @NotBlank(message = "业务单号不能为空")
+    private String businessNo;
+
+    @NotBlank(message = "幂等键不能为空")
+    private String idempotencyKey;
+
     @NotNull(message = "有效流水不能为空")
     @DecimalMin(value = "0.000001", message = "有效流水必须大于0")
     private BigDecimal validTurnoverAmount;
