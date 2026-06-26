@@ -75,6 +75,12 @@
             <artifactId>gameluck-job</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.gameluck</groupId>
+            <artifactId>gameluck-wallet</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
         <!-- 浠ｇ爜鐢熸垚-->
         <dependency>
             <groupId>com.gameluck</groupId>

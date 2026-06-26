@@ -13,6 +13,7 @@
         <module>gameluck-generator</module>
         <module>gameluck-job</module>
         <module>gameluck-system</module>
+        <module>gameluck-wallet</module>
     </modules>
 
     <artifactId>gameluck-modules</artifactId>
