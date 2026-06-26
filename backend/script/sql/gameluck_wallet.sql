@@ -67,12 +67,14 @@ CREATE TABLE IF NOT EXISTS gl_wallet_transaction (
   status VARCHAR(32) NOT NULL COMMENT 'Transaction status',
   fail_code VARCHAR(64) DEFAULT NULL COMMENT 'Failure code',
   fail_reason VARCHAR(500) DEFAULT NULL COMMENT 'Failure reason',
+  operator_id BIGINT DEFAULT NULL COMMENT 'Operator id',
+  remark VARCHAR(500) DEFAULT NULL COMMENT 'Remark',
   create_time DATETIME DEFAULT NULL COMMENT 'Create time',
   update_time DATETIME DEFAULT NULL COMMENT 'Update time',
   PRIMARY KEY (id),
   UNIQUE KEY uk_gl_wallet_transaction_01 (tenant_id, transaction_no),
   UNIQUE KEY uk_gl_wallet_transaction_02 (tenant_id, idempotency_key),
-  KEY idx_gl_wallet_transaction_01 (tenant_id, member_id, currency_code),
+  KEY idx_gl_wallet_transaction_01 (tenant_id, member_id, currency_code, create_time),
   KEY idx_gl_wallet_transaction_02 (tenant_id, business_no)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Wallet transaction ledger';
 
@@ -92,11 +94,14 @@ CREATE TABLE IF NOT EXISTS gl_wallet_release (
   release_mode VARCHAR(32) NOT NULL COMMENT 'Release mode',
   release_status VARCHAR(32) NOT NULL COMMENT 'Release status',
   metadata JSON DEFAULT NULL COMMENT 'Extended metadata',
+  operator_id BIGINT DEFAULT NULL COMMENT 'Operator id',
+  remark VARCHAR(500) DEFAULT NULL COMMENT 'Remark',
   create_time DATETIME DEFAULT NULL COMMENT 'Create time',
   update_time DATETIME DEFAULT NULL COMMENT 'Update time',
+  version INT NOT NULL DEFAULT 0 COMMENT 'Optimistic lock version',
   PRIMARY KEY (id),
   UNIQUE KEY uk_gl_wallet_release_01 (tenant_id, release_no),
-  KEY idx_gl_wallet_release_01 (tenant_id, member_id, currency_code, release_status),
+  KEY idx_gl_wallet_release_01 (tenant_id, member_id, currency_code, release_status, create_time),
   KEY idx_gl_wallet_release_02 (tenant_id, business_no)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Wallet release record';
 
@@ -110,11 +115,13 @@ CREATE TABLE IF NOT EXISTS gl_wallet_freeze (
   source_type VARCHAR(64) NOT NULL COMMENT 'Source type',
   business_no VARCHAR(128) NOT NULL COMMENT 'Business no',
   status VARCHAR(32) NOT NULL COMMENT 'Freeze status',
+  operator_id BIGINT DEFAULT NULL COMMENT 'Operator id',
+  remark VARCHAR(500) DEFAULT NULL COMMENT 'Remark',
   create_time DATETIME DEFAULT NULL COMMENT 'Create time',
   update_time DATETIME DEFAULT NULL COMMENT 'Update time',
   PRIMARY KEY (id),
   UNIQUE KEY uk_gl_wallet_freeze_01 (tenant_id, freeze_no),
-  KEY idx_gl_wallet_freeze_01 (tenant_id, member_id, currency_code),
+  KEY idx_gl_wallet_freeze_01 (tenant_id, member_id, currency_code, create_time),
   KEY idx_gl_wallet_freeze_02 (tenant_id, business_no)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Wallet freeze record';
 
