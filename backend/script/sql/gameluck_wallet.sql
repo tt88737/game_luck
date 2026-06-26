@@ -144,3 +144,36 @@ ON DUPLICATE KEY UPDATE
   sort_order = VALUES(sort_order),
   remark = VALUES(remark),
   update_time = NOW();
+
+-- Wallet Center admin menu and permissions.
+INSERT INTO sys_menu
+(menu_id, menu_name, parent_id, order_num, path, component, query_param, is_frame, is_cache, menu_type, visible, status, perms, icon, create_dept, create_by, create_time, update_by, update_time, remark)
+VALUES
+(1800, '钱包中心', 0, 6, 'wallet', NULL, '', 1, 0, 'M', '0', '0', '', 'money', 103, 1, NOW(), NULL, NULL, '钱包中心目录'),
+(1801, '币种配置', 1800, 1, 'currency', 'wallet/currency/index', '', 1, 0, 'C', '0', '0', 'wallet:currency:list', 'switch', 103, 1, NOW(), NULL, NULL, '钱包币种配置菜单'),
+(1802, '钱包账户', 1800, 2, 'account', 'wallet/account/index', '', 1, 0, 'C', '0', '0', 'wallet:account:list', 'user', 103, 1, NOW(), NULL, NULL, '会员钱包账户菜单'),
+(1803, '账变流水', 1800, 3, 'transaction', 'wallet/transaction/index', '', 1, 0, 'C', '0', '0', 'wallet:transaction:list', 'list', 103, 1, NOW(), NULL, NULL, '钱包账变流水菜单'),
+(1804, '释放记录', 1800, 4, 'release', 'wallet/release/index', '', 1, 0, 'C', '0', '0', 'wallet:release:list', 'validCode', 103, 1, NOW(), NULL, NULL, '钱包释放记录菜单'),
+(1805, '冻结记录', 1800, 5, 'freeze', 'wallet/freeze/index', '', 1, 0, 'C', '0', '0', 'wallet:freeze:list', 'lock', 103, 1, NOW(), NULL, NULL, '钱包冻结记录菜单'),
+(1811, '币种查询', 1801, 1, '#', '', '', 1, 0, 'F', '0', '0', 'wallet:currency:query', '#', 103, 1, NOW(), NULL, NULL, ''),
+(1812, '币种编辑', 1801, 2, '#', '', '', 1, 0, 'F', '0', '0', 'wallet:currency:edit', '#', 103, 1, NOW(), NULL, NULL, ''),
+(1813, '账户查询', 1802, 1, '#', '', '', 1, 0, 'F', '0', '0', 'wallet:account:query', '#', 103, 1, NOW(), NULL, NULL, ''),
+(1814, '流水查询', 1803, 1, '#', '', '', 1, 0, 'F', '0', '0', 'wallet:transaction:query', '#', 103, 1, NOW(), NULL, NULL, ''),
+(1815, '释放查询', 1804, 1, '#', '', '', 1, 0, 'F', '0', '0', 'wallet:release:query', '#', 103, 1, NOW(), NULL, NULL, ''),
+(1816, '冻结查询', 1805, 1, '#', '', '', 1, 0, 'F', '0', '0', 'wallet:freeze:query', '#', 103, 1, NOW(), NULL, NULL, '')
+ON DUPLICATE KEY UPDATE
+  menu_name = VALUES(menu_name),
+  parent_id = VALUES(parent_id),
+  order_num = VALUES(order_num),
+  path = VALUES(path),
+  component = VALUES(component),
+  query_param = VALUES(query_param),
+  is_frame = VALUES(is_frame),
+  is_cache = VALUES(is_cache),
+  menu_type = VALUES(menu_type),
+  visible = VALUES(visible),
+  status = VALUES(status),
+  perms = VALUES(perms),
+  icon = VALUES(icon),
+  remark = VALUES(remark),
+  update_time = NOW();
