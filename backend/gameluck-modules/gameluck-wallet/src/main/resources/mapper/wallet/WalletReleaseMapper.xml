@@ -4,4 +4,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.gameluck.wallet.mapper.WalletReleaseMapper">
 
+    <select id="selectLockedByMemberForUpdate" resultType="com.gameluck.wallet.domain.WalletRelease">
+        select *
+        from gl_wallet_release
+        where tenant_id = #{tenantId}
+          and member_id = #{memberId}
+          and currency_code = #{currencyCode}
+          and release_status = #{releaseStatus}
+        order by create_time asc, id asc
+        for update
+    </select>
 </mapper>

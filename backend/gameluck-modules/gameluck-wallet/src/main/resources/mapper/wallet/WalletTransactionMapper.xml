@@ -4,4 +4,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.gameluck.wallet.mapper.WalletTransactionMapper">
 
+    <select id="selectByIdempotencyKey" resultType="com.gameluck.wallet.domain.WalletTransaction">
+        select *
+        from gl_wallet_transaction
+        where tenant_id = #{tenantId}
+          and idempotency_key = #{idempotencyKey}
+        limit 1
+    </select>
 </mapper>
