@@ -422,7 +422,7 @@ git commit -m "feat(wallet): add wallet domain models"
 - Create service interfaces and implementations.
 - Create admin controllers.
 
-- [ ] **Step 1: Create service interfaces**
+- [x] **Step 1: Create service interfaces**
 
 Create:
 
@@ -448,7 +448,7 @@ For `WalletCurrency`, also expose:
 Boolean updateByBo(WalletCurrencyBo bo);
 ```
 
-- [ ] **Step 2: Create service implementations**
+- [x] **Step 2: Create service implementations**
 
 Implement query wrappers with MyBatis-Plus:
 
@@ -462,7 +462,7 @@ lqw.orderByAsc(WalletCurrency::getSortOrder);
 
 Use `baseMapper.selectVoPage(pageQuery.build(), lqw)` and `TableDataInfo.build(page)`.
 
-- [ ] **Step 3: Create controllers**
+- [x] **Step 3: Create controllers**
 
 Create controllers:
 
@@ -490,7 +490,7 @@ wallet:freeze:list
 
 Only `WalletCurrencyController` has `PUT /wallet/currency` in v1. No manual balance adjustment endpoints.
 
-- [ ] **Step 4: Compile admin**
+- [x] **Step 4: Compile admin**
 
 Run:
 
@@ -500,7 +500,7 @@ C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal 
 
 Expected: `BUILD SUCCESS`.
 
-- [ ] **Step 5: Commit query API layer**
+- [x] **Step 5: Commit query API layer**
 
 ```powershell
 git add backend\gameluck-modules\gameluck-wallet
