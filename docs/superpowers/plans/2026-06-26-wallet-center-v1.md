@@ -214,7 +214,7 @@ git commit -m "feat(wallet): add wallet database schema"
 - Modify: `backend/gameluck-modules/pom.xml`
 - Modify: `backend/gameluck-admin/pom.xml`
 
-- [ ] **Step 1: Add `gameluck-wallet` Maven module**
+- [x] **Step 1: Add `gameluck-wallet` Maven module**
 
 Create `backend/gameluck-modules/gameluck-wallet/pom.xml`:
 
@@ -265,7 +265,7 @@ Create `backend/gameluck-modules/gameluck-wallet/pom.xml`:
 </project>
 ```
 
-- [ ] **Step 2: Register module in parent POM**
+- [x] **Step 2: Register module in parent POM**
 
 Modify `backend/gameluck-modules/pom.xml`:
 
@@ -278,7 +278,7 @@ Modify `backend/gameluck-modules/pom.xml`:
 </modules>
 ```
 
-- [ ] **Step 3: Add admin dependency**
+- [x] **Step 3: Add admin dependency**
 
 Modify `backend/gameluck-admin/pom.xml`, after `gameluck-job`:
 
@@ -289,7 +289,7 @@ Modify `backend/gameluck-admin/pom.xml`, after `gameluck-job`:
 </dependency>
 ```
 
-- [ ] **Step 4: Verify module compiles**
+- [x] **Step 4: Verify module compiles**
 
 Run:
 
@@ -299,7 +299,7 @@ C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-modules/gameluck-wallet -a
 
 Expected: `BUILD SUCCESS`.
 
-- [ ] **Step 5: Commit module skeleton**
+- [x] **Step 5: Commit module skeleton**
 
 ```powershell
 git add backend\gameluck-modules\pom.xml backend\gameluck-admin\pom.xml backend\gameluck-modules\gameluck-wallet\pom.xml
