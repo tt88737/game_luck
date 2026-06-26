@@ -38,15 +38,15 @@
 - 当前环境未安装 `mvn` 命令，暂时无法执行 Maven 构建验证。
 - 用户同意执行后端环境基线检查。
 - 检查结果：Java 17 可用，Maven 不可用，Docker 可用但 Compose 不可用，MySQL 8.0.46 客户端可用，Redis 端口 6379 可访问但未配置密码。
-- 检查 GameLuck dev 配置：默认 MySQL `localhost:3306/ry-vue root/root`，Redis 密码 `gameluck123`，Spring Boot Admin Client 和 SnailJob 默认启用。
-- 当前 `ry-vue` 数据库不存在，`9090`、`17888`、`8800`、`9000` 端口未运行相关服务。
+- 检查 GameLuck dev 配置：默认 MySQL `localhost:3306/gameluck_vue root/root`，Redis 密码 `gameluck123`，Spring Boot Admin Client 和 SnailJob 默认启用。
+- 当前 `gameluck_vue` 数据库不存在，`9090`、`17888`、`8800`、`9000` 端口未运行相关服务。
 - 创建环境基线文档：`docs/implementation/backend-environment-baseline.md`。
 - 用户确认新增本地启动配置。
 - 创建 `backend/gameluck-admin/src/main/resources/application-local.yml`，用于本机最小启动，禁用 Spring Boot Admin Client 和 SnailJob，并覆盖 Redis 空密码。
 - 创建 `docs/implementation/backend-local-startup.md`，记录 Maven、数据库、SQL 导入、构建和启动步骤。
 - 用户选择自动处理环境。
 - 下载并校验 Apache Maven 3.9.16，解压到 `C:\tools\apache-maven-3.9.16`。
-- 创建数据库 `ry-vue`，导入 `ry_vue_5.X.sql`、`ry_job.sql`、`ry_workflow.sql`。
+- 创建数据库 `gameluck_vue`，导入 `ry_vue_5.X.sql`、`ry_job.sql`、`ry_workflow.sql`。
 - 验证核心表 `sys_user`、`sys_tenant`、`sj_group_config`、`flow_definition` 存在。
 - 执行 `mvn clean package -Plocal -DskipTests`，构建成功，产物为 `backend/gameluck-admin/target/gameluck-admin.jar`。
 - 用户反馈 `localhost:8080` 未启动。

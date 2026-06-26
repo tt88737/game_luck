@@ -11,7 +11,7 @@
 主要阻塞：
 
 - Maven 已安装到 `C:\tools\apache-maven-3.9.16`，当前会话配置 PATH 后可用。
-- GameLuck 默认数据库 `ry-vue` 已创建并导入基础 SQL。
+- GameLuck 默认数据库 `gameluck_vue` 已创建并导入基础 SQL。
 - Redis 服务在 `6379` 端口可访问，但当前 Redis 未配置密码；本项目 `application-local.yml` 已覆盖为空密码。
 - Docker 已安装，但没有 `docker compose` / `docker-compose` 命令。
 - GameLuck dev 配置默认启用 Spring Boot Admin Client 和 SnailJob，但本机 `9090`、`17888`、`8800` 端口未运行对应服务。
@@ -34,7 +34,7 @@
 | 服务 / 端口 | 状态 | 说明 |
 | --- | --- | --- |
 | MySQL `localhost:3306` | 可连接 | `root/root` 可执行 `SELECT VERSION()` |
-| 数据库 `ry-vue` | 已创建 | 已导入 GameLuck 基础 SQL |
+| 数据库 `gameluck_vue` | 已创建 | 已导入 GameLuck 基础 SQL |
 | Redis `localhost:6379` | 可连接 | TCP 可连接，RESP `PING` 返回 `PONG` |
 | Redis 密码 | 已处理 | 当前 Redis 已设置临时密码 `gameluck123` |
 | 后端 `localhost:8080` | 已运行 | TCP 连接成功，根路径返回 200 |
@@ -62,7 +62,7 @@ backend/pom.xml
 | Spring Boot | 3.5.15 |
 | 默认 profile | Maven profile 决定，dev profile 对应 `application-dev.yml` |
 | HTTP 端口 | 8080 |
-| MySQL URL | `jdbc:mysql://localhost:3306/ry-vue` |
+| MySQL URL | `jdbc:mysql://localhost:3306/gameluck_vue` |
 | MySQL 用户 | `root` |
 | MySQL 密码 | `root` |
 | Redis Host | `localhost` |
@@ -79,7 +79,7 @@ backend/pom.xml
 - 校验 Maven zip 的 SHA512。
 - 解压 Maven 到 `C:\tools\apache-maven-3.9.16`。
 - 当前会话中配置 `MAVEN_HOME` 和 PATH 后，`mvn -version` 可用。
-- 创建数据库 `ry-vue`。
+- 创建数据库 `gameluck_vue`。
 - 导入：
   - `backend/script/sql/ry_vue_5.X.sql`
   - `backend/script/sql/ry_job.sql`
@@ -156,7 +156,7 @@ backend/gameluck-admin/src/main/resources/application-local.yml
 - Redis 密码为空或匹配当前本机 Redis。
 - 禁用 Spring Boot Admin Client。
 - 禁用 SnailJob。
-- 保留 MySQL `localhost:3306/ry-vue root/root`。
+- 保留 MySQL `localhost:3306/gameluck_vue root/root`。
 
 ## 9. 当前不可验证项
 

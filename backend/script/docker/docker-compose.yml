@@ -8,7 +8,7 @@
       # root 瀵嗙爜
       MYSQL_ROOT_PASSWORD: root
       # 鍒濆鍖栨暟鎹簱(鍚庣画鐨勫垵濮嬪寲sql浼氬湪杩欎釜搴撴墽琛?
-      MYSQL_DATABASE: ry-vue
+      MYSQL_DATABASE: gameluck_vue
     ports:
       - "3306:3306"
     volumes:

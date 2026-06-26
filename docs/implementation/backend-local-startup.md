@@ -24,7 +24,7 @@ Spring profile: local
 已处理：
 
 - Maven 3.9.16 已下载并解压到 `C:\tools\apache-maven-3.9.16`。
-- 数据库 `ry-vue` 已创建。
+- 数据库 `gameluck_vue` 已创建。
 - 基础 SQL 已导入。
 
 ## 3. 安装 Maven
@@ -50,19 +50,19 @@ mvn -version
 在项目根目录执行：
 
 ```powershell
-mysql -uroot -proot -e "CREATE DATABASE IF NOT EXISTS `ry-vue` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
+mysql -uroot -proot -e "CREATE DATABASE IF NOT EXISTS `gameluck_vue` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
 ```
 
 验证：
 
 ```powershell
-mysql -uroot -proot -N -e "SHOW DATABASES LIKE 'ry-vue';"
+mysql -uroot -proot -N -e "SHOW DATABASES LIKE 'gameluck_vue';"
 ```
 
 期望输出：
 
 ```text
-ry-vue
+gameluck_vue
 ```
 
 ## 5. 导入基础 SQL
@@ -70,15 +70,15 @@ ry-vue
 执行：
 
 ```powershell
-mysql -uroot -proot ry-vue < backend\script\sql\ry_vue_5.X.sql
-mysql -uroot -proot ry-vue < backend\script\sql\ry_job.sql
-mysql -uroot -proot ry-vue < backend\script\sql\ry_workflow.sql
+mysql -uroot -proot gameluck_vue < backend\script\sql\ry_vue_5.X.sql
+mysql -uroot -proot gameluck_vue < backend\script\sql\ry_job.sql
+mysql -uroot -proot gameluck_vue < backend\script\sql\ry_workflow.sql
 ```
 
 验证核心表：
 
 ```powershell
-mysql -uroot -proot -N ry-vue -e "SHOW TABLES LIKE 'sys_user'; SHOW TABLES LIKE 'sys_tenant'; SHOW TABLES LIKE 'sj_group_config';"
+mysql -uroot -proot -N gameluck_vue -e "SHOW TABLES LIKE 'sys_user'; SHOW TABLES LIKE 'sys_tenant'; SHOW TABLES LIKE 'sj_group_config';"
 ```
 
 ## 6. 本地配置说明
@@ -93,7 +93,7 @@ backend/gameluck-admin/src/main/resources/application-local.yml
 
 - 禁用 Spring Boot Admin Client。
 - 禁用 SnailJob。
-- 使用本机 MySQL：`localhost:3306/ry-vue root/root`。
+- 使用本机 MySQL：`localhost:3306/gameluck_vue root/root`。
 - 使用本机 Redis：`localhost:6379`，密码 `gameluck123`。
 
 这样可以避开本机未启动的服务：
@@ -228,13 +228,13 @@ $client.Close()
 现象：
 
 ```text
-Unknown database 'ry-vue'
+Unknown database 'gameluck_vue'
 ```
 
 处理：
 
 ```powershell
-mysql -uroot -proot -e "CREATE DATABASE IF NOT EXISTS `ry-vue` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
+mysql -uroot -proot -e "CREATE DATABASE IF NOT EXISTS `gameluck_vue` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
 ```
 
 ### 10.4 表不存在
@@ -242,7 +242,7 @@ mysql -uroot -proot -e "CREATE DATABASE IF NOT EXISTS `ry-vue` DEFAULT CHARACTER
 现象：
 
 ```text
-Table 'ry-vue.sys_user' doesn't exist
+Table 'gameluck_vue.sys_user' doesn't exist
 ```
 
 处理：重新执行基础 SQL 导入。

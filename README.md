@@ -50,7 +50,7 @@ pnpm dev
 
 ## 本地依赖
 
-- MySQL：默认库名 `ry-vue`，账号 `root`，密码 `root`
+- MySQL：默认库名 `gameluck_vue`，账号 `root`，密码 `root`
 - Redis 或 Memurai：默认地址 `localhost:6379`，密码 `gameluck123`
 
 实际配置以 `backend/gameluck-admin/src/main/resources/application-local.yml` 为准。

@@ -24,7 +24,7 @@ script/              SQL、Docker 和环境脚本
 ## 本地配置
 
 ```text
-MySQL: localhost:3306/ry-vue
+MySQL: localhost:3306/gameluck_vue
 MySQL 用户: root
 MySQL 密码: root
 Redis: localhost:6379
