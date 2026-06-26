@@ -607,7 +607,7 @@ git commit -m "feat(wallet): add wallet core operations"
 **Files:**
 - Create wallet API files and Vue pages listed in File Structure.
 
-- [ ] **Step 1: Create TypeScript API wrappers**
+- [x] **Step 1: Create TypeScript API wrappers**
 
 Example `admin-ui/src/api/wallet/currency/index.ts`:
 
@@ -629,7 +629,7 @@ export function updateCurrency(data: CurrencyForm) {
 }
 ```
 
-- [ ] **Step 2: Create currency page**
+- [x] **Step 2: Create currency page**
 
 Create `admin-ui/src/views/wallet/currency/index.vue` with:
 
@@ -638,7 +638,7 @@ Create `admin-ui/src/views/wallet/currency/index.vue` with:
 - edit dialog for capability switches only.
 - no delete button.
 
-- [ ] **Step 3: Create account and ledger query pages**
+- [x] **Step 3: Create account and ledger query pages**
 
 Create:
 
@@ -651,7 +651,7 @@ wallet/freeze
 
 All are query-only pages with search form, table, pagination, and no balance-changing buttons.
 
-- [ ] **Step 4: Build frontend**
+- [x] **Step 4: Build frontend**
 
 Run:
 
@@ -661,7 +661,7 @@ pnpm --dir admin-ui build:prod
 
 Expected: build exits with status `0`.
 
-- [ ] **Step 5: Commit frontend**
+- [x] **Step 5: Commit frontend**
 
 ```powershell
 git add admin-ui\src\api\wallet admin-ui\src\views\wallet
