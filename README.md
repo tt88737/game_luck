@@ -55,6 +55,13 @@ pnpm dev
 
 实际配置以 `backend/gameluck-admin/src/main/resources/application-local.yml` 为准。
 
+## Wallet Center
+
+- 初始化钱包表：在 `gameluck_vue` 执行 `backend/script/sql/gameluck_wallet.sql`。
+- 默认币种：`GC`、`SC`、`RC`。
+- 钱包 v1 后台页面只提供币种能力配置和账务查询，不开放人工加款、人工扣款、提现审核等高风险操作。
+- 账务核心只记录余额、流水、释放和幂等事实；流水倍数、兑换条件、提现条件由业务模块计算后传入钱包。
+
 ## 开发约定
 
 - 新业务模块优先放在独立业务边界内，避免直接污染公共模块。
