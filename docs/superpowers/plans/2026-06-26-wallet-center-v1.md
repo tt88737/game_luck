@@ -313,7 +313,7 @@ git commit -m "feat(wallet): add wallet backend module"
 **Files:**
 - Create: wallet entity, BO, VO, enum, mapper files.
 
-- [ ] **Step 1: Create enums**
+- [x] **Step 1: Create enums**
 
 Create:
 
@@ -335,7 +335,7 @@ public enum WalletTransactionStatus { PENDING, SUCCESS, FAILED, REVERSED }
 public enum WalletFreezeStatus { FROZEN, SETTLED, RELEASED }
 ```
 
-- [ ] **Step 2: Create entity classes**
+- [x] **Step 2: Create entity classes**
 
 Create entities named:
 
@@ -356,7 +356,7 @@ Each entity:
 - uses `@TableId(value = "id")`.
 - uses `@TableLogic` on `delFlag` for currency/account.
 
-- [ ] **Step 3: Create BO and VO classes**
+- [x] **Step 3: Create BO and VO classes**
 
 For each entity create:
 
@@ -370,7 +370,7 @@ WalletFreezeBo / WalletFreezeVo
 
 BOs contain query fields used by list pages. VOs contain fields displayed by admin pages.
 
-- [ ] **Step 4: Create mapper interfaces**
+- [x] **Step 4: Create mapper interfaces**
 
 Create:
 
@@ -382,7 +382,7 @@ public interface WalletReleaseMapper extends BaseMapperPlus<WalletRelease, Walle
 public interface WalletFreezeMapper extends BaseMapperPlus<WalletFreeze, WalletFreezeVo> {}
 ```
 
-- [ ] **Step 5: Create mapper XML placeholders**
+- [x] **Step 5: Create mapper XML placeholders**
 
 Create XML files under `src/main/resources/mapper/wallet` with:
 
@@ -397,7 +397,7 @@ Create XML files under `src/main/resources/mapper/wallet` with:
 
 Repeat for each mapper namespace.
 
-- [ ] **Step 6: Compile**
+- [x] **Step 6: Compile**
 
 Run:
 
@@ -407,7 +407,7 @@ C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-modules/gameluck-wallet -a
 
 Expected: `BUILD SUCCESS`.
 
-- [ ] **Step 7: Commit model layer**
+- [x] **Step 7: Commit model layer**
 
 ```powershell
 git add backend\gameluck-modules\gameluck-wallet
