@@ -22,6 +22,8 @@ public class WalletCurrencyBo extends BaseEntity {
 
     private String currencyName;
 
+    private Integer scaleNum;
+
     private String enabled;
 
     private String creditEnabled;
@@ -33,4 +35,10 @@ public class WalletCurrencyBo extends BaseEntity {
     private String withdrawEnabled;
 
     private String exchangeEnabled;
+
+    private String negativeAllowed;
+
+    private Integer sortOrder;
+
+    private String remark;
 }
