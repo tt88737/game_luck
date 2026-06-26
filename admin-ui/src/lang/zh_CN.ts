@@ -27,14 +27,7 @@ export default {
       code: {
         required: '请输入验证码'
       }
-    },
-    social: {
-      wechat: '微信登录',
-      maxkey: 'MaxKey登录',
-      topiam: 'TopIam登录',
-      gitee: 'Gitee登录',
-      github: 'Github登录'
-    }
+    },
   },
   // 注册页面国际化
   register: {

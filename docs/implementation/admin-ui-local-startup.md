@@ -2,7 +2,7 @@
 
 ## 1. 目标
 
-启动 GameLuck-Vue-Plus 官方前端 `plus-ui`，用于访问当前后端管理系统。
+启动 GameLuck Backend Base 官方前端 `GameLuck Admin UI`，用于访问当前后端管理系统。
 
 本地目录：
 
@@ -27,7 +27,7 @@ http://localhost:5173
 前端来自：
 
 ```text
-https://github.com/JavaLionLi/plus-ui
+https://github.com/GameLuck/GameLuck Admin UI
 branch: 5.X
 commit: d0d451967676707021b9857df529c395b27e90a7
 ```
@@ -35,7 +35,7 @@ commit: d0d451967676707021b9857df529c395b27e90a7
 上游记录：
 
 ```text
-docs/upstream/plus-ui.md
+docs/upstream/GameLuck Admin UI.md
 ```
 
 ## 3. 环境要求

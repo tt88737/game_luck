@@ -6,7 +6,7 @@
 
 ## 2. 当前结论
 
-当前机器可以作为 GameLuck-Vue-Plus 后端开发环境，后端已经完成 Maven 构建验证。
+当前机器可以作为 GameLuck Backend Base 后端开发环境，后端已经完成 Maven 构建验证。
 
 主要阻塞：
 
@@ -81,7 +81,7 @@ backend/pom.xml
 - 当前会话中配置 `MAVEN_HOME` 和 PATH 后，`mvn -version` 可用。
 - 创建数据库 `gameluck_vue`。
 - 导入：
-  - `backend/script/sql/ry_vue_5.X.sql`
+  - `backend/script/sql/gameluck_vue_5.X.sql`
   - `backend/script/sql/ry_job.sql`
   - `backend/script/sql/ry_workflow.sql`
 - 验证核心表存在：

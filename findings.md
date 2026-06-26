@@ -7,14 +7,14 @@
 - 平台需要支持定制化，不同租户、品牌、渠道、地区可能有不同钱包、支付、兑换、活动和游戏配置。
 - 钱包不能只按双币设计，需要支持 GC、SC、RC 以及后续扩展币种。
 - 用户最终认可的技术路线是：
-  - RuoYi-Vue-Plus
+  - GameLuck Backend Base
   - Vue3 H5
   - Flutter App
   - 预留 Cocos 游戏接入
 
 ## 技术判断
 
-### RuoYi-Vue-Plus
+### GameLuck Backend Base
 
 适合作为 B 端后台和运营中台底座，承载租户、权限、菜单、字典、日志、报表、审核、配置等能力。
 

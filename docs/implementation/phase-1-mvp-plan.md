@@ -35,7 +35,7 @@ P0 不做：
 
 | 阶段 | 目标 | 结果 |
 | --- | --- | --- |
-| P0-1 | 引入并固定 GameLuck-Vue-Plus 底座 | 后台能启动，基础权限可用 |
+| P0-1 | 引入并固定 GameLuck Backend Base 底座 | 后台能启动，基础权限可用 |
 | P0-2 | 建立业务模块骨架 | tenant、channel、member、wallet、game 等模块边界明确 |
 | P0-3 | 完成多币种钱包核心 | 币种、账户、账变、冻结、结算可用 |
 | P0-4 | 完成模拟游戏闭环 | 启动游戏、下注、派彩、幂等回调可验证 |
@@ -50,7 +50,7 @@ P0 不做：
 
 ```text
 game_luck/
-  backend/                 GameLuck-Vue-Plus 二开后端和后台前端
+  backend/                 GameLuck Backend Base 二开后端和后台前端
   h5/                      Vue3 + Vite C 端 H5
   app/                     Flutter 玩家 App
   games/                   Cocos 自研游戏和小游戏预留
@@ -63,7 +63,7 @@ game_luck/
 
 ## 5. 底座引入策略
 
-GameLuck-Vue-Plus 建议采用“复制入仓 + 记录 upstream”的方式，而不是 git submodule。
+GameLuck Backend Base 建议采用“复制入仓 + 记录 upstream”的方式，而不是 git submodule。
 
 原因：
 
@@ -101,7 +101,7 @@ docs/upstream/gameluck-vue-plus.md
 
 再完成：
 
-- 拉取 GameLuck-Vue-Plus。
+- 拉取 GameLuck Backend Base。
 - 跑通 MySQL、Redis、后台登录。
 - 固定基础配置。
 - 建立业务模块包结构。

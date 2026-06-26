@@ -2,7 +2,7 @@
 
 ## 1. 目标
 
-用最少依赖启动 `backend/gameluck-admin`，先验证 GameLuck-Vue-Plus 后端能在本机跑起来。
+用最少依赖启动 `backend/gameluck-admin`，先验证 GameLuck Backend Base 后端能在本机跑起来。
 
 本地启动使用：
 
@@ -70,7 +70,7 @@ gameluck_vue
 执行：
 
 ```powershell
-mysql -uroot -proot gameluck_vue < backend\script\sql\ry_vue_5.X.sql
+mysql -uroot -proot gameluck_vue < backend\script\sql\gameluck_vue_5.X.sql
 mysql -uroot -proot gameluck_vue < backend\script\sql\ry_job.sql
 mysql -uroot -proot gameluck_vue < backend\script\sql\ry_workflow.sql
 ```
@@ -179,7 +179,7 @@ curl http://localhost:8080
 ```text
 localhost:8080 TCP 连接成功
 GET http://localhost:8080 返回 200
-响应内容：欢迎使用GameLuck-Vue-Plus后台管理框架，请通过前端地址访问。
+响应内容：欢迎使用GameLuck Backend Base后台管理框架，请通过前端地址访问。
 ```
 
 ## 10. 常见问题

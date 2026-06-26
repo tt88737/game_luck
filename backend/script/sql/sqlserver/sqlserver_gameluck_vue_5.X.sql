@@ -1,4 +1,4 @@
-create table sys_social
+﻿create table sys_social
 (
     id                 bigint            NOT NULL,
     user_id            bigint            NOT NULL,
@@ -1998,9 +1998,9 @@ EXEC sys.sp_addextendedproperty
     'TABLE', N'sys_notice'
 GO
 
-INSERT sys_notice VALUES (1, N'000000', N'温馨提醒：2018-07-01 若依新版本发布啦', N'2', N'新版本内容', N'0', 103, 1, getdate(), NULL, NULL, N'管理员')
+INSERT sys_notice VALUES (1, N'000000', N'温馨提醒：GameLuck 后台初始化完成', N'2', N'系统初始化内容', N'0', 103, 1, getdate(), NULL, NULL, N'管理员')
 GO
-INSERT sys_notice VALUES (2, N'000000', N'维护通知：2018-07-01 若依系统凌晨维护', N'1', N'维护内容', N'0', 103, 1, getdate(), NULL, NULL, N'管理员')
+INSERT sys_notice VALUES (2, N'000000', N'维护通知：GameLuck 后台维护通知', N'1', N'系统维护内容', N'0', 103, 1, getdate(), NULL, NULL, N'管理员')
 GO
 
 CREATE TABLE sys_oper_log
@@ -2867,7 +2867,7 @@ EXEC sys.sp_addextendedproperty
     'TABLE', N'sys_user'
 GO
 
-INSERT sys_user VALUES (1, N'000000', 103,  N'admin', N'疯狂的狮子Li', N'sys_user', N'crazyLionLi@163.com', N'15888888888', N'1', NULL, N'$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', N'0', N'0', N'127.0.0.1', getdate(), 103, 1, getdate(), NULL, NULL, N'管理员')
+INSERT sys_user VALUES (1, N'000000', 103,  N'admin', N'GameLuck Admin', N'sys_user', N'admin@gameluck.local', N'15888888888', N'1', NULL, N'$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', N'0', N'0', N'127.0.0.1', getdate(), 103, 1, getdate(), NULL, NULL, N'管理员')
 GO
 INSERT sys_user VALUES (3, N'000000', 108, N'test', N'本部门及以下 密码666666', N'sys_user', N'', N'', N'0', NULL, N'$2a$10$b8yUzN0C71sbz.PhNOCgJe.Tu1yWC3RNrTyjSQ8p1W0.aaUXUJ.Ne', N'0', N'0', N'127.0.0.1', getdate(), 103, 1, getdate(), 3, getdate(), NULL);
 GO

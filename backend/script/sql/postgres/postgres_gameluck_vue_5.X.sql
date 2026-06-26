@@ -1,4 +1,4 @@
--- ----------------------------
+﻿-- ----------------------------
 -- 第三方平台授权表
 -- ----------------------------
 create table sys_social
@@ -273,7 +273,7 @@ comment on column sys_user.remark       is '备注';
 
 -- 初始化-用户信息表数据
 -- ----------------------------
-insert into sys_user values(1, '000000', 103, 'admin', '疯狂的狮子Li', 'sys_user', 'crazyLionLi@163.com', '15888888888', '1', null, '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', '0', '0', '127.0.0.1', now(), 103, 1, now(), null, null, '管理员');
+insert into sys_user values(1, '000000', 103, 'admin', 'GameLuck Admin', 'sys_user', 'admin@gameluck.local', '15888888888', '1', null, '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', '0', '0', '127.0.0.1', now(), 103, 1, now(), null, null, '管理员');
 insert into sys_user VALUES(3, '000000', 108, 'test', '本部门及以下 密码666666', 'sys_user', '', '', '0', null, '$2a$10$b8yUzN0C71sbz.PhNOCgJe.Tu1yWC3RNrTyjSQ8p1W0.aaUXUJ.Ne', '0', '0', '127.0.0.1', now(), 103, 1, now(), 3, now(), NULL);
 insert into sys_user VALUES(4, '000000', 102, 'test1', '仅本人 密码666666', 'sys_user', '', '', '0', null, '$2a$10$b8yUzN0C71sbz.PhNOCgJe.Tu1yWC3RNrTyjSQ8p1W0.aaUXUJ.Ne', '0', '0', '127.0.0.1', now(), 103, 1, now(), 4, now(), NULL);
 
@@ -1048,8 +1048,8 @@ comment on column sys_notice.remark         is '备注';
 -- ----------------------------
 -- 初始化-公告信息表数据
 -- ----------------------------
-insert into sys_notice values('1', '000000', '温馨提醒：2018-07-01 新版本发布啦', '2', '新版本内容', '0', 103, 1, now(), null, null, '管理员');
-insert into sys_notice values('2', '000000', '维护通知：2018-07-01 系统凌晨维护', '1', '维护内容',   '0', 103, 1, now(), null, null, '管理员');
+insert into sys_notice values('1', '000000', '温馨提醒：2018-07-01 新版本发布啦', '2', '系统初始化内容', '0', 103, 1, now(), null, null, '管理员');
+insert into sys_notice values('2', '000000', '维护通知：2018-07-01 系统凌晨维护', '1', '系统维护内容',   '0', 103, 1, now(), null, null, '管理员');
 
 
 -- ----------------------------

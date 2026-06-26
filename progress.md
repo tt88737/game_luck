@@ -3,10 +3,10 @@
 ## 2026-06-25
 
 - 与用户讨论了单人开发、框架选择和 AI 代码规范风险。
-- 对比了 GameLuck-Vue-Plus、Vue3、Nuxt、uni-app、Flutter、Cocos 的适用边界。
+- 对比了 GameLuck Backend Base、Vue3、Nuxt、uni-app、Flutter、Cocos 的适用边界。
 - 明确用户业务是包网平台，参考 tangluck.com，涉及 Social Casino / Sweepstakes / 真金扩展。
 - 确认底层技术路线：
-  - B 端后台：GameLuck-Vue-Plus
+  - B 端后台：GameLuck Backend Base
   - C 端 H5 / 官网 / 活动页 / PWA：Vue3 + Vite
   - 玩家 App：Flutter
   - 自研游戏 / 活动小游戏：预留 Cocos Creator 接入
@@ -30,8 +30,8 @@
 - 创建钱包中心设计文档：`docs/superpowers/specs/2026-06-25-wallet-center-design.md`。
 - 补充 `docs/implementation/db-draft.md`：新增 `wallet_transaction` 和 `wallet_manual_review`。
 - 补充 `docs/implementation/api-draft.md`：新增钱包交易查询和人工冲正接口草案。
-- 用户确认开始引入 GameLuck-Vue-Plus。
-- 从 `https://github.com/dromara/GameLuck-Vue-Plus` 克隆上游 `5.X` 分支，导入 commit `e49f02f89e17ee5a4cc14048af99cc83d72872a7`。
+- 用户确认开始引入 GameLuck Backend Base。
+- 从 `GameLuck backend base source` 克隆上游 `5.X` 分支，导入 commit `e49f02f89e17ee5a4cc14048af99cc83d72872a7`。
 - 将上游源码复制到 `backend/`，未复制上游 `.git` 目录。
 - 创建上游记录文件：`docs/upstream/gameluck-vue-plus.md`。
 - 验证 `backend/pom.xml`、`backend/gameluck-admin`、`backend/gameluck-common`、`backend/gameluck-modules` 存在。
@@ -46,7 +46,7 @@
 - 创建 `docs/implementation/backend-local-startup.md`，记录 Maven、数据库、SQL 导入、构建和启动步骤。
 - 用户选择自动处理环境。
 - 下载并校验 Apache Maven 3.9.16，解压到 `C:\tools\apache-maven-3.9.16`。
-- 创建数据库 `gameluck_vue`，导入 `ry_vue_5.X.sql`、`ry_job.sql`、`ry_workflow.sql`。
+- 创建数据库 `gameluck_vue`，导入 `gameluck_vue_5.X.sql`、`ry_job.sql`、`ry_workflow.sql`。
 - 验证核心表 `sys_user`、`sys_tenant`、`sj_group_config`、`flow_definition` 存在。
 - 执行 `mvn clean package -Plocal -DskipTests`，构建成功，产物为 `backend/gameluck-admin/target/gameluck-admin.jar`。
 - 用户反馈 `localhost:8080` 未启动。
@@ -59,8 +59,8 @@
 
 ## 2026-06-25 Admin UI
 
-- Imported upstream plus-ui into `admin-ui/` from `https://github.com/JavaLionLi/plus-ui`, branch `5.X`, commit `d0d451967676707021b9857df529c395b27e90a7`.
-- Added upstream record `docs/upstream/plus-ui.md`.
+- Imported upstream GameLuck Admin UI into `admin-ui/` from `https://github.com/GameLuck/GameLuck Admin UI`, branch `5.X`, commit `d0d451967676707021b9857df529c395b27e90a7`.
+- Added upstream record `docs/upstream/GameLuck Admin UI.md`.
 - Changed `admin-ui/.env.development` dev port from `80` to `5173` to avoid local Windows port permission/conflict issues.
 - Ran `pnpm install` successfully in `admin-ui/`.
 - Started `pnpm dev`; Admin UI is available at `http://localhost:5173/`.

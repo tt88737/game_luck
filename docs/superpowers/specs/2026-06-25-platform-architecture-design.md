@@ -25,7 +25,7 @@
 
 | 层级 | 技术 | 定位 |
 | --- | --- | --- |
-| B 端后台 | GameLuck-Vue-Plus | 平台总后台、租户后台、运营配置、审核、报表 |
+| B 端后台 | GameLuck Backend Base | 平台总后台、租户后台、运营配置、审核、报表 |
 | C 端 H5 | Vue3 + Vite | 品牌官网、H5 玩家入口、PWA、活动页、下载页、政策页 |
 | 玩家 App | Flutter | iOS / Android 玩家主 App |
 | 自研游戏 | Cocos Creator | 自研游戏、活动小游戏、转盘、刮刮卡、互动玩法 |
@@ -36,7 +36,7 @@
 
 ## 4. 系统边界
 
-### 4.1 GameLuck-Vue-Plus
+### 4.1 GameLuck Backend Base
 
 负责：
 
@@ -215,7 +215,7 @@ Cocos 只作为游戏或小游戏容器，不承担平台业务。
 
 ```mermaid
 flowchart LR
-  Admin[GameLuck-Vue-Plus 后台] --> API[Spring Boot API]
+  Admin[GameLuck Backend Base 后台] --> API[Spring Boot API]
   H5[Vue3 H5 / PWA] --> API
   App[Flutter App] --> API
   Game[Cocos / 第三方游戏] --> GameCenter[game-center]
@@ -259,7 +259,7 @@ P0 不做：
 
 ### 11.1 禁止事项
 
-- 禁止修改 GameLuck-Vue-Plus 框架核心包，除非明确说明。
+- 禁止修改 GameLuck Backend Base 框架核心包，除非明确说明。
 - 禁止绕过权限、租户、数据权限机制。
 - 禁止业务模块直接修改钱包余额。
 - 禁止在 Controller 中写复杂业务逻辑。
