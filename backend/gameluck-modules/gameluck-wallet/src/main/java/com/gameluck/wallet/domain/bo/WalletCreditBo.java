@@ -35,6 +35,8 @@ public class WalletCreditBo {
     @NotBlank(message = "释放模式不能为空")
     private String releaseMode;
 
+    @NotNull(message = "所需流水不能为空")
+    @DecimalMin(value = "0", message = "所需流水不能小于0")
     private BigDecimal requiredTurnover;
 
     private Long operatorId;

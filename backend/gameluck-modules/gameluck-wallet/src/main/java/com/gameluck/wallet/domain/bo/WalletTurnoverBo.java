@@ -21,5 +21,5 @@ public class WalletTurnoverBo {
 
     @NotNull(message = "有效流水不能为空")
     @DecimalMin(value = "0.000001", message = "有效流水必须大于0")
-    private BigDecimal turnoverAmount;
+    private BigDecimal validTurnoverAmount;
 }

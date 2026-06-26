@@ -47,20 +47,20 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
     @Transactional(rollbackFor = Exception.class)
     public WalletTransaction credit(WalletCreditBo bo) {
         String tenantId = currentTenantId();
-        WalletTransaction exists = walletTransactionMapper.selectByIdempotencyKey(tenantId, bo.getIdempotencyKey());
-        if (exists != null) {
-            return exists;
-        }
-
         WalletReleaseMode releaseMode = parseReleaseMode(bo.getReleaseMode());
         BigDecimal amount = requirePositive(bo.getAmount(), "入账金额必须大于0");
         BigDecimal requiredTurnover = defaultZero(bo.getRequiredTurnover());
         Date now = new Date();
         WalletTransaction transaction = buildCreditTransaction(tenantId, bo, releaseMode, amount, requiredTurnover,
             ZERO, ZERO, ZERO, now);
+        WalletTransaction exists = walletTransactionMapper.selectByIdempotencyKey(tenantId, bo.getIdempotencyKey());
+        if (exists != null) {
+            return resolveIdempotentResult(exists, transaction.getRequestHash());
+        }
+
         WalletTransaction concurrent = reserveTransaction(transaction);
         if (concurrent != null) {
-            return concurrent;
+            return resolveIdempotentResult(concurrent, transaction.getRequestHash());
         }
 
         WalletAccount account = getOrCreateAccountForUpdate(tenantId, bo.getMemberId(), bo.getCurrencyCode(), now);
@@ -88,17 +88,17 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
     @Transactional(rollbackFor = Exception.class)
     public WalletTransaction debit(WalletDebitBo bo) {
         String tenantId = currentTenantId();
-        WalletTransaction exists = walletTransactionMapper.selectByIdempotencyKey(tenantId, bo.getIdempotencyKey());
-        if (exists != null) {
-            return exists;
-        }
-
         BigDecimal amount = requirePositive(bo.getAmount(), "出账金额必须大于0");
         Date now = new Date();
         WalletTransaction transaction = buildDebitTransaction(tenantId, bo, amount, ZERO, ZERO, ZERO, now);
+        WalletTransaction exists = walletTransactionMapper.selectByIdempotencyKey(tenantId, bo.getIdempotencyKey());
+        if (exists != null) {
+            return resolveIdempotentResult(exists, transaction.getRequestHash());
+        }
+
         WalletTransaction concurrent = reserveTransaction(transaction);
         if (concurrent != null) {
-            return concurrent;
+            return resolveIdempotentResult(concurrent, transaction.getRequestHash());
         }
 
         WalletAccount account = walletAccountMapper.selectByBizKeyForUpdate(tenantId, bo.getMemberId(), bo.getCurrencyCode());
@@ -107,11 +107,20 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
         }
 
         BigDecimal balanceBefore = defaultZero(account.getAvailableBalance());
+        BigDecimal frozenBefore = defaultZero(account.getFrozenBalance());
         if (balanceBefore.compareTo(amount) < 0) {
-            throw new ServiceException("钱包余额不足");
+            transaction.setBalanceBefore(balanceBefore);
+            transaction.setBalanceAfter(balanceBefore);
+            transaction.setFrozenBefore(frozenBefore);
+            transaction.setFrozenAfter(frozenBefore);
+            transaction.setStatus(WalletTransactionStatus.FAILED.name());
+            transaction.setFailCode("INSUFFICIENT_BALANCE");
+            transaction.setFailReason("钱包余额不足");
+            transaction.setUpdateTime(now);
+            walletTransactionMapper.updateById(transaction);
+            return transaction;
         }
 
-        BigDecimal frozenBefore = defaultZero(account.getFrozenBalance());
         BigDecimal balanceAfter = balanceBefore.subtract(amount);
         account.setAvailableBalance(balanceAfter);
         account.setUpdateTime(now);
@@ -131,7 +140,7 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
     @Transactional(rollbackFor = Exception.class)
     public int addValidTurnover(WalletTurnoverBo bo) {
         String tenantId = currentTenantId();
-        BigDecimal remainTurnover = requirePositive(bo.getTurnoverAmount(), "有效流水必须大于0");
+        BigDecimal remainTurnover = requirePositive(bo.getValidTurnoverAmount(), "有效流水必须大于0");
         List<WalletRelease> lockedList = walletReleaseMapper.selectLockedByMemberForUpdate(
             tenantId, bo.getMemberId(), bo.getCurrencyCode(), WalletReleaseStatus.LOCKED.name());
 
@@ -202,6 +211,13 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
             }
             throw ex;
         }
+    }
+
+    private WalletTransaction resolveIdempotentResult(WalletTransaction exists, String expectedRequestHash) {
+        if (!StringUtils.equals(exists.getRequestHash(), expectedRequestHash)) {
+            throw new ServiceException("幂等请求参数冲突");
+        }
+        return exists;
     }
 
     private WalletTransaction buildCreditTransaction(String tenantId, WalletCreditBo bo, WalletReleaseMode releaseMode,
