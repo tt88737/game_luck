@@ -1,0 +1,40 @@
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/gameluck_vue?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: root
+    hikari:
+      connection-timeout: 30000
+      validation-timeout: 5000
+      minimum-idle: 10
+      maximum-pool-size: 20
+      idle-timeout: 600000
+      max-lifetime: 900000
+      keepaliveTime: 30000
+
+--- # snail-job server
+snail-job:
+  server-host:
+  server-port: 17888
+  merge-Log-days: 1
+  merge-Log-num: 500
+  retry-pull-page-size: 100
+  log-storage: 7
+  bucket-total: 128
+  summary-day: 7
+  load-balance-cycle-time: 10
+  retry-max-pull-parallel: 2
+
+--- # Spring Boot Admin client
+spring.boot.admin.client:
+  enabled: true
+  url: http://localhost:9090/admin
+  instance:
+    service-host-type: IP
+    metadata:
+      username: ${spring.boot.admin.client.username}
+      userpassword: ${spring.boot.admin.client.password}
+  username: @monitor.username@
+  password: @monitor.password@

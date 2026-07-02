@@ -67,3 +67,13 @@
 - Verified `GET http://localhost:5173/` returns 200 and backend `GET http://localhost:8080/` returns 200.
 - Ran `pnpm build:dev` successfully. Only large chunk warnings were reported by Vite.
 - Added `docs/implementation/admin-ui-local-startup.md` for local startup and troubleshooting.
+
+## 2026-07-02 Session Continuation
+
+- Continued from the existing wallet/admin implementation plan.
+- Reviewed remaining dirty worktree and split it into documentation/script cleanup and code behavior fixes.
+- Verified `backend/script/bin/gameluck.bat` exits cleanly with option `5`.
+- `bash` is not available on this Windows machine, so `gameluck.sh` syntax was reviewed but not shell-linted locally.
+- Ran `pnpm --dir admin-ui check:menu-icons`: passed, 93 local SVG icons available.
+- Ran `pnpm --dir admin-ui build:prod`: passed; Vite reported existing large chunk warnings only.
+- Ran `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal -DskipTests`: passed.

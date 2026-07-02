@@ -1,13 +1,13 @@
 # GameLuck Backend
 
-`backend/` 是 GameLuck 的后端服务工程，负责后台管理接口、认证授权、系统配置、日志、文件、任务、代码生成等基础能力。
+`backend/` 是 GameLuck 的后端服务工程，负责后台管理接口、认证授权、系统配置、日志、文件、任务、代码生成和业务模块接入。
 
 ## 模块说明
 
 ```text
 gameluck-admin/      后端启动模块
 gameluck-common/     公共能力模块
-gameluck-modules/    系统、任务、代码生成等业务模块
+gameluck-modules/    系统、任务、代码生成、钱包等业务模块
 gameluck-extend/     监控和扩展服务模块
 script/              SQL、Docker 和环境脚本
 ```
@@ -19,7 +19,7 @@ script/              SQL、Docker 和环境脚本
 - 文件配置、文件上传、对象存储接入
 - 定时任务基础能力
 - 代码生成器
-- 多租户、数据权限、接口权限、操作审计等后台基础能力
+- 多租户、数据权限、接口权限、操作审计
 
 ## 本地配置
 
@@ -47,7 +47,7 @@ java -jar gameluck-admin\target\gameluck-admin.jar --spring.profiles.active=loca
 启动成功后，后端默认监听：
 
 ```text
-本机 8080 端口
+http://localhost:8080
 ```
 
 ## 开发边界

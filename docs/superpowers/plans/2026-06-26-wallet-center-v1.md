@@ -6,7 +6,7 @@
 
 **Architecture:** Add a new `gameluck-wallet` module under `backend/gameluck-modules`, expose it through `gameluck-admin`, and keep wallet logic separate from system framework code. Wallet v1 stores accounting facts and release state only; business modules pass `releaseMode` and `requiredTurnover` into wallet operations.
 
-**Tech Stack:** Java 17, Spring Boot, MyBatis-Plus, MySQL, RuoYi-Vue-Plus conventions, Vue 3, Element Plus, TypeScript.
+**Tech Stack:** Java 17, Spring Boot, MyBatis-Plus, MySQL, GameLuck Admin conventions, Vue 3, Element Plus, TypeScript.
 
 ---
 

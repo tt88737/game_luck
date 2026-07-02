@@ -1,13 +1,13 @@
 # GameLuck
 
-GameLuck 是一个面向包网平台业务的全栈项目。当前阶段重点建设 B 端后台、后端基础服务和后续 C 端接入能力。
+GameLuck 是一个面向包网平台业务的全栈项目。当前阶段重点建设 B 端后台、后端基础服务、多币种钱包中心，并为后续 C 端 H5、Flutter App 和 Cocos 游戏接入预留边界。
 
 ## 项目定位
 
-- 平台后台：租户、用户、角色、菜单、参数、日志、文件、任务、代码生成等基础管理能力。
+- 平台后台：租户、用户、角色、菜单、参数、日志、文件、任务等基础管理能力。
 - 后端服务：基于 Java、Spring Boot、MySQL、Redis 的模块化单体架构。
 - 后台前端：基于 Vue 3、TypeScript、Vite、Element Plus 的管理后台。
-- 后续扩展：预留 Vue3 H5、Flutter App、多币种钱包中心和 Cocos 游戏接入边界。
+- 后续扩展：Vue3 H5、Flutter App、多币种钱包中心、Cocos 游戏接入。
 
 ## 目录结构
 
@@ -44,14 +44,14 @@ pnpm dev
 默认访问：
 
 ```text
-前端: 本机 5173 端口
-后端: 本机 8080 端口
+前端: http://localhost:5173
+后端: http://localhost:8080
 ```
 
 ## 本地依赖
 
 - MySQL：默认库名 `gameluck_vue`，账号 `root`，密码 `root`
-- Redis 或 Memurai：默认地址 `localhost:6379`，密码 `gameluck123`
+- Redis / Memurai：默认地址 `localhost:6379`，密码 `gameluck123`
 
 实际配置以 `backend/gameluck-admin/src/main/resources/application-local.yml` 为准。
 
@@ -60,7 +60,7 @@ pnpm dev
 - 初始化钱包表：在 `gameluck_vue` 执行 `backend/script/sql/gameluck_wallet.sql`。
 - 默认币种：`GC`、`SC`、`RC`。
 - 钱包 v1 后台页面只提供币种能力配置和账务查询，不开放人工加款、人工扣款、提现审核等高风险操作。
-- 账务核心只记录余额、流水、释放和幂等事实；流水倍数、兑换条件、提现条件由业务模块计算后传入钱包。
+- 钱包核心只记录余额、流水、释放和幂等事实；流水倍数、兑换条件、提现条件由业务模块计算后传入钱包。
 
 ## 开发约定
 
@@ -73,4 +73,4 @@ pnpm dev
 
 - 后端模块已统一使用 `gameluck-*` 命名。
 - 后台品牌已替换为 GameLuck。
-- 当前阶段以后台基础能力和后续业务边界为主，减少无关演示入口。
+- 当前阶段以后台基础能力和业务边界为主，减少无关演示入口。
