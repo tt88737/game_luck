@@ -43,7 +43,7 @@ public class DepositOrderController extends BaseController {
     }
 
     @SaCheckPermission("payment:deposit:add")
-    @Log(title = "充值订单", businessType = BusinessType.INSERT)
+    @Log(title = "充值订单新增", businessType = BusinessType.INSERT)
     @PostMapping
     public R<Void> add(@Validated @RequestBody DepositOrderBo bo) {
         return toAjax(depositOrderService.insertByBo(bo));
