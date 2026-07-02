@@ -22,6 +22,7 @@ import com.gameluck.common.core.utils.StringUtils;
 import com.gameluck.common.mybatis.core.page.PageQuery;
 import com.gameluck.common.mybatis.core.page.TableDataInfo;
 import com.gameluck.common.redis.utils.CacheUtils;
+import com.gameluck.common.satoken.utils.LoginHelper;
 import com.gameluck.common.tenant.core.TenantEntity;
 import com.gameluck.common.tenant.helper.TenantHelper;
 import com.gameluck.system.domain.*;
@@ -300,7 +301,9 @@ public class SysTenantServiceImpl implements ISysTenantService {
      */
     @Override
     public void checkTenantAllowed(String tenantId) {
-        if (ObjectUtil.isNotNull(tenantId) && TenantConstants.DEFAULT_TENANT_ID.equals(tenantId)) {
+        if (ObjectUtil.isNotNull(tenantId)
+            && TenantConstants.DEFAULT_TENANT_ID.equals(tenantId)
+            && !LoginHelper.isSuperAdmin()) {
             throw new ServiceException("不允许操作管理租户");
         }
     }
