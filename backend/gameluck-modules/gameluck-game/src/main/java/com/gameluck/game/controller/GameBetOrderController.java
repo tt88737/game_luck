@@ -40,28 +40,28 @@ public class GameBetOrderController extends BaseController {
     }
 
     @SaCheckPermission("game:bet:add")
-    @Log(title = "Game bet order", businessType = BusinessType.INSERT)
+    @Log(title = "模拟下注订单新增", businessType = BusinessType.INSERT)
     @PostMapping
     public R<Void> add(@Validated @RequestBody GameBetOrderBo bo) {
         return toAjax(gameBetOrderService.insertByBo(bo));
     }
 
     @SaCheckPermission("game:bet:place")
-    @Log(title = "Simulated game bet", businessType = BusinessType.UPDATE)
+    @Log(title = "模拟下注扣款", businessType = BusinessType.UPDATE)
     @PostMapping("/{id}/place")
     public R<GameBetOrderVo> place(@PathVariable Long id) {
         return R.ok(gameBetOrderService.placeBet(id));
     }
 
     @SaCheckPermission("game:bet:settle")
-    @Log(title = "Simulated game payout", businessType = BusinessType.UPDATE)
+    @Log(title = "模拟结算派彩", businessType = BusinessType.UPDATE)
     @PostMapping("/{id}/settle")
     public R<GameBetOrderVo> settle(@PathVariable Long id) {
         return R.ok(gameBetOrderService.settle(id));
     }
 
     @SaCheckPermission("game:bet:cancel")
-    @Log(title = "Cancel simulated game bet", businessType = BusinessType.UPDATE)
+    @Log(title = "模拟下注取消退款", businessType = BusinessType.UPDATE)
     @PostMapping("/{id}/cancel")
     public R<GameBetOrderVo> cancel(@PathVariable Long id) {
         return R.ok(gameBetOrderService.cancel(id));

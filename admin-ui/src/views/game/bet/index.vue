@@ -65,7 +65,19 @@
         </el-table-column>
         <el-table-column label="下注交易号" align="center" prop="betWalletTransactionNo" min-width="180" show-overflow-tooltip />
         <el-table-column label="结算交易号" align="center" prop="settleWalletTransactionNo" min-width="180" show-overflow-tooltip />
-        <el-table-column label="退款交易号" align="center" prop="refundWalletTransactionNo" min-width="180" show-overflow-tooltip />
+        <el-table-column label="退款交易号" align="center" prop="refundWalletTransactionNo" min-width="180" show-overflow-tooltip>
+          <template #default="scope">
+            <el-button
+              v-if="scope.row.refundWalletTransactionNo"
+              link
+              type="primary"
+              @click="goWalletTransaction(scope.row.refundWalletTransactionNo)"
+            >
+              {{ scope.row.refundWalletTransactionNo }}
+            </el-button>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
         <el-table-column label="创建时间" align="center" prop="createTime" width="170" />
         <el-table-column label="操作" align="center" width="180" fixed="right">
           <template #default="scope">
@@ -134,7 +146,12 @@
         <el-descriptions-item label="派彩金额">{{ detail.payoutAmount }}</el-descriptions-item>
         <el-descriptions-item label="下注交易号">{{ detail.betWalletTransactionNo }}</el-descriptions-item>
         <el-descriptions-item label="结算交易号">{{ detail.settleWalletTransactionNo }}</el-descriptions-item>
-        <el-descriptions-item label="退款交易号">{{ detail.refundWalletTransactionNo }}</el-descriptions-item>
+        <el-descriptions-item label="退款交易号">
+          <el-button v-if="detail.refundWalletTransactionNo" link type="primary" @click="goWalletTransaction(detail.refundWalletTransactionNo)">
+            {{ detail.refundWalletTransactionNo }}
+          </el-button>
+          <span v-else>-</span>
+        </el-descriptions-item>
         <el-descriptions-item label="下注幂等键">{{ detail.betIdempotencyKey }}</el-descriptions-item>
         <el-descriptions-item label="结算幂等键">{{ detail.settleIdempotencyKey }}</el-descriptions-item>
         <el-descriptions-item label="退款幂等键">{{ detail.refundIdempotencyKey }}</el-descriptions-item>
@@ -151,6 +168,7 @@ import { addGameBet, cancelGameBet, getGameBet, listGameBet, placeGameBet, settl
 import { GameBetOrderForm, GameBetOrderQuery, GameBetOrderVO } from '@/api/game/bet/types';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+const router = useRouter();
 
 const betList = ref<GameBetOrderVO[]>([]);
 const loading = ref(true);
@@ -289,6 +307,13 @@ const handleCancelBet = async (row: GameBetOrderVO) => {
   await cancelGameBet(row.id);
   proxy?.$modal.msgSuccess('取消退款完成');
   await getList();
+};
+
+const goWalletTransaction = (transactionNo: string) => {
+  router.push({
+    path: '/wallet/transaction',
+    query: { transactionNo }
+  });
 };
 
 onMounted(() => {

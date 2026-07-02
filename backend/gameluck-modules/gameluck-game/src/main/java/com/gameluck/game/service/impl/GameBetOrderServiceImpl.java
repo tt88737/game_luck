@@ -114,7 +114,7 @@ public class GameBetOrderServiceImpl implements IGameBetOrderService {
         if (GameBetOrderStatus.CANCELLED.name().equals(order.getStatus())) {
             return BeanUtil.toBean(order, GameBetOrderVo.class);
         }
-        requireStatus(order, GameBetOrderStatus.BET_SUCCESS);
+        requireCancelable(order);
 
         Date now = new Date();
         WalletTransaction transaction = walletCoreService.credit(buildRefundCreditBo(order));
@@ -183,6 +183,20 @@ public class GameBetOrderServiceImpl implements IGameBetOrderService {
         if (!expectedStatus.name().equals(order.getStatus())) {
             throw new ServiceException("invalid game bet order status");
         }
+    }
+
+    private void requireCancelable(GameBetOrder order) {
+        String status = order.getStatus();
+        if (GameBetOrderStatus.BET_SUCCESS.name().equals(status)) {
+            return;
+        }
+        if (GameBetOrderStatus.SETTLED.name().equals(status)) {
+            throw new ServiceException("已结算订单不能取消退款");
+        }
+        if (GameBetOrderStatus.PENDING.name().equals(status)) {
+            throw new ServiceException("待下注订单不能取消退款");
+        }
+        throw new ServiceException("当前订单状态不能取消退款");
     }
 
     private WalletDebitBo buildDebitBo(GameBetOrder order) {

@@ -73,6 +73,7 @@ import { listTransaction } from '@/api/wallet/transaction';
 import { TransactionQuery, TransactionVO } from '@/api/wallet/transaction/types';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+const route = useRoute();
 
 const transactionList = ref<TransactionVO[]>([]);
 const loading = ref(true);
@@ -85,7 +86,7 @@ const statusOptions = ['PENDING', 'SUCCESS', 'FAILED', 'REVERSED'];
 const queryParams = ref<TransactionQuery>({
   pageNum: 1,
   pageSize: 10,
-  transactionNo: '',
+  transactionNo: typeof route.query.transactionNo === 'string' ? route.query.transactionNo : '',
   memberId: undefined,
   currencyCode: '',
   operation: '',
@@ -118,6 +119,14 @@ const resetQuery = () => {
   queryFormRef.value?.resetFields();
   handleQuery();
 };
+
+watch(
+  () => route.query.transactionNo,
+  (transactionNo) => {
+    queryParams.value.transactionNo = typeof transactionNo === 'string' ? transactionNo : '';
+    handleQuery();
+  }
+);
 
 onMounted(() => {
   getList();
