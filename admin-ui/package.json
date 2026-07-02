@@ -8,8 +8,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite serve --mode development",
+    "prebuild:prod": "pnpm check:menu-icons",
     "build:prod": "vite build --mode production",
+    "prebuild:dev": "pnpm check:menu-icons",
     "build:dev": "vite build --mode development",
+    "check:menu-icons": "node scripts/check-menu-icons.mjs",
     "preview": "vite preview",
     "lint:eslint": "eslint",
     "lint:eslint:fix": "eslint --fix",

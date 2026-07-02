@@ -12,6 +12,7 @@ import com.gameluck.wallet.domain.WalletTransaction;
 import com.gameluck.wallet.domain.bo.WalletCreditBo;
 import com.gameluck.wallet.domain.bo.WalletDebitBo;
 import com.gameluck.wallet.domain.bo.WalletTurnoverBo;
+import com.gameluck.wallet.domain.vo.WalletRuleVo;
 import com.gameluck.wallet.enums.WalletOperation;
 import com.gameluck.wallet.enums.WalletReleaseMode;
 import com.gameluck.wallet.enums.WalletReleaseStatus;
@@ -20,6 +21,7 @@ import com.gameluck.wallet.mapper.WalletAccountMapper;
 import com.gameluck.wallet.mapper.WalletReleaseMapper;
 import com.gameluck.wallet.mapper.WalletTransactionMapper;
 import com.gameluck.wallet.service.IWalletCoreService;
+import com.gameluck.wallet.service.IWalletRuleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -48,14 +50,16 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
     private final WalletAccountMapper walletAccountMapper;
     private final WalletTransactionMapper walletTransactionMapper;
     private final WalletReleaseMapper walletReleaseMapper;
+    private final IWalletRuleService walletRuleService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public WalletTransaction credit(WalletCreditBo bo) {
         String tenantId = currentTenantId();
-        WalletReleaseMode releaseMode = parseReleaseMode(bo.getReleaseMode());
+        WalletRuleVo rule = walletRuleService.resolveCreditRule(tenantId, bo.getCurrencyCode(), bo.getSourceType());
+        WalletReleaseMode releaseMode = resolveReleaseMode(bo, rule);
         BigDecimal amount = requirePositive(bo.getAmount(), "入账金额必须大于0");
-        BigDecimal requiredTurnover = normalizeAmount(defaultZero(bo.getRequiredTurnover()));
+        BigDecimal requiredTurnover = resolveRequiredTurnover(bo, rule);
         Date now = new Date();
         WalletTransaction transaction = buildCreditTransaction(tenantId, bo, releaseMode, amount, requiredTurnover,
             ZERO, ZERO, ZERO, now);
@@ -342,6 +346,27 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
         } catch (IllegalArgumentException ex) {
             throw new ServiceException("不支持的释放模式: {}", releaseMode);
         }
+    }
+
+    private WalletReleaseMode resolveReleaseMode(WalletCreditBo bo, WalletRuleVo rule) {
+        WalletReleaseMode ruleMode = parseReleaseMode(rule.getReleaseMode());
+        if (StringUtils.isBlank(bo.getReleaseMode())) {
+            return ruleMode;
+        }
+        WalletReleaseMode requestMode = parseReleaseMode(bo.getReleaseMode());
+        if (requestMode != ruleMode) {
+            throw new ServiceException("入账释放模式与钱包规则不一致");
+        }
+        return ruleMode;
+    }
+
+    private BigDecimal resolveRequiredTurnover(WalletCreditBo bo, WalletRuleVo rule) {
+        BigDecimal requestTurnover = bo.getRequiredTurnover();
+        BigDecimal defaultTurnover = defaultZero(rule.getDefaultRequiredTurnover());
+        if (SystemConstants.NORMAL.equals(rule.getTurnoverRequired())) {
+            return normalizeAmount(requestTurnover == null ? defaultTurnover : requestTurnover);
+        }
+        return normalizeAmount(requestTurnover == null ? defaultTurnover : requestTurnover);
     }
 
     private WalletReleaseStatus releaseStatus(WalletReleaseMode releaseMode, BigDecimal requiredTurnover) {

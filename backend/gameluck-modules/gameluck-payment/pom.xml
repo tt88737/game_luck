@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.gameluck</groupId>
+        <artifactId>gameluck-modules</artifactId>
+        <version>${revision}</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>gameluck-payment</artifactId>
+
+    <description>
+        payment center
+    </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.gameluck</groupId>
+            <artifactId>gameluck-common-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.gameluck</groupId>
+            <artifactId>gameluck-common-mybatis</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.gameluck</groupId>
+            <artifactId>gameluck-common-log</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.gameluck</groupId>
+            <artifactId>gameluck-common-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.gameluck</groupId>
+            <artifactId>gameluck-common-tenant</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.gameluck</groupId>
+            <artifactId>gameluck-common-security</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.gameluck</groupId>
+            <artifactId>gameluck-wallet</artifactId>
+        </dependency>
+    </dependencies>
+</project>

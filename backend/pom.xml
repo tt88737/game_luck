@@ -336,6 +336,18 @@
                 <version>${revision}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.gameluck</groupId>
+                <artifactId>gameluck-payment</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.gameluck</groupId>
+                <artifactId>gameluck-game</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

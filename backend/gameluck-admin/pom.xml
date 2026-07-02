@@ -80,6 +80,16 @@
             <artifactId>gameluck-wallet</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.gameluck</groupId>
+            <artifactId>gameluck-payment</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.gameluck</groupId>
+            <artifactId>gameluck-game</artifactId>
+        </dependency>
+
         <!-- 浠ｇ爜鐢熸垚-->
         <dependency>
             <groupId>com.gameluck</groupId>

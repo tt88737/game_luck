@@ -32,10 +32,8 @@ public class WalletCreditBo {
     @DecimalMin(value = "0.000001", message = "金额必须大于0")
     private BigDecimal amount;
 
-    @NotBlank(message = "释放模式不能为空")
     private String releaseMode;
 
-    @NotNull(message = "所需流水不能为空")
     @DecimalMin(value = "0", message = "所需流水不能小于0")
     private BigDecimal requiredTurnover;
 

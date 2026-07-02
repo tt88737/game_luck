@@ -14,6 +14,8 @@
         <module>gameluck-job</module>
         <module>gameluck-system</module>
         <module>gameluck-wallet</module>
+        <module>gameluck-payment</module>
+        <module>gameluck-game</module>
     </modules>
 
     <artifactId>gameluck-modules</artifactId>
