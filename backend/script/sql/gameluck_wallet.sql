@@ -173,6 +173,65 @@ ON DUPLICATE KEY UPDATE
   remark = VALUES(remark),
   update_time = NOW();
 
+CREATE TABLE IF NOT EXISTS gl_redemption_order (
+  id BIGINT NOT NULL COMMENT 'Primary key',
+  tenant_id VARCHAR(20) NOT NULL DEFAULT '000000' COMMENT 'Tenant id',
+  redemption_order_no VARCHAR(64) NOT NULL COMMENT 'Redemption order number',
+  member_id BIGINT NOT NULL COMMENT 'Member id',
+  currency_code VARCHAR(32) NOT NULL COMMENT 'Currency code',
+  amount DECIMAL(20,6) NOT NULL COMMENT 'Redemption amount',
+  redemption_method VARCHAR(32) NOT NULL DEFAULT 'SIMULATED' COMMENT 'Redemption method',
+  account_ref VARCHAR(256) DEFAULT NULL COMMENT 'Masked account reference',
+  status VARCHAR(32) NOT NULL DEFAULT 'PENDING' COMMENT 'Order status',
+  freeze_no VARCHAR(64) NOT NULL COMMENT 'Wallet freeze number',
+  freeze_wallet_transaction_no VARCHAR(64) DEFAULT NULL COMMENT 'Freeze wallet transaction number',
+  settle_wallet_transaction_no VARCHAR(64) DEFAULT NULL COMMENT 'Settle wallet transaction number',
+  release_wallet_transaction_no VARCHAR(64) DEFAULT NULL COMMENT 'Release wallet transaction number',
+  freeze_idempotency_key VARCHAR(128) NOT NULL COMMENT 'Freeze idempotency key',
+  settle_idempotency_key VARCHAR(128) NOT NULL COMMENT 'Settle idempotency key',
+  release_idempotency_key VARCHAR(128) NOT NULL COMMENT 'Release idempotency key',
+  audit_by BIGINT DEFAULT NULL COMMENT 'Audit user id',
+  audit_time DATETIME DEFAULT NULL COMMENT 'Audit time',
+  audit_reason VARCHAR(500) DEFAULT NULL COMMENT 'Audit reason',
+  fail_reason VARCHAR(500) DEFAULT NULL COMMENT 'Failure reason',
+  remark VARCHAR(500) DEFAULT NULL COMMENT 'Remark',
+  create_dept BIGINT DEFAULT NULL COMMENT 'Create department',
+  create_by BIGINT DEFAULT NULL COMMENT 'Created by',
+  create_time DATETIME DEFAULT NULL COMMENT 'Create time',
+  update_by BIGINT DEFAULT NULL COMMENT 'Updated by',
+  update_time DATETIME DEFAULT NULL COMMENT 'Update time',
+  version INT NOT NULL DEFAULT 0 COMMENT 'Optimistic lock version',
+  del_flag CHAR(1) NOT NULL DEFAULT '0' COMMENT 'Delete flag: 0 normal, 1 deleted',
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_gl_redemption_order_01 (tenant_id, redemption_order_no),
+  UNIQUE KEY uk_gl_redemption_order_02 (tenant_id, freeze_idempotency_key),
+  UNIQUE KEY uk_gl_redemption_order_03 (tenant_id, settle_idempotency_key),
+  UNIQUE KEY uk_gl_redemption_order_04 (tenant_id, release_idempotency_key),
+  UNIQUE KEY uk_gl_redemption_order_05 (tenant_id, freeze_no),
+  KEY idx_gl_redemption_order_01 (tenant_id, member_id, currency_code),
+  KEY idx_gl_redemption_order_02 (tenant_id, status, create_time)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Redemption order';
+
+INSERT INTO sys_menu
+(menu_id, menu_name, parent_id, order_num, path, component, query_param, is_frame, is_cache, menu_type, visible, status, perms, icon, create_dept, create_by, create_time, update_by, update_time, remark)
+VALUES
+(1940, 'Redemption Center', 0, 9, 'redemption', NULL, '', 1, 0, 'M', '0', '0', '', 'money', 103, 1, NOW(), NULL, NULL, 'Redemption center directory'),
+(1941, 'Redemption Orders', 1940, 1, 'order', 'redemption/order/index', '', 1, 0, 'C', '0', '0', 'redemption:order:list', 'money', 103, 1, NOW(), NULL, NULL, 'Redemption order menu'),
+(1951, 'Redemption Query', 1941, 1, '#', '', '', 1, 0, 'F', '0', '0', 'redemption:order:query', '#', 103, 1, NOW(), NULL, NULL, ''),
+(1952, 'Redemption Add', 1941, 2, '#', '', '', 1, 0, 'F', '0', '0', 'redemption:order:add', '#', 103, 1, NOW(), NULL, NULL, ''),
+(1953, 'Redemption Approve', 1941, 3, '#', '', '', 1, 0, 'F', '0', '0', 'redemption:order:approve', '#', 103, 1, NOW(), NULL, NULL, ''),
+(1954, 'Redemption Reject', 1941, 4, '#', '', '', 1, 0, 'F', '0', '0', 'redemption:order:reject', '#', 103, 1, NOW(), NULL, NULL, '')
+ON DUPLICATE KEY UPDATE
+  menu_name = VALUES(menu_name),
+  parent_id = VALUES(parent_id),
+  order_num = VALUES(order_num),
+  path = VALUES(path),
+  component = VALUES(component),
+  perms = VALUES(perms),
+  icon = VALUES(icon),
+  remark = VALUES(remark),
+  update_time = NOW();
+
 INSERT INTO gl_wallet_rule
 (id, tenant_id, currency_code, source_type, rule_name, credit_enabled, debit_enabled, withdraw_enabled, exchange_enabled, release_mode, turnover_required, default_required_turnover, status, sort_order, remark, create_time)
 VALUES

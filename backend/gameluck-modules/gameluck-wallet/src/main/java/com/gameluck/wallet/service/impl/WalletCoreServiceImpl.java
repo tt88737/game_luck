@@ -7,17 +7,21 @@ import com.gameluck.common.core.exception.ServiceException;
 import com.gameluck.common.core.utils.StringUtils;
 import com.gameluck.common.tenant.helper.TenantHelper;
 import com.gameluck.wallet.domain.WalletAccount;
+import com.gameluck.wallet.domain.WalletFreeze;
 import com.gameluck.wallet.domain.WalletRelease;
 import com.gameluck.wallet.domain.WalletTransaction;
 import com.gameluck.wallet.domain.bo.WalletCreditBo;
 import com.gameluck.wallet.domain.bo.WalletDebitBo;
+import com.gameluck.wallet.domain.bo.WalletFreezeOperationBo;
 import com.gameluck.wallet.domain.bo.WalletTurnoverBo;
+import com.gameluck.wallet.enums.WalletFreezeStatus;
 import com.gameluck.wallet.domain.vo.WalletRuleVo;
 import com.gameluck.wallet.enums.WalletOperation;
 import com.gameluck.wallet.enums.WalletReleaseMode;
 import com.gameluck.wallet.enums.WalletReleaseStatus;
 import com.gameluck.wallet.enums.WalletTransactionStatus;
 import com.gameluck.wallet.mapper.WalletAccountMapper;
+import com.gameluck.wallet.mapper.WalletFreezeMapper;
 import com.gameluck.wallet.mapper.WalletReleaseMapper;
 import com.gameluck.wallet.mapper.WalletTransactionMapper;
 import com.gameluck.wallet.service.IWalletCoreService;
@@ -50,6 +54,7 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
     private final WalletAccountMapper walletAccountMapper;
     private final WalletTransactionMapper walletTransactionMapper;
     private final WalletReleaseMapper walletReleaseMapper;
+    private final WalletFreezeMapper walletFreezeMapper;
     private final IWalletRuleService walletRuleService;
 
     @Override
@@ -144,6 +149,68 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
         transaction.setUpdateTime(now);
         walletTransactionMapper.updateById(transaction);
         return transaction;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public WalletTransaction freeze(WalletFreezeOperationBo bo) {
+        String tenantId = currentTenantId();
+        BigDecimal amount = requirePositive(bo.getAmount(), "freeze amount must be greater than 0");
+        Date now = new Date();
+        String freezeNo = StringUtils.blankToDefault(bo.getFreezeNo(), "WF" + IdUtil.getSnowflakeNextIdStr());
+        bo.setFreezeNo(freezeNo);
+        WalletTransaction transaction = buildFreezeTransaction(tenantId, bo, WalletOperation.FREEZE, amount, now);
+        WalletTransaction exists = walletTransactionMapper.selectByIdempotencyKey(tenantId, bo.getIdempotencyKey());
+        if (exists != null) {
+            return resolveIdempotentResult(exists, transaction.getRequestHash());
+        }
+
+        WalletTransaction concurrent = reserveTransaction(transaction);
+        if (concurrent != null) {
+            return resolveIdempotentResult(concurrent, transaction.getRequestHash());
+        }
+
+        WalletAccount account = walletAccountMapper.selectByBizKeyForUpdate(tenantId, bo.getMemberId(), bo.getCurrencyCode());
+        if (account == null) {
+            markFailed(transaction, ZERO, ZERO, "ACCOUNT_NOT_FOUND", "wallet account does not exist", now);
+            return transaction;
+        }
+
+        BigDecimal balanceBefore = defaultZero(account.getAvailableBalance());
+        BigDecimal frozenBefore = defaultZero(account.getFrozenBalance());
+        if (balanceBefore.compareTo(amount) < 0) {
+            markFailed(transaction, balanceBefore, frozenBefore, "INSUFFICIENT_BALANCE", "wallet balance is insufficient", now);
+            return transaction;
+        }
+
+        BigDecimal balanceAfter = normalizeAmount(balanceBefore.subtract(amount));
+        BigDecimal frozenAfter = normalizeAmount(frozenBefore.add(amount));
+        account.setAvailableBalance(balanceAfter);
+        account.setFrozenBalance(frozenAfter);
+        account.setUpdateTime(now);
+        walletAccountMapper.updateById(account);
+
+        transaction.setBalanceBefore(normalizeAmount(balanceBefore));
+        transaction.setBalanceAfter(balanceAfter);
+        transaction.setFrozenBefore(normalizeAmount(frozenBefore));
+        transaction.setFrozenAfter(frozenAfter);
+        transaction.setStatus(WalletTransactionStatus.SUCCESS.name());
+        transaction.setUpdateTime(now);
+        walletTransactionMapper.updateById(transaction);
+        walletFreezeMapper.insert(buildFreezeRecord(tenantId, bo, amount, now));
+        return transaction;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public WalletTransaction unfreeze(WalletFreezeOperationBo bo) {
+        return completeFreeze(bo, WalletOperation.UNFREEZE, WalletFreezeStatus.RELEASED);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public WalletTransaction settle(WalletFreezeOperationBo bo) {
+        return completeFreeze(bo, WalletOperation.SETTLE, WalletFreezeStatus.SETTLED);
     }
 
     @Override
@@ -287,6 +354,107 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
         transaction.setRequestHash(requestHash(tenantId, bo.getIdempotencyKey(), bo.getMemberId(), bo.getCurrencyCode(),
             WalletOperation.TURNOVER.name(), bo.getSourceType(), bo.getBusinessNo(), amount));
         return transaction;
+    }
+
+    private WalletTransaction buildFreezeTransaction(String tenantId, WalletFreezeOperationBo bo, WalletOperation operation,
+                                                     BigDecimal amount, Date now) {
+        WalletTransaction transaction = baseTransaction(tenantId, bo.getIdempotencyKey(), bo.getMemberId(),
+            bo.getCurrencyCode(), bo.getSourceType(), bo.getBusinessNo(), amount, ZERO, ZERO, ZERO,
+            bo.getOperatorId(), bo.getRemark(), now);
+        transaction.setOperation(operation.name());
+        transaction.setRequestHash(requestHash(tenantId, bo.getIdempotencyKey(), bo.getFreezeNo(), bo.getMemberId(),
+            bo.getCurrencyCode(), operation.name(), bo.getSourceType(), bo.getBusinessNo(), amount));
+        return transaction;
+    }
+
+    private WalletFreeze buildFreezeRecord(String tenantId, WalletFreezeOperationBo bo, BigDecimal amount, Date now) {
+        WalletFreeze freeze = new WalletFreeze();
+        freeze.setId(IdUtil.getSnowflakeNextId());
+        freeze.setTenantId(tenantId);
+        freeze.setFreezeNo(bo.getFreezeNo());
+        freeze.setMemberId(bo.getMemberId());
+        freeze.setCurrencyCode(bo.getCurrencyCode());
+        freeze.setAmount(normalizeAmount(amount));
+        freeze.setSourceType(bo.getSourceType());
+        freeze.setBusinessNo(bo.getBusinessNo());
+        freeze.setStatus(WalletFreezeStatus.FROZEN.name());
+        freeze.setOperatorId(bo.getOperatorId());
+        freeze.setRemark(bo.getRemark());
+        freeze.setCreateTime(now);
+        freeze.setUpdateTime(now);
+        return freeze;
+    }
+
+    private WalletTransaction completeFreeze(WalletFreezeOperationBo bo, WalletOperation operation, WalletFreezeStatus targetStatus) {
+        String tenantId = currentTenantId();
+        Date now = new Date();
+        WalletFreeze freeze = walletFreezeMapper.selectByFreezeNoForUpdate(tenantId, bo.getFreezeNo());
+        if (freeze == null) {
+            throw new ServiceException("freeze record does not exist");
+        }
+        BigDecimal amount = normalizeAmount(freeze.getAmount());
+        WalletTransaction transaction = buildFreezeTransaction(tenantId, bo, operation, amount, now);
+        WalletTransaction exists = walletTransactionMapper.selectByIdempotencyKey(tenantId, bo.getIdempotencyKey());
+        if (exists != null) {
+            return resolveIdempotentResult(exists, transaction.getRequestHash());
+        }
+
+        if (!WalletFreezeStatus.FROZEN.name().equals(freeze.getStatus())) {
+            throw new ServiceException("freeze record is not frozen");
+        }
+        WalletTransaction concurrent = reserveTransaction(transaction);
+        if (concurrent != null) {
+            return resolveIdempotentResult(concurrent, transaction.getRequestHash());
+        }
+
+        WalletAccount account = walletAccountMapper.selectByBizKeyForUpdate(tenantId, freeze.getMemberId(), freeze.getCurrencyCode());
+        if (account == null) {
+            throw new ServiceException("wallet account does not exist");
+        }
+        BigDecimal balanceBefore = defaultZero(account.getAvailableBalance());
+        BigDecimal frozenBefore = defaultZero(account.getFrozenBalance());
+        if (frozenBefore.compareTo(amount) < 0) {
+            throw new ServiceException("wallet frozen balance is insufficient");
+        }
+
+        BigDecimal balanceAfter = balanceBefore;
+        if (WalletOperation.UNFREEZE == operation) {
+            balanceAfter = normalizeAmount(balanceBefore.add(amount));
+        }
+        BigDecimal frozenAfter = normalizeAmount(frozenBefore.subtract(amount));
+        account.setAvailableBalance(balanceAfter);
+        account.setFrozenBalance(frozenAfter);
+        account.setUpdateTime(now);
+        walletAccountMapper.updateById(account);
+
+        freeze.setStatus(targetStatus.name());
+        freeze.setUpdateTime(now);
+        walletFreezeMapper.updateById(freeze);
+
+        transaction.setMemberId(freeze.getMemberId());
+        transaction.setCurrencyCode(freeze.getCurrencyCode());
+        transaction.setAmount(amount);
+        transaction.setBalanceBefore(normalizeAmount(balanceBefore));
+        transaction.setBalanceAfter(normalizeAmount(balanceAfter));
+        transaction.setFrozenBefore(normalizeAmount(frozenBefore));
+        transaction.setFrozenAfter(frozenAfter);
+        transaction.setStatus(WalletTransactionStatus.SUCCESS.name());
+        transaction.setUpdateTime(now);
+        walletTransactionMapper.updateById(transaction);
+        return transaction;
+    }
+
+    private void markFailed(WalletTransaction transaction, BigDecimal balanceBefore, BigDecimal frozenBefore,
+                            String failCode, String failReason, Date now) {
+        transaction.setBalanceBefore(normalizeAmount(balanceBefore));
+        transaction.setBalanceAfter(normalizeAmount(balanceBefore));
+        transaction.setFrozenBefore(normalizeAmount(frozenBefore));
+        transaction.setFrozenAfter(normalizeAmount(frozenBefore));
+        transaction.setStatus(WalletTransactionStatus.FAILED.name());
+        transaction.setFailCode(failCode);
+        transaction.setFailReason(failReason);
+        transaction.setUpdateTime(now);
+        walletTransactionMapper.updateById(transaction);
     }
 
     private WalletTransaction baseTransaction(String tenantId, String idempotencyKey, Long memberId, String currencyCode,

@@ -4,4 +4,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.gameluck.wallet.mapper.WalletFreezeMapper">
 
+    <select id="selectByFreezeNoForUpdate" resultType="com.gameluck.wallet.domain.WalletFreeze">
+        select *
+        from gl_wallet_freeze
+        where tenant_id = #{tenantId}
+          and freeze_no = #{freezeNo}
+        limit 1
+        for update
+    </select>
 </mapper>

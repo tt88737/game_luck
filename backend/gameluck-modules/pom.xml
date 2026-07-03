@@ -16,6 +16,7 @@
         <module>gameluck-wallet</module>
         <module>gameluck-payment</module>
         <module>gameluck-game</module>
+        <module>gameluck-redemption</module>
     </modules>
 
     <artifactId>gameluck-modules</artifactId>

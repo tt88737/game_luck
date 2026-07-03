@@ -9,53 +9,43 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>gameluck-wallet</artifactId>
+    <artifactId>gameluck-redemption</artifactId>
 
-    <description>
-        钱包中心
-    </description>
+    <description>redemption center</description>
 
     <dependencies>
         <dependency>
             <groupId>com.gameluck</groupId>
             <artifactId>gameluck-common-core</artifactId>
         </dependency>
-
         <dependency>
             <groupId>com.gameluck</groupId>
             <artifactId>gameluck-common-mybatis</artifactId>
         </dependency>
-
         <dependency>
             <groupId>com.gameluck</groupId>
             <artifactId>gameluck-common-log</artifactId>
         </dependency>
-
         <dependency>
             <groupId>com.gameluck</groupId>
             <artifactId>gameluck-common-web</artifactId>
         </dependency>
-
         <dependency>
             <groupId>com.gameluck</groupId>
             <artifactId>gameluck-common-tenant</artifactId>
         </dependency>
-
         <dependency>
             <groupId>com.gameluck</groupId>
             <artifactId>gameluck-common-security</artifactId>
         </dependency>
-
         <dependency>
             <groupId>com.gameluck</groupId>
-            <artifactId>gameluck-common-excel</artifactId>
+            <artifactId>gameluck-wallet</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
-
 </project>

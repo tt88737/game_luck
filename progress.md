@@ -77,3 +77,29 @@
 - Ran `pnpm --dir admin-ui check:menu-icons`: passed, 93 local SVG icons available.
 - Ran `pnpm --dir admin-ui build:prod`: passed; Vite reported existing large chunk warnings only.
 - Ran `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal -DskipTests`: passed.
+
+## 2026-07-03 Redemption Order v1
+
+- Added redemption order v1 design and implementation plan docs.
+- Started wallet freeze API with test-first workflow.
+- First targeted Maven test command without `-am` failed because sibling `gameluck-common-*` modules could not be resolved from remote repositories. Next test run must include `-am`.
+- Added wallet freeze operation support: `freeze`, `unfreeze`, and `settle`, with `WalletFreezeOperationBo`, row-lock query by freeze number, transaction recording, and focused wallet service test.
+- Added `gameluck-redemption` module wired into backend Maven and `gameluck-admin`.
+- Added redemption order backend table, menu SQL, enum, entity, BO, VO, mapper, service, controller, and focused service test.
+- Added admin-ui redemption order API wrappers and B-side order page with filters, table, detail dialog, approve/reject actions, and local `money` menu icon.
+- Fixed generated redemption order page mojibake by rewriting `admin-ui/src/views/redemption/order/index.vue` with valid UTF-8 Chinese copy and valid Vue attributes.
+- Imported `backend/script/sql/gameluck_wallet.sql` with `backend/script/bin/import-sql-utf8.ps1`; confirmed `gl_redemption_order` exists and menu IDs `1940`, `1941`, `1951`-`1954` exist with `money` / `#` icon rules.
+- Repackaged backend after stopping the old 8080 process that locked `gameluck-admin.jar`; package succeeded and backend was restarted from the rebuilt jar.
+- Runtime smoke test:
+  - Authenticated `GET /redemption/order/list?pageNum=1&pageSize=10` returned `code=200`.
+  - Created one `1001/RC` redemption order for `1.110000`, approved it, and confirmed wallet freeze status became `SETTLED`.
+  - Created one `1001/RC` redemption order for `1.220000`, rejected it, and confirmed wallet freeze status became `RELEASED`.
+  - Final `1001/RC` wallet balance after smoke data: available `98.890000`, frozen `0.000000`.
+- Verification passed:
+  - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-modules/gameluck-wallet -am -Plocal -DskipTests=false "-Dtest=WalletCoreServiceImplTest" "-Dsurefire.failIfNoSpecifiedTests=false" test`
+  - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-modules/gameluck-redemption -am -Plocal -DskipTests=false "-Dtest=RedemptionOrderServiceImplTest" "-Dsurefire.failIfNoSpecifiedTests=false" test`
+  - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal -DskipTests`
+  - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am package -Plocal -DskipTests`
+  - `pnpm --dir admin-ui check:menu-icons`
+  - `pnpm --dir admin-ui build:prod`
+  - Mojibake scan on newly added redemption frontend/backend/docs returned no matches.

@@ -90,6 +90,11 @@
             <artifactId>gameluck-game</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.gameluck</groupId>
+            <artifactId>gameluck-redemption</artifactId>
+        </dependency>
+
         <!-- 浠ｇ爜鐢熸垚-->
         <dependency>
             <groupId>com.gameluck</groupId>
