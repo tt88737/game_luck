@@ -354,6 +354,12 @@
                 <version>${revision}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.gameluck</groupId>
+                <artifactId>gameluck-promotion</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

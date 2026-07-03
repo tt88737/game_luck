@@ -173,6 +173,93 @@ ON DUPLICATE KEY UPDATE
   remark = VALUES(remark),
   update_time = NOW();
 
+CREATE TABLE IF NOT EXISTS gl_promotion_reward (
+  id BIGINT NOT NULL COMMENT 'Primary key',
+  tenant_id VARCHAR(20) NOT NULL DEFAULT '000000' COMMENT 'Tenant id',
+  promotion_no VARCHAR(64) NOT NULL COMMENT 'Promotion number',
+  promotion_name VARCHAR(128) NOT NULL COMMENT 'Promotion name',
+  currency_code VARCHAR(32) NOT NULL COMMENT 'Currency code',
+  reward_amount DECIMAL(20,6) NOT NULL COMMENT 'Reward amount',
+  status VARCHAR(32) NOT NULL DEFAULT 'INACTIVE' COMMENT 'Reward status',
+  start_time DATETIME DEFAULT NULL COMMENT 'Start time',
+  end_time DATETIME DEFAULT NULL COMMENT 'End time',
+  remark VARCHAR(500) DEFAULT NULL COMMENT 'Remark',
+  create_dept BIGINT DEFAULT NULL COMMENT 'Create department',
+  create_by BIGINT DEFAULT NULL COMMENT 'Created by',
+  create_time DATETIME DEFAULT NULL COMMENT 'Create time',
+  update_by BIGINT DEFAULT NULL COMMENT 'Updated by',
+  update_time DATETIME DEFAULT NULL COMMENT 'Update time',
+  version INT NOT NULL DEFAULT 0 COMMENT 'Optimistic lock version',
+  del_flag CHAR(1) NOT NULL DEFAULT '0' COMMENT 'Delete flag: 0 normal, 1 deleted',
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_gl_promotion_reward_01 (tenant_id, promotion_no),
+  KEY idx_gl_promotion_reward_01 (tenant_id, status, create_time),
+  KEY idx_gl_promotion_reward_02 (tenant_id, currency_code)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Promotion reward';
+
+CREATE TABLE IF NOT EXISTS gl_promotion_claim (
+  id BIGINT NOT NULL COMMENT 'Primary key',
+  tenant_id VARCHAR(20) NOT NULL DEFAULT '000000' COMMENT 'Tenant id',
+  claim_no VARCHAR(64) NOT NULL COMMENT 'Claim number',
+  promotion_id BIGINT NOT NULL COMMENT 'Promotion id',
+  promotion_no VARCHAR(64) NOT NULL COMMENT 'Promotion number',
+  promotion_name VARCHAR(128) NOT NULL COMMENT 'Promotion name',
+  member_id BIGINT NOT NULL COMMENT 'Member id',
+  currency_code VARCHAR(32) NOT NULL COMMENT 'Currency code',
+  reward_amount DECIMAL(20,6) NOT NULL COMMENT 'Reward amount',
+  status VARCHAR(32) NOT NULL COMMENT 'Claim status',
+  wallet_transaction_no VARCHAR(64) DEFAULT NULL COMMENT 'Wallet transaction number',
+  idempotency_key VARCHAR(160) NOT NULL COMMENT 'Claim idempotency key',
+  fail_reason VARCHAR(500) DEFAULT NULL COMMENT 'Failure reason',
+  remark VARCHAR(500) DEFAULT NULL COMMENT 'Remark',
+  create_dept BIGINT DEFAULT NULL COMMENT 'Create department',
+  create_by BIGINT DEFAULT NULL COMMENT 'Created by',
+  create_time DATETIME DEFAULT NULL COMMENT 'Create time',
+  update_by BIGINT DEFAULT NULL COMMENT 'Updated by',
+  update_time DATETIME DEFAULT NULL COMMENT 'Update time',
+  version INT NOT NULL DEFAULT 0 COMMENT 'Optimistic lock version',
+  del_flag CHAR(1) NOT NULL DEFAULT '0' COMMENT 'Delete flag: 0 normal, 1 deleted',
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_gl_promotion_claim_01 (tenant_id, claim_no),
+  UNIQUE KEY uk_gl_promotion_claim_02 (tenant_id, idempotency_key),
+  UNIQUE KEY uk_gl_promotion_claim_03 (tenant_id, promotion_id, member_id),
+  KEY idx_gl_promotion_claim_01 (tenant_id, member_id, currency_code),
+  KEY idx_gl_promotion_claim_02 (tenant_id, promotion_id, status, create_time)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Promotion claim';
+
+INSERT INTO gl_promotion_reward
+(id, tenant_id, promotion_no, promotion_name, currency_code, reward_amount, status, start_time, end_time, remark, create_time)
+VALUES
+(1900000000000000301, '000000', 'PR-SEED-SC-001', 'Seed SC Reward', 'SC', 3.000000, 'ACTIVE', NULL, NULL, 'Default simulated promotion reward.', NOW())
+ON DUPLICATE KEY UPDATE
+  promotion_name = VALUES(promotion_name),
+  currency_code = VALUES(currency_code),
+  reward_amount = VALUES(reward_amount),
+  status = VALUES(status),
+  remark = VALUES(remark),
+  update_time = NOW();
+
+INSERT INTO sys_menu
+(menu_id, menu_name, parent_id, order_num, path, component, query_param, is_frame, is_cache, menu_type, visible, status, perms, icon, create_dept, create_by, create_time, update_by, update_time, remark)
+VALUES
+(1960, 'Promotion Center', 0, 10, 'promotion', NULL, '', 1, 0, 'M', '0', '0', '', 'skill', 103, 1, NOW(), NULL, NULL, 'Promotion center directory'),
+(1961, 'Promotion Rewards', 1960, 1, 'reward', 'promotion/reward/index', '', 1, 0, 'C', '0', '0', 'promotion:reward:list', 'skill', 103, 1, NOW(), NULL, NULL, 'Promotion reward menu'),
+(1971, 'Promotion Query', 1961, 1, '#', '', '', 1, 0, 'F', '0', '0', 'promotion:reward:query', '#', 103, 1, NOW(), NULL, NULL, ''),
+(1972, 'Promotion Add', 1961, 2, '#', '', '', 1, 0, 'F', '0', '0', 'promotion:reward:add', '#', 103, 1, NOW(), NULL, NULL, ''),
+(1973, 'Promotion Edit', 1961, 3, '#', '', '', 1, 0, 'F', '0', '0', 'promotion:reward:edit', '#', 103, 1, NOW(), NULL, NULL, ''),
+(1974, 'Promotion Remove', 1961, 4, '#', '', '', 1, 0, 'F', '0', '0', 'promotion:reward:remove', '#', 103, 1, NOW(), NULL, NULL, ''),
+(1975, 'Promotion Claim', 1961, 5, '#', '', '', 1, 0, 'F', '0', '0', 'promotion:reward:claim', '#', 103, 1, NOW(), NULL, NULL, '')
+ON DUPLICATE KEY UPDATE
+  menu_name = VALUES(menu_name),
+  parent_id = VALUES(parent_id),
+  order_num = VALUES(order_num),
+  path = VALUES(path),
+  component = VALUES(component),
+  perms = VALUES(perms),
+  icon = VALUES(icon),
+  remark = VALUES(remark),
+  update_time = NOW();
+
 CREATE TABLE IF NOT EXISTS gl_redemption_order (
   id BIGINT NOT NULL COMMENT 'Primary key',
   tenant_id VARCHAR(20) NOT NULL DEFAULT '000000' COMMENT 'Tenant id',

@@ -95,6 +95,11 @@
             <artifactId>gameluck-redemption</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.gameluck</groupId>
+            <artifactId>gameluck-promotion</artifactId>
+        </dependency>
+
         <!-- 浠ｇ爜鐢熸垚-->
         <dependency>
             <groupId>com.gameluck</groupId>
