@@ -173,6 +173,63 @@ ON DUPLICATE KEY UPDATE
   remark = VALUES(remark),
   update_time = NOW();
 
+CREATE TABLE IF NOT EXISTS gl_member_profile (
+  id BIGINT NOT NULL COMMENT 'Primary key',
+  tenant_id VARCHAR(20) NOT NULL DEFAULT '000000' COMMENT 'Tenant id',
+  member_no VARCHAR(64) NOT NULL COMMENT 'Member number',
+  username VARCHAR(64) NOT NULL COMMENT 'Username',
+  nickname VARCHAR(128) DEFAULT NULL COMMENT 'Nickname',
+  status VARCHAR(32) NOT NULL DEFAULT 'ACTIVE' COMMENT 'Member status',
+  risk_level VARCHAR(32) NOT NULL DEFAULT 'NORMAL' COMMENT 'Risk level',
+  register_channel VARCHAR(64) NOT NULL DEFAULT 'ADMIN' COMMENT 'Register channel',
+  last_login_time DATETIME DEFAULT NULL COMMENT 'Last login time',
+  remark VARCHAR(500) DEFAULT NULL COMMENT 'Remark',
+  create_dept BIGINT DEFAULT NULL COMMENT 'Create department',
+  create_by BIGINT DEFAULT NULL COMMENT 'Created by',
+  create_time DATETIME DEFAULT NULL COMMENT 'Create time',
+  update_by BIGINT DEFAULT NULL COMMENT 'Updated by',
+  update_time DATETIME DEFAULT NULL COMMENT 'Update time',
+  version INT NOT NULL DEFAULT 0 COMMENT 'Optimistic lock version',
+  del_flag CHAR(1) NOT NULL DEFAULT '0' COMMENT 'Delete flag: 0 normal, 1 deleted',
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_gl_member_profile_01 (tenant_id, member_no),
+  UNIQUE KEY uk_gl_member_profile_02 (tenant_id, username),
+  KEY idx_gl_member_profile_01 (tenant_id, status, create_time),
+  KEY idx_gl_member_profile_02 (tenant_id, risk_level)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Member profile';
+
+INSERT INTO gl_member_profile
+(id, tenant_id, member_no, username, nickname, status, risk_level, register_channel, remark, create_time)
+VALUES
+(1900000000000000401, '000000', 'MB-SEED-1001', 'member1001', 'Seed Member 1001', 'ACTIVE', 'NORMAL', 'ADMIN', 'Default local member profile.', NOW())
+ON DUPLICATE KEY UPDATE
+  nickname = VALUES(nickname),
+  status = VALUES(status),
+  risk_level = VALUES(risk_level),
+  register_channel = VALUES(register_channel),
+  remark = VALUES(remark),
+  update_time = NOW();
+
+INSERT INTO sys_menu
+(menu_id, menu_name, parent_id, order_num, path, component, query_param, is_frame, is_cache, menu_type, visible, status, perms, icon, create_dept, create_by, create_time, update_by, update_time, remark)
+VALUES
+(1980, 'Member Center', 0, 11, 'member', NULL, '', 1, 0, 'M', '0', '0', '', 'user', 103, 1, NOW(), NULL, NULL, 'Member center directory'),
+(1981, 'Member Profiles', 1980, 1, 'profile', 'member/profile/index', '', 1, 0, 'C', '0', '0', 'member:profile:list', 'user', 103, 1, NOW(), NULL, NULL, 'Member profile menu'),
+(1991, 'Member Query', 1981, 1, '#', '', '', 1, 0, 'F', '0', '0', 'member:profile:query', '#', 103, 1, NOW(), NULL, NULL, ''),
+(1992, 'Member Add', 1981, 2, '#', '', '', 1, 0, 'F', '0', '0', 'member:profile:add', '#', 103, 1, NOW(), NULL, NULL, ''),
+(1993, 'Member Edit', 1981, 3, '#', '', '', 1, 0, 'F', '0', '0', 'member:profile:edit', '#', 103, 1, NOW(), NULL, NULL, ''),
+(1994, 'Member Remove', 1981, 4, '#', '', '', 1, 0, 'F', '0', '0', 'member:profile:remove', '#', 103, 1, NOW(), NULL, NULL, '')
+ON DUPLICATE KEY UPDATE
+  menu_name = VALUES(menu_name),
+  parent_id = VALUES(parent_id),
+  order_num = VALUES(order_num),
+  path = VALUES(path),
+  component = VALUES(component),
+  perms = VALUES(perms),
+  icon = VALUES(icon),
+  remark = VALUES(remark),
+  update_time = NOW();
+
 CREATE TABLE IF NOT EXISTS gl_promotion_reward (
   id BIGINT NOT NULL COMMENT 'Primary key',
   tenant_id VARCHAR(20) NOT NULL DEFAULT '000000' COMMENT 'Tenant id',

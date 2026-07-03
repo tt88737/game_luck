@@ -18,6 +18,7 @@
         <module>gameluck-game</module>
         <module>gameluck-redemption</module>
         <module>gameluck-promotion</module>
+        <module>gameluck-member</module>
     </modules>
 
     <artifactId>gameluck-modules</artifactId>
