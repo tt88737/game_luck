@@ -5,7 +5,7 @@
         <el-menu-item :index="resolvePath(onlyOneChild.path)" :class="{ 'submenu-title-noDropdown': !isNest }">
           <svg-icon :icon-class="onlyOneChild.meta.icon || (item.meta && item.meta.icon)" />
           <template #title>
-            <span class="menu-title" :title="hasTitle(onlyOneChild.meta.title)">{{ onlyOneChild.meta.title }}</span>
+            <span class="menu-title" :title="hasTitle(translateTitle(onlyOneChild.meta.title))">{{ translateTitle(onlyOneChild.meta.title) }}</span>
           </template>
         </el-menu-item>
       </app-link>
@@ -14,7 +14,7 @@
     <el-sub-menu v-else ref="subMenu" :index="resolvePath(item.path)" teleported>
       <template v-if="item.meta" #title>
         <svg-icon :icon-class="item.meta ? item.meta.icon : ''" />
-        <span class="menu-title" :title="hasTitle(item.meta?.title)">{{ item.meta?.title }}</span>
+        <span class="menu-title" :title="hasTitle(translateTitle(item.meta?.title))">{{ translateTitle(item.meta?.title) }}</span>
       </template>
 
       <sidebar-item
@@ -34,6 +34,7 @@ import { isExternal } from '@/utils/validate';
 import AppLink from './Link.vue';
 import { getNormalPath } from '@/utils/gameluck';
 import { RouteRecordRaw } from 'vue-router';
+import { translateTitle } from '@/utils/i18nTitle';
 
 const props = defineProps({
   item: {

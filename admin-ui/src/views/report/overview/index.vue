@@ -4,14 +4,16 @@
       <template #header>
         <div class="report-toolbar">
           <div>
-            <div class="report-title">Report Overview</div>
-            <div class="report-subtitle">Real-time MVP metrics from member, wallet, payment, game, promotion, and redemption modules.</div>
+            <div class="report-title">{{ t('reportOverview.title') }}</div>
+            <div class="report-subtitle">{{ t('reportOverview.subtitle') }}</div>
           </div>
-          <el-button v-hasPermi="['report:overview:query']" type="primary" icon="Refresh" :loading="loading" @click="getSummary">Refresh</el-button>
+          <el-button v-hasPermi="['report:overview:query']" type="primary" icon="Refresh" :loading="loading" @click="getSummary">
+            {{ t('reportOverview.refresh') }}
+          </el-button>
         </div>
       </template>
 
-      <el-empty v-if="!loading && !summary" description="No report data returned" />
+      <el-empty v-if="!loading && !summary" :description="t('reportOverview.empty')" />
 
       <div v-else v-loading="loading">
         <el-row :gutter="10" class="metric-row">
@@ -29,11 +31,11 @@
     <el-row :gutter="10">
       <el-col :xs="24" :lg="12">
         <el-card shadow="hover" class="mb-[10px]">
-          <template #header>Wallet And Payment</template>
+          <template #header>{{ t('reportOverview.sections.walletPayment') }}</template>
           <el-table v-loading="loading" border :data="walletPaymentRows">
-            <el-table-column label="Metric" prop="metric" min-width="180" />
-            <el-table-column label="Value" prop="value" align="right" width="180" />
-            <el-table-column label="State" prop="state" align="center" width="140">
+            <el-table-column :label="t('reportOverview.columns.metric')" prop="metric" min-width="180" />
+            <el-table-column :label="t('reportOverview.columns.value')" prop="value" align="right" width="180" />
+            <el-table-column :label="t('reportOverview.columns.state')" prop="state" align="center" width="140">
               <template #default="scope">
                 <el-tag :type="scope.row.type">{{ scope.row.state }}</el-tag>
               </template>
@@ -44,11 +46,11 @@
 
       <el-col :xs="24" :lg="12">
         <el-card shadow="hover" class="mb-[10px]">
-          <template #header>Game And Promotion</template>
+          <template #header>{{ t('reportOverview.sections.gamePromotion') }}</template>
           <el-table v-loading="loading" border :data="gamePromotionRows">
-            <el-table-column label="Metric" prop="metric" min-width="180" />
-            <el-table-column label="Value" prop="value" align="right" width="180" />
-            <el-table-column label="State" prop="state" align="center" width="140">
+            <el-table-column :label="t('reportOverview.columns.metric')" prop="metric" min-width="180" />
+            <el-table-column :label="t('reportOverview.columns.value')" prop="value" align="right" width="180" />
+            <el-table-column :label="t('reportOverview.columns.state')" prop="state" align="center" width="140">
               <template #default="scope">
                 <el-tag :type="scope.row.type">{{ scope.row.state }}</el-tag>
               </template>
@@ -59,12 +61,12 @@
     </el-row>
 
     <el-card shadow="hover">
-      <template #header>Redemption Review</template>
+      <template #header>{{ t('reportOverview.sections.redemptionReview') }}</template>
       <el-table v-loading="loading" border :data="redemptionRows">
-        <el-table-column label="Metric" prop="metric" min-width="180" />
-        <el-table-column label="Value" prop="value" align="right" width="180" />
-        <el-table-column label="Operational Meaning" prop="meaning" min-width="260" show-overflow-tooltip />
-        <el-table-column label="State" prop="state" align="center" width="140">
+        <el-table-column :label="t('reportOverview.columns.metric')" prop="metric" min-width="180" />
+        <el-table-column :label="t('reportOverview.columns.value')" prop="value" align="right" width="180" />
+        <el-table-column :label="t('reportOverview.columns.meaning')" prop="meaning" min-width="260" show-overflow-tooltip />
+        <el-table-column :label="t('reportOverview.columns.state')" prop="state" align="center" width="140">
           <template #default="scope">
             <el-tag :type="scope.row.type">{{ scope.row.state }}</el-tag>
           </template>
@@ -77,6 +79,7 @@
 <script setup name="ReportOverview" lang="ts">
 import { getReportOverviewSummary } from '@/api/report/overview';
 import { ReportOverviewSummaryVO } from '@/api/report/overview/types';
+import { useI18n } from 'vue-i18n';
 
 interface MetricRow {
   metric: string;
@@ -87,6 +90,7 @@ interface MetricRow {
 }
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+const { t } = useI18n();
 
 const loading = ref(false);
 const summary = ref<ReportOverviewSummaryVO>();
@@ -117,108 +121,108 @@ const formatAmount = (value: string | number | undefined) => Number(value || 0).
 const formatCount = (value: number | undefined) => Number(value || 0).toLocaleString();
 
 const metricCards = computed(() => [
-  { label: 'Members', value: formatCount(data.value.memberCount), hint: 'Registered profiles' },
-  { label: 'Wallet Accounts', value: formatCount(data.value.walletAccountCount), hint: 'Currency accounts' },
-  { label: 'Deposit Amount', value: formatAmount(data.value.successfulDepositAmount), hint: 'Successful deposits' },
-  { label: 'Game Net', value: formatAmount(data.value.netGameAmount), hint: 'Payout minus bet' },
-  { label: 'Rewards', value: formatAmount(data.value.successfulRewardAmount), hint: 'Successful claims' },
-  { label: 'Pending Redeem', value: formatCount(data.value.pendingRedemptionCount), hint: 'Needs review' }
+  { label: t('reportOverview.cards.members'), value: formatCount(data.value.memberCount), hint: t('reportOverview.cards.registeredProfiles') },
+  { label: t('reportOverview.cards.walletAccounts'), value: formatCount(data.value.walletAccountCount), hint: t('reportOverview.cards.currencyAccounts') },
+  { label: t('reportOverview.cards.depositAmount'), value: formatAmount(data.value.successfulDepositAmount), hint: t('reportOverview.cards.successfulDeposits') },
+  { label: t('reportOverview.cards.gameNet'), value: formatAmount(data.value.netGameAmount), hint: t('reportOverview.cards.payoutMinusBet') },
+  { label: t('reportOverview.cards.rewards'), value: formatAmount(data.value.successfulRewardAmount), hint: t('reportOverview.cards.successfulClaims') },
+  { label: t('reportOverview.cards.pendingRedeem'), value: formatCount(data.value.pendingRedemptionCount), hint: t('reportOverview.cards.needsReview') }
 ]);
 
 const walletPaymentRows = computed<MetricRow[]>(() => [
   {
-    metric: 'Wallet available total',
+    metric: t('reportOverview.metrics.walletAvailableTotal'),
     value: formatAmount(data.value.walletAvailableAmount),
-    state: 'Available',
+    state: t('reportOverview.states.available'),
     type: 'success'
   },
   {
-    metric: 'Wallet frozen total',
+    metric: t('reportOverview.metrics.walletFrozenTotal'),
     value: formatAmount(data.value.walletFrozenAmount),
-    state: Number(data.value.walletFrozenAmount || 0) > 0 ? 'Frozen' : 'Clear',
+    state: Number(data.value.walletFrozenAmount || 0) > 0 ? t('reportOverview.states.frozen') : t('reportOverview.states.clear'),
     type: Number(data.value.walletFrozenAmount || 0) > 0 ? 'warning' : 'info'
   },
   {
-    metric: 'Deposit orders',
+    metric: t('reportOverview.metrics.depositOrders'),
     value: formatCount(data.value.depositOrderCount),
-    state: 'Orders',
+    state: t('reportOverview.states.orders'),
     type: 'primary'
   },
   {
-    metric: 'Successful deposit amount',
+    metric: t('reportOverview.metrics.successfulDepositAmount'),
     value: formatAmount(data.value.successfulDepositAmount),
-    state: 'Credited',
+    state: t('reportOverview.states.credited'),
     type: 'success'
   }
 ]);
 
 const gamePromotionRows = computed<MetricRow[]>(() => [
   {
-    metric: 'Game orders',
+    metric: t('reportOverview.metrics.gameOrders'),
     value: formatCount(data.value.gameOrderCount),
-    state: 'Orders',
+    state: t('reportOverview.states.orders'),
     type: 'primary'
   },
   {
-    metric: 'Total bet amount',
+    metric: t('reportOverview.metrics.totalBetAmount'),
     value: formatAmount(data.value.totalBetAmount),
-    state: 'Debit',
+    state: t('reportOverview.states.debit'),
     type: 'warning'
   },
   {
-    metric: 'Total payout amount',
+    metric: t('reportOverview.metrics.totalPayoutAmount'),
     value: formatAmount(data.value.totalPayoutAmount),
-    state: 'Credit',
+    state: t('reportOverview.states.credit'),
     type: 'success'
   },
   {
-    metric: 'Promotion claims',
+    metric: t('reportOverview.metrics.promotionClaims'),
     value: formatCount(data.value.promotionClaimCount),
-    state: 'Claims',
+    state: t('reportOverview.states.claims'),
     type: 'primary'
   },
   {
-    metric: 'Successful reward amount',
+    metric: t('reportOverview.metrics.successfulRewardAmount'),
     value: formatAmount(data.value.successfulRewardAmount),
-    state: 'Credited',
+    state: t('reportOverview.states.credited'),
     type: 'success'
   }
 ]);
 
 const redemptionRows = computed<MetricRow[]>(() => [
   {
-    metric: 'Redemption orders',
+    metric: t('reportOverview.metrics.redemptionOrders'),
     value: formatCount(data.value.redemptionOrderCount),
-    meaning: 'All submitted redemption requests.',
-    state: 'Orders',
+    meaning: t('reportOverview.meanings.redemptionOrders'),
+    state: t('reportOverview.states.orders'),
     type: 'primary'
   },
   {
-    metric: 'Pending review',
+    metric: t('reportOverview.metrics.pendingReview'),
     value: formatCount(data.value.pendingRedemptionCount),
-    meaning: 'Frozen funds that still need an operator decision.',
-    state: Number(data.value.pendingRedemptionCount || 0) > 0 ? 'Action' : 'Clear',
+    meaning: t('reportOverview.meanings.pendingReview'),
+    state: Number(data.value.pendingRedemptionCount || 0) > 0 ? t('reportOverview.states.action') : t('reportOverview.states.clear'),
     type: Number(data.value.pendingRedemptionCount || 0) > 0 ? 'warning' : 'info'
   },
   {
-    metric: 'Approved',
+    metric: t('reportOverview.metrics.approved'),
     value: formatCount(data.value.approvedRedemptionCount),
-    meaning: 'Requests settled from frozen wallet balance.',
-    state: 'Settled',
+    meaning: t('reportOverview.meanings.approved'),
+    state: t('reportOverview.states.settled'),
     type: 'success'
   },
   {
-    metric: 'Rejected',
+    metric: t('reportOverview.metrics.rejected'),
     value: formatCount(data.value.rejectedRedemptionCount),
-    meaning: 'Requests rejected and released back to available balance.',
-    state: 'Released',
+    meaning: t('reportOverview.meanings.rejected'),
+    state: t('reportOverview.states.released'),
     type: 'info'
   },
   {
-    metric: 'Approved amount',
+    metric: t('reportOverview.metrics.approvedAmount'),
     value: formatAmount(data.value.approvedRedemptionAmount),
-    meaning: 'Total amount approved for redemption.',
-    state: 'Amount',
+    meaning: t('reportOverview.meanings.approvedAmount'),
+    state: t('reportOverview.states.amount'),
     type: 'success'
   }
 ]);
@@ -229,7 +233,7 @@ const getSummary = async () => {
     const res = await getReportOverviewSummary();
     summary.value = res.data;
   } catch (error) {
-    proxy?.$modal.msgError('Failed to load report overview');
+    proxy?.$modal.msgError(t('reportOverview.messages.loadFailed'));
   } finally {
     loading.value = false;
   }
@@ -297,4 +301,3 @@ onMounted(() => {
   }
 }
 </style>
-
