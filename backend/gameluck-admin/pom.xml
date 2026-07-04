@@ -105,6 +105,11 @@
             <artifactId>gameluck-member</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.gameluck</groupId>
+            <artifactId>gameluck-report</artifactId>
+        </dependency>
+
         <!-- 浠ｇ爜鐢熸垚-->
         <dependency>
             <groupId>com.gameluck</groupId>

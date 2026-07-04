@@ -213,6 +213,23 @@ ON DUPLICATE KEY UPDATE
 INSERT INTO sys_menu
 (menu_id, menu_name, parent_id, order_num, path, component, query_param, is_frame, is_cache, menu_type, visible, status, perms, icon, create_dept, create_by, create_time, update_by, update_time, remark)
 VALUES
+(2000, 'Report Center', 0, 12, 'report', NULL, '', 1, 0, 'M', '0', '0', '', 'chart', 103, 1, NOW(), NULL, NULL, 'Report center directory'),
+(2001, 'Overview', 2000, 1, 'overview', 'report/overview/index', '', 1, 0, 'C', '0', '0', 'report:overview:list', 'chart', 103, 1, NOW(), NULL, NULL, 'Report overview menu'),
+(2011, 'Report Overview Query', 2001, 1, '#', '', '', 1, 0, 'F', '0', '0', 'report:overview:query', '#', 103, 1, NOW(), NULL, NULL, '')
+ON DUPLICATE KEY UPDATE
+  menu_name = VALUES(menu_name),
+  parent_id = VALUES(parent_id),
+  order_num = VALUES(order_num),
+  path = VALUES(path),
+  component = VALUES(component),
+  perms = VALUES(perms),
+  icon = VALUES(icon),
+  remark = VALUES(remark),
+  update_time = NOW();
+
+INSERT INTO sys_menu
+(menu_id, menu_name, parent_id, order_num, path, component, query_param, is_frame, is_cache, menu_type, visible, status, perms, icon, create_dept, create_by, create_time, update_by, update_time, remark)
+VALUES
 (1980, 'Member Center', 0, 11, 'member', NULL, '', 1, 0, 'M', '0', '0', '', 'user', 103, 1, NOW(), NULL, NULL, 'Member center directory'),
 (1981, 'Member Profiles', 1980, 1, 'profile', 'member/profile/index', '', 1, 0, 'C', '0', '0', 'member:profile:list', 'user', 103, 1, NOW(), NULL, NULL, 'Member profile menu'),
 (1991, 'Member Query', 1981, 1, '#', '', '', 1, 0, 'F', '0', '0', 'member:profile:query', '#', 103, 1, NOW(), NULL, NULL, ''),

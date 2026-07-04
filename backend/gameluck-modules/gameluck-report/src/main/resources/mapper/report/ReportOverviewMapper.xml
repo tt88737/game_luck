@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gameluck.report.mapper.ReportOverviewMapper">
+
+    <select id="selectSummary" resultType="com.gameluck.report.domain.vo.ReportOverviewSummaryVo">
+        SELECT
+            (SELECT COUNT(1)
+             FROM gl_member_profile
+             WHERE tenant_id = #{tenantId}
+               AND del_flag = '0') AS member_count,
+            (SELECT COUNT(1)
+             FROM gl_wallet_account
+             WHERE tenant_id = #{tenantId}
+               AND del_flag = '0') AS wallet_account_count,
+            (SELECT COALESCE(SUM(available_balance), 0)
+             FROM gl_wallet_account
+             WHERE tenant_id = #{tenantId}
+               AND del_flag = '0') AS wallet_available_amount,
+            (SELECT COALESCE(SUM(frozen_balance), 0)
+             FROM gl_wallet_account
+             WHERE tenant_id = #{tenantId}
+               AND del_flag = '0') AS wallet_frozen_amount,
+            (SELECT COUNT(1)
+             FROM gl_payment_deposit_order
+             WHERE tenant_id = #{tenantId}
+               AND del_flag = '0') AS deposit_order_count,
+            (SELECT COALESCE(SUM(amount), 0)
+             FROM gl_payment_deposit_order
+             WHERE tenant_id = #{tenantId}
+               AND del_flag = '0'
+               AND status = 'SUCCESS') AS successful_deposit_amount,
+            (SELECT COUNT(1)
+             FROM gl_game_bet_order
+             WHERE tenant_id = #{tenantId}
+               AND del_flag = '0') AS game_order_count,
+            (SELECT COALESCE(SUM(bet_amount), 0)
+             FROM gl_game_bet_order
+             WHERE tenant_id = #{tenantId}
+               AND del_flag = '0') AS total_bet_amount,
+            (SELECT COALESCE(SUM(payout_amount), 0)
+             FROM gl_game_bet_order
+             WHERE tenant_id = #{tenantId}
+               AND del_flag = '0') AS total_payout_amount,
+            (SELECT COALESCE(SUM(net_amount), 0)
+             FROM gl_game_bet_order
+             WHERE tenant_id = #{tenantId}
+               AND del_flag = '0') AS net_game_amount,
+            (SELECT COUNT(1)
+             FROM gl_promotion_claim
+             WHERE tenant_id = #{tenantId}
+               AND del_flag = '0') AS promotion_claim_count,
+            (SELECT COALESCE(SUM(reward_amount), 0)
+             FROM gl_promotion_claim
+             WHERE tenant_id = #{tenantId}
+               AND del_flag = '0'
+               AND status = 'SUCCESS') AS successful_reward_amount,
+            (SELECT COUNT(1)
+             FROM gl_redemption_order
+             WHERE tenant_id = #{tenantId}
+               AND del_flag = '0') AS redemption_order_count,
+            (SELECT COUNT(1)
+             FROM gl_redemption_order
+             WHERE tenant_id = #{tenantId}
+               AND del_flag = '0'
+               AND status = 'PENDING') AS pending_redemption_count,
+            (SELECT COUNT(1)
+             FROM gl_redemption_order
+             WHERE tenant_id = #{tenantId}
+               AND del_flag = '0'
+               AND status = 'APPROVED') AS approved_redemption_count,
+            (SELECT COUNT(1)
+             FROM gl_redemption_order
+             WHERE tenant_id = #{tenantId}
+               AND del_flag = '0'
+               AND status = 'REJECTED') AS rejected_redemption_count,
+            (SELECT COALESCE(SUM(amount), 0)
+             FROM gl_redemption_order
+             WHERE tenant_id = #{tenantId}
+               AND del_flag = '0'
+               AND status = 'APPROVED') AS approved_redemption_amount
+    </select>
+
+</mapper>
+
