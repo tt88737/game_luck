@@ -125,3 +125,7 @@
   - Wrapped monitor login log, online user, operation log, operation log detail, and Redis cache monitor copy with `tt()`.
   - Added monitor/log/cache English mappings to `admin-ui/src/utils/i18nText.ts`.
   - Kept SnailJob/Admin iframe pages unchanged because they have no local visible copy in these Vue files.
+- Started built-in system module i18n pass:
+  - Wrapped system config, notice, and client management pages with `tt()`.
+  - Added system config/notice/client English mappings and confirmation message fragments to `admin-ui/src/utils/i18nText.ts`.
+  - Verified this first system batch with static scans, menu icon check, and production build.
