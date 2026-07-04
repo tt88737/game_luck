@@ -4,32 +4,32 @@
       <div v-show="showSearch" class="mb-[10px]">
         <el-card shadow="hover">
           <el-form ref="queryFormRef" :model="queryParams" :inline="true">
-            <el-form-item label="会员编号" prop="memberNo">
-              <el-input v-model="queryParams.memberNo" placeholder="请输入会员编号" clearable @keyup.enter="handleQuery" />
+            <el-form-item :label="t('memberProfile.fields.memberNo')" prop="memberNo">
+              <el-input v-model="queryParams.memberNo" :placeholder="t('memberProfile.placeholders.memberNo')" clearable @keyup.enter="handleQuery" />
             </el-form-item>
-            <el-form-item label="用户名" prop="username">
-              <el-input v-model="queryParams.username" placeholder="请输入用户名" clearable @keyup.enter="handleQuery" />
+            <el-form-item :label="t('memberProfile.fields.username')" prop="username">
+              <el-input v-model="queryParams.username" :placeholder="t('memberProfile.placeholders.username')" clearable @keyup.enter="handleQuery" />
             </el-form-item>
-            <el-form-item label="昵称" prop="nickname">
-              <el-input v-model="queryParams.nickname" placeholder="请输入昵称" clearable @keyup.enter="handleQuery" />
+            <el-form-item :label="t('memberProfile.fields.nickname')" prop="nickname">
+              <el-input v-model="queryParams.nickname" :placeholder="t('memberProfile.placeholders.nickname')" clearable @keyup.enter="handleQuery" />
             </el-form-item>
-            <el-form-item label="状态" prop="status">
-              <el-select v-model="queryParams.status" placeholder="请选择状态" clearable class="!w-130px">
-                <el-option label="正常" value="ACTIVE" />
-                <el-option label="冻结" value="FROZEN" />
-                <el-option label="禁用" value="DISABLED" />
+            <el-form-item :label="t('common.status')" prop="status">
+              <el-select v-model="queryParams.status" :placeholder="t('memberProfile.placeholders.status')" clearable class="!w-130px">
+                <el-option :label="t('memberProfile.status.ACTIVE')" value="ACTIVE" />
+                <el-option :label="t('memberProfile.status.FROZEN')" value="FROZEN" />
+                <el-option :label="t('memberProfile.status.DISABLED')" value="DISABLED" />
               </el-select>
             </el-form-item>
-            <el-form-item label="风险" prop="riskLevel">
-              <el-select v-model="queryParams.riskLevel" placeholder="请选择风险" clearable class="!w-130px">
-                <el-option label="正常" value="NORMAL" />
-                <el-option label="观察" value="WATCH" />
-                <el-option label="高风险" value="HIGH" />
+            <el-form-item :label="t('memberProfile.fields.riskLevel')" prop="riskLevel">
+              <el-select v-model="queryParams.riskLevel" :placeholder="t('memberProfile.placeholders.riskLevel')" clearable class="!w-130px">
+                <el-option :label="t('memberProfile.risk.NORMAL')" value="NORMAL" />
+                <el-option :label="t('memberProfile.risk.WATCH')" value="WATCH" />
+                <el-option :label="t('memberProfile.risk.HIGH')" value="HIGH" />
               </el-select>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-              <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+              <el-button type="primary" icon="Search" @click="handleQuery">{{ t('common.search') }}</el-button>
+              <el-button icon="Refresh" @click="resetQuery">{{ t('common.reset') }}</el-button>
             </el-form-item>
           </el-form>
         </el-card>
@@ -40,10 +40,12 @@
       <template #header>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
-            <el-button v-hasPermi="['member:profile:add']" type="primary" plain icon="Plus" @click="handleAdd">新增</el-button>
+            <el-button v-hasPermi="['member:profile:add']" type="primary" plain icon="Plus" @click="handleAdd">{{ t('common.add') }}</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button v-hasPermi="['member:profile:remove']" type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()">删除</el-button>
+            <el-button v-hasPermi="['member:profile:remove']" type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()">
+              {{ t('common.delete') }}
+            </el-button>
           </el-col>
           <right-toolbar v-model:show-search="showSearch" @query-table="getList"></right-toolbar>
         </el-row>
@@ -51,31 +53,31 @@
 
       <el-table v-loading="loading" border :data="memberList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="45" align="center" />
-        <el-table-column label="会员编号" align="center" prop="memberNo" min-width="160" show-overflow-tooltip />
-        <el-table-column label="用户名" align="center" prop="username" min-width="140" show-overflow-tooltip />
-        <el-table-column label="昵称" align="center" prop="nickname" min-width="140" show-overflow-tooltip />
-        <el-table-column label="状态" align="center" prop="status" width="100">
+        <el-table-column :label="t('memberProfile.fields.memberNo')" align="center" prop="memberNo" min-width="160" show-overflow-tooltip />
+        <el-table-column :label="t('memberProfile.fields.username')" align="center" prop="username" min-width="140" show-overflow-tooltip />
+        <el-table-column :label="t('memberProfile.fields.nickname')" align="center" prop="nickname" min-width="140" show-overflow-tooltip />
+        <el-table-column :label="t('common.status')" align="center" prop="status" width="100">
           <template #default="scope">
             <el-tag :type="statusType(scope.row.status)">{{ statusLabel(scope.row.status) }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="风险" align="center" prop="riskLevel" width="100">
+        <el-table-column :label="t('memberProfile.fields.riskLevel')" align="center" prop="riskLevel" width="100">
           <template #default="scope">
             <el-tag :type="riskType(scope.row.riskLevel)">{{ riskLabel(scope.row.riskLevel) }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="注册渠道" align="center" prop="registerChannel" width="120" show-overflow-tooltip />
-        <el-table-column label="最后登录" align="center" prop="lastLoginTime" width="170" />
-        <el-table-column label="创建时间" align="center" prop="createTime" width="170" />
-        <el-table-column label="操作" align="center" width="240" fixed="right">
+        <el-table-column :label="t('memberProfile.fields.registerChannel')" align="center" prop="registerChannel" width="120" show-overflow-tooltip />
+        <el-table-column :label="t('memberProfile.fields.lastLoginTime')" align="center" prop="lastLoginTime" width="170" />
+        <el-table-column :label="t('common.createTime')" align="center" prop="createTime" width="170" />
+        <el-table-column :label="t('common.operation')" align="center" width="240" fixed="right">
           <template #default="scope">
-            <el-tooltip content="查看详情" placement="top">
+            <el-tooltip :content="t('memberProfile.actions.view')" placement="top">
               <el-button v-hasPermi="['member:profile:query']" link type="primary" icon="View" @click="handleDetail(scope.row)"></el-button>
             </el-tooltip>
-            <el-tooltip content="编辑资料" placement="top">
+            <el-tooltip :content="t('memberProfile.actions.edit')" placement="top">
               <el-button v-hasPermi="['member:profile:edit']" link type="primary" icon="Edit" @click="handleUpdate(scope.row)"></el-button>
             </el-tooltip>
-            <el-tooltip content="设为正常" placement="top">
+            <el-tooltip :content="t('memberProfile.actions.setActive')" placement="top">
               <el-button
                 v-if="scope.row.status !== 'ACTIVE'"
                 v-hasPermi="['member:profile:edit']"
@@ -85,7 +87,7 @@
                 @click="handleStatus(scope.row, 'ACTIVE')"
               ></el-button>
             </el-tooltip>
-            <el-tooltip content="冻结会员" placement="top">
+            <el-tooltip :content="t('memberProfile.actions.freeze')" placement="top">
               <el-button
                 v-if="scope.row.status !== 'FROZEN'"
                 v-hasPermi="['member:profile:edit']"
@@ -95,7 +97,7 @@
                 @click="handleStatus(scope.row, 'FROZEN')"
               ></el-button>
             </el-tooltip>
-            <el-tooltip content="禁用会员" placement="top">
+            <el-tooltip :content="t('memberProfile.actions.disable')" placement="top">
               <el-button
                 v-if="scope.row.status !== 'DISABLED'"
                 v-hasPermi="['member:profile:edit']"
@@ -105,7 +107,7 @@
                 @click="handleStatus(scope.row, 'DISABLED')"
               ></el-button>
             </el-tooltip>
-            <el-tooltip content="删除资料" placement="top">
+            <el-tooltip :content="t('memberProfile.actions.delete')" placement="top">
               <el-button v-hasPermi="['member:profile:remove']" link type="danger" icon="Delete" @click="handleDelete(scope.row)"></el-button>
             </el-tooltip>
           </template>
@@ -115,55 +117,55 @@
       <pagination v-show="total > 0" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" :total="total" @pagination="getList" />
     </el-card>
 
-    <el-dialog v-model="dialog.visible" :title="dialog.title" width="620px" append-to-body>
+    <el-dialog v-model="dialog.visible" :title="dialogTitle" width="620px" append-to-body>
       <el-form ref="memberFormRef" :model="form" :rules="rules" label-width="100px">
-        <el-form-item label="用户名" prop="username">
-          <el-input v-model="form.username" placeholder="请输入用户名" />
+        <el-form-item :label="t('memberProfile.fields.username')" prop="username">
+          <el-input v-model="form.username" :placeholder="t('memberProfile.placeholders.username')" />
         </el-form-item>
-        <el-form-item label="昵称" prop="nickname">
-          <el-input v-model="form.nickname" placeholder="请输入昵称" />
+        <el-form-item :label="t('memberProfile.fields.nickname')" prop="nickname">
+          <el-input v-model="form.nickname" :placeholder="t('memberProfile.placeholders.nickname')" />
         </el-form-item>
-        <el-form-item label="状态" prop="status">
+        <el-form-item :label="t('common.status')" prop="status">
           <el-radio-group v-model="form.status">
-            <el-radio-button label="ACTIVE">正常</el-radio-button>
-            <el-radio-button label="FROZEN">冻结</el-radio-button>
-            <el-radio-button label="DISABLED">禁用</el-radio-button>
+            <el-radio-button label="ACTIVE">{{ t('memberProfile.status.ACTIVE') }}</el-radio-button>
+            <el-radio-button label="FROZEN">{{ t('memberProfile.status.FROZEN') }}</el-radio-button>
+            <el-radio-button label="DISABLED">{{ t('memberProfile.status.DISABLED') }}</el-radio-button>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="风险等级" prop="riskLevel">
+        <el-form-item :label="t('memberProfile.fields.riskLevel')" prop="riskLevel">
           <el-radio-group v-model="form.riskLevel">
-            <el-radio-button label="NORMAL">正常</el-radio-button>
-            <el-radio-button label="WATCH">观察</el-radio-button>
-            <el-radio-button label="HIGH">高风险</el-radio-button>
+            <el-radio-button label="NORMAL">{{ t('memberProfile.risk.NORMAL') }}</el-radio-button>
+            <el-radio-button label="WATCH">{{ t('memberProfile.risk.WATCH') }}</el-radio-button>
+            <el-radio-button label="HIGH">{{ t('memberProfile.risk.HIGH') }}</el-radio-button>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="注册渠道" prop="registerChannel">
-          <el-input v-model="form.registerChannel" placeholder="默认 ADMIN" />
+        <el-form-item :label="t('memberProfile.fields.registerChannel')" prop="registerChannel">
+          <el-input v-model="form.registerChannel" placeholder="ADMIN" />
         </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" type="textarea" :rows="3" placeholder="请输入备注" />
+        <el-form-item :label="t('common.remark')" prop="remark">
+          <el-input v-model="form.remark" type="textarea" :rows="3" :placeholder="t('memberProfile.placeholders.remark')" />
         </el-form-item>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" @click="submitForm">确定</el-button>
-          <el-button @click="cancel">取消</el-button>
+          <el-button type="primary" @click="submitForm">{{ t('common.confirm') }}</el-button>
+          <el-button @click="cancel">{{ t('common.cancel') }}</el-button>
         </div>
       </template>
     </el-dialog>
 
-    <el-dialog v-model="detailOpen" title="会员详情" width="760px" append-to-body>
+    <el-dialog v-model="detailOpen" :title="t('memberProfile.dialog.detail')" width="760px" append-to-body>
       <el-descriptions :column="2" border>
-        <el-descriptions-item label="会员编号">{{ detail.memberNo }}</el-descriptions-item>
-        <el-descriptions-item label="用户名">{{ detail.username }}</el-descriptions-item>
-        <el-descriptions-item label="昵称">{{ detail.nickname }}</el-descriptions-item>
-        <el-descriptions-item label="状态">{{ statusLabel(detail.status) }}</el-descriptions-item>
-        <el-descriptions-item label="风险等级">{{ riskLabel(detail.riskLevel) }}</el-descriptions-item>
-        <el-descriptions-item label="注册渠道">{{ detail.registerChannel }}</el-descriptions-item>
-        <el-descriptions-item label="最后登录">{{ detail.lastLoginTime }}</el-descriptions-item>
-        <el-descriptions-item label="创建时间">{{ detail.createTime }}</el-descriptions-item>
-        <el-descriptions-item label="更新时间">{{ detail.updateTime }}</el-descriptions-item>
-        <el-descriptions-item label="备注" :span="2">{{ detail.remark }}</el-descriptions-item>
+        <el-descriptions-item :label="t('memberProfile.fields.memberNo')">{{ detail.memberNo }}</el-descriptions-item>
+        <el-descriptions-item :label="t('memberProfile.fields.username')">{{ detail.username }}</el-descriptions-item>
+        <el-descriptions-item :label="t('memberProfile.fields.nickname')">{{ detail.nickname }}</el-descriptions-item>
+        <el-descriptions-item :label="t('common.status')">{{ statusLabel(detail.status) }}</el-descriptions-item>
+        <el-descriptions-item :label="t('memberProfile.fields.riskLevel')">{{ riskLabel(detail.riskLevel) }}</el-descriptions-item>
+        <el-descriptions-item :label="t('memberProfile.fields.registerChannel')">{{ detail.registerChannel }}</el-descriptions-item>
+        <el-descriptions-item :label="t('memberProfile.fields.lastLoginTime')">{{ detail.lastLoginTime }}</el-descriptions-item>
+        <el-descriptions-item :label="t('common.createTime')">{{ detail.createTime }}</el-descriptions-item>
+        <el-descriptions-item :label="t('common.updateTime')">{{ detail.updateTime }}</el-descriptions-item>
+        <el-descriptions-item :label="t('common.remark')" :span="2">{{ detail.remark }}</el-descriptions-item>
       </el-descriptions>
     </el-dialog>
   </div>
@@ -172,8 +174,10 @@
 <script setup name="MemberProfile" lang="ts">
 import { addMemberProfile, delMemberProfile, getMemberProfile, listMemberProfile, updateMemberProfile, updateMemberProfileStatus } from '@/api/member/profile';
 import { MemberProfileForm, MemberProfileQuery, MemberProfileVO } from '@/api/member/profile/types';
+import { useI18n } from 'vue-i18n';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+const { t } = useI18n();
 
 const memberList = ref<MemberProfileVO[]>([]);
 const loading = ref(true);
@@ -181,15 +185,14 @@ const showSearch = ref(true);
 const total = ref(0);
 const detailOpen = ref(false);
 const ids = ref<Array<string | number>>([]);
-const single = ref(true);
 const multiple = ref(true);
 const queryFormRef = ref<ElFormInstance>();
 const memberFormRef = ref<ElFormInstance>();
 const detail = ref<Partial<MemberProfileVO>>({});
 
-const dialog = reactive<DialogOption>({
+const dialog = reactive({
   visible: false,
-  title: ''
+  mode: 'add' as 'add' | 'edit'
 });
 
 const initFormData: MemberProfileForm = {
@@ -198,26 +201,25 @@ const initFormData: MemberProfileForm = {
   registerChannel: 'ADMIN'
 };
 
-const data = reactive<PageData<MemberProfileForm, MemberProfileQuery>>({
-  form: { ...initFormData },
-  queryParams: {
-    pageNum: 1,
-    pageSize: 10,
-    memberNo: '',
-    username: '',
-    nickname: '',
-    status: '',
-    riskLevel: '',
-    registerChannel: ''
-  },
-  rules: {
-    username: [{ required: true, message: '用户名不能为空', trigger: 'blur' }],
-    status: [{ required: true, message: '状态不能为空', trigger: 'change' }],
-    riskLevel: [{ required: true, message: '风险等级不能为空', trigger: 'change' }]
-  }
+const form = ref<MemberProfileForm>({ ...initFormData });
+const queryParams = ref<MemberProfileQuery>({
+  pageNum: 1,
+  pageSize: 10,
+  memberNo: '',
+  username: '',
+  nickname: '',
+  status: '',
+  riskLevel: '',
+  registerChannel: ''
 });
 
-const { queryParams, form, rules } = toRefs(data);
+const dialogTitle = computed(() => t(dialog.mode === 'add' ? 'memberProfile.dialog.add' : 'memberProfile.dialog.edit'));
+
+const rules = computed(() => ({
+  username: [{ required: true, message: t('memberProfile.rules.username'), trigger: 'blur' }],
+  status: [{ required: true, message: t('memberProfile.rules.status'), trigger: 'change' }],
+  riskLevel: [{ required: true, message: t('memberProfile.rules.riskLevel'), trigger: 'change' }]
+}));
 
 const getList = async () => {
   loading.value = true;
@@ -231,12 +233,7 @@ const getList = async () => {
 };
 
 const statusLabel = (status?: string) => {
-  const map: Record<string, string> = {
-    ACTIVE: '正常',
-    FROZEN: '冻结',
-    DISABLED: '禁用'
-  };
-  return status ? map[status] || status : '';
+  return status ? t(`memberProfile.status.${status}`) || status : '';
 };
 
 const statusType = (status?: string) => {
@@ -249,12 +246,7 @@ const statusType = (status?: string) => {
 };
 
 const riskLabel = (riskLevel?: string) => {
-  const map: Record<string, string> = {
-    NORMAL: '正常',
-    WATCH: '观察',
-    HIGH: '高风险'
-  };
-  return riskLevel ? map[riskLevel] || riskLevel : '';
+  return riskLevel ? t(`memberProfile.risk.${riskLevel}`) || riskLevel : '';
 };
 
 const riskType = (riskLevel?: string) => {
@@ -283,22 +275,21 @@ const resetQuery = () => {
 
 const handleSelectionChange = (selection: MemberProfileVO[]) => {
   ids.value = selection.map((item) => item.id);
-  single.value = selection.length !== 1;
   multiple.value = !selection.length;
 };
 
 const handleAdd = () => {
   reset();
+  dialog.mode = 'add';
   dialog.visible = true;
-  dialog.title = '新增会员';
 };
 
 const handleUpdate = async (row: MemberProfileVO) => {
   reset();
   const res = await getMemberProfile(row.id);
   form.value = res.data;
+  dialog.mode = 'edit';
   dialog.visible = true;
-  dialog.title = '编辑会员';
 };
 
 const submitForm = () => {
@@ -306,10 +297,10 @@ const submitForm = () => {
     if (valid) {
       if (form.value.id) {
         await updateMemberProfile(form.value);
-        proxy?.$modal.msgSuccess('修改成功');
+        proxy?.$modal.msgSuccess(t('common.success.edit'));
       } else {
         await addMemberProfile(form.value);
-        proxy?.$modal.msgSuccess('新增成功');
+        proxy?.$modal.msgSuccess(t('common.success.add'));
       }
       dialog.visible = false;
       await getList();
@@ -329,17 +320,17 @@ const handleDetail = async (row: MemberProfileVO) => {
 };
 
 const handleStatus = async (row: MemberProfileVO, status: 'ACTIVE' | 'FROZEN' | 'DISABLED') => {
-  await proxy?.$modal.confirm(`确认将会员 ${row.username} 状态改为${statusLabel(status)}？`);
+  await proxy?.$modal.confirm(t('memberProfile.confirm.status', { username: row.username, status: statusLabel(status) }));
   await updateMemberProfileStatus(row.id, status);
-  proxy?.$modal.msgSuccess('状态已更新');
+  proxy?.$modal.msgSuccess(t('common.success.statusUpdated'));
   await getList();
 };
 
 const handleDelete = async (row?: MemberProfileVO) => {
   const deleteIds = row?.id || ids.value;
-  await proxy?.$modal.confirm('确认删除选中的会员资料？');
+  await proxy?.$modal.confirm(t('memberProfile.confirm.delete'));
   await delMemberProfile(deleteIds);
-  proxy?.$modal.msgSuccess('删除成功');
+  proxy?.$modal.msgSuccess(t('common.success.delete'));
   await getList();
 };
 

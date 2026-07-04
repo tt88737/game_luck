@@ -3,6 +3,13 @@ export default {
   route: {
     dashboard: 'Dashboard',
     document: 'Document',
+    systemManagement: 'System Management',
+    tenantManagement: 'Tenant Management',
+    systemMonitor: 'System Monitor',
+    systemTools: 'System Tools',
+    walletCenter: 'Wallet Center',
+    paymentCenter: 'Payment Center',
+    gameTrading: 'Game Trading',
     reportCenter: 'Report Center',
     reportOverview: 'Overview',
     reportOverviewQuery: 'Report Overview Query',
@@ -83,6 +90,188 @@ export default {
     layoutSetting: 'Layout Setting',
     personalCenter: 'Personal Center',
     logout: 'Logout'
+  },
+  common: {
+    search: 'Search',
+    reset: 'Reset',
+    add: 'Add',
+    delete: 'Delete',
+    confirm: 'Confirm',
+    cancel: 'Cancel',
+    edit: 'Edit',
+    detail: 'Detail',
+    operation: 'Operation',
+    createTime: 'Created At',
+    updateTime: 'Updated At',
+    remark: 'Remark',
+    status: 'Status',
+    currency: 'Currency',
+    amount: 'Amount',
+    success: {
+      add: 'Added successfully',
+      edit: 'Updated successfully',
+      delete: 'Deleted successfully',
+      operate: 'Operation successful',
+      statusUpdated: 'Status updated'
+    }
+  },
+  memberProfile: {
+    fields: {
+      memberNo: 'Member No.',
+      username: 'Username',
+      nickname: 'Nickname',
+      riskLevel: 'Risk Level',
+      registerChannel: 'Register Channel',
+      lastLoginTime: 'Last Login'
+    },
+    placeholders: {
+      memberNo: 'Enter member no.',
+      username: 'Enter username',
+      nickname: 'Enter nickname',
+      status: 'Select status',
+      riskLevel: 'Select risk level',
+      remark: 'Enter remark'
+    },
+    status: {
+      ACTIVE: 'Active',
+      FROZEN: 'Frozen',
+      DISABLED: 'Disabled'
+    },
+    risk: {
+      NORMAL: 'Normal',
+      WATCH: 'Watch',
+      HIGH: 'High Risk'
+    },
+    actions: {
+      view: 'View detail',
+      edit: 'Edit profile',
+      setActive: 'Set active',
+      freeze: 'Freeze member',
+      disable: 'Disable member',
+      delete: 'Delete profile'
+    },
+    dialog: {
+      add: 'Add Member',
+      edit: 'Edit Member',
+      detail: 'Member Detail'
+    },
+    rules: {
+      username: 'Username is required',
+      status: 'Status is required',
+      riskLevel: 'Risk level is required'
+    },
+    confirm: {
+      status: 'Confirm changing member {username} status to {status}?',
+      delete: 'Confirm deleting the selected member profiles?'
+    }
+  },
+  promotionReward: {
+    fields: {
+      promotionNo: 'Promotion No.',
+      promotionName: 'Promotion Name',
+      rewardAmount: 'Reward Amount',
+      startTime: 'Start Time',
+      endTime: 'End Time',
+      claimNo: 'Claim No.',
+      memberId: 'Member ID',
+      walletTransactionNo: 'Wallet Transaction No.',
+      failReason: 'Failure Reason',
+      claimTime: 'Claimed At'
+    },
+    placeholders: {
+      promotionNo: 'Enter promotion no.',
+      promotionName: 'Enter promotion name',
+      currency: 'Select currency',
+      status: 'Select status',
+      startTime: 'Leave empty to start immediately',
+      endTime: 'Leave empty for no end date',
+      remark: 'Enter remark',
+      memberId: 'Enter member ID'
+    },
+    status: {
+      ACTIVE: 'Active',
+      INACTIVE: 'Inactive',
+      SUCCESS: 'Success',
+      FAILED: 'Failed'
+    },
+    actions: {
+      edit: 'Edit configuration',
+      enable: 'Enable promotion',
+      disable: 'Disable promotion',
+      claim: 'Member claim',
+      claims: 'Claim records',
+      delete: 'Delete configuration'
+    },
+    dialog: {
+      add: 'Add Promotion Reward',
+      edit: 'Edit Promotion Reward',
+      claim: 'Member Claim Reward',
+      claimRecords: '{name} - Claim Records'
+    },
+    rules: {
+      promotionName: 'Promotion name is required',
+      currency: 'Currency is required',
+      rewardAmount: 'Reward amount is required',
+      status: 'Status is required',
+      memberId: 'Member ID is required'
+    },
+    confirm: {
+      status: 'Confirm {action} this promotion reward?',
+      delete: 'Confirm deleting the selected promotion rewards?'
+    },
+    messages: {
+      claimSuccess: 'Claimed successfully'
+    }
+  },
+  redemptionOrder: {
+    fields: {
+      redemptionOrderNo: 'Order No.',
+      memberId: 'Member ID',
+      redemptionMethod: 'Method',
+      accountRef: 'Account Remark',
+      freezeNo: 'Freeze No.',
+      freezeWalletTransactionNo: 'Freeze Transaction',
+      settleWalletTransactionNo: 'Settlement Transaction',
+      releaseWalletTransactionNo: 'Release Transaction',
+      auditTime: 'Audit Time',
+      auditReason: 'Audit Reason',
+      failReason: 'Failure Reason'
+    },
+    placeholders: {
+      redemptionOrderNo: 'Enter order no.',
+      memberId: 'Enter member ID',
+      currency: 'Select currency',
+      status: 'Select status',
+      redemptionMethod: 'Default SIMULATED',
+      accountRef: 'Enter simulated or masked account information only',
+      remark: 'Enter remark',
+      auditReason: 'Enter audit reason'
+    },
+    status: {
+      PENDING: 'Pending',
+      APPROVED: 'Approved',
+      REJECTED: 'Rejected',
+      FAILED: 'Failed'
+    },
+    actions: {
+      view: 'View detail',
+      approve: 'Approve',
+      reject: 'Reject'
+    },
+    dialog: {
+      add: 'Add Simulated Redemption Order',
+      approve: 'Approve',
+      reject: 'Reject',
+      detail: 'Redemption Order Detail'
+    },
+    rules: {
+      memberId: 'Member ID is required',
+      currency: 'Currency is required',
+      amount: 'Amount is required'
+    },
+    confirm: {
+      audit: 'Confirm {action} this redemption order?'
+    }
   },
   reportOverview: {
     title: 'Report Overview',

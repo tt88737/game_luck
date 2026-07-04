@@ -4,28 +4,28 @@
       <div v-show="showSearch" class="mb-[10px]">
         <el-card shadow="hover">
           <el-form ref="queryFormRef" :model="queryParams" :inline="true">
-            <el-form-item label="活动编号" prop="promotionNo">
-              <el-input v-model="queryParams.promotionNo" placeholder="请输入活动编号" clearable @keyup.enter="handleQuery" />
+            <el-form-item :label="t('promotionReward.fields.promotionNo')" prop="promotionNo">
+              <el-input v-model="queryParams.promotionNo" :placeholder="t('promotionReward.placeholders.promotionNo')" clearable @keyup.enter="handleQuery" />
             </el-form-item>
-            <el-form-item label="活动名称" prop="promotionName">
-              <el-input v-model="queryParams.promotionName" placeholder="请输入活动名称" clearable @keyup.enter="handleQuery" />
+            <el-form-item :label="t('promotionReward.fields.promotionName')" prop="promotionName">
+              <el-input v-model="queryParams.promotionName" :placeholder="t('promotionReward.placeholders.promotionName')" clearable @keyup.enter="handleQuery" />
             </el-form-item>
-            <el-form-item label="币种" prop="currencyCode">
-              <el-select v-model="queryParams.currencyCode" placeholder="请选择币种" clearable class="!w-120px">
+            <el-form-item :label="t('common.currency')" prop="currencyCode">
+              <el-select v-model="queryParams.currencyCode" :placeholder="t('promotionReward.placeholders.currency')" clearable class="!w-120px">
                 <el-option label="SC" value="SC" />
                 <el-option label="RC" value="RC" />
                 <el-option label="GC" value="GC" />
               </el-select>
             </el-form-item>
-            <el-form-item label="状态" prop="status">
-              <el-select v-model="queryParams.status" placeholder="请选择状态" clearable class="!w-140px">
-                <el-option label="启用" value="ACTIVE" />
-                <el-option label="停用" value="INACTIVE" />
+            <el-form-item :label="t('common.status')" prop="status">
+              <el-select v-model="queryParams.status" :placeholder="t('promotionReward.placeholders.status')" clearable class="!w-140px">
+                <el-option :label="t('promotionReward.status.ACTIVE')" value="ACTIVE" />
+                <el-option :label="t('promotionReward.status.INACTIVE')" value="INACTIVE" />
               </el-select>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-              <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+              <el-button type="primary" icon="Search" @click="handleQuery">{{ t('common.search') }}</el-button>
+              <el-button icon="Refresh" @click="resetQuery">{{ t('common.reset') }}</el-button>
             </el-form-item>
           </el-form>
         </el-card>
@@ -36,10 +36,12 @@
       <template #header>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
-            <el-button v-hasPermi="['promotion:reward:add']" type="primary" plain icon="Plus" @click="handleAdd">新增</el-button>
+            <el-button v-hasPermi="['promotion:reward:add']" type="primary" plain icon="Plus" @click="handleAdd">{{ t('common.add') }}</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button v-hasPermi="['promotion:reward:remove']" type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()">删除</el-button>
+            <el-button v-hasPermi="['promotion:reward:remove']" type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()">
+              {{ t('common.delete') }}
+            </el-button>
           </el-col>
           <right-toolbar v-model:show-search="showSearch" @query-table="getList"></right-toolbar>
         </el-row>
@@ -47,24 +49,24 @@
 
       <el-table v-loading="loading" border :data="rewardList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="45" align="center" />
-        <el-table-column label="活动编号" align="center" prop="promotionNo" min-width="170" show-overflow-tooltip />
-        <el-table-column label="活动名称" align="center" prop="promotionName" min-width="160" show-overflow-tooltip />
-        <el-table-column label="币种" align="center" prop="currencyCode" width="90" />
-        <el-table-column label="奖励金额" align="right" prop="rewardAmount" width="130" />
-        <el-table-column label="状态" align="center" prop="status" width="100">
+        <el-table-column :label="t('promotionReward.fields.promotionNo')" align="center" prop="promotionNo" min-width="170" show-overflow-tooltip />
+        <el-table-column :label="t('promotionReward.fields.promotionName')" align="center" prop="promotionName" min-width="160" show-overflow-tooltip />
+        <el-table-column :label="t('common.currency')" align="center" prop="currencyCode" width="90" />
+        <el-table-column :label="t('promotionReward.fields.rewardAmount')" align="right" prop="rewardAmount" width="130" />
+        <el-table-column :label="t('common.status')" align="center" prop="status" width="100">
           <template #default="scope">
             <el-tag :type="scope.row.status === 'ACTIVE' ? 'success' : 'info'">{{ statusLabel(scope.row.status) }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="开始时间" align="center" prop="startTime" width="170" />
-        <el-table-column label="结束时间" align="center" prop="endTime" width="170" />
-        <el-table-column label="创建时间" align="center" prop="createTime" width="170" />
-        <el-table-column label="操作" align="center" width="240" fixed="right">
+        <el-table-column :label="t('promotionReward.fields.startTime')" align="center" prop="startTime" width="170" />
+        <el-table-column :label="t('promotionReward.fields.endTime')" align="center" prop="endTime" width="170" />
+        <el-table-column :label="t('common.createTime')" align="center" prop="createTime" width="170" />
+        <el-table-column :label="t('common.operation')" align="center" width="240" fixed="right">
           <template #default="scope">
-            <el-tooltip content="编辑配置" placement="top">
+            <el-tooltip :content="t('promotionReward.actions.edit')" placement="top">
               <el-button v-hasPermi="['promotion:reward:edit']" link type="primary" icon="Edit" @click="handleUpdate(scope.row)"></el-button>
             </el-tooltip>
-            <el-tooltip :content="scope.row.status === 'ACTIVE' ? '停用活动' : '启用活动'" placement="top">
+            <el-tooltip :content="scope.row.status === 'ACTIVE' ? t('promotionReward.actions.disable') : t('promotionReward.actions.enable')" placement="top">
               <el-button
                 v-hasPermi="['promotion:reward:edit']"
                 link
@@ -73,13 +75,13 @@
                 @click="handleStatus(scope.row)"
               ></el-button>
             </el-tooltip>
-            <el-tooltip content="会员领取" placement="top">
+            <el-tooltip :content="t('promotionReward.actions.claim')" placement="top">
               <el-button v-hasPermi="['promotion:reward:claim']" link type="success" icon="Present" @click="openClaim(scope.row)"></el-button>
             </el-tooltip>
-            <el-tooltip content="领取记录" placement="top">
+            <el-tooltip :content="t('promotionReward.actions.claims')" placement="top">
               <el-button v-hasPermi="['promotion:reward:query']" link type="primary" icon="Tickets" @click="openClaims(scope.row)"></el-button>
             </el-tooltip>
-            <el-tooltip content="删除配置" placement="top">
+            <el-tooltip :content="t('promotionReward.actions.delete')" placement="top">
               <el-button v-hasPermi="['promotion:reward:remove']" link type="danger" icon="Delete" @click="handleDelete(scope.row)"></el-button>
             </el-tooltip>
           </template>
@@ -89,79 +91,79 @@
       <pagination v-show="total > 0" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" :total="total" @pagination="getList" />
     </el-card>
 
-    <el-dialog v-model="dialog.visible" :title="dialog.title" width="620px" append-to-body>
+    <el-dialog v-model="dialog.visible" :title="dialogTitle" width="620px" append-to-body>
       <el-form ref="rewardFormRef" :model="form" :rules="rules" label-width="100px">
-        <el-form-item label="活动名称" prop="promotionName">
-          <el-input v-model="form.promotionName" placeholder="请输入活动名称" />
+        <el-form-item :label="t('promotionReward.fields.promotionName')" prop="promotionName">
+          <el-input v-model="form.promotionName" :placeholder="t('promotionReward.placeholders.promotionName')" />
         </el-form-item>
-        <el-form-item label="币种" prop="currencyCode">
+        <el-form-item :label="t('common.currency')" prop="currencyCode">
           <el-select v-model="form.currencyCode" class="w-full">
             <el-option label="SC" value="SC" />
             <el-option label="RC" value="RC" />
             <el-option label="GC" value="GC" />
           </el-select>
         </el-form-item>
-        <el-form-item label="奖励金额" prop="rewardAmount">
+        <el-form-item :label="t('promotionReward.fields.rewardAmount')" prop="rewardAmount">
           <el-input-number v-model="form.rewardAmount" :precision="6" :min="0.000001" class="w-full" />
         </el-form-item>
-        <el-form-item label="状态" prop="status">
+        <el-form-item :label="t('common.status')" prop="status">
           <el-radio-group v-model="form.status">
-            <el-radio-button label="ACTIVE">启用</el-radio-button>
-            <el-radio-button label="INACTIVE">停用</el-radio-button>
+            <el-radio-button label="ACTIVE">{{ t('promotionReward.status.ACTIVE') }}</el-radio-button>
+            <el-radio-button label="INACTIVE">{{ t('promotionReward.status.INACTIVE') }}</el-radio-button>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="开始时间" prop="startTime">
-          <el-date-picker v-model="form.startTime" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" placeholder="不填则立即可用" class="w-full" />
+        <el-form-item :label="t('promotionReward.fields.startTime')" prop="startTime">
+          <el-date-picker v-model="form.startTime" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" :placeholder="t('promotionReward.placeholders.startTime')" class="w-full" />
         </el-form-item>
-        <el-form-item label="结束时间" prop="endTime">
-          <el-date-picker v-model="form.endTime" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" placeholder="不填则长期有效" class="w-full" />
+        <el-form-item :label="t('promotionReward.fields.endTime')" prop="endTime">
+          <el-date-picker v-model="form.endTime" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" :placeholder="t('promotionReward.placeholders.endTime')" class="w-full" />
         </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" type="textarea" :rows="3" placeholder="请输入备注" />
+        <el-form-item :label="t('common.remark')" prop="remark">
+          <el-input v-model="form.remark" type="textarea" :rows="3" :placeholder="t('promotionReward.placeholders.remark')" />
         </el-form-item>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" @click="submitForm">确定</el-button>
-          <el-button @click="cancel">取消</el-button>
+          <el-button type="primary" @click="submitForm">{{ t('common.confirm') }}</el-button>
+          <el-button @click="cancel">{{ t('common.cancel') }}</el-button>
         </div>
       </template>
     </el-dialog>
 
-    <el-dialog v-model="claimDialog.visible" title="会员领取奖励" width="480px" append-to-body>
+    <el-dialog v-model="claimDialog.visible" :title="t('promotionReward.dialog.claim')" width="480px" append-to-body>
       <el-form ref="claimFormRef" :model="claimForm" :rules="claimRules" label-width="100px">
-        <el-form-item label="活动名称">
+        <el-form-item :label="t('promotionReward.fields.promotionName')">
           <span>{{ claimDialog.promotionName }}</span>
         </el-form-item>
-        <el-form-item label="会员ID" prop="memberId">
-          <el-input v-model="claimForm.memberId" placeholder="请输入会员ID" />
+        <el-form-item :label="t('promotionReward.fields.memberId')" prop="memberId">
+          <el-input v-model="claimForm.memberId" :placeholder="t('promotionReward.placeholders.memberId')" />
         </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input v-model="claimForm.remark" type="textarea" :rows="3" placeholder="请输入备注" />
+        <el-form-item :label="t('common.remark')" prop="remark">
+          <el-input v-model="claimForm.remark" type="textarea" :rows="3" :placeholder="t('promotionReward.placeholders.remark')" />
         </el-form-item>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" @click="submitClaim">确定</el-button>
-          <el-button @click="claimDialog.visible = false">取消</el-button>
+          <el-button type="primary" @click="submitClaim">{{ t('common.confirm') }}</el-button>
+          <el-button @click="claimDialog.visible = false">{{ t('common.cancel') }}</el-button>
         </div>
       </template>
     </el-dialog>
 
-    <el-drawer v-model="claimDrawer.visible" :title="claimDrawer.title" size="70%" append-to-body>
+    <el-drawer v-model="claimDrawer.visible" :title="claimDrawerTitle" size="70%" append-to-body>
       <el-table v-loading="claimLoading" border :data="claimList">
-        <el-table-column label="领取单号" align="center" prop="claimNo" min-width="170" show-overflow-tooltip />
-        <el-table-column label="会员ID" align="center" prop="memberId" width="120" />
-        <el-table-column label="币种" align="center" prop="currencyCode" width="90" />
-        <el-table-column label="奖励金额" align="right" prop="rewardAmount" width="130" />
-        <el-table-column label="状态" align="center" prop="status" width="100">
+        <el-table-column :label="t('promotionReward.fields.claimNo')" align="center" prop="claimNo" min-width="170" show-overflow-tooltip />
+        <el-table-column :label="t('promotionReward.fields.memberId')" align="center" prop="memberId" width="120" />
+        <el-table-column :label="t('common.currency')" align="center" prop="currencyCode" width="90" />
+        <el-table-column :label="t('promotionReward.fields.rewardAmount')" align="right" prop="rewardAmount" width="130" />
+        <el-table-column :label="t('common.status')" align="center" prop="status" width="100">
           <template #default="scope">
             <el-tag :type="scope.row.status === 'SUCCESS' ? 'success' : 'danger'">{{ claimStatusLabel(scope.row.status) }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="钱包交易号" align="center" prop="walletTransactionNo" min-width="180" show-overflow-tooltip />
-        <el-table-column label="失败原因" align="center" prop="failReason" min-width="160" show-overflow-tooltip />
-        <el-table-column label="领取时间" align="center" prop="createTime" width="170" />
+        <el-table-column :label="t('promotionReward.fields.walletTransactionNo')" align="center" prop="walletTransactionNo" min-width="180" show-overflow-tooltip />
+        <el-table-column :label="t('promotionReward.fields.failReason')" align="center" prop="failReason" min-width="160" show-overflow-tooltip />
+        <el-table-column :label="t('promotionReward.fields.claimTime')" align="center" prop="createTime" width="170" />
       </el-table>
       <pagination v-show="claimTotal > 0" v-model:page="claimQuery.pageNum" v-model:limit="claimQuery.pageSize" :total="claimTotal" @pagination="getClaimList" />
     </el-drawer>
@@ -180,8 +182,10 @@ import {
   updatePromotionRewardStatus
 } from '@/api/promotion/reward';
 import { PromotionClaimForm, PromotionClaimQuery, PromotionClaimVO, PromotionRewardForm, PromotionRewardQuery, PromotionRewardVO } from '@/api/promotion/reward/types';
+import { useI18n } from 'vue-i18n';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+const { t } = useI18n();
 
 const rewardList = ref<PromotionRewardVO[]>([]);
 const claimList = ref<PromotionClaimVO[]>([]);
@@ -191,15 +195,14 @@ const showSearch = ref(true);
 const total = ref(0);
 const claimTotal = ref(0);
 const ids = ref<Array<string | number>>([]);
-const single = ref(true);
 const multiple = ref(true);
 const queryFormRef = ref<ElFormInstance>();
 const rewardFormRef = ref<ElFormInstance>();
 const claimFormRef = ref<ElFormInstance>();
 
-const dialog = reactive<DialogOption>({
+const dialog = reactive({
   visible: false,
-  title: ''
+  mode: 'add' as 'add' | 'edit'
 });
 
 const claimDialog = reactive({
@@ -210,7 +213,7 @@ const claimDialog = reactive({
 
 const claimDrawer = reactive({
   visible: false,
-  title: ''
+  promotionName: ''
 });
 
 const initFormData: PromotionRewardForm = {
@@ -220,22 +223,14 @@ const initFormData: PromotionRewardForm = {
 
 const initClaimData: PromotionClaimForm = {};
 
-const data = reactive<PageData<PromotionRewardForm, PromotionRewardQuery>>({
-  form: { ...initFormData },
-  queryParams: {
-    pageNum: 1,
-    pageSize: 10,
-    promotionNo: '',
-    promotionName: '',
-    currencyCode: '',
-    status: ''
-  },
-  rules: {
-    promotionName: [{ required: true, message: '活动名称不能为空', trigger: 'blur' }],
-    currencyCode: [{ required: true, message: '币种不能为空', trigger: 'change' }],
-    rewardAmount: [{ required: true, message: '奖励金额不能为空', trigger: 'blur' }],
-    status: [{ required: true, message: '状态不能为空', trigger: 'change' }]
-  }
+const form = ref<PromotionRewardForm>({ ...initFormData });
+const queryParams = ref<PromotionRewardQuery>({
+  pageNum: 1,
+  pageSize: 10,
+  promotionNo: '',
+  promotionName: '',
+  currencyCode: '',
+  status: ''
 });
 
 const claimForm = ref<PromotionClaimForm>({ ...initClaimData });
@@ -245,11 +240,19 @@ const claimQuery = ref<PromotionClaimQuery>({
   promotionId: ''
 });
 
-const claimRules = reactive({
-  memberId: [{ required: true, message: '会员ID不能为空', trigger: 'blur' }]
-});
+const dialogTitle = computed(() => t(dialog.mode === 'add' ? 'promotionReward.dialog.add' : 'promotionReward.dialog.edit'));
+const claimDrawerTitle = computed(() => t('promotionReward.dialog.claimRecords', { name: claimDrawer.promotionName }));
 
-const { queryParams, form, rules } = toRefs(data);
+const rules = computed(() => ({
+  promotionName: [{ required: true, message: t('promotionReward.rules.promotionName'), trigger: 'blur' }],
+  currencyCode: [{ required: true, message: t('promotionReward.rules.currency'), trigger: 'change' }],
+  rewardAmount: [{ required: true, message: t('promotionReward.rules.rewardAmount'), trigger: 'blur' }],
+  status: [{ required: true, message: t('promotionReward.rules.status'), trigger: 'change' }]
+}));
+
+const claimRules = computed(() => ({
+  memberId: [{ required: true, message: t('promotionReward.rules.memberId'), trigger: 'blur' }]
+}));
 
 const getList = async () => {
   loading.value = true;
@@ -274,19 +277,11 @@ const getClaimList = async () => {
 };
 
 const statusLabel = (status?: string) => {
-  const map: Record<string, string> = {
-    ACTIVE: '启用',
-    INACTIVE: '停用'
-  };
-  return status ? map[status] || status : '';
+  return status ? t(`promotionReward.status.${status}`) || status : '';
 };
 
 const claimStatusLabel = (status?: string) => {
-  const map: Record<string, string> = {
-    SUCCESS: '成功',
-    FAILED: '失败'
-  };
-  return status ? map[status] || status : '';
+  return status ? t(`promotionReward.status.${status}`) || status : '';
 };
 
 const reset = () => {
@@ -306,22 +301,21 @@ const resetQuery = () => {
 
 const handleSelectionChange = (selection: PromotionRewardVO[]) => {
   ids.value = selection.map((item) => item.id);
-  single.value = selection.length !== 1;
   multiple.value = !selection.length;
 };
 
 const handleAdd = () => {
   reset();
+  dialog.mode = 'add';
   dialog.visible = true;
-  dialog.title = '新增促销奖励';
 };
 
 const handleUpdate = async (row: PromotionRewardVO) => {
   reset();
   const res = await getPromotionReward(row.id);
   form.value = res.data;
+  dialog.mode = 'edit';
   dialog.visible = true;
-  dialog.title = '编辑促销奖励';
 };
 
 const submitForm = () => {
@@ -329,10 +323,10 @@ const submitForm = () => {
     if (valid) {
       if (form.value.id) {
         await updatePromotionReward(form.value);
-        proxy?.$modal.msgSuccess('修改成功');
+        proxy?.$modal.msgSuccess(t('common.success.edit'));
       } else {
         await addPromotionReward(form.value);
-        proxy?.$modal.msgSuccess('新增成功');
+        proxy?.$modal.msgSuccess(t('common.success.add'));
       }
       dialog.visible = false;
       await getList();
@@ -347,17 +341,18 @@ const cancel = () => {
 
 const handleStatus = async (row: PromotionRewardVO) => {
   const nextStatus = row.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
-  await proxy?.$modal.confirm(`确认${nextStatus === 'ACTIVE' ? '启用' : '停用'}该促销奖励？`);
+  const action = nextStatus === 'ACTIVE' ? t('promotionReward.actions.enable') : t('promotionReward.actions.disable');
+  await proxy?.$modal.confirm(t('promotionReward.confirm.status', { action }));
   await updatePromotionRewardStatus(row.id, nextStatus);
-  proxy?.$modal.msgSuccess('状态已更新');
+  proxy?.$modal.msgSuccess(t('common.success.statusUpdated'));
   await getList();
 };
 
 const handleDelete = async (row?: PromotionRewardVO) => {
   const deleteIds = row?.id || ids.value;
-  await proxy?.$modal.confirm('确认删除选中的促销奖励？');
+  await proxy?.$modal.confirm(t('promotionReward.confirm.delete'));
   await delPromotionReward(deleteIds);
-  proxy?.$modal.msgSuccess('删除成功');
+  proxy?.$modal.msgSuccess(t('common.success.delete'));
   await getList();
 };
 
@@ -373,7 +368,7 @@ const submitClaim = () => {
   claimFormRef.value?.validate(async (valid: boolean) => {
     if (valid && claimDialog.promotionId) {
       await claimPromotionReward(claimDialog.promotionId, claimForm.value);
-      proxy?.$modal.msgSuccess('领取成功');
+      proxy?.$modal.msgSuccess(t('promotionReward.messages.claimSuccess'));
       claimDialog.visible = false;
       await getClaimList();
     }
@@ -386,7 +381,7 @@ const openClaims = async (row: PromotionRewardVO) => {
     pageSize: 10,
     promotionId: row.id
   };
-  claimDrawer.title = `${row.promotionName} - 领取记录`;
+  claimDrawer.promotionName = row.promotionName;
   claimDrawer.visible = true;
   await getClaimList();
 };

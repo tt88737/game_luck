@@ -2,6 +2,13 @@ export default {
   route: {
     dashboard: '首页',
     document: '项目文档',
+    systemManagement: '系统管理',
+    tenantManagement: '租户管理',
+    systemMonitor: '系统监控',
+    systemTools: '系统工具',
+    walletCenter: '钱包中心',
+    paymentCenter: '支付中心',
+    gameTrading: '游戏交易',
     reportCenter: '报表中心',
     reportOverview: '数据总览',
     reportOverviewQuery: '报表总览查询',
@@ -79,6 +86,188 @@ export default {
     layoutSetting: '布局设置',
     personalCenter: '个人中心',
     logout: '退出登录'
+  },
+  common: {
+    search: '搜索',
+    reset: '重置',
+    add: '新增',
+    delete: '删除',
+    confirm: '确定',
+    cancel: '取消',
+    edit: '编辑',
+    detail: '详情',
+    operation: '操作',
+    createTime: '创建时间',
+    updateTime: '更新时间',
+    remark: '备注',
+    status: '状态',
+    currency: '币种',
+    amount: '金额',
+    success: {
+      add: '新增成功',
+      edit: '修改成功',
+      delete: '删除成功',
+      operate: '操作成功',
+      statusUpdated: '状态已更新'
+    }
+  },
+  memberProfile: {
+    fields: {
+      memberNo: '会员编号',
+      username: '用户名',
+      nickname: '昵称',
+      riskLevel: '风险等级',
+      registerChannel: '注册渠道',
+      lastLoginTime: '最后登录'
+    },
+    placeholders: {
+      memberNo: '请输入会员编号',
+      username: '请输入用户名',
+      nickname: '请输入昵称',
+      status: '请选择状态',
+      riskLevel: '请选择风险',
+      remark: '请输入备注'
+    },
+    status: {
+      ACTIVE: '正常',
+      FROZEN: '冻结',
+      DISABLED: '禁用'
+    },
+    risk: {
+      NORMAL: '正常',
+      WATCH: '观察',
+      HIGH: '高风险'
+    },
+    actions: {
+      view: '查看详情',
+      edit: '编辑资料',
+      setActive: '设为正常',
+      freeze: '冻结会员',
+      disable: '禁用会员',
+      delete: '删除资料'
+    },
+    dialog: {
+      add: '新增会员',
+      edit: '编辑会员',
+      detail: '会员详情'
+    },
+    rules: {
+      username: '用户名不能为空',
+      status: '状态不能为空',
+      riskLevel: '风险等级不能为空'
+    },
+    confirm: {
+      status: '确认将会员 {username} 状态改为 {status}？',
+      delete: '确认删除选中的会员资料？'
+    }
+  },
+  promotionReward: {
+    fields: {
+      promotionNo: '活动编号',
+      promotionName: '活动名称',
+      rewardAmount: '奖励金额',
+      startTime: '开始时间',
+      endTime: '结束时间',
+      claimNo: '领取单号',
+      memberId: '会员ID',
+      walletTransactionNo: '钱包交易号',
+      failReason: '失败原因',
+      claimTime: '领取时间'
+    },
+    placeholders: {
+      promotionNo: '请输入活动编号',
+      promotionName: '请输入活动名称',
+      currency: '请选择币种',
+      status: '请选择状态',
+      startTime: '不填则立即可用',
+      endTime: '不填则长期有效',
+      remark: '请输入备注',
+      memberId: '请输入会员ID'
+    },
+    status: {
+      ACTIVE: '启用',
+      INACTIVE: '停用',
+      SUCCESS: '成功',
+      FAILED: '失败'
+    },
+    actions: {
+      edit: '编辑配置',
+      enable: '启用活动',
+      disable: '停用活动',
+      claim: '会员领取',
+      claims: '领取记录',
+      delete: '删除配置'
+    },
+    dialog: {
+      add: '新增促销奖励',
+      edit: '编辑促销奖励',
+      claim: '会员领取奖励',
+      claimRecords: '{name} - 领取记录'
+    },
+    rules: {
+      promotionName: '活动名称不能为空',
+      currency: '币种不能为空',
+      rewardAmount: '奖励金额不能为空',
+      status: '状态不能为空',
+      memberId: '会员ID不能为空'
+    },
+    confirm: {
+      status: '确认{action}该促销奖励？',
+      delete: '确认删除选中的促销奖励？'
+    },
+    messages: {
+      claimSuccess: '领取成功'
+    }
+  },
+  redemptionOrder: {
+    fields: {
+      redemptionOrderNo: '订单号',
+      memberId: '会员ID',
+      redemptionMethod: '方式',
+      accountRef: '账户备注',
+      freezeNo: '冻结单号',
+      freezeWalletTransactionNo: '冻结交易',
+      settleWalletTransactionNo: '结算交易',
+      releaseWalletTransactionNo: '释放交易',
+      auditTime: '审核时间',
+      auditReason: '审核原因',
+      failReason: '失败原因'
+    },
+    placeholders: {
+      redemptionOrderNo: '请输入订单号',
+      memberId: '请输入会员ID',
+      currency: '请选择币种',
+      status: '请选择状态',
+      redemptionMethod: '默认 SIMULATED',
+      accountRef: '仅填写模拟或脱敏账户信息',
+      remark: '请输入备注',
+      auditReason: '请输入审核原因'
+    },
+    status: {
+      PENDING: '待审核',
+      APPROVED: '已通过',
+      REJECTED: '已拒绝',
+      FAILED: '失败'
+    },
+    actions: {
+      view: '查看详情',
+      approve: '审核通过',
+      reject: '审核拒绝'
+    },
+    dialog: {
+      add: '新增模拟兑换订单',
+      approve: '审核通过',
+      reject: '审核拒绝',
+      detail: '兑换订单详情'
+    },
+    rules: {
+      memberId: '会员ID不能为空',
+      currency: '币种不能为空',
+      amount: '金额不能为空'
+    },
+    confirm: {
+      audit: '确认{action}该兑换订单？'
+    }
   },
   reportOverview: {
     title: '数据总览',
