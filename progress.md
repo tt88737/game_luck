@@ -121,3 +121,7 @@
   - Wrapped visible labels, placeholders, button text, table columns, dialog titles, validation messages, status text, and confirmation messages in wallet, payment deposit, and game bet pages.
   - Added explicit English mappings for wallet account/currency/freeze/release/rule/transaction, simulated deposit, and simulated bet operation terms.
   - Static scan found no raw visible Chinese strings outside the translation wrapper in the touched wallet/payment/game pages.
+- Continued the built-in monitor module i18n pass:
+  - Wrapped monitor login log, online user, operation log, operation log detail, and Redis cache monitor copy with `tt()`.
+  - Added monitor/log/cache English mappings to `admin-ui/src/utils/i18nText.ts`.
+  - Kept SnailJob/Admin iframe pages unchanged because they have no local visible copy in these Vue files.
