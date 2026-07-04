@@ -134,3 +134,7 @@
   - Added dictionary/post/department/menu English mappings, menu tooltip copy, and dialog/confirmation terms to `admin-ui/src/utils/i18nText.ts`.
   - Moved complex menu tooltip examples into script constants to avoid Vue template parsing failures from nested quotes.
   - Verified this second system batch with duplicate-key scan, mojibake scan, menu icon check, and production build.
+- Continued built-in role module i18n pass:
+  - Wrapped role list, authorized user list, and select user dialog pages with `tt()`.
+  - Added role, data permission, authorization, and data scope English mappings to `admin-ui/src/utils/i18nText.ts`.
+  - Verified this role batch with duplicate-key scan, bound-attribute scan, missing-key scan, menu icon check, and production build.
