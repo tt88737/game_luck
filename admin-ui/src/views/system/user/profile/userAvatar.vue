@@ -1,6 +1,6 @@
 <template>
   <div class="user-info-head" @click="editCropper()">
-    <img :src="options.img" title="点击上传头像" class="img-circle img-lg" />
+    <img :src="options.img" :title="tt('点击上传头像')" class="img-circle img-lg" />
     <el-dialog v-model="open" :title="title" width="800px" append-to-body @opened="modalOpened" @close="closeDialog">
       <el-row>
         <el-col :xs="24" :md="12" :style="{ height: '350px' }">
@@ -28,7 +28,7 @@
         <el-col :lg="2" :md="2">
           <el-upload action="#" :http-request="requestUpload" :show-file-list="false" :before-upload="beforeUpload">
             <el-button>
-              选择
+              {{ tt('选择') }}
               <el-icon class="el-icon--right">
                 <Upload />
               </el-icon>
@@ -48,7 +48,7 @@
           <el-button icon="RefreshRight" @click="rotateRight()"></el-button>
         </el-col>
         <el-col :lg="{ span: 2, offset: 6 }" :md="2">
-          <el-button type="primary" @click="uploadImg()">提 交</el-button>
+          <el-button type="primary" @click="uploadImg()">{{ tt('提 交') }}</el-button>
         </el-col>
       </el-row>
     </el-dialog>
@@ -61,6 +61,7 @@ import { VueCropper } from 'vue-cropper';
 import { uploadAvatar } from '@/api/system/user';
 import { useUserStore } from '@/store/modules/user';
 import { UploadRawFile } from 'element-plus';
+import { tt } from '@/utils/i18nText';
 
 interface Options {
   img: string | any; // 裁剪图片的地址
@@ -79,7 +80,7 @@ const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 const open = ref(false);
 const visible = ref(false);
-const title = ref('修改头像');
+const title = computed(() => tt('修改头像'));
 
 const cropper = ref<any>({});
 //图片裁剪数据
@@ -121,7 +122,7 @@ const changeScale = (num: number) => {
 /** 上传预处理 */
 const beforeUpload = (file: UploadRawFile): any => {
   if (file.type.indexOf('image/') == -1) {
-    proxy?.$modal.msgError('文件格式错误，请上传图片类型,如：JPG，PNG后缀的文件。');
+    proxy?.$modal.msgError(tt('文件格式错误，请上传图片类型,如：JPG，PNG后缀的文件。'));
   } else {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -140,7 +141,7 @@ const uploadImg = async () => {
     open.value = false;
     options.img = res.data.imgUrl;
     userStore.setAvatar(options.img);
-    proxy?.$modal.msgSuccess('修改成功');
+    proxy?.$modal.msgSuccess(tt('修改成功'));
     visible.value = false;
   });
 };

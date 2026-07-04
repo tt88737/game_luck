@@ -142,3 +142,7 @@
   - Wrapped user management and authorized role pages with `tt()`.
   - Added user, import, reset password, and authorization role English mappings to `admin-ui/src/utils/i18nText.ts`.
   - Verified this user batch with duplicate-key scan, missing-key scan, bound-attribute scan, menu icon check, and production build.
+- Continued profile module i18n pass:
+  - Wrapped profile overview, basic profile, password reset, avatar upload, and online device pages with `tt()`.
+  - Added profile, password, avatar, and online device English mappings to `admin-ui/src/utils/i18nText.ts`.
+  - Verified this profile batch with duplicate-key scan, missing-key scan, bound-attribute scan, mojibake marker scan, menu icon check, and production build.
