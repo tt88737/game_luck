@@ -138,3 +138,7 @@
   - Wrapped role list, authorized user list, and select user dialog pages with `tt()`.
   - Added role, data permission, authorization, and data scope English mappings to `admin-ui/src/utils/i18nText.ts`.
   - Verified this role batch with duplicate-key scan, bound-attribute scan, missing-key scan, menu icon check, and production build.
+- Continued built-in user module i18n pass:
+  - Wrapped user management and authorized role pages with `tt()`.
+  - Added user, import, reset password, and authorization role English mappings to `admin-ui/src/utils/i18nText.ts`.
+  - Verified this user batch with duplicate-key scan, missing-key scan, bound-attribute scan, menu icon check, and production build.
