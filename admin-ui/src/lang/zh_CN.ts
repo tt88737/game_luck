@@ -9,6 +9,34 @@ export default {
     walletCenter: '钱包中心',
     paymentCenter: '支付中心',
     gameTrading: '游戏交易',
+    userManagement: '用户管理',
+    roleManagement: '角色管理',
+    menuManagement: '菜单管理',
+    deptManagement: '部门管理',
+    postManagement: '岗位管理',
+    dictManagement: '字典管理',
+    configManagement: '参数设置',
+    noticeManagement: '通知公告',
+    logManagement: '日志管理',
+    onlineUser: '在线用户',
+    cacheMonitor: '缓存监控',
+    codeGenerator: '代码生成',
+    tenantPackage: '租户套餐管理',
+    clientManagement: '客户端管理',
+    ossConfig: '文件配置管理',
+    adminMonitor: 'Admin监控',
+    fileManagement: '文件管理',
+    jobCenter: '任务调度中心',
+    operLog: '操作日志',
+    loginLog: '登录日志',
+    currencyConfig: '币种配置',
+    walletAccounts: '钱包账户',
+    walletTransactions: '账变流水',
+    walletReleaseRecords: '释放记录',
+    walletFreezeRecords: '冻结记录',
+    depositOrders: '充值订单',
+    gameBetOrders: '模拟下注订单',
+    walletRules: '钱包规则',
     reportCenter: '报表中心',
     reportOverview: '数据总览',
     reportOverviewQuery: '报表总览查询',
@@ -85,7 +113,72 @@ export default {
     selectTenant: '选择租户',
     layoutSetting: '布局设置',
     personalCenter: '个人中心',
-    logout: '退出登录'
+    logout: '退出登录',
+    search: '搜索',
+    logoutConfirm: '确定注销并退出系统吗？',
+    prompt: '提示'
+  },
+  dashboardHome: {
+    title: 'GameLuck Admin',
+    subtitle: '包网平台运营后台，用于管理平台、租户、钱包、游戏、活动、风控和审核流程。',
+    edition: '基础版',
+    columns: {
+      module: '模块',
+      focus: '当前重点',
+      status: '状态'
+    },
+    metrics: {
+      foundation: {
+        label: '后台底座',
+        value: '已就绪',
+        hint: '登录、租户、菜单、日志'
+      },
+      wallet: {
+        label: '钱包中心',
+        value: '规划中',
+        hint: '多币种可配置开关'
+      },
+      game: {
+        label: '游戏接入',
+        value: '已预留',
+        hint: 'Cocos / 三方游戏桥接'
+      },
+      risk: {
+        label: '风控审核',
+        value: '规划中',
+        hint: '审批、审计、限制规则'
+      }
+    },
+    tasks: {
+      platform: {
+        module: '平台后台',
+        task: '保持核心权限和租户边界稳定',
+        status: '进行中'
+      },
+      wallet: {
+        module: '钱包中心',
+        task: '定义账户、流水、冻结、充值和提现流程',
+        status: '下一步'
+      },
+      game: {
+        module: '游戏接入',
+        task: '预留游戏入口、回调和会话接入能力',
+        status: '已预留'
+      },
+      frontend: {
+        module: '前端减法',
+        task: '清理无关链接、默认品牌和无用入口',
+        status: '进行中'
+      }
+    },
+    boundary: {
+      title: '建设边界',
+      items: [
+        '保留权限、租户隔离、审计日志和数据权限，不破坏后台底座能力。',
+        'GameLuck 业务模块通过钱包、游戏、活动和结算接口逐步接入。',
+        '新增业务页面前，先清理无关入口，保持后台菜单和职责清晰。'
+      ]
+    }
   },
   common: {
     search: '搜索',

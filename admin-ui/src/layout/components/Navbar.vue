@@ -27,7 +27,7 @@
         </el-select>
 
         <search-menu ref="searchMenuRef" />
-        <el-tooltip content="搜索" effect="dark" placement="bottom">
+        <el-tooltip :content="proxy.$t('navbar.search')" effect="dark" placement="bottom">
           <div class="right-menu-item hover-effect" @click="openSearchMenu">
             <svg-icon class-name="search-icon" icon-class="search" />
           </div>
@@ -162,9 +162,9 @@ const toggleSideBar = () => {
 };
 
 const logout = async () => {
-  await ElMessageBox.confirm('确定注销并退出系统吗？', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
+  await ElMessageBox.confirm(proxy.$t('navbar.logoutConfirm'), proxy.$t('navbar.prompt'), {
+    confirmButtonText: proxy.$t('common.confirm'),
+    cancelButtonText: proxy.$t('common.cancel'),
     type: 'warning'
   } as ElMessageBoxOptions);
   userStore.logout().then(() => {

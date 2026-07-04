@@ -103,3 +103,16 @@
   - `pnpm --dir admin-ui check:menu-icons`
   - `pnpm --dir admin-ui build:prod`
   - Mojibake scan on newly added redemption frontend/backend/docs returned no matches.
+
+## 2026-07-04 Admin UI i18n
+
+- User reported full-site multilingual support is required after Dashboard and system menus still showed mixed Chinese/English.
+- Added task-plan phase `Admin UI 全站多语言`.
+- Completed previous commits:
+  - `03ad3eb fix(admin): localize report overview navigation`
+  - `6e035fd fix(admin): localize new module pages`
+- Started public-layer i18n pass:
+  - Dashboard home page now reads copy from `dashboardHome.*` i18n keys.
+  - Navbar search tooltip and logout confirmation use i18n keys.
+  - Top menu search placeholder and result titles use i18n / `translateTitle`.
+  - `i18nTitle.ts` route title mapping expanded for system, wallet, payment, and game menus.

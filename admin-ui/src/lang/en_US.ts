@@ -10,6 +10,34 @@ export default {
     walletCenter: 'Wallet Center',
     paymentCenter: 'Payment Center',
     gameTrading: 'Game Trading',
+    userManagement: 'User Management',
+    roleManagement: 'Role Management',
+    menuManagement: 'Menu Management',
+    deptManagement: 'Department Management',
+    postManagement: 'Post Management',
+    dictManagement: 'Dictionary Management',
+    configManagement: 'Parameter Settings',
+    noticeManagement: 'Notice Management',
+    logManagement: 'Log Management',
+    onlineUser: 'Online Users',
+    cacheMonitor: 'Cache Monitor',
+    codeGenerator: 'Code Generator',
+    tenantPackage: 'Tenant Packages',
+    clientManagement: 'Client Management',
+    ossConfig: 'File Config',
+    adminMonitor: 'Admin Monitor',
+    fileManagement: 'File Management',
+    jobCenter: 'Job Center',
+    operLog: 'Operation Logs',
+    loginLog: 'Login Logs',
+    currencyConfig: 'Currency Config',
+    walletAccounts: 'Wallet Accounts',
+    walletTransactions: 'Wallet Transactions',
+    walletReleaseRecords: 'Release Records',
+    walletFreezeRecords: 'Freeze Records',
+    depositOrders: 'Deposit Orders',
+    gameBetOrders: 'Simulated Bet Orders',
+    walletRules: 'Wallet Rules',
     reportCenter: 'Report Center',
     reportOverview: 'Overview',
     reportOverviewQuery: 'Report Overview Query',
@@ -89,7 +117,72 @@ export default {
     selectTenant: 'Select Tenant',
     layoutSetting: 'Layout Setting',
     personalCenter: 'Personal Center',
-    logout: 'Logout'
+    logout: 'Logout',
+    search: 'Search',
+    logoutConfirm: 'Are you sure you want to log out?',
+    prompt: 'Prompt'
+  },
+  dashboardHome: {
+    title: 'GameLuck Admin',
+    subtitle: 'Back-office operations console for platform, tenants, wallets, games, promotions, risk control, and audit workflows.',
+    edition: 'Base',
+    columns: {
+      module: 'Module',
+      focus: 'Current Focus',
+      status: 'Status'
+    },
+    metrics: {
+      foundation: {
+        label: 'Admin Foundation',
+        value: 'Ready',
+        hint: 'Login, tenants, menus, logs'
+      },
+      wallet: {
+        label: 'Wallet Center',
+        value: 'In Planning',
+        hint: 'Multi-currency configurable switches'
+      },
+      game: {
+        label: 'Game Integration',
+        value: 'Reserved',
+        hint: 'Cocos / third-party game bridge'
+      },
+      risk: {
+        label: 'Risk Audit',
+        value: 'In Planning',
+        hint: 'Approval, audit, restriction rules'
+      }
+    },
+    tasks: {
+      platform: {
+        module: 'Platform Admin',
+        task: 'Keep core permissions and tenant boundaries stable',
+        status: 'In Progress'
+      },
+      wallet: {
+        module: 'Wallet Center',
+        task: 'Define account, ledger, freeze, deposit, and withdrawal flows',
+        status: 'Next'
+      },
+      game: {
+        module: 'Game Integration',
+        task: 'Reserve game entry, callback, and session integration capabilities',
+        status: 'Reserved'
+      },
+      frontend: {
+        module: 'Frontend Simplification',
+        task: 'Remove unrelated links, default branding, and unused entries',
+        status: 'In Progress'
+      }
+    },
+    boundary: {
+      title: 'Build Boundaries',
+      items: [
+        'Keep permissions, tenant isolation, audit logs, and data permissions without weakening the admin foundation.',
+        'GameLuck business modules connect gradually through wallet, game, promotion, and settlement APIs.',
+        'Before adding business pages, remove unrelated entries and keep menus and responsibilities clear.'
+      ]
+    }
   },
   common: {
     search: 'Search',

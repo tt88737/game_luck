@@ -7,7 +7,7 @@
           v-model="state.menuQuery"
           class="layout-search-dialog__autocomplete"
           :fetch-suggestions="menuSearch"
-          placeholder="搜索"
+          :placeholder="t('navbar.search')"
           :fit-input-width="true"
           @select="onHandleSelect"
         >
@@ -31,6 +31,8 @@ import { getNormalPath } from '@/utils/gameluck';
 import { isHttp } from '@/utils/validate';
 import { usePermissionStore } from '@/store/modules/permission';
 import { RouteRecordRaw } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+import { translateTitle } from '@/utils/i18nTitle';
 type Router = Array<{
   path: string;
   icon: string;
@@ -42,6 +44,7 @@ type SearchState<T = any> = {
   menuList: T[];
 };
 // 定义变量内容
+const { t } = useI18n();
 const layoutMenuAutocompleteRef = ref();
 const router = useRouter();
 const routes = computed(() => usePermissionStore().routes);
@@ -88,7 +91,7 @@ const generateRoutes = (routes: RouteRecordRaw[], basePath = '', prefixTitle: st
         title: [...prefixTitle]
       };
       if (r.meta && r.meta.title) {
-        data.title = [...data.title, r.meta.title];
+        data.title = [...data.title, translateTitle(r.meta.title as string)];
         if (r.redirect !== 'noRedirect') {
           // only push the routes with title
           // special case: need to exclude parent router without redirect

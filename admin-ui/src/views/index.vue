@@ -2,14 +2,14 @@
   <div class="app-container home">
     <section class="hero">
       <div>
-        <h1>GameLuck Admin</h1>
-        <p>包网平台运营后台，用于管理平台、租户、钱包、游戏、活动、风控和审核流程。</p>
+        <h1>{{ t('dashboardHome.title') }}</h1>
+        <p>{{ t('dashboardHome.subtitle') }}</p>
       </div>
-      <el-tag type="success" effect="light">基础版</el-tag>
+      <el-tag type="success" effect="light">{{ t('dashboardHome.edition') }}</el-tag>
     </section>
 
     <el-row :gutter="16">
-      <el-col :xs="24" :sm="12" :lg="6" v-for="item in metrics" :key="item.label">
+      <el-col v-for="item in metrics" :key="item.key" :xs="24" :sm="12" :lg="6">
         <div class="metric">
           <span>{{ item.label }}</span>
           <strong>{{ item.value }}</strong>
@@ -21,9 +21,9 @@
     <el-row :gutter="16" class="section-row">
       <el-col :xs="24" :lg="14">
         <el-table :data="tasks" border>
-          <el-table-column prop="module" label="模块" min-width="150" />
-          <el-table-column prop="task" label="当前重点" min-width="220" />
-          <el-table-column prop="status" label="状态" width="120">
+          <el-table-column prop="module" :label="t('dashboardHome.columns.module')" min-width="150" />
+          <el-table-column prop="task" :label="t('dashboardHome.columns.focus')" min-width="220" />
+          <el-table-column prop="status" :label="t('dashboardHome.columns.status')" width="120">
             <template #default="{ row }">
               <el-tag :type="row.type">{{ row.status }}</el-tag>
             </template>
@@ -32,11 +32,9 @@
       </el-col>
       <el-col :xs="24" :lg="10">
         <div class="panel">
-          <h2>建设边界</h2>
+          <h2>{{ t('dashboardHome.boundary.title') }}</h2>
           <ul>
-            <li>保留权限、租户隔离、审计日志和数据权限，不破坏后台底座能力。</li>
-            <li>GameLuck 业务模块通过钱包、游戏、活动和结算接口逐步接入。</li>
-            <li>新增业务页面前，先清理无关入口，保持后台菜单和职责清晰。</li>
+            <li v-for="item in boundaryItems" :key="item">{{ item }}</li>
           </ul>
         </div>
       </el-col>
@@ -45,19 +43,32 @@
 </template>
 
 <script setup name="Index" lang="ts">
-const metrics = [
-  { label: '后台底座', value: '已就绪', hint: '登录、租户、菜单、日志' },
-  { label: '钱包中心', value: '规划中', hint: '多币种可配置开关' },
-  { label: '游戏接入', value: '已预留', hint: 'Cocos / 三方游戏桥接' },
-  { label: '风控审核', value: '规划中', hint: '审批、审计、限制规则' }
-];
+import { useI18n } from 'vue-i18n';
 
-const tasks = [
-  { module: '平台后台', task: '保持核心权限和租户边界稳定', status: '进行中', type: 'success' },
-  { module: '钱包中心', task: '定义账户、流水、冻结、充值和提现流程', status: '下一步', type: 'warning' },
-  { module: '游戏接入', task: '预留游戏入口、回调和会话接入能力', status: '已预留', type: 'info' },
-  { module: '前端减法', task: '清理无关链接、默认品牌和无用入口', status: '进行中', type: 'success' }
-];
+const { t, tm } = useI18n();
+
+const metricKeys = ['foundation', 'wallet', 'game', 'risk'];
+const taskKeys = ['platform', 'wallet', 'game', 'frontend'];
+
+const metrics = computed(() =>
+  metricKeys.map((key) => ({
+    key,
+    label: t(`dashboardHome.metrics.${key}.label`),
+    value: t(`dashboardHome.metrics.${key}.value`),
+    hint: t(`dashboardHome.metrics.${key}.hint`)
+  }))
+);
+
+const tasks = computed(() =>
+  taskKeys.map((key, index) => ({
+    module: t(`dashboardHome.tasks.${key}.module`),
+    task: t(`dashboardHome.tasks.${key}.task`),
+    status: t(`dashboardHome.tasks.${key}.status`),
+    type: index === 1 ? 'warning' : index === 2 ? 'info' : 'success'
+  }))
+);
+
+const boundaryItems = computed(() => tm('dashboardHome.boundary.items') as string[]);
 </script>
 
 <style lang="scss" scoped>
