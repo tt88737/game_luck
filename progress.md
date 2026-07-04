@@ -129,3 +129,8 @@
   - Wrapped system config, notice, and client management pages with `tt()`.
   - Added system config/notice/client English mappings and confirmation message fragments to `admin-ui/src/utils/i18nText.ts`.
   - Verified this first system batch with static scans, menu icon check, and production build.
+- Continued built-in system module i18n pass:
+  - Wrapped system dictionary type/data, post, department, and menu pages with `tt()`.
+  - Added dictionary/post/department/menu English mappings, menu tooltip copy, and dialog/confirmation terms to `admin-ui/src/utils/i18nText.ts`.
+  - Moved complex menu tooltip examples into script constants to avoid Vue template parsing failures from nested quotes.
+  - Verified this second system batch with duplicate-key scan, mojibake scan, menu icon check, and production build.
