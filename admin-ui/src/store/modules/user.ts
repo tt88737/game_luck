@@ -58,12 +58,16 @@ export const useUserStore = defineStore('user', () => {
   };
 
   // 注销
-  const logout = async (): Promise<void> => {
-    await logoutApi();
+  const resetUserState = () => {
     token.value = '';
     roles.value = [];
     permissions.value = [];
     removeToken();
+  };
+
+  const logout = async (): Promise<void> => {
+    await to(logoutApi());
+    resetUserState();
   };
 
   const setAvatar = (value: string) => {
