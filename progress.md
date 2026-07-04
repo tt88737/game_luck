@@ -116,3 +116,8 @@
   - Navbar search tooltip and logout confirmation use i18n keys.
   - Top menu search placeholder and result titles use i18n / `translateTitle`.
   - `i18nTitle.ts` route title mapping expanded for system, wallet, payment, and game menus.
+- Continued business-page i18n pass for wallet/payment/game modules:
+  - Added `admin-ui/src/utils/i18nText.ts` as a lightweight translation bridge for existing hardcoded business page copy.
+  - Wrapped visible labels, placeholders, button text, table columns, dialog titles, validation messages, status text, and confirmation messages in wallet, payment deposit, and game bet pages.
+  - Added explicit English mappings for wallet account/currency/freeze/release/rule/transaction, simulated deposit, and simulated bet operation terms.
+  - Static scan found no raw visible Chinese strings outside the translation wrapper in the touched wallet/payment/game pages.
