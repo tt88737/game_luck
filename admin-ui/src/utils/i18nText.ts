@@ -10,6 +10,18 @@ const enTextMap: Record<string, string> = {
   操作: 'Operation',
   状态: 'Status',
   系统提示: 'System Prompt',
+  中文: 'Chinese',
+  '切换语言成功！': 'Language switched successfully!',
+  '401错误!': '401 Error!',
+  '您没有访问权限！': 'You do not have access permission!',
+  '对不起，您没有访问权限，请不要进行非法操作！您可以返回主页面':
+    'Sorry, you do not have access permission. Do not perform unauthorized operations. You can return to the home page.',
+  回首页: 'Back to Home',
+  '404错误!': '404 Error!',
+  '对不起，您正在寻找的页面不存在。尝试检查URL的错误，然后按浏览器上的刷新按钮或尝试在我们的应用程序中找到其他内容。':
+    'Sorry, the page you are looking for does not exist. Check the URL, refresh the browser, or try finding other content in the application.',
+  返回首页: 'Back to Home',
+  '找不到网页！': 'Page not found!',
   币种: 'Currency',
   金额: 'Amount',
   备注: 'Remark',

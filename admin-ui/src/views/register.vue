@@ -77,6 +77,7 @@ import { getCodeImg, register, getTenantList } from '@/api/login';
 import { RegisterForm, TenantVO } from '@/api/types';
 import { to } from 'await-to-js';
 import { useI18n } from 'vue-i18n';
+import { tt } from '@/utils/i18nText';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
@@ -137,7 +138,7 @@ const handleRegister = () => {
       const [err] = await to(register(registerForm.value));
       if (!err) {
         const username = registerForm.value.username;
-        await ElMessageBox.alert('<span style="color: red; ">' + t('register.registerSuccess', { username }) + '</font>', '系统提示', {
+        await ElMessageBox.alert('<span style="color: red; ">' + t('register.registerSuccess', { username }) + '</font>', tt('系统提示'), {
           app: undefined,
           dangerouslyUseHTMLString: true,
           type: 'success'

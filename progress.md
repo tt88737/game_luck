@@ -170,3 +170,6 @@
   - Wrapped editor, file upload, image upload, icon select, right toolbar, and role select visible copy with `tt()`.
   - Moved Quill tooltip labels to CSS variables derived from `tt()` so editor pseudo-element copy can follow language changes.
   - Verified this component batch with duplicate-key scan, missing-key scan, visible Chinese scan, mojibake marker scan, menu icon check, and production build. The first build hit Windows/esbuild memory pressure; rerun with `GOMAXPROCS=2` passed.
+- Continued global error and language page i18n pass:
+  - Wrapped language selector, 401 page, 404 page, and register success dialog title visible copy with `tt()`.
+  - Added English mappings for language switch feedback, 401/404 error copy, and back-home actions to `admin-ui/src/utils/i18nText.ts`.
