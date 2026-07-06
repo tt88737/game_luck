@@ -9,6 +9,7 @@ import ParentView from '@/components/ParentView/index.vue';
 import InnerLink from '@/layout/components/InnerLink/index.vue';
 import { ref } from 'vue';
 import { createCustomNameComponent } from '@/utils/createCustomNameComponent';
+import { tt } from '@/utils/i18nText';
 
 // 匹配views里面所有的.vue文件
 const modules = import.meta.glob('./../../views/**/*.vue');
@@ -193,10 +194,10 @@ function duplicateRouteChecker(localRoutes: Route[], routes: Route[]) {
   allRoutes.forEach((route) => {
     const name = route.name.toString();
     if (name && nameList.includes(name)) {
-      const message = `路由名称: [${name}] 重复, 会造成 404`;
+      const message = tt('路由名称') + `: [${name}] ` + tt('重复，会造成 404');
       console.error(message);
       ElNotification({
-        title: '路由名称重复',
+        title: tt('路由名称重复'),
         message,
         type: 'error'
       });

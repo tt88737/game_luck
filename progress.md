@@ -176,3 +176,6 @@
 - Continued residual system module i18n pass:
   - Wrapped remaining system menu and role tooltip text, role data-scope labels, OSS dialog/status text, tenant dialog/status text, tenant package dialog/status text, and user password invalid-character messages with `tt()`.
   - Reduced the full visible Chinese scan to non-UI CSS comments only.
+- Continued global notification i18n pass:
+  - Wrapped WebSocket/SSE notification titles and duplicate-route warning notifications with `tt()`.
+  - Added English mappings for message and route-duplicate notification copy.

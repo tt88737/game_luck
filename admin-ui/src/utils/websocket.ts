@@ -1,6 +1,7 @@
 import { getToken } from '@/utils/auth';
 import { ElNotification } from 'element-plus';
 import { useNoticeStore } from '@/store/modules/notice';
+import { tt } from '@/utils/i18nText';
 
 // 初始化socket
 export const initWebSocket = (url: any) => {
@@ -41,7 +42,7 @@ export const initWebSocket = (url: any) => {
         time: new Date().toLocaleString()
       });
       ElNotification({
-        title: '消息',
+        title: tt('消息'),
         message: e.data,
         type: 'success',
         duration: 3000
