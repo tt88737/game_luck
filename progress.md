@@ -154,3 +154,7 @@
   - Wrapped OSS object storage and OSS config pages with `tt()`.
   - Added file, upload, preview, bucket, endpoint, access policy, and OSS confirmation English mappings to `admin-ui/src/utils/i18nText.ts`.
   - Verified this OSS batch with duplicate-key scan, missing-key scan, bound-attribute scan, mojibake marker scan, menu icon check, and production build.
+- Continued code generation module i18n pass:
+  - Wrapped code generation list, import table dialog, basic info form, edit table page, and generation info form with `tt()`.
+  - Added data source, table metadata, generation settings, field configuration, preview, sync, import, and validation English mappings to `admin-ui/src/utils/i18nText.ts`.
+  - Verified this code generation batch with duplicate-key scan, missing-key scan, bound-attribute scan, mojibake marker scan, menu icon check, and production build.
