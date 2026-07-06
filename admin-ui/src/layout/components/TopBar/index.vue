@@ -4,7 +4,7 @@
 
     <el-sub-menu index="more" class="el-sub-menu__hide-arrow" v-if="moreRoutes.length > 0">
       <template #title>
-        <span>更多菜单</span>
+        <span>{{ tt('更多菜单') }}</span>
       </template>
       <sidebar-item :key="route.path + index" v-for="(route, index) in moreRoutes" :item="route" :base-path="route.path" />
     </el-sub-menu>
@@ -16,6 +16,7 @@ import SidebarItem from '../Sidebar/SidebarItem'
 import {useAppStore} from '@/store/modules/app'
 import {useSettingsStore} from '@/store/modules/settings'
 import {usePermissionStore} from '@/store/modules/permission'
+import { tt } from '@/utils/i18nText'
 
 const route = useRoute()
 const appStore = useAppStore()

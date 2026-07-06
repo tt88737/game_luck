@@ -1,8 +1,8 @@
 <template>
   <el-drawer v-model="showSettings" :with-header="false" direction="rtl" size="300px" close-on-click-modal>
-    <h3 class="drawer-title">菜单导航设置</h3>
+    <h3 class="drawer-title">{{ tt('菜单导航设置') }}</h3>
     <div class="nav-wrap">
-      <el-tooltip content="左侧菜单" placement="bottom">
+      <el-tooltip :content="tt('左侧菜单')" placement="bottom">
         <div
           class="item left"
           @click="handleNavType(NavTypeEnum.LEFT)"
@@ -13,7 +13,7 @@
         </div>
       </el-tooltip>
 
-      <el-tooltip content="混合菜单" placement="bottom">
+      <el-tooltip :content="tt('混合菜单')" placement="bottom">
         <div
           class="item mix"
           @click="handleNavType(NavTypeEnum.MIX)"
@@ -23,7 +23,7 @@
           <b></b><b></b>
         </div>
       </el-tooltip>
-      <el-tooltip content="顶部菜单" placement="bottom">
+      <el-tooltip :content="tt('顶部菜单')" placement="bottom">
         <div
           class="item top"
           @click="handleNavType(NavTypeEnum.TOP)"
@@ -35,13 +35,13 @@
       </el-tooltip>
     </div>
 
-    <h3 class="drawer-title">主题风格设置</h3>
+    <h3 class="drawer-title">{{ tt('主题风格设置') }}</h3>
 
     <div class="setting-drawer-block-checbox">
       <div class="setting-drawer-block-checbox-item" @click="handleTheme(SideThemeEnum.DARK)">
         <img src="@/assets/images/dark.svg" alt="dark" />
         <div v-if="sideTheme === 'theme-dark'" class="setting-drawer-block-checbox-selectIcon" style="display: block">
-          <i aria-label="图标: check" class="anticon anticon-check">
+          <i :aria-label="tt('图标: check')" class="anticon anticon-check">
             <svg viewBox="64 64 896 896" data-icon="check" width="1em" height="1em" :fill="theme" aria-hidden="true" focusable="false" class>
               <path
                 d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 0 0-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"
@@ -53,7 +53,7 @@
       <div class="setting-drawer-block-checbox-item" @click="handleTheme(SideThemeEnum.LIGHT)">
         <img src="@/assets/images/light.svg" alt="light" />
         <div v-if="sideTheme === 'theme-light'" class="setting-drawer-block-checbox-selectIcon" style="display: block">
-          <i aria-label="图标: check" class="anticon anticon-check">
+          <i :aria-label="tt('图标: check')" class="anticon anticon-check">
             <svg viewBox="64 64 896 896" data-icon="check" width="1em" height="1em" :fill="theme" aria-hidden="true" focusable="false" class>
               <path
                 d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 0 0-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"
@@ -64,19 +64,19 @@
       </div>
     </div>
     <div class="drawer-item">
-      <span>主题颜色</span>
+      <span>{{ tt('主题颜色') }}</span>
       <span class="comp-style">
         <el-color-picker v-model="theme" :predefine="predefineColors" @change="themeChange" />
       </span>
     </div>
     <div class="drawer-item">
-      <span>深色模式</span>
+      <span>{{ tt('深色模式') }}</span>
       <span class="comp-style">
         <el-switch v-model="isDark" class="drawer-switch" @change="toggleDark" />
       </span>
     </div>
     <div class="drawer-item">
-      <span>页面圆角</span>
+      <span>{{ tt('页面圆角') }}</span>
       <span class="comp-style">
         <el-slider v-model="radiusBase" :min="0" :max="32" :step="2" style="width: 120px" @change="radiusBaseChange" />
       </span>
@@ -84,38 +84,38 @@
 
     <el-divider />
 
-    <h3 class="drawer-title">系统布局配置</h3>
+    <h3 class="drawer-title">{{ tt('系统布局配置') }}</h3>
 
     <div class="drawer-item">
-      <span>开启 Tags-Views</span>
+      <span>{{ tt('开启 Tags-Views') }}</span>
       <span class="comp-style">
         <el-switch v-model="settingsStore.tagsView" class="drawer-switch" />
       </span>
     </div>
 
     <div class="drawer-item">
-      <span>显示页签图标</span>
+      <span>{{ tt('显示页签图标') }}</span>
       <span class="comp-style">
         <el-switch v-model="settingsStore.tagsIcon" :disabled="!settingsStore.tagsView" class="drawer-switch" />
       </span>
     </div>
 
     <div class="drawer-item">
-      <span>固定 Header</span>
+      <span>{{ tt('固定 Header') }}</span>
       <span class="comp-style">
         <el-switch v-model="settingsStore.fixedHeader" class="drawer-switch" />
       </span>
     </div>
 
     <div class="drawer-item">
-      <span>显示 Logo</span>
+      <span>{{ tt('显示 Logo') }}</span>
       <span class="comp-style">
         <el-switch v-model="settingsStore.sidebarLogo" class="drawer-switch" />
       </span>
     </div>
 
     <div class="drawer-item">
-      <span>动态标题</span>
+      <span>{{ tt('动态标题') }}</span>
       <span class="comp-style">
         <el-switch v-model="settingsStore.dynamicTitle" class="drawer-switch" @change="dynamicTitleChange" />
       </span>
@@ -123,8 +123,8 @@
 
     <el-divider />
 
-    <el-button type="primary" plain icon="DocumentAdd" @click="saveSetting">保存配置</el-button>
-    <el-button plain icon="Refresh" @click="resetSetting">重置配置</el-button>
+    <el-button type="primary" plain icon="DocumentAdd" @click="saveSetting">{{ tt('保存配置') }}</el-button>
+    <el-button plain icon="Refresh" @click="resetSetting">{{ tt('重置配置') }}</el-button>
   </el-drawer>
 </template>
 
@@ -137,6 +137,7 @@ import { handleThemeStyle } from '@/utils/theme';
 import { SideThemeEnum } from '@/enums/SideThemeEnum';
 import { NavTypeEnum } from '@/enums/NavTypeEnum';
 import defaultSettings from '@/settings';
+import { tt } from '@/utils/i18nText';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const appStore = useAppStore();
@@ -217,7 +218,7 @@ const handleTheme = (val: string) => {
   settingsStore.sideTheme = val;
 };
 const saveSetting = () => {
-  proxy?.$modal.loading('正在保存到本地，请稍候...');
+  proxy?.$modal.loading(tt('正在保存到本地，请稍候...'));
   const settings = useStorage<LayoutSetting>('layout-setting', defaultSettings);
   settings.value.tagsView = storeSettings.value.tagsView;
   settings.value.tagsIcon = storeSettings.value.tagsIcon;
@@ -233,7 +234,7 @@ const saveSetting = () => {
   }, 1000);
 };
 const resetSetting = () => {
-  proxy?.$modal.loading('正在清除设置缓存并刷新，请稍候...');
+  proxy?.$modal.loading(tt('正在清除设置缓存并刷新，请稍候...'));
   useStorage<any>('layout-setting', null).value = null;
   setTimeout('window.location.reload()', 1000);
 };

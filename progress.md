@@ -162,3 +162,7 @@
   - Wrapped `UserSelect`, `TopNav`, `SizeSelect`, global modal prompts, and download loading/error copy with `tt()`.
   - Added shared dialog, top menu, size selector, and download English mappings to `admin-ui/src/utils/i18nText.ts`.
   - Verified this shared batch with duplicate-key scan, missing-key scan, bound-attribute scan, mojibake marker scan, menu icon check, and production build.
+- Continued layout shell i18n pass:
+  - Wrapped settings drawer, tags-view context menu, notice popover, TopBar more menu, and breadcrumb default home title with `tt()`.
+  - Added layout shell English mappings to `admin-ui/src/utils/i18nText.ts`.
+  - Verified this layout batch with duplicate-key scan, missing-key scan, visible Chinese scan, mojibake marker scan, menu icon check, and production build.

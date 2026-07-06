@@ -15,6 +15,7 @@
 import { RouteLocationMatched } from 'vue-router';
 import { usePermissionStore } from '@/store/modules/permission';
 import { translateTitle } from '@/utils/i18nTitle';
+import { tt } from '@/utils/i18nText';
 
 const route = useRoute();
 const router = useRouter();
@@ -35,7 +36,7 @@ const getBreadcrumb = () => {
     matched = route.matched.filter((item) => item.meta && item.meta.title);
   }
   if (!isDashboard(matched[0])) {
-    matched = [{ path: '/index', meta: { title: '首页' } }].concat(matched);
+    matched = [{ path: '/index', meta: { title: tt('首页') } }].concat(matched);
   }
   levelList.value = matched.filter((item) => item.meta && item.meta.title && item.meta.breadcrumb !== false);
 };
