@@ -1,6 +1,7 @@
 package com.gameluck.common.core.domain;
 
 import com.gameluck.common.core.constant.HttpStatus;
+import com.gameluck.common.core.utils.MessageUtils;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -36,11 +37,11 @@ public class R<T> implements Serializable {
     private T data;
 
     public static <T> R<T> ok() {
-        return restResult(null, SUCCESS, "操作成功");
+        return restResult(null, SUCCESS, MessageUtils.message("common.operation.success"));
     }
 
     public static <T> R<T> ok(T data) {
-        return restResult(data, SUCCESS, "操作成功");
+        return restResult(data, SUCCESS, MessageUtils.message("common.operation.success"));
     }
 
     public static <T> R<T> ok(String msg) {
@@ -52,7 +53,7 @@ public class R<T> implements Serializable {
     }
 
     public static <T> R<T> fail() {
-        return restResult(null, FAIL, "操作失败");
+        return restResult(null, FAIL, MessageUtils.message("common.operation.fail"));
     }
 
     public static <T> R<T> fail(String msg) {
@@ -60,7 +61,7 @@ public class R<T> implements Serializable {
     }
 
     public static <T> R<T> fail(T data) {
-        return restResult(data, FAIL, "操作失败");
+        return restResult(data, FAIL, MessageUtils.message("common.operation.fail"));
     }
 
     public static <T> R<T> fail(String msg, T data) {

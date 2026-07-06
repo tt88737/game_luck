@@ -181,3 +181,7 @@
   - Added English mappings for message and route-duplicate notification copy.
 - Continued route title i18n pass:
   - Added `personalCenter` route key and title mappings so the profile route is translated in sidebar/breadcrumb/tags-view contexts.
+- Continued backend/data-message i18n pass:
+  - Routed default backend `R.ok()` / `R.fail()` messages and `TableDataInfo` query success messages through `MessageUtils`.
+  - Added common response i18n keys to backend `messages*.properties`.
+  - Routed admin-ui request-layer error codes, repeat-submit prompts, relogin prompts, network errors, and download fallback errors through `tt()`.
