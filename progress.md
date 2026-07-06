@@ -166,3 +166,7 @@
   - Wrapped settings drawer, tags-view context menu, notice popover, TopBar more menu, and breadcrumb default home title with `tt()`.
   - Added layout shell English mappings to `admin-ui/src/utils/i18nText.ts`.
   - Verified this layout batch with duplicate-key scan, missing-key scan, visible Chinese scan, mojibake marker scan, menu icon check, and production build.
+- Continued common component i18n pass:
+  - Wrapped editor, file upload, image upload, icon select, right toolbar, and role select visible copy with `tt()`.
+  - Moved Quill tooltip labels to CSS variables derived from `tt()` so editor pseudo-element copy can follow language changes.
+  - Verified this component batch with duplicate-key scan, missing-key scan, visible Chinese scan, mojibake marker scan, menu icon check, and production build. The first build hit Windows/esbuild memory pressure; rerun with `GOMAXPROCS=2` passed.

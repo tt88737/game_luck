@@ -24,17 +24,17 @@
     </el-upload>
     <!-- 上传提示 -->
     <div v-if="showTip" class="el-upload__tip">
-      请上传
+      {{ tt('请上传') }}
       <template v-if="fileSize">
-        大小不超过 <b style="color: #f56c6c">{{ fileSize }}MB</b>
+        {{ tt('大小不超过') }} <b style="color: #f56c6c">{{ fileSize }}MB</b>
       </template>
       <template v-if="fileType">
-        格式为 <b style="color: #f56c6c">{{ fileType.join('/') }}</b>
+        {{ tt('格式为') }} <b style="color: #f56c6c">{{ fileType.join('/') }}</b>
       </template>
-      的文件
+      {{ tt('的文件') }}
     </div>
 
-    <el-dialog v-model="dialogVisible" title="预览" width="800px" append-to-body>
+    <el-dialog v-model="dialogVisible" :title="tt('预览')" width="800px" append-to-body>
       <img :src="dialogImageUrl" style="display: block; max-width: 100%; margin: 0 auto" />
     </el-dialog>
   </div>
@@ -46,6 +46,7 @@ import { OssVO } from '@/api/system/oss/types';
 import { propTypes } from '@/utils/propTypes';
 import { globalHeaders } from '@/utils/request';
 import { compressAccurately } from 'image-conversion';
+import { tt } from '@/utils/i18nText';
 
 const props = defineProps({
   modelValue: {
@@ -140,35 +141,35 @@ const handleBeforeUpload = (file: any) => {
     isImg = file.type.indexOf('image') > -1;
   }
   if (!isImg) {
-    proxy?.$modal.msgError(`文件格式不正确, 请上传${props.fileType.join('/')}图片格式文件!`);
+    proxy?.$modal.msgError(tt('文件格式不正确, 请上传') + props.fileType.join('/') + tt('图片格式文件!'));
     return false;
   }
   if (file.name.includes(',')) {
-    proxy?.$modal.msgError('文件名不正确，不能包含英文逗号!');
+    proxy?.$modal.msgError(tt('文件名不正确，不能包含英文逗号!'));
     return false;
   }
   if (props.fileSize) {
     const isLt = file.size / 1024 / 1024 < props.fileSize;
     if (!isLt) {
-      proxy?.$modal.msgError(`上传头像图片大小不能超过 ${props.fileSize} MB!`);
+      proxy?.$modal.msgError(tt('上传头像图片大小不能超过') + ` ${props.fileSize} MB!`);
       return false;
     }
   }
 
   //压缩图片，开启压缩并且大于指定的压缩大小时才压缩
   if (props.compressSupport && file.size / 1024 > props.compressTargetSize) {
-    proxy?.$modal.loading('正在上传图片，请稍候...');
+    proxy?.$modal.loading(tt('正在上传图片，请稍候...'));
     number.value++;
     return compressAccurately(file, props.compressTargetSize);
   } else {
-    proxy?.$modal.loading('正在上传图片，请稍候...');
+    proxy?.$modal.loading(tt('正在上传图片，请稍候...'));
     number.value++;
   }
 };
 
 // 文件个数超出
 const handleExceed = () => {
-  proxy?.$modal.msgError(`上传文件数量不能超过 ${props.limit} 个!`);
+  proxy?.$modal.msgError(tt('上传文件数量不能超过') + ` ${props.limit} ` + tt('个!'));
 };
 
 // 上传成功回调
@@ -211,7 +212,7 @@ const uploadedSuccessfully = () => {
 
 // 上传失败
 const handleUploadError = () => {
-  proxy?.$modal.msgError('上传图片失败');
+  proxy?.$modal.msgError(tt('上传图片失败'));
   proxy?.$modal.closeLoading();
 };
 
