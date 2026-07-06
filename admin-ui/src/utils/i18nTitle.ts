@@ -90,7 +90,9 @@ const titleKeyMap: Record<string, string> = {
   'Redemption Center': 'route.redemptionCenter',
   兑换中心: 'route.redemptionCenter',
   'Redemption Orders': 'route.redemptionOrders',
-  兑换订单: 'route.redemptionOrders'
+  兑换订单: 'route.redemptionOrders',
+  个人中心: 'route.personalCenter',
+  'Personal Center': 'route.personalCenter'
 };
 
 export const translateTitle = (title?: string) => {

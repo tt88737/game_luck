@@ -46,7 +46,8 @@ export default {
     promotionCenter: 'Promotion Center',
     promotionRewards: 'Promotion Rewards',
     redemptionCenter: 'Redemption Center',
-    redemptionOrders: 'Redemption Orders'
+    redemptionOrders: 'Redemption Orders',
+    personalCenter: 'Personal Center'
   },
   // 登录页面国际化
   login: {

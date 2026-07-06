@@ -45,7 +45,8 @@ export default {
     promotionCenter: '促销中心',
     promotionRewards: '促销奖励',
     redemptionCenter: '兑换中心',
-    redemptionOrders: '兑换订单'
+    redemptionOrders: '兑换订单',
+    personalCenter: '个人中心'
   },
   login: {
     selectPlaceholder: '请选择/输入公司名称',

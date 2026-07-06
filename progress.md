@@ -179,3 +179,5 @@
 - Continued global notification i18n pass:
   - Wrapped WebSocket/SSE notification titles and duplicate-route warning notifications with `tt()`.
   - Added English mappings for message and route-duplicate notification copy.
+- Continued route title i18n pass:
+  - Added `personalCenter` route key and title mappings so the profile route is translated in sidebar/breadcrumb/tags-view contexts.
