@@ -1,5 +1,6 @@
 import { MessageBoxData } from 'element-plus';
 import { LoadingInstance } from 'element-plus/es/components/loading/src/loading';
+import { tt } from '@/utils/i18nText';
 let loadingInstance: LoadingInstance;
 export default {
   // 消息提示
@@ -20,19 +21,19 @@ export default {
   },
   // 弹出提示
   alert(content: any) {
-    ElMessageBox.alert(content, '系统提示');
+    ElMessageBox.alert(content, tt('系统提示'));
   },
   // 错误提示
   alertError(content: any) {
-    ElMessageBox.alert(content, '系统提示', { type: 'error' });
+    ElMessageBox.alert(content, tt('系统提示'), { type: 'error' });
   },
   // 成功提示
   alertSuccess(content: any) {
-    ElMessageBox.alert(content, '系统提示', { type: 'success' });
+    ElMessageBox.alert(content, tt('系统提示'), { type: 'success' });
   },
   // 警告提示
   alertWarning(content: any) {
-    ElMessageBox.alert(content, '系统提示', { type: 'warning' });
+    ElMessageBox.alert(content, tt('系统提示'), { type: 'warning' });
   },
   // 通知提示
   notify(content: any) {
@@ -52,17 +53,17 @@ export default {
   },
   // 确认窗体
   confirm(content: any): Promise<MessageBoxData> {
-    return ElMessageBox.confirm(content, '系统提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
+    return ElMessageBox.confirm(content, tt('系统提示'), {
+      confirmButtonText: tt('确定'),
+      cancelButtonText: tt('取消'),
       type: 'warning'
     });
   },
   // 提交内容
   prompt(content: any) {
-    return ElMessageBox.prompt(content, '系统提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
+    return ElMessageBox.prompt(content, tt('系统提示'), {
+      confirmButtonText: tt('确定'),
+      cancelButtonText: tt('取消'),
       type: 'warning'
     });
   },

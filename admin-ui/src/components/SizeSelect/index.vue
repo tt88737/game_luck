@@ -7,7 +7,7 @@
       <template #dropdown>
         <el-dropdown-menu>
           <el-dropdown-item v-for="item of sizeOptions" :key="item.value" :disabled="size === item.value" :command="item.value">
-            {{ item.label }}
+            {{ tt(item.label) }}
           </el-dropdown-item>
         </el-dropdown-menu>
       </template>
@@ -17,6 +17,7 @@
 
 <script setup lang="ts">
 import { useAppStore } from '@/store/modules/app';
+import { tt } from '@/utils/i18nText';
 
 const appStore = useAppStore();
 const size = computed(() => appStore.size);
