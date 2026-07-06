@@ -146,3 +146,7 @@
   - Wrapped profile overview, basic profile, password reset, avatar upload, and online device pages with `tt()`.
   - Added profile, password, avatar, and online device English mappings to `admin-ui/src/utils/i18nText.ts`.
   - Verified this profile batch with duplicate-key scan, missing-key scan, bound-attribute scan, mojibake marker scan, menu icon check, and production build.
+- Continued tenant module i18n pass:
+  - Wrapped tenant management and tenant package management pages with `tt()`.
+  - Added tenant, package, sync, company, and confirmation English mappings to `admin-ui/src/utils/i18nText.ts`.
+  - Verified this tenant batch with duplicate-key scan, missing-key scan, bound-attribute scan, mojibake marker scan, menu icon check, and production build.
