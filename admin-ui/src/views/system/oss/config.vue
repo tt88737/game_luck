@@ -288,7 +288,7 @@ const handleSelectionChange = (selection: OssConfigVO[]) => {
 const handleAdd = () => {
   reset();
   dialog.visible = true;
-  dialog.title = '添加对象存储配置';
+  dialog.title = tt('添加对象存储配置');
 };
 /** 修改按钮操作 */
 const handleUpdate = async (row?: OssConfigVO) => {
@@ -297,7 +297,7 @@ const handleUpdate = async (row?: OssConfigVO) => {
   const res = await getOssConfig(ossConfigId);
   Object.assign(form.value, res.data);
   dialog.visible = true;
-  dialog.title = '修改对象存储配置';
+  dialog.title = tt('修改对象存储配置');
 };
 /** 提交按钮 */
 const submitForm = () => {
@@ -317,12 +317,12 @@ const submitForm = () => {
 };
 /** 状态修改  */
 const handleStatusChange = async (row: OssConfigVO) => {
-  const text = row.status === '0' ? '启用' : '停用';
+  const text = row.status === '0' ? tt('启用') : tt('停用');
   try {
-    await proxy?.$modal.confirm(tt('确认要') + '"' + tt(text) + '""' + row.configKey + '"' + tt('配置吗?'));
+    await proxy?.$modal.confirm(tt('确认要') + '"' + text + '""' + row.configKey + '"' + tt('配置吗?'));
     await changeOssConfigStatus(row.ossConfigId, row.status, row.configKey);
     await getList();
-    proxy?.$modal.msgSuccess(tt(text + '成功'));
+    proxy?.$modal.msgSuccess(text + tt('成功'));
   } catch {
     return;
   } finally {

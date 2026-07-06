@@ -28,7 +28,7 @@ const user = ref<ResetPwdForm>({
   newPassword: '',
   confirmPassword: ''
 });
-const invalidCharMessage = `不能包含非法字符：< > " ' \\ |`;
+const invalidCharMessage = () => tt(`不能包含非法字符：< > " ' \\ |`);
 
 const equalToPassword = (rule: any, value: string, callback: any) => {
   if (user.value.newPassword !== value) {
@@ -47,7 +47,7 @@ const rules = ref({
       message: tt('长度在 6 到 20 个字符'),
       trigger: 'blur'
     },
-    { pattern: /^[^<>"'|\\]+$/, message: tt(invalidCharMessage), trigger: 'blur' }
+    { pattern: /^[^<>"'|\\]+$/, message: invalidCharMessage(), trigger: 'blur' }
   ],
   confirmPassword: [
     { required: true, message: tt('确认密码不能为空'), trigger: 'blur' },

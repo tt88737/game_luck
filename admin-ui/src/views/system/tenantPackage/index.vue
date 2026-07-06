@@ -189,13 +189,13 @@ const getList = async () => {
 
 // 租户套餐状态修改
 const handleStatusChange = async (row: TenantPkgVO) => {
-  const text = row.status === '0' ? '启用' : '停用';
-  const [err] = await to(proxy?.$modal.confirm(tt('确认要') + '"' + tt(text) + '""' + row.packageName + '"' + tt('套餐吗') + '?') as Promise<any>);
+  const text = row.status === '0' ? tt('启用') : tt('停用');
+  const [err] = await to(proxy?.$modal.confirm(tt('确认要') + '"' + text + '""' + row.packageName + '"' + tt('套餐吗') + '?') as Promise<any>);
   if (err) {
     row.status = row.status === '0' ? '1' : '0';
   } else {
     await changePackageStatus(row.packageId, row.status);
-    proxy?.$modal.msgSuccess(tt(text + '成功'));
+    proxy?.$modal.msgSuccess(text + tt('成功'));
   }
 };
 
@@ -264,7 +264,7 @@ const handleAdd = async () => {
   reset();
   await getPackageMenuTreeselect(0);
   dialog.visible = true;
-  dialog.title = '添加租户套餐';
+  dialog.title = tt('添加租户套餐');
 };
 
 /** 修改按钮操作 */
@@ -275,7 +275,7 @@ const handleUpdate = async (row?: TenantPkgVO) => {
   form.value = response.data;
   const res = await getPackageMenuTreeselect(_packageId);
   dialog.visible = true;
-  dialog.title = '修改租户套餐';
+  dialog.title = tt('修改租户套餐');
   res.data.checkedKeys.forEach((v) => {
     nextTick(() => {
       menuTreeRef.value?.setChecked(v, true, false);

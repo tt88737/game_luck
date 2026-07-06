@@ -173,3 +173,6 @@
 - Continued global error and language page i18n pass:
   - Wrapped language selector, 401 page, 404 page, and register success dialog title visible copy with `tt()`.
   - Added English mappings for language switch feedback, 401/404 error copy, and back-home actions to `admin-ui/src/utils/i18nText.ts`.
+- Continued residual system module i18n pass:
+  - Wrapped remaining system menu and role tooltip text, role data-scope labels, OSS dialog/status text, tenant dialog/status text, tenant package dialog/status text, and user password invalid-character messages with `tt()`.
+  - Reduced the full visible Chinese scan to non-UI CSS comments only.

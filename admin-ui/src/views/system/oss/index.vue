@@ -288,14 +288,14 @@ const handleFile = () => {
   reset();
   type.value = 0;
   dialog.visible = true;
-  dialog.title = '上传文件';
+  dialog.title = tt('上传文件');
 };
 /** 图片按钮操作 */
 const handleImage = () => {
   reset();
   type.value = 1;
   dialog.visible = true;
-  dialog.title = '上传图片';
+  dialog.title = tt('上传图片');
 };
 /** 提交按钮 */
 const submitForm = () => {
@@ -308,12 +308,12 @@ const handleDownload = (row: OssVO) => {
 };
 /** 预览开关按钮  */
 const handlePreviewListResource = async (preview: boolean) => {
-  const text = preview ? '启用' : '停用';
+  const text = preview ? tt('启用') : tt('停用');
   try {
-    await proxy?.$modal.confirm(tt('确认要') + '"' + tt(text) + '""' + tt('预览列表图片') + '"' + tt('配置吗?'));
+    await proxy?.$modal.confirm(tt('确认要') + '"' + text + '""' + tt('预览列表图片') + '"' + tt('配置吗?'));
     await proxy?.updateConfigByKey('sys.oss.previewListResource', preview);
     await getList();
-    proxy?.$modal.msgSuccess(tt(text + '成功'));
+    proxy?.$modal.msgSuccess(text + tt('成功'));
   } catch {
     return;
   }

@@ -301,7 +301,7 @@ import { useUserStore } from '@/store/modules/user';
 const router = useRouter();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { sys_normal_disable, sys_user_sex } = toRefs<any>(proxy?.useDict('sys_normal_disable', 'sys_user_sex'));
-const invalidCharMessage = `不能包含非法字符：< > " ' \\ |`;
+const invalidCharMessage = () => tt(`不能包含非法字符：< > " ' \\ |`);
 const userList = ref<UserVO[]>();
 const loading = ref(true);
 const showSearch = ref(true);
@@ -398,7 +398,7 @@ const initData: PageData<UserForm, UserQuery> = {
         message: tt('用户密码长度必须介于 5 和 20 之间'),
         trigger: 'blur'
       },
-      { pattern: /^[^<>"'|\\]+$/, message: tt(invalidCharMessage), trigger: 'blur' }
+      { pattern: /^[^<>"'|\\]+$/, message: invalidCharMessage(), trigger: 'blur' }
     ],
     email: [
       {
@@ -525,7 +525,7 @@ const handleResetPwd = async (row: UserVO) => {
       inputErrorMessage: tt('用户密码长度必须介于 5 和 20 之间'),
       inputValidator: (value) => {
         if (/<|>|"|'|\||\\/.test(value)) {
-          return tt(invalidCharMessage);
+          return invalidCharMessage();
         }
       }
     })

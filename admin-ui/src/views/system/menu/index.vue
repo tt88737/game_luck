@@ -320,8 +320,8 @@ const menuExpandMap = ref({});
 const loading = ref(true);
 const showSearch = ref(true);
 const menuOptions = ref<MenuOptionsType[]>([]);
-const permissionTooltip = "控制器中定义的权限字符，如：@SaCheckPermission('system:user:list')";
-const routeParamsTooltip = '访问路由的默认传递参数，如：`{"id": 1, "name": "ry"}`';
+const permissionTooltip = computed(() => tt("控制器中定义的权限字符，如：@SaCheckPermission('system:user:list')"));
+const routeParamsTooltip = computed(() => tt('访问路由的默认传递参数，如：`{"id": 1, "name": "ry"}`'));
 
 const dialog = reactive<DialogOption>({
   visible: false,

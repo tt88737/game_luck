@@ -160,7 +160,7 @@
         </el-form-item>
         <el-form-item :label="tt('权限范围')">
           <el-select v-model="form.dataScope" @change="dataScopeSelectChange">
-            <el-option v-for="item in dataScopeOptions" :key="item.value" :label="tt(item.label)" :value="item.value"></el-option>
+            <el-option v-for="item in dataScopeOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item v-show="form.dataScope === '2'" :label="tt('数据权限')">
@@ -200,7 +200,7 @@ import { MenuTreeOption, RoleMenuTree } from '@/api/system/menu/types';
 const router = useRouter();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { sys_normal_disable } = toRefs<any>(proxy?.useDict('sys_normal_disable'));
-const rolePermissionTooltip = "控制器中定义的权限字符，如：@SaCheckRole('admin')";
+const rolePermissionTooltip = computed(() => tt("控制器中定义的权限字符，如：@SaCheckRole('admin')"));
 
 const roleList = ref<RoleVO[]>();
 const loading = ref(true);
@@ -219,13 +219,13 @@ const deptOptions = ref<DeptTreeOption[]>([]);
 const openDataScope = ref(false);
 
 /** 数据范围选项*/
-const dataScopeOptions = ref([
-  { value: '1', label: '全部数据权限' },
-  { value: '2', label: '自定数据权限' },
-  { value: '3', label: '本部门数据权限' },
-  { value: '4', label: '本部门及以下数据权限' },
-  { value: '5', label: '仅本人数据权限' },
-  { value: '6', label: '部门及以下或本人数据权限' }
+const dataScopeOptions = computed(() => [
+  { value: '1', label: tt('全部数据权限') },
+  { value: '2', label: tt('自定数据权限') },
+  { value: '3', label: tt('本部门数据权限') },
+  { value: '4', label: tt('本部门及以下数据权限') },
+  { value: '5', label: tt('仅本人数据权限') },
+  { value: '6', label: tt('部门及以下或本人数据权限') }
 ]);
 
 const queryFormRef = ref<ElFormInstance>();

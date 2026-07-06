@@ -250,11 +250,11 @@ const getList = async () => {
 
 // 租户套餐状态修改
 const handleStatusChange = async (row: TenantVO) => {
-  const text = row.status === '0' ? '启用' : '停用';
+  const text = row.status === '0' ? tt('启用') : tt('停用');
   try {
-    await proxy?.$modal.confirm(tt('确认要') + '"' + tt(text) + '""' + row.companyName + '"' + tt('租户吗') + '?');
+    await proxy?.$modal.confirm(tt('确认要') + '"' + text + '""' + row.companyName + '"' + tt('租户吗') + '?');
     await changeTenantStatus(row.id, row.tenantId, row.status);
-    proxy?.$modal.msgSuccess(tt(text + '成功'));
+    proxy?.$modal.msgSuccess(text + tt('成功'));
   } catch {
     row.status = row.status === '0' ? '1' : '0';
   }
@@ -296,7 +296,7 @@ const handleAdd = () => {
   reset();
   getTenantPackage();
   dialog.visible = true;
-  dialog.title = '添加租户';
+  dialog.title = tt('添加租户');
 };
 
 /** 修改按钮操作 */
@@ -307,7 +307,7 @@ const handleUpdate = async (row?: TenantVO) => {
   const res = await getTenant(_id);
   Object.assign(form.value, res.data);
   dialog.visible = true;
-  dialog.title = '修改租户';
+  dialog.title = tt('修改租户');
 };
 
 /** 提交按钮 */
