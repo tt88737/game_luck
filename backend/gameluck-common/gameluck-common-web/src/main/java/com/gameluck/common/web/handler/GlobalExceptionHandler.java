@@ -11,6 +11,7 @@ import com.gameluck.common.core.domain.R;
 import com.gameluck.common.core.exception.ServiceException;
 import com.gameluck.common.core.exception.SseException;
 import com.gameluck.common.core.exception.base.BaseException;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.StreamUtils;
 import com.gameluck.common.json.utils.JsonUtils;
 import org.springframework.boot.json.JsonParseException;
@@ -70,7 +71,7 @@ public class GlobalExceptionHandler {
     public String handleNotLoginException(SseException e, HttpServletRequest request) {
         String requestURI = request.getRequestURI();
         log.debug("请求地址'{}',认证失败'{}',无法访问系统资源", requestURI, e.getMessage());
-        return JsonUtils.toJsonString(R.fail(HttpStatus.HTTP_UNAUTHORIZED, "认证失败，无法访问系统资源"));
+        return JsonUtils.toJsonString(R.fail(HttpStatus.HTTP_UNAUTHORIZED, MessageUtils.message("security.unauthorized")));
     }
 
     /**
@@ -211,7 +212,7 @@ public class GlobalExceptionHandler {
     public R<Void> handleJsonParseException(JsonParseException e, HttpServletRequest request) {
         String requestURI = request.getRequestURI();
         log.error("请求地址'{}' 发生 JSON 解析异常: {}", requestURI, e.getMessage());
-        return R.fail(HttpStatus.HTTP_BAD_REQUEST, "请求数据格式错误（JSON 解析失败）：" + e.getMessage());
+        return R.fail(HttpStatus.HTTP_BAD_REQUEST, MessageUtils.message("request.json.parse.error") + e.getMessage());
     }
 
     /**
@@ -229,7 +230,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ExpressionException.class)
     public R<Void> handleSpelException(ExpressionException e, HttpServletRequest request) {
         log.error("请求地址'{}'，SpEL解析异常: {}", request.getRequestURI(), e.getMessage());
-        return R.fail(HttpStatus.HTTP_INTERNAL_ERROR, "SpEL解析失败：" + e.getMessage());
+        return R.fail(HttpStatus.HTTP_INTERNAL_ERROR, MessageUtils.message("request.spel.parse.error") + e.getMessage());
     }
 
 }

@@ -10,6 +10,7 @@ import com.gameluck.common.core.utils.SpringUtils;
 import com.gameluck.common.core.utils.StringUtils;
 import com.gameluck.common.encrypt.annotation.ApiEncrypt;
 import com.gameluck.common.encrypt.properties.ApiDecryptProperties;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -17,6 +18,7 @@ import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.io.IOException;
+import java.util.Locale;
 
 
 /**
@@ -55,7 +57,7 @@ public class CryptoFilter implements Filter {
                     HandlerExceptionResolver exceptionResolver = SpringUtils.getBean("handlerExceptionResolver", HandlerExceptionResolver.class);
                     exceptionResolver.resolveException(
                         servletRequest, servletResponse, null,
-                        new ServiceException("没有访问权限，请联系管理员授权", HttpStatus.FORBIDDEN));
+                        new ServiceException(message(servletRequest, "security.no.permission"), HttpStatus.FORBIDDEN));
                     return;
                 }
             }
@@ -102,6 +104,19 @@ public class CryptoFilter implements Filter {
             return null;
         }
         return null;
+    }
+
+    private String message(HttpServletRequest request, String code) {
+        MessageSource messageSource = SpringUtils.getBean(MessageSource.class);
+        String language = request.getHeader("content-language");
+        Locale locale = Locale.getDefault();
+        if (StringUtils.isNotBlank(language)) {
+            String[] split = language.split("[_-]");
+            if (split.length >= 2) {
+                locale = new Locale(split[0], split[1]);
+            }
+        }
+        return messageSource.getMessage(code, null, locale);
     }
 
     @Override

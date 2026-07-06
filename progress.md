@@ -185,3 +185,8 @@
   - Routed default backend `R.ok()` / `R.fail()` messages and `TableDataInfo` query success messages through `MessageUtils`.
   - Added common response i18n keys to backend `messages*.properties`.
   - Routed admin-ui request-layer error codes, repeat-submit prompts, relogin prompts, network errors, and download fallback errors through `tt()`.
+- Continued backend security/exception i18n pass:
+  - Routed security no-permission, unauthenticated, JSON parse, SpEL parse, SSE, MyBatis auth, and SMS send failure messages through backend i18n keys.
+  - Added matching Chinese and English keys to backend `messages*.properties`.
+  - Fixed `CryptoFilter` to resolve `Content-Language` directly from the request header before MVC locale resolution is available.
+  - Verified unencrypted encrypted-API login rejection and unauthenticated protected API responses return the correct Chinese/English messages.

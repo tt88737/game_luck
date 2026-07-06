@@ -6,6 +6,7 @@ import com.baomidou.dynamic.datasource.exception.CannotFindDataSourceException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import com.gameluck.common.core.domain.R;
+import com.gameluck.common.core.utils.MessageUtils;
 import org.mybatis.spring.MyBatisSystemException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -39,7 +40,7 @@ public class MybatisExceptionHandler {
         Throwable root = getRootCause(e);
         if (root instanceof NotLoginException) {
             log.error("请求地址'{}',认证失败'{}',无法访问系统资源", requestURI, root.getMessage());
-            return R.fail(HttpStatus.HTTP_UNAUTHORIZED, "认证失败，无法访问系统资源");
+            return R.fail(HttpStatus.HTTP_UNAUTHORIZED, MessageUtils.message("security.unauthorized"));
         }
         if (root instanceof CannotFindDataSourceException) {
             log.error("请求地址'{}', 未找到数据源", requestURI);
