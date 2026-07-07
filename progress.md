@@ -199,3 +199,7 @@
   - Routed global exception handler fallback, missing path variable, parameter type mismatch, missing path, and request-body parse messages through backend i18n keys.
   - Routed email-code disabled, unsupported auth grant strategy, register disabled, and logout success responses through i18n.
   - Verified target hardcoded-message scan, backend compile/package, menu icon guard, and runtime `/auth/code` plus `/resource/email/code` language switching.
+- Continued system controller backend i18n pass:
+  - Routed user, role, and menu controller `R.fail` / `R.warn` business messages through backend i18n keys.
+  - Added Chinese and English keys for user uniqueness, tenant quota, role uniqueness/update failure, and menu validation/delete guards.
+  - Verified target hardcoded-message scan, backend compile, backend i18n key consistency, and menu icon guard.

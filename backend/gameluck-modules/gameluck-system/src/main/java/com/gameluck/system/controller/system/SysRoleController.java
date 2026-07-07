@@ -5,6 +5,7 @@ import cn.hutool.core.lang.tree.Tree;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import com.gameluck.common.core.domain.R;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.excel.utils.ExcelUtil;
 import com.gameluck.common.idempotent.annotation.RepeatSubmit;
 import com.gameluck.common.log.annotation.Log;
@@ -83,9 +84,9 @@ public class SysRoleController extends BaseController {
     public R<Void> add(@Validated @RequestBody SysRoleBo role) {
         roleService.checkRoleAllowed(role);
         if (!roleService.checkRoleNameUnique(role)) {
-            return R.fail("新增角色'" + role.getRoleName() + "'失败，角色名称已存在");
+            return R.fail(MessageUtils.message("system.role.add.name.exists", role.getRoleName()));
         } else if (!roleService.checkRoleKeyUnique(role)) {
-            return R.fail("新增角色'" + role.getRoleName() + "'失败，角色权限已存在");
+            return R.fail(MessageUtils.message("system.role.add.key.exists", role.getRoleName()));
         }
         return toAjax(roleService.insertRole(role));
 
@@ -102,16 +103,16 @@ public class SysRoleController extends BaseController {
         roleService.checkRoleAllowed(role);
         roleService.checkRoleDataScope(role.getRoleId());
         if (!roleService.checkRoleNameUnique(role)) {
-            return R.fail("修改角色'" + role.getRoleName() + "'失败，角色名称已存在");
+            return R.fail(MessageUtils.message("system.role.update.name.exists", role.getRoleName()));
         } else if (!roleService.checkRoleKeyUnique(role)) {
-            return R.fail("修改角色'" + role.getRoleName() + "'失败，角色权限已存在");
+            return R.fail(MessageUtils.message("system.role.update.key.exists", role.getRoleName()));
         }
 
         if (roleService.updateRole(role) > 0) {
             roleService.cleanOnlineUserByRole(role.getRoleId());
             return R.ok();
         }
-        return R.fail("修改角色'" + role.getRoleName() + "'失败，请联系管理员");
+        return R.fail(MessageUtils.message("system.role.update.fail", role.getRoleName()));
     }
 
     /**
