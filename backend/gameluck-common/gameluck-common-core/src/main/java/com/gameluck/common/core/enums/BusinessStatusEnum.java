@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import com.gameluck.common.core.exception.ServiceException;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.StringUtils;
 
 import java.util.Arrays;
@@ -141,15 +142,15 @@ public enum BusinessStatusEnum {
      */
     public static void checkStartStatus(String status) {
         if (WAITING.getStatus().equals(status)) {
-            throw new ServiceException("该单据已提交过申请,正在审批中！");
+            throw new ServiceException(message("business.status.submitted.pending"));
         } else if (FINISH.getStatus().equals(status)) {
-            throw new ServiceException("该单据已完成申请！");
+            throw new ServiceException(message("business.status.finished"));
         } else if (INVALID.getStatus().equals(status)) {
-            throw new ServiceException("该单据已作废！");
+            throw new ServiceException(message("business.status.invalidated"));
         } else if (TERMINATION.getStatus().equals(status)) {
-            throw new ServiceException("该单据已终止！");
+            throw new ServiceException(message("business.status.terminated"));
         } else if (StringUtils.isBlank(status)) {
-            throw new ServiceException("流程状态为空！");
+            throw new ServiceException(message("business.status.empty"));
         }
     }
 
@@ -160,17 +161,17 @@ public enum BusinessStatusEnum {
      */
     public static void checkCancelStatus(String status) {
         if (CANCEL.getStatus().equals(status)) {
-            throw new ServiceException("该单据已撤销！");
+            throw new ServiceException(message("business.status.canceled"));
         } else if (FINISH.getStatus().equals(status)) {
-            throw new ServiceException("该单据已完成申请！");
+            throw new ServiceException(message("business.status.finished"));
         } else if (INVALID.getStatus().equals(status)) {
-            throw new ServiceException("该单据已作废！");
+            throw new ServiceException(message("business.status.invalidated"));
         } else if (TERMINATION.getStatus().equals(status)) {
-            throw new ServiceException("该单据已终止！");
+            throw new ServiceException(message("business.status.terminated"));
         } else if (BACK.getStatus().equals(status)) {
-            throw new ServiceException("该单据已退回！");
+            throw new ServiceException(message("business.status.returned"));
         } else if (StringUtils.isBlank(status)) {
-            throw new ServiceException("流程状态为空！");
+            throw new ServiceException(message("business.status.empty"));
         }
     }
 
@@ -181,17 +182,17 @@ public enum BusinessStatusEnum {
      */
     public static void checkBackStatus(String status) {
         if (BACK.getStatus().equals(status)) {
-            throw new ServiceException("该单据已退回！");
+            throw new ServiceException(message("business.status.returned"));
         } else if (FINISH.getStatus().equals(status)) {
-            throw new ServiceException("该单据已完成申请！");
+            throw new ServiceException(message("business.status.finished"));
         } else if (INVALID.getStatus().equals(status)) {
-            throw new ServiceException("该单据已作废！");
+            throw new ServiceException(message("business.status.invalidated"));
         } else if (TERMINATION.getStatus().equals(status)) {
-            throw new ServiceException("该单据已终止！");
+            throw new ServiceException(message("business.status.terminated"));
         } else if (CANCEL.getStatus().equals(status)) {
-            throw new ServiceException("该单据已撤销！");
+            throw new ServiceException(message("business.status.canceled"));
         } else if (StringUtils.isBlank(status)) {
-            throw new ServiceException("流程状态为空！");
+            throw new ServiceException(message("business.status.empty"));
         }
     }
 
@@ -202,14 +203,18 @@ public enum BusinessStatusEnum {
      */
     public static void checkInvalidStatus(String status) {
         if (FINISH.getStatus().equals(status)) {
-            throw new ServiceException("该单据已完成申请！");
+            throw new ServiceException(message("business.status.finished"));
         } else if (INVALID.getStatus().equals(status)) {
-            throw new ServiceException("该单据已作废！");
+            throw new ServiceException(message("business.status.invalidated"));
         } else if (TERMINATION.getStatus().equals(status)) {
-            throw new ServiceException("该单据已终止！");
+            throw new ServiceException(message("business.status.terminated"));
         } else if (StringUtils.isBlank(status)) {
-            throw new ServiceException("流程状态为空！");
+            throw new ServiceException(message("business.status.empty"));
         }
+    }
+
+    private static String message(String key) {
+        return MessageUtils.message(key);
     }
 
 }

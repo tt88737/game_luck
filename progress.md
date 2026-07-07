@@ -237,3 +237,7 @@
   - Routed game bet order `ServiceException` messages through backend i18n keys.
   - Added Chinese and English keys for missing/invalid game bet orders, bet/payout amount validation, and cancel-refund status guards.
   - Verified target hardcoded-message scans, backend compile, backend i18n key consistency, and menu icon guard.
+- Continued common-core backend i18n pass:
+  - Routed `BusinessStatusEnum` workflow status `ServiceException` messages through backend i18n keys.
+  - Added Chinese and English keys for submitted, finished, invalidated, terminated, empty, canceled, and returned document status guards.
+  - Verified target hardcoded-message scan, common-core hardcoded-message scan, backend compile, backend i18n key consistency, and menu icon guard.
