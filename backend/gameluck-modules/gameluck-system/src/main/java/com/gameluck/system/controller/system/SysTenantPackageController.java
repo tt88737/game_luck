@@ -4,6 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import com.gameluck.common.core.constant.TenantConstants;
 import com.gameluck.common.core.domain.R;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.validate.AddGroup;
 import com.gameluck.common.core.validate.EditGroup;
 import com.gameluck.common.excel.utils.ExcelUtil;
@@ -95,7 +96,7 @@ public class SysTenantPackageController extends BaseController {
     @PostMapping()
     public R<Void> add(@Validated(AddGroup.class) @RequestBody SysTenantPackageBo bo) {
         if (!tenantPackageService.checkPackageNameUnique(bo)) {
-            return R.fail("新增套餐'" + bo.getPackageName() + "'失败，套餐名称已存在");
+            return R.fail(MessageUtils.message("system.tenant.package.add.name.exists", bo.getPackageName()));
         }
         return toAjax(tenantPackageService.insertByBo(bo));
     }
@@ -110,7 +111,7 @@ public class SysTenantPackageController extends BaseController {
     @PutMapping()
     public R<Void> edit(@Validated(EditGroup.class) @RequestBody SysTenantPackageBo bo) {
         if (!tenantPackageService.checkPackageNameUnique(bo)) {
-            return R.fail("修改套餐'" + bo.getPackageName() + "'失败，套餐名称已存在");
+            return R.fail(MessageUtils.message("system.tenant.package.update.name.exists", bo.getPackageName()));
         }
         return toAjax(tenantPackageService.updateByBo(bo));
     }

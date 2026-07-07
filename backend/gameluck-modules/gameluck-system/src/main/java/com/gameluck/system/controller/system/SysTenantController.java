@@ -10,6 +10,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import com.gameluck.common.core.constant.TenantConstants;
 import com.gameluck.common.core.domain.R;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.validate.AddGroup;
 import com.gameluck.common.core.validate.EditGroup;
 import com.gameluck.common.encrypt.annotation.ApiEncrypt;
@@ -91,7 +92,7 @@ public class SysTenantController extends BaseController {
     @PostMapping()
     public R<Void> add(@Validated(AddGroup.class) @RequestBody SysTenantBo bo) {
         if (!tenantService.checkCompanyNameUnique(bo)) {
-            return R.fail("新增租户'" + bo.getCompanyName() + "'失败，企业名称已存在");
+            return R.fail(MessageUtils.message("system.tenant.add.company.exists", bo.getCompanyName()));
         }
         return toAjax(TenantHelper.ignore(() -> tenantService.insertByBo(bo)));
     }
@@ -107,7 +108,7 @@ public class SysTenantController extends BaseController {
     public R<Void> edit(@Validated(EditGroup.class) @RequestBody SysTenantBo bo) {
         tenantService.checkTenantAllowed(bo.getTenantId());
         if (!tenantService.checkCompanyNameUnique(bo)) {
-            return R.fail("修改租户'" + bo.getCompanyName() + "'失败，公司名称已存在");
+            return R.fail(MessageUtils.message("system.tenant.update.company.exists", bo.getCompanyName()));
         }
         return toAjax(tenantService.updateByBo(bo));
     }
@@ -187,10 +188,10 @@ public class SysTenantController extends BaseController {
     @GetMapping("/syncTenantDict")
     public R<Void> syncTenantDict() {
         if (!TenantHelper.isEnable()) {
-            return R.fail("当前未开启租户模式");
+            return R.fail(MessageUtils.message("system.tenant.mode.disabled"));
         }
         tenantService.syncTenantDict();
-        return R.ok("同步租户字典成功");
+        return R.ok(MessageUtils.message("system.tenant.sync.dict.success"));
     }
 
     /**
@@ -202,10 +203,10 @@ public class SysTenantController extends BaseController {
     @GetMapping("/syncTenantConfig")
     public R<Void> syncTenantConfig() {
         if (!TenantHelper.isEnable()) {
-            return R.fail("当前未开启租户模式");
+            return R.fail(MessageUtils.message("system.tenant.mode.disabled"));
         }
         tenantService.syncTenantConfig();
-        return R.ok("同步租户参数配置成功");
+        return R.ok(MessageUtils.message("system.tenant.sync.config.success"));
     }
 
 }

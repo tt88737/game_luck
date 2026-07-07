@@ -6,6 +6,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.crypto.digest.BCrypt;
 import lombok.RequiredArgsConstructor;
 import com.gameluck.common.core.domain.R;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.StringUtils;
 import com.gameluck.common.core.utils.file.MimeTypeUtils;
 import com.gameluck.common.encrypt.annotation.ApiEncrypt;
@@ -69,16 +70,16 @@ public class SysProfileController extends BaseController {
         user.setUserId(LoginHelper.getUserId());
         String username = LoginHelper.getUsername();
         if (StringUtils.isNotEmpty(user.getPhonenumber()) && !userService.checkPhoneUnique(user)) {
-            return R.fail("修改用户'" + username + "'失败，手机号码已存在");
+            return R.fail(MessageUtils.message("system.profile.update.phone.exists", username));
         }
         if (StringUtils.isNotEmpty(user.getEmail()) && !userService.checkEmailUnique(user)) {
-            return R.fail("修改用户'" + username + "'失败，邮箱账号已存在");
+            return R.fail(MessageUtils.message("system.profile.update.email.exists", username));
         }
         int rows = DataPermissionHelper.ignore(() -> userService.updateUserProfile(user));
         if (rows > 0) {
             return R.ok();
         }
-        return R.fail("修改个人信息异常，请联系管理员");
+        return R.fail(MessageUtils.message("system.profile.update.fail"));
     }
 
     /**
@@ -94,16 +95,16 @@ public class SysProfileController extends BaseController {
         SysUserVo user = userService.selectUserById(LoginHelper.getUserId());
         String password = user.getPassword();
         if (!BCrypt.checkpw(bo.getOldPassword(), password)) {
-            return R.fail("修改密码失败，旧密码错误");
+            return R.fail(MessageUtils.message("system.profile.password.old.error"));
         }
         if (BCrypt.checkpw(bo.getNewPassword(), password)) {
-            return R.fail("新密码不能与旧密码相同");
+            return R.fail(MessageUtils.message("system.profile.password.same"));
         }
         int rows = DataPermissionHelper.ignore(() -> userService.resetUserPwd(user.getUserId(), BCrypt.hashpw(bo.getNewPassword())));
         if (rows > 0) {
             return R.ok();
         }
-        return R.fail("修改密码异常，请联系管理员");
+        return R.fail(MessageUtils.message("system.profile.password.update.fail"));
     }
 
     /**
@@ -118,7 +119,7 @@ public class SysProfileController extends BaseController {
         if (ObjectUtil.isNotNull(avatarfile) && !avatarfile.isEmpty()) {
             String extension = FileUtil.extName(avatarfile.getOriginalFilename());
             if (!StringUtils.equalsAnyIgnoreCase(extension, MimeTypeUtils.IMAGE_EXTENSION)) {
-                return R.fail("文件格式不正确，请上传" + Arrays.toString(MimeTypeUtils.IMAGE_EXTENSION) + "格式");
+                return R.fail(MessageUtils.message("system.profile.avatar.format.invalid", Arrays.toString(MimeTypeUtils.IMAGE_EXTENSION)));
             }
             SysOssVo oss = ossService.upload(avatarfile);
             String avatar = oss.getUrl();
@@ -127,7 +128,7 @@ public class SysProfileController extends BaseController {
                 return R.ok(new AvatarVo(avatar));
             }
         }
-        return R.fail("上传图片异常，请联系管理员");
+        return R.fail(MessageUtils.message("system.profile.avatar.upload.fail"));
     }
 
     /**
