@@ -13,6 +13,7 @@ import com.gameluck.common.core.domain.dto.OssDTO;
 import com.gameluck.common.core.exception.ServiceException;
 import com.gameluck.common.core.service.OssService;
 import com.gameluck.common.core.utils.MapstructUtils;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.SpringUtils;
 import com.gameluck.common.core.utils.StreamUtils;
 import com.gameluck.common.core.utils.StringUtils;
@@ -175,7 +176,7 @@ public class SysOssServiceImpl implements ISysOssService, OssService {
     public void download(Long ossId, HttpServletResponse response) throws IOException {
         SysOssVo sysOss = SpringUtils.getAopProxy(this).getById(ossId);
         if (ObjectUtil.isNull(sysOss)) {
-            throw new ServiceException("文件数据不存在!");
+            throw new ServiceException(MessageUtils.message("system.oss.file.not.exists"));
         }
         FileUtils.setAttachmentResponseHeader(response, sysOss.getOriginalName());
         response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE + "; charset=UTF-8");
@@ -193,7 +194,7 @@ public class SysOssServiceImpl implements ISysOssService, OssService {
     @Override
     public SysOssVo upload(MultipartFile file) {
         if (ObjectUtil.isNull(file) || file.isEmpty()) {
-            throw new ServiceException("上传文件不能为空");
+            throw new ServiceException(MessageUtils.message("system.oss.upload.file.required"));
         }
         String originalfileName = file.getOriginalFilename();
         String suffix = StringUtils.substring(originalfileName, originalfileName.lastIndexOf("."), originalfileName.length());
@@ -220,7 +221,7 @@ public class SysOssServiceImpl implements ISysOssService, OssService {
     @Override
     public SysOssVo upload(File file) {
         if (ObjectUtil.isNull(file) || !file.isFile() || file.length() <= 0) {
-            throw new ServiceException("上传文件不能为空");
+            throw new ServiceException(MessageUtils.message("system.oss.upload.file.required"));
         }
         String originalfileName = file.getName();
         String suffix = StringUtils.substring(originalfileName, originalfileName.lastIndexOf("."), originalfileName.length());

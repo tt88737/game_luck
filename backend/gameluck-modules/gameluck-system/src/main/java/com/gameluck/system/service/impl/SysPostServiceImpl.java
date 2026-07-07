@@ -10,6 +10,7 @@ import com.gameluck.common.core.constant.SystemConstants;
 import com.gameluck.common.core.exception.ServiceException;
 import com.gameluck.common.core.service.PostService;
 import com.gameluck.common.core.utils.MapstructUtils;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.StreamUtils;
 import com.gameluck.common.core.utils.StringUtils;
 import com.gameluck.common.mybatis.core.page.PageQuery;
@@ -225,7 +226,7 @@ public class SysPostServiceImpl implements ISysPostService, PostService {
         List<SysPost> list = baseMapper.selectByIds(postIds);
         for (SysPost post : list) {
             if (this.countUserPostById(post.getPostId()) > 0) {
-                throw new ServiceException("{}已分配，不能删除!", post.getPostName());
+                throw new ServiceException(MessageUtils.message("system.post.assigned.delete.forbidden", post.getPostName()));
             }
         }
         return baseMapper.deleteByIds(postIds);

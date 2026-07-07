@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import com.gameluck.common.core.constant.CacheNames;
 import com.gameluck.common.core.exception.ServiceException;
 import com.gameluck.common.core.utils.MapstructUtils;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.ObjectUtils;
 import com.gameluck.common.core.utils.StringUtils;
 import com.gameluck.common.json.utils.JsonUtils;
@@ -120,7 +121,7 @@ public class SysOssConfigServiceImpl implements ISysOssConfigService {
     private void validEntityBeforeSave(SysOssConfig entity) {
         if (StringUtils.isNotEmpty(entity.getConfigKey())
             && !checkConfigKeyUnique(entity)) {
-            throw new ServiceException("操作配置'{}'失败, 配置key已存在!", entity.getConfigKey());
+            throw new ServiceException(MessageUtils.message("system.oss.config.key.exists", entity.getConfigKey()));
         }
     }
 
@@ -128,7 +129,7 @@ public class SysOssConfigServiceImpl implements ISysOssConfigService {
     public Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid) {
         if (isValid) {
             if (CollUtil.containsAny(ids, OssConstant.SYSTEM_DATA_IDS)) {
-                throw new ServiceException("系统内置, 不可删除!");
+                throw new ServiceException(MessageUtils.message("system.oss.config.builtin.delete.forbidden"));
             }
         }
         List<SysOssConfig> list = CollUtil.newArrayList();
