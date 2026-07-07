@@ -19,6 +19,7 @@ import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.xssf.usermodel.XSSFDataValidation;
 import com.gameluck.common.core.exception.ServiceException;
 import com.gameluck.common.core.service.DictService;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.SpringUtils;
 import com.gameluck.common.core.utils.StreamUtils;
 import com.gameluck.common.core.utils.StringUtils;
@@ -105,7 +106,7 @@ public class ExcelDownHandler implements SheetWriteHandler {
                 if (StringUtils.isNotBlank(dictType)) {
                     // 如果传递了字典名，则依据字典建立下拉
                     Collection<String> values = Optional.ofNullable(dictService.getAllDictByDictType(dictType))
-                        .orElseThrow(() -> new ServiceException("字典 {} 不存在", dictType))
+                        .orElseThrow(() -> new ServiceException(MessageUtils.message("excel.dict.not.exists", dictType)))
                         .values();
                     options = new ArrayList<>(values);
                 } else if (StringUtils.isNotBlank(converterExp)) {

@@ -249,3 +249,7 @@
   - Routed RSA, SM2, AES, and SM4 hardcoded `IllegalArgumentException` messages through backend i18n keys.
   - Added Chinese and English keys for key-pair requirements, AES/SM4 password validation, and SM2/RSA public/private key guards.
   - Verified common-encrypt hardcoded-message scan, focused target scan, backend compile, backend i18n key consistency, and menu icon guard.
+- Continued common-excel backend i18n pass:
+  - Routed Excel enum conversion, dropdown option, dictionary dropdown, and export/template exception messages through backend i18n keys.
+  - Added Chinese and English keys for invalid cell types, dropdown option validation, missing dictionaries, export failures, and empty data.
+  - Verified common-excel hardcoded-message scan, focused target scan, backend compile, backend i18n key consistency, and menu icon guard.

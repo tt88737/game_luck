@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import com.gameluck.common.core.exception.ServiceException;
+import com.gameluck.common.core.utils.MessageUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,7 +69,7 @@ public class DropDownOptions {
         for (int i = 0; i < vars.length; i++) {
             String var = StrUtil.trimToEmpty(Convert.toStr(vars[i]));
             if (!var.matches(regex)) {
-                throw new ServiceException("选项数据不符合规则，仅允许使用中英文字符以及数字");
+                throw new ServiceException(MessageUtils.message("excel.dropdown.option.invalid"));
             }
             stringBuffer.append(var);
             if (i < vars.length - 1) {
@@ -77,7 +78,7 @@ public class DropDownOptions {
             }
         }
         if (stringBuffer.toString().matches("^\\d_*$")) {
-            throw new ServiceException("禁止以数字开头");
+            throw new ServiceException(MessageUtils.message("excel.dropdown.option.start.number.forbidden"));
         }
         return stringBuffer.toString();
     }

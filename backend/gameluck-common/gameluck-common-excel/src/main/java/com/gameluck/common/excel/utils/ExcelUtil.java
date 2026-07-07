@@ -14,6 +14,7 @@ import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.StringUtils;
 import com.gameluck.common.core.utils.file.FileUtils;
 import com.gameluck.common.excel.convert.ExcelBigNumberConvert;
@@ -89,7 +90,7 @@ public class ExcelUtil {
             ServletOutputStream os = response.getOutputStream();
             exportExcel(list, sheetName, clazz, false, os, null);
         } catch (IOException e) {
-            throw new RuntimeException("导出Excel异常");
+            throw exportException(e);
         }
     }
 
@@ -108,7 +109,7 @@ public class ExcelUtil {
             ServletOutputStream os = response.getOutputStream();
             exportExcel(list, sheetName, clazz, false, os, options);
         } catch (IOException e) {
-            throw new RuntimeException("导出Excel异常");
+            throw exportException(e);
         }
     }
 
@@ -127,7 +128,7 @@ public class ExcelUtil {
             ServletOutputStream os = response.getOutputStream();
             exportExcel(list, sheetName, clazz, merge, os, null);
         } catch (IOException e) {
-            throw new RuntimeException("导出Excel异常");
+            throw exportException(e);
         }
     }
 
@@ -147,7 +148,7 @@ public class ExcelUtil {
             ServletOutputStream os = response.getOutputStream();
             exportExcel(list, sheetName, clazz, merge, os, options);
         } catch (IOException e) {
-            throw new RuntimeException("导出Excel异常");
+            throw exportException(e);
         }
     }
 
@@ -255,13 +256,13 @@ public class ExcelUtil {
     public static <T> void exportTemplate(List<T> data, String filename, String templatePath, HttpServletResponse response) {
         try {
             if (CollUtil.isEmpty(data)) {
-                throw new IllegalArgumentException("数据为空");
+                throw dataEmptyException();
             }
             resetResponse(filename, response);
             ServletOutputStream os = response.getOutputStream();
             exportTemplate(data, templatePath, os);
         } catch (IOException e) {
-            throw new RuntimeException("导出Excel异常");
+            throw exportException(e);
         }
     }
 
@@ -305,13 +306,13 @@ public class ExcelUtil {
     public static void exportTemplateMultiList(Map<String, Object> data, String filename, String templatePath, HttpServletResponse response) {
         try {
             if (CollUtil.isEmpty(data)) {
-                throw new IllegalArgumentException("数据为空");
+                throw dataEmptyException();
             }
             resetResponse(filename, response);
             ServletOutputStream os = response.getOutputStream();
             exportTemplateMultiList(data, templatePath, os);
         } catch (IOException e) {
-            throw new RuntimeException("导出Excel异常");
+            throw exportException(e);
         }
     }
 
@@ -328,13 +329,13 @@ public class ExcelUtil {
     public static void exportTemplateMultiSheet(List<Map<String, Object>> data, String filename, String templatePath, HttpServletResponse response) {
         try {
             if (CollUtil.isEmpty(data)) {
-                throw new IllegalArgumentException("数据为空");
+                throw dataEmptyException();
             }
             resetResponse(filename, response);
             ServletOutputStream os = response.getOutputStream();
             exportTemplateMultiSheet(data, templatePath, os);
         } catch (IOException e) {
-            throw new RuntimeException("导出Excel异常");
+            throw exportException(e);
         }
     }
 
@@ -474,6 +475,14 @@ public class ExcelUtil {
      */
     public static String encodingFilename(String filename) {
         return IdUtil.fastSimpleUUID() + "_" + filename + ".xlsx";
+    }
+
+    private static RuntimeException exportException(IOException e) {
+        return new RuntimeException(MessageUtils.message("excel.export.fail"), e);
+    }
+
+    private static IllegalArgumentException dataEmptyException() {
+        return new IllegalArgumentException(MessageUtils.message("excel.data.empty"));
     }
 
 }

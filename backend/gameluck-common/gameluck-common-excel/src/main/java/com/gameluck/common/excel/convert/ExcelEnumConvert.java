@@ -9,6 +9,7 @@ import cn.idev.excel.metadata.GlobalConfiguration;
 import cn.idev.excel.metadata.data.ReadCellData;
 import cn.idev.excel.metadata.data.WriteCellData;
 import cn.idev.excel.metadata.property.ExcelContentProperty;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.reflect.ReflectUtils;
 import com.gameluck.common.excel.annotation.ExcelEnumFormat;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +44,7 @@ public class ExcelEnumConvert implements Converter<Object> {
             case STRING, DIRECT_STRING, RICH_TEXT_STRING -> cellData.getStringValue();
             case NUMBER -> cellData.getNumberValue();
             case BOOLEAN -> cellData.getBooleanValue();
-            default -> throw new IllegalArgumentException("单元格类型异常!");
+            default -> throw new IllegalArgumentException(MessageUtils.message("excel.cell.type.invalid"));
         };
         // 如果是空值
         if (ObjectUtil.isNull(textValue)) {
