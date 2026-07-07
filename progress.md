@@ -212,3 +212,8 @@
   - Routed profile, password, avatar upload, tenant, and tenant package controller response messages through backend i18n keys.
   - Added Chinese and English keys for profile update failures, password validation, avatar format/upload failures, tenant sync responses, and tenant package uniqueness checks.
   - Verified target hardcoded-message scan, backend compile, backend i18n key consistency, and menu icon guard.
+- Continued system service backend i18n pass:
+  - Routed config, department, dictionary data, and dictionary type service `ServiceException` messages through backend i18n keys.
+  - Reused `common.operation.fail` for generic persistence failures.
+  - Added Chinese and English keys for built-in config deletion, department data permissions, disabled department add guards, missing departments, and assigned dictionary type deletion guards.
+  - Verified target hardcoded-message scan, backend compile, backend i18n key consistency, and menu icon guard.

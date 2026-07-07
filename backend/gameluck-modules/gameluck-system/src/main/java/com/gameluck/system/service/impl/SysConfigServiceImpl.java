@@ -12,6 +12,7 @@ import com.gameluck.common.core.constant.SystemConstants;
 import com.gameluck.common.core.exception.ServiceException;
 import com.gameluck.common.core.service.ConfigService;
 import com.gameluck.common.core.utils.MapstructUtils;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.ObjectUtils;
 import com.gameluck.common.core.utils.SpringUtils;
 import com.gameluck.common.core.utils.StringUtils;
@@ -134,7 +135,7 @@ public class SysConfigServiceImpl implements ISysConfigService, ConfigService {
         if (row > 0) {
             return config.getConfigValue();
         }
-        throw new ServiceException("操作失败");
+        throw new ServiceException(MessageUtils.message("common.operation.fail"));
     }
 
     /**
@@ -162,7 +163,7 @@ public class SysConfigServiceImpl implements ISysConfigService, ConfigService {
         if (row > 0) {
             return config.getConfigValue();
         }
-        throw new ServiceException("操作失败");
+        throw new ServiceException(MessageUtils.message("common.operation.fail"));
     }
 
     /**
@@ -175,7 +176,7 @@ public class SysConfigServiceImpl implements ISysConfigService, ConfigService {
         List<SysConfig> list = baseMapper.selectByIds(configIds);
         list.forEach(config -> {
             if (StringUtils.equals(SystemConstants.YES, config.getConfigType())) {
-                throw new ServiceException("内置参数【{}】不能删除", config.getConfigKey());
+                throw new ServiceException(MessageUtils.message("system.config.builtin.delete.forbidden", config.getConfigKey()));
             }
             CacheUtils.evict(CacheNames.SYS_CONFIG, config.getConfigKey());
         });

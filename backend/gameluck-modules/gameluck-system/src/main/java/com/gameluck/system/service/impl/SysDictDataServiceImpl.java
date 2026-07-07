@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import com.gameluck.common.core.constant.CacheNames;
 import com.gameluck.common.core.exception.ServiceException;
 import com.gameluck.common.core.utils.MapstructUtils;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.StringUtils;
 import com.gameluck.common.mybatis.core.page.PageQuery;
 import com.gameluck.common.mybatis.core.page.TableDataInfo;
@@ -121,7 +122,7 @@ public class SysDictDataServiceImpl implements ISysDictDataService {
         if (row > 0) {
             return baseMapper.selectDictDataByType(data.getDictType());
         }
-        throw new ServiceException("操作失败");
+        throw new ServiceException(MessageUtils.message("common.operation.fail"));
     }
 
     /**
@@ -138,7 +139,7 @@ public class SysDictDataServiceImpl implements ISysDictDataService {
         if (row > 0) {
             return baseMapper.selectDictDataByType(data.getDictType());
         }
-        throw new ServiceException("操作失败");
+        throw new ServiceException(MessageUtils.message("common.operation.fail"));
     }
 
     /**
