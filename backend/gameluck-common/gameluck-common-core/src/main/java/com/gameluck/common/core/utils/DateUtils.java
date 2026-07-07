@@ -279,7 +279,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     public static void validateDateRange(Date startDate, Date endDate, int maxValue, TimeUnit unit) {
         // 校验结束日期不能早于开始日期
         if (endDate.before(startDate)) {
-            throw new ServiceException("结束日期不能早于开始日期");
+            throw new ServiceException(MessageUtils.message("date.range.end.before.start"));
         }
 
         // 计算时间跨度
@@ -290,12 +290,12 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
             case DAYS -> TimeUnit.MILLISECONDS.toDays(diffInMillis);
             case HOURS -> TimeUnit.MILLISECONDS.toHours(diffInMillis);
             case MINUTES -> TimeUnit.MILLISECONDS.toMinutes(diffInMillis);
-            default -> throw new IllegalArgumentException("不支持的时间单位");
+            default -> throw new IllegalArgumentException(MessageUtils.message("date.time.unit.unsupported"));
         };
 
         // 校验时间跨度不超过最大限制
         if (diff > maxValue) {
-            throw new ServiceException("最大时间跨度为 {} {}", maxValue, unit.toString().toLowerCase());
+            throw new ServiceException(MessageUtils.message("date.range.max.span", maxValue, unit.toString().toLowerCase()));
         }
     }
 

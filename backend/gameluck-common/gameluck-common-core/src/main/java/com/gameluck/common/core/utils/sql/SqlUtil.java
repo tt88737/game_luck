@@ -3,6 +3,7 @@ package com.gameluck.common.core.utils.sql;
 import cn.hutool.core.exceptions.UtilException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.StringUtils;
 
 /**
@@ -28,7 +29,7 @@ public class SqlUtil {
      */
     public static String escapeOrderBySql(String value) {
         if (StringUtils.isNotEmpty(value) && !isValidOrderBySql(value)) {
-            throw new IllegalArgumentException("参数不符合规范，不能进行查询");
+            throw new IllegalArgumentException(MessageUtils.message("sql.param.invalid"));
         }
         return value;
     }
@@ -51,7 +52,7 @@ public class SqlUtil {
         // ==================== 核心增强：自动转义单引号 ====================
         // 不抛异常、不破坏业务、不改变原方法行为、自动防注入
         if (value.contains("'")) {
-            throw new UtilException("请求参数包含非法字符【'】，已禁止执行");
+            throw new UtilException(MessageUtils.message("sql.param.illegal.quote"));
         }
 
         // ==================== 原有逻辑不变 ====================
@@ -59,7 +60,7 @@ public class SqlUtil {
         String[] sqlKeywords = StringUtils.split(SQL_REGEX, "\\|");
         for (String sqlKeyword : sqlKeywords) {
             if (StringUtils.indexOf(normalizedValue, sqlKeyword) > -1) {
-                throw new UtilException("请求参数包含敏感关键词'" + sqlKeyword + "'，可能存在安全风险");
+                throw new UtilException(MessageUtils.message("sql.param.sensitive.keyword", sqlKeyword));
             }
         }
     }

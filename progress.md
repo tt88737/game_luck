@@ -241,3 +241,7 @@
   - Routed `BusinessStatusEnum` workflow status `ServiceException` messages through backend i18n keys.
   - Added Chinese and English keys for submitted, finished, invalidated, terminated, empty, canceled, and returned document status guards.
   - Verified target hardcoded-message scan, common-core hardcoded-message scan, backend compile, backend i18n key consistency, and menu icon guard.
+- Continued common-core utility i18n pass:
+  - Routed `LoginUser`, `DateUtils`, `RegionUtils`, `SqlUtil`, and `ValidatorUtils` hardcoded exception messages through backend i18n keys.
+  - Added Chinese and English keys for login identity requirements, date range validation, region initialization, SQL guard failures, and validator failures.
+  - Verified common-core hardcoded-message scan, focused target scan, full backend hardcoded-message distribution, backend compile, backend i18n key consistency, and menu icon guard.

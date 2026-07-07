@@ -3,6 +3,7 @@ package com.gameluck.common.core.utils.ip;
 import cn.hutool.core.io.resource.ResourceUtil;
 import lombok.extern.slf4j.Slf4j;
 import com.gameluck.common.core.exception.ServiceException;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.StringUtils;
 import org.lionsoul.ip2region.service.Config;
 import org.lionsoul.ip2region.service.Ip2Region;
@@ -77,7 +78,7 @@ public class RegionUtils {
             RegionUtils.ip2Region = Ip2Region.create(v4Config, v6Config);
             log.debug("IP工具初始化成功，加载IP地址库数据成功！");
         } catch (Exception e) {
-            throw new ServiceException("RegionUtils初始化失败，原因：{}", e.getMessage());
+            throw new ServiceException(MessageUtils.message("region.utils.init.fail", e.getMessage()));
         }
     }
 

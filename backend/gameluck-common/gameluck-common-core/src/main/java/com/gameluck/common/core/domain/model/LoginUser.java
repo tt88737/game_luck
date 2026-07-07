@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import com.gameluck.common.core.domain.dto.PostDTO;
 import com.gameluck.common.core.domain.dto.RoleDTO;
+import com.gameluck.common.core.utils.MessageUtils;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -137,10 +138,10 @@ public class LoginUser implements Serializable {
      */
     public String getLoginId() {
         if (userType == null) {
-            throw new IllegalArgumentException("用户类型不能为空");
+            throw new IllegalArgumentException(MessageUtils.message("login.user.type.required"));
         }
         if (userId == null) {
-            throw new IllegalArgumentException("用户ID不能为空");
+            throw new IllegalArgumentException(MessageUtils.message("login.user.id.required"));
         }
         return userType + ":" + userId;
     }
