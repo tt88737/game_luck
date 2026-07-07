@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.gameluck.common.core.constant.SystemConstants;
 import com.gameluck.common.core.exception.ServiceException;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.StringUtils;
 import com.gameluck.common.mybatis.core.page.PageQuery;
 import com.gameluck.common.mybatis.core.page.TableDataInfo;
@@ -67,8 +68,8 @@ public class GameBetOrderServiceImpl implements IGameBetOrderService {
         add.setCurrencyCode(StringUtils.blankToDefault(bo.getCurrencyCode(), DEFAULT_CURRENCY));
         add.setGameCode(StringUtils.blankToDefault(bo.getGameCode(), DEFAULT_GAME_CODE));
         add.setRoundNo(roundNo);
-        add.setBetAmount(normalizePositive(bo.getBetAmount(), "betAmount must be greater than 0"));
-        add.setPayoutAmount(normalizeNonNegative(bo.getPayoutAmount(), "payoutAmount cannot be negative"));
+        add.setBetAmount(normalizePositive(bo.getBetAmount(), "game.bet.order.bet.amount.positive.required"));
+        add.setPayoutAmount(normalizeNonNegative(bo.getPayoutAmount(), "game.bet.order.payout.amount.non.negative.required"));
         add.setNetAmount(normalizeAmount(add.getPayoutAmount().subtract(add.getBetAmount())));
         add.setStatus(GameBetOrderStatus.PENDING.name());
         add.setBetIdempotencyKey(betIdempotencyKey(orderNo));
@@ -174,14 +175,14 @@ public class GameBetOrderServiceImpl implements IGameBetOrderService {
     private GameBetOrder lockOrder(Long id) {
         GameBetOrder order = baseMapper.selectByIdForUpdate(id);
         if (order == null) {
-            throw new ServiceException("game bet order does not exist");
+            throw new ServiceException(MessageUtils.message("game.bet.order.not.exists"));
         }
         return order;
     }
 
     private void requireStatus(GameBetOrder order, GameBetOrderStatus expectedStatus) {
         if (!expectedStatus.name().equals(order.getStatus())) {
-            throw new ServiceException("invalid game bet order status");
+            throw new ServiceException(MessageUtils.message("game.bet.order.status.invalid"));
         }
     }
 
@@ -191,12 +192,12 @@ public class GameBetOrderServiceImpl implements IGameBetOrderService {
             return;
         }
         if (GameBetOrderStatus.SETTLED.name().equals(status)) {
-            throw new ServiceException("已结算订单不能取消退款");
+            throw new ServiceException(MessageUtils.message("game.bet.order.refund.cancel.settled.forbidden"));
         }
         if (GameBetOrderStatus.PENDING.name().equals(status)) {
-            throw new ServiceException("待下注订单不能取消退款");
+            throw new ServiceException(MessageUtils.message("game.bet.order.refund.cancel.pending.forbidden"));
         }
-        throw new ServiceException("当前订单状态不能取消退款");
+        throw new ServiceException(MessageUtils.message("game.bet.order.refund.cancel.status.forbidden"));
     }
 
     private WalletDebitBo buildDebitBo(GameBetOrder order) {
@@ -252,18 +253,18 @@ public class GameBetOrderServiceImpl implements IGameBetOrderService {
         return "game:refund:" + orderNo;
     }
 
-    private BigDecimal normalizePositive(BigDecimal value, String message) {
+    private BigDecimal normalizePositive(BigDecimal value, String messageKey) {
         BigDecimal normalized = normalizeAmount(value);
         if (normalized == null || normalized.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new ServiceException(message);
+            throw new ServiceException(MessageUtils.message(messageKey));
         }
         return normalized;
     }
 
-    private BigDecimal normalizeNonNegative(BigDecimal value, String message) {
+    private BigDecimal normalizeNonNegative(BigDecimal value, String messageKey) {
         BigDecimal normalized = normalizeAmount(value);
         if (normalized == null || normalized.compareTo(BigDecimal.ZERO) < 0) {
-            throw new ServiceException(message);
+            throw new ServiceException(MessageUtils.message(messageKey));
         }
         return normalized;
     }
