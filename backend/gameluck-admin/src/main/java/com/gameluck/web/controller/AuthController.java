@@ -96,14 +96,14 @@ public class AuthController {
     @PostMapping("/logout")
     public R<Void> logout() {
         loginService.logout();
-        return R.ok("logout success");
+        return R.ok(MessageUtils.message("user.logout.success"));
     }
 
     @ApiEncrypt
     @PostMapping("/register")
     public R<Void> register(@Validated @RequestBody RegisterBody user) {
         if (!configService.selectRegisterEnabled(user.getTenantId())) {
-            return R.fail("registration is disabled");
+            return R.fail(MessageUtils.message("user.register.disabled"));
         }
         registerService.register(user);
         return R.ok();

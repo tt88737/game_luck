@@ -195,3 +195,7 @@
   - Added Chinese and English keys for wallet account/balance/freeze/release/turnover/rule, simulated deposit, and member validation errors.
   - Changed `MessageUtils` to lazily resolve `MessageSource`, so pure unit tests without a Spring context fall back to the message key instead of failing static initialization.
   - Verified wallet/member focused tests, backend compile/package, menu icon guard, and runtime `/auth/code` plus encrypted-login rejection language switching.
+- Continued public backend entry i18n pass:
+  - Routed global exception handler fallback, missing path variable, parameter type mismatch, missing path, and request-body parse messages through backend i18n keys.
+  - Routed email-code disabled, unsupported auth grant strategy, register disabled, and logout success responses through i18n.
+  - Verified target hardcoded-message scan, backend compile/package, menu icon guard, and runtime `/auth/code` plus `/resource/email/code` language switching.

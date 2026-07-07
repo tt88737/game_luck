@@ -2,6 +2,7 @@ package com.gameluck.web.service;
 
 
 import com.gameluck.common.core.exception.ServiceException;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.SpringUtils;
 import com.gameluck.system.domain.SysClient;
 import com.gameluck.system.domain.vo.SysClientVo;
@@ -28,7 +29,7 @@ public interface IAuthStrategy {
         // 授权类型和客户端id
         String beanName = grantType + BASE_NAME;
         if (!SpringUtils.containsBean(beanName)) {
-            throw new ServiceException("授权类型不正确!");
+            throw new ServiceException(MessageUtils.message("auth.grant.type.error"));
         }
         IAuthStrategy instance = SpringUtils.getBean(beanName);
         return instance.login(body, client);

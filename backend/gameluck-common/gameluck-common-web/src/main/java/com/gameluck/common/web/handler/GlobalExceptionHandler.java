@@ -81,7 +81,7 @@ public class GlobalExceptionHandler {
     public R<Void> handleServletException(ServletException e, HttpServletRequest request) {
         String requestURI = request.getRequestURI();
         log.error("请求地址'{}',发生未知异常.", requestURI, e);
-        return R.fail("发生未知异常，请联系管理员");
+        return R.fail(MessageUtils.message("system.unknown.error"));
     }
 
     /**
@@ -100,7 +100,7 @@ public class GlobalExceptionHandler {
     public R<Void> handleMissingPathVariableException(MissingPathVariableException e, HttpServletRequest request) {
         String requestURI = request.getRequestURI();
         log.error("请求路径中缺少必需的路径变量'{}',发生系统异常.", requestURI);
-        return R.fail(String.format("请求路径中缺少必需的路径变量[%s]", e.getVariableName()));
+        return R.fail(MessageUtils.message("request.path.variable.missing", e.getVariableName()));
     }
 
     /**
@@ -110,7 +110,7 @@ public class GlobalExceptionHandler {
     public R<Void> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e, HttpServletRequest request) {
         String requestURI = request.getRequestURI();
         log.error("请求参数类型不匹配'{}',发生系统异常.", requestURI);
-        return R.fail(String.format("请求参数类型不匹配，参数[%s]要求类型为：'%s'，但输入值为：'%s'", e.getName(), e.getRequiredType().getName(), e.getValue()));
+        return R.fail(MessageUtils.message("request.param.type.mismatch", e.getName(), e.getRequiredType().getName(), e.getValue()));
     }
 
     /**
@@ -120,7 +120,7 @@ public class GlobalExceptionHandler {
     public R<Void> handleNoHandlerFoundException(NoHandlerFoundException e, HttpServletRequest request) {
         String requestURI = request.getRequestURI();
         log.error("请求地址'{}'不存在.", requestURI);
-        return R.fail(HttpStatus.HTTP_NOT_FOUND, "请求地址不存在");
+        return R.fail(HttpStatus.HTTP_NOT_FOUND, MessageUtils.message("request.path.not.found"));
     }
 
     /**
@@ -151,7 +151,7 @@ public class GlobalExceptionHandler {
     public R<Void> handleRuntimeException(RuntimeException e, HttpServletRequest request) {
         String requestURI = request.getRequestURI();
         log.error("请求地址'{}',发生未知异常.", requestURI, e);
-        return R.fail("发生未知异常，请联系管理员");
+        return R.fail(MessageUtils.message("system.unknown.error"));
     }
 
     /**
@@ -161,7 +161,7 @@ public class GlobalExceptionHandler {
     public R<Void> handleException(Exception e, HttpServletRequest request) {
         String requestURI = request.getRequestURI();
         log.error("请求地址'{}',发生系统异常.", requestURI, e);
-        return R.fail("发生系统异常，请联系管理员");
+        return R.fail(MessageUtils.message("system.error"));
     }
 
     /**
@@ -221,7 +221,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public R<Void> handleHttpMessageNotReadableException(HttpMessageNotReadableException e, HttpServletRequest request) {
         log.error("请求地址'{}', 参数解析失败: {}", request.getRequestURI(), e.getMessage());
-        return R.fail(HttpStatus.HTTP_BAD_REQUEST, "请求参数格式错误：" + e.getMostSpecificCause().getMessage());
+        return R.fail(HttpStatus.HTTP_BAD_REQUEST, MessageUtils.message("request.param.format.error") + e.getMostSpecificCause().getMessage());
     }
 
     /**

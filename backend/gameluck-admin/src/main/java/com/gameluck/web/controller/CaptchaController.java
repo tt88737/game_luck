@@ -13,6 +13,7 @@ import com.gameluck.common.core.constant.Constants;
 import com.gameluck.common.core.constant.GlobalConstants;
 import com.gameluck.common.core.domain.R;
 import com.gameluck.common.core.exception.ServiceException;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.SpringUtils;
 import com.gameluck.common.core.utils.StringUtils;
 import com.gameluck.common.mail.config.properties.MailProperties;
@@ -84,7 +85,7 @@ public class CaptchaController {
     @GetMapping("/resource/email/code")
     public R<Void> emailCode(@NotBlank(message = "{user.email.not.blank}") String email) {
         if (!mailProperties.getEnabled()) {
-            return R.fail("当前系统没有开启邮箱功能！");
+            return R.fail(MessageUtils.message("email.feature.disabled"));
         }
         SpringUtils.getAopProxy(this).emailCodeImpl(email);
         return R.ok();
