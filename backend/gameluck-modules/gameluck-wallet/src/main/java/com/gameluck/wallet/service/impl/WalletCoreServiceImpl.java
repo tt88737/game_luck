@@ -4,6 +4,7 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import com.gameluck.common.core.constant.SystemConstants;
 import com.gameluck.common.core.exception.ServiceException;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.StringUtils;
 import com.gameluck.common.tenant.helper.TenantHelper;
 import com.gameluck.wallet.domain.WalletAccount;
@@ -63,7 +64,7 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
         String tenantId = currentTenantId();
         WalletRuleVo rule = walletRuleService.resolveCreditRule(tenantId, bo.getCurrencyCode(), bo.getSourceType());
         WalletReleaseMode releaseMode = resolveReleaseMode(bo, rule);
-        BigDecimal amount = requirePositive(bo.getAmount(), "入账金额必须大于0");
+        BigDecimal amount = requirePositive(bo.getAmount(), "wallet.credit.amount.positive");
         BigDecimal requiredTurnover = resolveRequiredTurnover(bo, rule);
         Date now = new Date();
         WalletTransaction transaction = buildCreditTransaction(tenantId, bo, releaseMode, amount, requiredTurnover,
@@ -103,7 +104,7 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
     @Transactional(rollbackFor = Exception.class)
     public WalletTransaction debit(WalletDebitBo bo) {
         String tenantId = currentTenantId();
-        BigDecimal amount = requirePositive(bo.getAmount(), "出账金额必须大于0");
+        BigDecimal amount = requirePositive(bo.getAmount(), "wallet.debit.amount.positive");
         Date now = new Date();
         WalletTransaction transaction = buildDebitTransaction(tenantId, bo, amount, ZERO, ZERO, ZERO, now);
         WalletTransaction exists = walletTransactionMapper.selectByIdempotencyKey(tenantId, bo.getIdempotencyKey());
@@ -118,7 +119,7 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
 
         WalletAccount account = walletAccountMapper.selectByBizKeyForUpdate(tenantId, bo.getMemberId(), bo.getCurrencyCode());
         if (account == null) {
-            throw new ServiceException("钱包账户不存在");
+            throw new ServiceException(MessageUtils.message("wallet.account.not.exists"));
         }
 
         BigDecimal balanceBefore = defaultZero(account.getAvailableBalance());
@@ -130,7 +131,7 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
             transaction.setFrozenAfter(normalizeAmount(frozenBefore));
             transaction.setStatus(WalletTransactionStatus.FAILED.name());
             transaction.setFailCode("INSUFFICIENT_BALANCE");
-            transaction.setFailReason("钱包余额不足");
+            transaction.setFailReason(MessageUtils.message("wallet.balance.insufficient"));
             transaction.setUpdateTime(now);
             walletTransactionMapper.updateById(transaction);
             return transaction;
@@ -155,7 +156,7 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
     @Transactional(rollbackFor = Exception.class)
     public WalletTransaction freeze(WalletFreezeOperationBo bo) {
         String tenantId = currentTenantId();
-        BigDecimal amount = requirePositive(bo.getAmount(), "freeze amount must be greater than 0");
+        BigDecimal amount = requirePositive(bo.getAmount(), "wallet.freeze.amount.positive");
         Date now = new Date();
         String freezeNo = StringUtils.blankToDefault(bo.getFreezeNo(), "WF" + IdUtil.getSnowflakeNextIdStr());
         bo.setFreezeNo(freezeNo);
@@ -172,14 +173,14 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
 
         WalletAccount account = walletAccountMapper.selectByBizKeyForUpdate(tenantId, bo.getMemberId(), bo.getCurrencyCode());
         if (account == null) {
-            markFailed(transaction, ZERO, ZERO, "ACCOUNT_NOT_FOUND", "wallet account does not exist", now);
+            markFailed(transaction, ZERO, ZERO, "ACCOUNT_NOT_FOUND", MessageUtils.message("wallet.account.not.exists"), now);
             return transaction;
         }
 
         BigDecimal balanceBefore = defaultZero(account.getAvailableBalance());
         BigDecimal frozenBefore = defaultZero(account.getFrozenBalance());
         if (balanceBefore.compareTo(amount) < 0) {
-            markFailed(transaction, balanceBefore, frozenBefore, "INSUFFICIENT_BALANCE", "wallet balance is insufficient", now);
+            markFailed(transaction, balanceBefore, frozenBefore, "INSUFFICIENT_BALANCE", MessageUtils.message("wallet.balance.insufficient"), now);
             return transaction;
         }
 
@@ -217,7 +218,7 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
     @Transactional(rollbackFor = Exception.class)
     public int addValidTurnover(WalletTurnoverBo bo) {
         String tenantId = currentTenantId();
-        BigDecimal validTurnoverAmount = requirePositive(bo.getValidTurnoverAmount(), "有效流水必须大于0");
+        BigDecimal validTurnoverAmount = requirePositive(bo.getValidTurnoverAmount(), "wallet.turnover.amount.positive");
         Date now = new Date();
         WalletTransaction transaction = buildTurnoverTransaction(tenantId, bo, validTurnoverAmount, now);
         WalletTransaction exists = walletTransactionMapper.selectByIdempotencyKey(tenantId, bo.getIdempotencyKey());
@@ -308,14 +309,14 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
 
     private WalletTransaction resolveIdempotentResult(WalletTransaction exists, String expectedRequestHash) {
         if (!StringUtils.equals(exists.getRequestHash(), expectedRequestHash)) {
-            throw new ServiceException("幂等请求参数冲突");
+            throw new ServiceException(MessageUtils.message("wallet.idempotency.conflict"));
         }
         return exists;
     }
 
     private int resolveTurnoverIdempotentResult(WalletTransaction exists, String expectedRequestHash) {
         if (!StringUtils.equals(exists.getRequestHash(), expectedRequestHash)) {
-            throw new ServiceException("幂等请求参数冲突");
+            throw new ServiceException(MessageUtils.message("wallet.idempotency.conflict"));
         }
         return parseReleasedCount(exists.getRemark());
     }
@@ -390,7 +391,7 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
         Date now = new Date();
         WalletFreeze freeze = walletFreezeMapper.selectByFreezeNoForUpdate(tenantId, bo.getFreezeNo());
         if (freeze == null) {
-            throw new ServiceException("freeze record does not exist");
+            throw new ServiceException(MessageUtils.message("wallet.freeze.record.not.exists"));
         }
         BigDecimal amount = normalizeAmount(freeze.getAmount());
         WalletTransaction transaction = buildFreezeTransaction(tenantId, bo, operation, amount, now);
@@ -400,7 +401,7 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
         }
 
         if (!WalletFreezeStatus.FROZEN.name().equals(freeze.getStatus())) {
-            throw new ServiceException("freeze record is not frozen");
+            throw new ServiceException(MessageUtils.message("wallet.freeze.record.not.frozen"));
         }
         WalletTransaction concurrent = reserveTransaction(transaction);
         if (concurrent != null) {
@@ -409,12 +410,12 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
 
         WalletAccount account = walletAccountMapper.selectByBizKeyForUpdate(tenantId, freeze.getMemberId(), freeze.getCurrencyCode());
         if (account == null) {
-            throw new ServiceException("wallet account does not exist");
+            throw new ServiceException(MessageUtils.message("wallet.account.not.exists"));
         }
         BigDecimal balanceBefore = defaultZero(account.getAvailableBalance());
         BigDecimal frozenBefore = defaultZero(account.getFrozenBalance());
         if (frozenBefore.compareTo(amount) < 0) {
-            throw new ServiceException("wallet frozen balance is insufficient");
+            throw new ServiceException(MessageUtils.message("wallet.frozen.balance.insufficient"));
         }
 
         BigDecimal balanceAfter = balanceBefore;
@@ -512,7 +513,7 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
         try {
             return WalletReleaseMode.valueOf(releaseMode);
         } catch (IllegalArgumentException ex) {
-            throw new ServiceException("不支持的释放模式: {}", releaseMode);
+            throw new ServiceException(MessageUtils.message("wallet.release.mode.unsupported", releaseMode));
         }
     }
 
@@ -523,7 +524,7 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
         }
         WalletReleaseMode requestMode = parseReleaseMode(bo.getReleaseMode());
         if (requestMode != ruleMode) {
-            throw new ServiceException("入账释放模式与钱包规则不一致");
+            throw new ServiceException(MessageUtils.message("wallet.release.mode.not.match.rule"));
         }
         return ruleMode;
     }
@@ -558,7 +559,7 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
     private BigDecimal requirePositive(BigDecimal value, String message) {
         BigDecimal normalized = normalizeAmount(value);
         if (normalized == null || normalized.compareTo(ZERO) <= 0) {
-            throw new ServiceException(message);
+            throw new ServiceException(MessageUtils.message(message));
         }
         return normalized;
     }

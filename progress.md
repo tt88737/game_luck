@@ -190,3 +190,8 @@
   - Added matching Chinese and English keys to backend `messages*.properties`.
   - Fixed `CryptoFilter` to resolve `Content-Language` directly from the request header before MVC locale resolution is available.
   - Verified unencrypted encrypted-API login rejection and unauthenticated protected API responses return the correct Chinese/English messages.
+- Continued business backend i18n pass:
+  - Routed wallet, wallet rule, deposit order, and member profile service-facing error messages through backend i18n keys.
+  - Added Chinese and English keys for wallet account/balance/freeze/release/turnover/rule, simulated deposit, and member validation errors.
+  - Changed `MessageUtils` to lazily resolve `MessageSource`, so pure unit tests without a Spring context fall back to the message key instead of failing static initialization.
+  - Verified wallet/member focused tests, backend compile/package, menu icon guard, and runtime `/auth/code` plus encrypted-login rejection language switching.

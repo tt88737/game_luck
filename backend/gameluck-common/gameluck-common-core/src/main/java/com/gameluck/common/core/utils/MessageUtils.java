@@ -14,8 +14,6 @@ import org.springframework.context.i18n.LocaleContextHolder;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MessageUtils {
 
-    private static final MessageSource MESSAGE_SOURCE = SpringUtils.getBean(MessageSource.class);
-
     /**
      * 根据消息键和参数 获取消息 委托给spring messageSource
      *
@@ -25,8 +23,11 @@ public class MessageUtils {
      */
     public static String message(String code, Object... args) {
         try {
-            return MESSAGE_SOURCE.getMessage(code, args, LocaleContextHolder.getLocale());
+            MessageSource messageSource = SpringUtils.getBean(MessageSource.class);
+            return messageSource.getMessage(code, args, LocaleContextHolder.getLocale());
         } catch (NoSuchMessageException e) {
+            return code;
+        } catch (Exception e) {
             return code;
         }
     }

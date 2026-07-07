@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.gameluck.common.core.constant.SystemConstants;
 import com.gameluck.common.core.exception.ServiceException;
 import com.gameluck.common.core.utils.MapstructUtils;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.StringUtils;
 import com.gameluck.common.mybatis.core.page.PageQuery;
 import com.gameluck.common.mybatis.core.page.TableDataInfo;
@@ -57,7 +58,7 @@ public class WalletRuleServiceImpl implements IWalletRuleService {
     public Boolean insertByBo(WalletRuleBo bo) {
         WalletRule add = MapstructUtils.convert(bo, WalletRule.class);
         if (add == null) {
-            throw new ServiceException("钱包规则参数错误");
+            throw new ServiceException(MessageUtils.message("wallet.rule.param.error"));
         }
         Date now = new Date();
         add.setId(IdUtil.getSnowflakeNextId());
@@ -104,11 +105,11 @@ public class WalletRuleServiceImpl implements IWalletRuleService {
             .eq(WalletRule::getCurrencyCode, currencyCode)
             .eq(WalletRule::getSourceType, sourceType));
         if (rule == null) {
-            throw new ServiceException("钱包规则不存在");
+            throw new ServiceException(MessageUtils.message("wallet.rule.not.exists"));
         }
         if (!StringUtils.equals(SystemConstants.NORMAL, rule.getStatus())
             || !StringUtils.equals(SystemConstants.NORMAL, rule.getCreditEnabled())) {
-            throw new ServiceException("钱包规则未启用或不允许入账");
+            throw new ServiceException(MessageUtils.message("wallet.rule.credit.disabled"));
         }
         return MapstructUtils.convert(rule, WalletRuleVo.class);
     }

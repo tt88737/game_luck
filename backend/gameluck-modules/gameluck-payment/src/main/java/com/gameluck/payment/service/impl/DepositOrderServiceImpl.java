@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.gameluck.common.core.constant.SystemConstants;
 import com.gameluck.common.core.exception.ServiceException;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.StringUtils;
 import com.gameluck.common.mybatis.core.page.PageQuery;
 import com.gameluck.common.mybatis.core.page.TableDataInfo;
@@ -98,7 +99,7 @@ public class DepositOrderServiceImpl implements IDepositOrderService {
         try {
             WalletTransaction transaction = walletCoreService.credit(buildCreditBo(order));
             if (!WalletTransactionStatus.SUCCESS.name().equals(transaction.getStatus())) {
-                throw new ServiceException("钱包入账未成功");
+                throw new ServiceException(MessageUtils.message("payment.deposit.wallet.credit.fail"));
             }
             order.setStatus(DepositOrderStatus.SUCCESS.name());
             order.setWalletTransactionNo(transaction.getTransactionNo());
@@ -142,14 +143,14 @@ public class DepositOrderServiceImpl implements IDepositOrderService {
     private DepositOrder lockOrder(Long id) {
         DepositOrder order = baseMapper.selectByIdForUpdate(id);
         if (order == null) {
-            throw new ServiceException("充值订单不存在");
+            throw new ServiceException(MessageUtils.message("payment.deposit.order.not.exists"));
         }
         return order;
     }
 
     private void requirePending(DepositOrder order) {
         if (!DepositOrderStatus.PENDING.name().equals(order.getStatus())) {
-            throw new ServiceException("只有待支付订单允许操作");
+            throw new ServiceException(MessageUtils.message("payment.deposit.only.pending.allowed"));
         }
     }
 
@@ -176,7 +177,7 @@ public class DepositOrderServiceImpl implements IDepositOrderService {
 
     private BigDecimal normalizeAmount(BigDecimal value) {
         if (value == null || value.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new ServiceException("充值金额必须大于0");
+            throw new ServiceException(MessageUtils.message("payment.deposit.amount.positive"));
         }
         return value.setScale(MONEY_SCALE, RoundingMode.HALF_UP);
     }

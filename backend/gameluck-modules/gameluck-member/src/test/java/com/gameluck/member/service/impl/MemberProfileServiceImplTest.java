@@ -45,7 +45,7 @@ class MemberProfileServiceImplTest {
 
         ServiceException exception = assertThrows(ServiceException.class, () -> service.insertByBo(createBo("alice")));
 
-        assertEquals("member username already exists", exception.getMessage());
+        assertEquals("member.username.exists", exception.getMessage());
         verify(mapper, never()).insert(any(MemberProfile.class));
     }
 
@@ -57,7 +57,7 @@ class MemberProfileServiceImplTest {
 
         ServiceException exception = assertThrows(ServiceException.class, () -> service.updateStatus(1L, "LOCKED"));
 
-        assertEquals("invalid member status", exception.getMessage());
+        assertEquals("member.status.invalid", exception.getMessage());
         verify(mapper, never()).selectById(any());
     }
 

@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.gameluck.common.core.constant.SystemConstants;
 import com.gameluck.common.core.exception.ServiceException;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.StringUtils;
 import com.gameluck.common.mybatis.core.page.PageQuery;
 import com.gameluck.common.mybatis.core.page.TableDataInfo;
@@ -86,7 +87,7 @@ public class MemberProfileServiceImpl implements IMemberProfileService {
     public Boolean updateByBo(MemberProfileBo bo) {
         MemberProfile member = baseMapper.selectById(bo.getId());
         if (member == null) {
-            throw new ServiceException("member does not exist");
+            throw new ServiceException(MessageUtils.message("member.profile.not.exists"));
         }
         String tenantId = StringUtils.blankToDefault(member.getTenantId(), currentTenantId());
         String username = normalizeUsername(bo.getUsername());
@@ -117,7 +118,7 @@ public class MemberProfileServiceImpl implements IMemberProfileService {
         validateStatus(status);
         MemberProfile member = baseMapper.selectById(id);
         if (member == null) {
-            throw new ServiceException("member does not exist");
+            throw new ServiceException(MessageUtils.message("member.profile.not.exists"));
         }
         member.setStatus(status);
         member.setUpdateTime(new Date());
@@ -143,14 +144,14 @@ public class MemberProfileServiceImpl implements IMemberProfileService {
     private void requireUsernameAvailable(String tenantId, String username, Long currentId) {
         MemberProfile existing = baseMapper.selectByUsername(tenantId, username);
         if (existing != null && !existing.getId().equals(currentId)) {
-            throw new ServiceException("member username already exists");
+            throw new ServiceException(MessageUtils.message("member.username.exists"));
         }
     }
 
     private String normalizeUsername(String username) {
         String normalized = StringUtils.trim(username);
         if (StringUtils.isBlank(normalized)) {
-            throw new ServiceException("username is required");
+            throw new ServiceException(MessageUtils.message("member.username.required"));
         }
         return normalized;
     }
@@ -159,7 +160,7 @@ public class MemberProfileServiceImpl implements IMemberProfileService {
         try {
             MemberStatus.valueOf(status);
         } catch (Exception ex) {
-            throw new ServiceException("invalid member status");
+            throw new ServiceException(MessageUtils.message("member.status.invalid"));
         }
     }
 
@@ -167,7 +168,7 @@ public class MemberProfileServiceImpl implements IMemberProfileService {
         try {
             MemberRiskLevel.valueOf(riskLevel);
         } catch (Exception ex) {
-            throw new ServiceException("invalid member risk level");
+            throw new ServiceException(MessageUtils.message("member.risk.level.invalid"));
         }
     }
 
