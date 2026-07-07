@@ -1,5 +1,6 @@
 package com.gameluck.common.encrypt.core.encryptor;
 
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.StringUtils;
 import com.gameluck.common.encrypt.core.EncryptContext;
 import com.gameluck.common.encrypt.enumd.AlgorithmType;
@@ -22,7 +23,7 @@ public class RsaEncryptor extends AbstractEncryptor {
         String privateKey = context.getPrivateKey();
         String publicKey = context.getPublicKey();
         if (StringUtils.isAnyEmpty(privateKey, publicKey)) {
-            throw new IllegalArgumentException("RSA公私钥均需要提供，公钥加密，私钥解密。");
+            throw new IllegalArgumentException(MessageUtils.message("encrypt.rsa.keypair.required"));
         }
         this.context = context;
     }

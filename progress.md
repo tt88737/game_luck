@@ -245,3 +245,7 @@
   - Routed `LoginUser`, `DateUtils`, `RegionUtils`, `SqlUtil`, and `ValidatorUtils` hardcoded exception messages through backend i18n keys.
   - Added Chinese and English keys for login identity requirements, date range validation, region initialization, SQL guard failures, and validator failures.
   - Verified common-core hardcoded-message scan, focused target scan, full backend hardcoded-message distribution, backend compile, backend i18n key consistency, and menu icon guard.
+- Continued common-encrypt backend i18n pass:
+  - Routed RSA, SM2, AES, and SM4 hardcoded `IllegalArgumentException` messages through backend i18n keys.
+  - Added Chinese and English keys for key-pair requirements, AES/SM4 password validation, and SM2/RSA public/private key guards.
+  - Verified common-encrypt hardcoded-message scan, focused target scan, backend compile, backend i18n key consistency, and menu icon guard.
