@@ -203,3 +203,8 @@
   - Routed user, role, and menu controller `R.fail` / `R.warn` business messages through backend i18n keys.
   - Added Chinese and English keys for user uniqueness, tenant quota, role uniqueness/update failure, and menu validation/delete guards.
   - Verified target hardcoded-message scan, backend compile, backend i18n key consistency, and menu icon guard.
+- Continued system configuration controller backend i18n pass:
+  - Routed client, config, department, dictionary data/type, and post controller response messages through backend i18n keys.
+  - Reused `common.operation.success` for config-key query success copy.
+  - Added Chinese and English keys for uniqueness checks, disable guards, and delete guards.
+  - Verified target hardcoded-message scan, backend compile, backend i18n key consistency, and menu icon guard.

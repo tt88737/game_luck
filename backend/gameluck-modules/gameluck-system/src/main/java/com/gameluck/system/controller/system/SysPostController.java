@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import com.gameluck.common.core.constant.SystemConstants;
 import com.gameluck.common.core.domain.R;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.excel.utils.ExcelUtil;
 import com.gameluck.common.idempotent.annotation.RepeatSubmit;
 import com.gameluck.common.log.annotation.Log;
@@ -80,9 +81,9 @@ public class SysPostController extends BaseController {
     @PostMapping
     public R<Void> add(@Validated @RequestBody SysPostBo post) {
         if (!postService.checkPostNameUnique(post)) {
-            return R.fail("新增岗位'" + post.getPostName() + "'失败，岗位名称已存在");
+            return R.fail(MessageUtils.message("system.post.add.name.exists", post.getPostName()));
         } else if (!postService.checkPostCodeUnique(post)) {
-            return R.fail("新增岗位'" + post.getPostName() + "'失败，岗位编码已存在");
+            return R.fail(MessageUtils.message("system.post.add.code.exists", post.getPostName()));
         }
         return toAjax(postService.insertPost(post));
     }
@@ -96,12 +97,12 @@ public class SysPostController extends BaseController {
     @PutMapping
     public R<Void> edit(@Validated @RequestBody SysPostBo post) {
         if (!postService.checkPostNameUnique(post)) {
-            return R.fail("修改岗位'" + post.getPostName() + "'失败，岗位名称已存在");
+            return R.fail(MessageUtils.message("system.post.update.name.exists", post.getPostName()));
         } else if (!postService.checkPostCodeUnique(post)) {
-            return R.fail("修改岗位'" + post.getPostName() + "'失败，岗位编码已存在");
+            return R.fail(MessageUtils.message("system.post.update.code.exists", post.getPostName()));
         } else if (SystemConstants.DISABLE.equals(post.getStatus())
             && postService.countUserPostById(post.getPostId()) > 0) {
-            return R.fail("该岗位下存在已分配用户，不能禁用!");
+            return R.fail(MessageUtils.message("system.post.disable.has.user"));
         }
         return toAjax(postService.updatePost(post));
     }

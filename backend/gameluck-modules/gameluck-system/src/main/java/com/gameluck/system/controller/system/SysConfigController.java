@@ -4,6 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import com.gameluck.common.core.domain.R;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.excel.utils.ExcelUtil;
 import com.gameluck.common.idempotent.annotation.RepeatSubmit;
 import com.gameluck.common.log.annotation.Log;
@@ -71,7 +72,7 @@ public class SysConfigController extends BaseController {
      */
     @GetMapping(value = "/configKey/{configKey}")
     public R<String> getConfigKey(@PathVariable String configKey) {
-        return R.ok("操作成功", configService.selectConfigByKey(configKey));
+        return R.ok(MessageUtils.message("common.operation.success"), configService.selectConfigByKey(configKey));
     }
 
     /**
@@ -83,7 +84,7 @@ public class SysConfigController extends BaseController {
     @PostMapping
     public R<Void> add(@Validated @RequestBody SysConfigBo config) {
         if (!configService.checkConfigKeyUnique(config)) {
-            return R.fail("新增参数'" + config.getConfigName() + "'失败，参数键名已存在");
+            return R.fail(MessageUtils.message("system.config.add.key.exists", config.getConfigName()));
         }
         configService.insertConfig(config);
         return R.ok();
@@ -98,7 +99,7 @@ public class SysConfigController extends BaseController {
     @PutMapping
     public R<Void> edit(@Validated @RequestBody SysConfigBo config) {
         if (!configService.checkConfigKeyUnique(config)) {
-            return R.fail("修改参数'" + config.getConfigName() + "'失败，参数键名已存在");
+            return R.fail(MessageUtils.message("system.config.update.key.exists", config.getConfigName()));
         }
         configService.updateConfig(config);
         return R.ok();

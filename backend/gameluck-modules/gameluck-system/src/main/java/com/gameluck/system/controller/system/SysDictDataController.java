@@ -5,6 +5,7 @@ import cn.hutool.core.util.ObjectUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import com.gameluck.common.core.domain.R;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.excel.utils.ExcelUtil;
 import com.gameluck.common.idempotent.annotation.RepeatSubmit;
 import com.gameluck.common.log.annotation.Log;
@@ -91,7 +92,7 @@ public class SysDictDataController extends BaseController {
     @PostMapping
     public R<Void> add(@Validated @RequestBody SysDictDataBo dict) {
         if (!dictDataService.checkDictDataUnique(dict)) {
-            return R.fail("新增字典数据'" + dict.getDictValue() + "'失败，字典键值已存在");
+            return R.fail(MessageUtils.message("system.dict.data.add.value.exists", dict.getDictValue()));
         }
         dictDataService.insertDictData(dict);
         return R.ok();
@@ -106,7 +107,7 @@ public class SysDictDataController extends BaseController {
     @PutMapping
     public R<Void> edit(@Validated @RequestBody SysDictDataBo dict) {
         if (!dictDataService.checkDictDataUnique(dict)) {
-            return R.fail("修改字典数据'" + dict.getDictValue() + "'失败，字典键值已存在");
+            return R.fail(MessageUtils.message("system.dict.data.update.value.exists", dict.getDictValue()));
         }
         dictDataService.updateDictData(dict);
         return R.ok();

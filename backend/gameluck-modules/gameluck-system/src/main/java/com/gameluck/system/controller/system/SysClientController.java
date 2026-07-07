@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import com.gameluck.common.core.domain.R;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.validate.AddGroup;
 import com.gameluck.common.core.validate.EditGroup;
 import com.gameluck.common.excel.utils.ExcelUtil;
@@ -78,7 +79,7 @@ public class SysClientController extends BaseController {
     @PostMapping()
     public R<Void> add(@Validated(AddGroup.class) @RequestBody SysClientBo bo) {
         if (!sysClientService.checkClickKeyUnique(bo)) {
-            return R.fail("新增客户端'" + bo.getClientKey() + "'失败，客户端key已存在");
+            return R.fail(MessageUtils.message("system.client.add.key.exists", bo.getClientKey()));
         }
         return toAjax(sysClientService.insertByBo(bo));
     }
@@ -92,7 +93,7 @@ public class SysClientController extends BaseController {
     @PutMapping()
     public R<Void> edit(@Validated(EditGroup.class) @RequestBody SysClientBo bo) {
         if (!sysClientService.checkClickKeyUnique(bo)) {
-            return R.fail("修改客户端'" + bo.getClientKey() + "'失败，客户端key已存在");
+            return R.fail(MessageUtils.message("system.client.update.key.exists", bo.getClientKey()));
         }
         return toAjax(sysClientService.updateByBo(bo));
     }

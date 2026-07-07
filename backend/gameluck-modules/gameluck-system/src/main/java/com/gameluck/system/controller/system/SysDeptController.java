@@ -5,6 +5,7 @@ import cn.hutool.core.convert.Convert;
 import lombok.RequiredArgsConstructor;
 import com.gameluck.common.core.constant.SystemConstants;
 import com.gameluck.common.core.domain.R;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.StringUtils;
 import com.gameluck.common.idempotent.annotation.RepeatSubmit;
 import com.gameluck.common.log.annotation.Log;
@@ -78,7 +79,7 @@ public class SysDeptController extends BaseController {
     @PostMapping
     public R<Void> add(@Validated @RequestBody SysDeptBo dept) {
         if (!deptService.checkDeptNameUnique(dept)) {
-            return R.fail("新增部门'" + dept.getDeptName() + "'失败，部门名称已存在");
+            return R.fail(MessageUtils.message("system.dept.add.name.exists", dept.getDeptName()));
         }
         return toAjax(deptService.insertDept(dept));
     }
@@ -94,14 +95,14 @@ public class SysDeptController extends BaseController {
         Long deptId = dept.getDeptId();
         deptService.checkDeptDataScope(deptId);
         if (!deptService.checkDeptNameUnique(dept)) {
-            return R.fail("修改部门'" + dept.getDeptName() + "'失败，部门名称已存在");
+            return R.fail(MessageUtils.message("system.dept.update.name.exists", dept.getDeptName()));
         } else if (dept.getParentId().equals(deptId)) {
-            return R.fail("修改部门'" + dept.getDeptName() + "'失败，上级部门不能是自己");
+            return R.fail(MessageUtils.message("system.dept.update.parent.self", dept.getDeptName()));
         } else if (StringUtils.equals(SystemConstants.DISABLE, dept.getStatus())) {
             if (deptService.selectNormalChildrenDeptById(deptId) > 0) {
-                return R.fail("该部门包含未停用的子部门!");
+                return R.fail(MessageUtils.message("system.dept.disable.has.enabled.children"));
             } else if (deptService.checkDeptExistUser(deptId)) {
-                return R.fail("该部门下存在已分配用户，不能禁用!");
+                return R.fail(MessageUtils.message("system.dept.disable.has.user"));
             }
         }
         return toAjax(deptService.updateDept(dept));
@@ -117,16 +118,16 @@ public class SysDeptController extends BaseController {
     @DeleteMapping("/{deptId}")
     public R<Void> remove(@PathVariable Long deptId) {
         if (SystemConstants.DEFAULT_DEPT_ID.equals(deptId)) {
-            return R.warn("默认部门,不允许删除");
+            return R.warn(MessageUtils.message("system.dept.default.delete.forbidden"));
         }
         if (deptService.hasChildByDeptId(deptId)) {
-            return R.warn("存在下级部门,不允许删除");
+            return R.warn(MessageUtils.message("system.dept.has.children"));
         }
         if (deptService.checkDeptExistUser(deptId)) {
-            return R.warn("部门存在用户,不允许删除");
+            return R.warn(MessageUtils.message("system.dept.has.user"));
         }
         if (postService.countPostByDeptId(deptId) > 0) {
-            return R.warn("部门存在岗位,不允许删除");
+            return R.warn(MessageUtils.message("system.dept.has.post"));
         }
         deptService.checkDeptDataScope(deptId);
         return toAjax(deptService.deleteDeptById(deptId));
