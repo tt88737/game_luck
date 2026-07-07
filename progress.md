@@ -229,3 +229,7 @@
   - Routed tenant and tenant package service `ServiceException` messages through backend i18n keys.
   - Added Chinese and English keys for tenant creation failure, missing tenant packages, management tenant operation guards, super-admin tenant deletion guards, and used tenant package deletion guards.
   - Verified target hardcoded-message scan, backend compile, backend i18n key consistency, and menu icon guard.
+- Continued user service backend i18n pass:
+  - Routed user service `ServiceException` messages through backend i18n keys.
+  - Added Chinese and English keys for super admin user protection, user update/delete failures, post/role data-scope denial, and super-admin role assignment guards.
+  - Verified target hardcoded-message scan, system service hardcoded-message scan, backend compile, backend i18n key consistency, and menu icon guard.

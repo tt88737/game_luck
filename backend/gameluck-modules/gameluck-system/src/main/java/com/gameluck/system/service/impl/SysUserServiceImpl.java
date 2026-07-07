@@ -276,7 +276,7 @@ public class SysUserServiceImpl implements ISysUserService, UserService {
     @Override
     public void checkUserAllowed(Long userId) {
         if (ObjectUtil.isNotNull(userId) && LoginHelper.isSuperAdmin(userId)) {
-            throw new ServiceException("不允许操作超级管理员用户");
+            throw new ServiceException(MessageUtils.message("system.user.super.admin.operation.forbidden"));
         }
     }
 
@@ -294,7 +294,7 @@ public class SysUserServiceImpl implements ISysUserService, UserService {
             return;
         }
         if (baseMapper.countUserById(userId) == 0) {
-            throw new ServiceException("没有权限访问用户数据！");
+            throw new ServiceException(MessageUtils.message("system.user.data.no.permission"));
         }
     }
 
@@ -351,7 +351,7 @@ public class SysUserServiceImpl implements ISysUserService, UserService {
         // 防止错误更新后导致的数据误删除
         int flag = baseMapper.updateById(sysUser);
         if (flag < 1) {
-            throw new ServiceException("修改用户{}信息失败", user.getUserName());
+            throw new ServiceException(MessageUtils.message("system.user.update.info.fail", user.getUserName()));
         }
         return flag;
     }
@@ -456,7 +456,7 @@ public class SysUserServiceImpl implements ISysUserService, UserService {
 
         // 校验是否有权限操作这些岗位（含数据权限控制）
         if (postMapper.selectPostCount(postIds) != postIds.size()) {
-            throw new ServiceException("没有权限访问岗位的数据");
+            throw new ServiceException(MessageUtils.message("system.user.post.data.no.permission"));
         }
 
         // 是否清除旧的用户岗位绑定
@@ -496,12 +496,12 @@ public class SysUserServiceImpl implements ISysUserService, UserService {
 
         // 移除超管角色后若无剩余角色，说明仅选了超管角色且不允许分配，显式报错
         if (roleList.isEmpty()) {
-            throw new ServiceException("不允许为普通用户分配超级管理员角色，请至少选择一个其他角色");
+            throw new ServiceException(MessageUtils.message("system.user.assign.super.admin.role.forbidden"));
         }
 
         // 校验是否有权限访问这些角色（含数据权限控制）
         if (roleMapper.selectRoleCount(roleList) != roleList.size()) {
-            throw new ServiceException("没有权限访问角色的数据");
+            throw new ServiceException(MessageUtils.message("system.user.role.data.no.permission"));
         }
 
         // 是否清除原有绑定
@@ -536,7 +536,7 @@ public class SysUserServiceImpl implements ISysUserService, UserService {
         // 防止更新失败导致的数据删除
         int flag = baseMapper.deleteById(userId);
         if (flag < 1) {
-            throw new ServiceException("删除用户失败!");
+            throw new ServiceException(MessageUtils.message("system.user.delete.fail"));
         }
         return flag;
     }
@@ -562,7 +562,7 @@ public class SysUserServiceImpl implements ISysUserService, UserService {
         // 防止更新失败导致的数据删除
         int flag = baseMapper.deleteByIds(ids);
         if (flag < 1) {
-            throw new ServiceException("删除用户失败!");
+            throw new ServiceException(MessageUtils.message("system.user.delete.fail"));
         }
         return flag;
     }
