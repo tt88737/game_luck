@@ -18,6 +18,7 @@ import com.gameluck.common.core.domain.model.LoginUser;
 import com.gameluck.common.core.exception.ServiceException;
 import com.gameluck.common.core.service.RoleService;
 import com.gameluck.common.core.utils.MapstructUtils;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.StreamUtils;
 import com.gameluck.common.core.utils.StringUtils;
 import com.gameluck.common.mybatis.core.page.PageQuery;
@@ -222,13 +223,13 @@ public class SysRoleServiceImpl implements ISysRoleService, RoleService {
     @Override
     public void checkRoleAllowed(SysRoleBo role) {
         if (ObjectUtil.isNotNull(role.getRoleId()) && LoginHelper.isSuperAdmin(role.getRoleId())) {
-            throw new ServiceException("不允许操作超级管理员角色");
+            throw new ServiceException(MessageUtils.message("system.role.super.admin.operation.forbidden"));
         }
         String[] keys = new String[]{TenantConstants.SUPER_ADMIN_ROLE_KEY, TenantConstants.TENANT_ADMIN_ROLE_KEY};
         // 新增不允许使用 管理员标识符
         if (ObjectUtil.isNull(role.getRoleId())
             && StringUtils.equalsAny(role.getRoleKey(), keys)) {
-            throw new ServiceException("不允许使用系统内置管理员角色标识符!");
+            throw new ServiceException(MessageUtils.message("system.role.builtin.admin.key.use.forbidden"));
         }
         // 修改不允许修改 管理员标识符
         if (ObjectUtil.isNotNull(role.getRoleId())) {
@@ -236,9 +237,9 @@ public class SysRoleServiceImpl implements ISysRoleService, RoleService {
             // 如果标识符不相等 判断为修改了管理员标识符
             if (!StringUtils.equals(sysRole.getRoleKey(), role.getRoleKey())) {
                 if (StringUtils.equalsAny(sysRole.getRoleKey(), keys)) {
-                    throw new ServiceException("不允许修改系统内置管理员角色标识符!");
+                    throw new ServiceException(MessageUtils.message("system.role.builtin.admin.key.update.forbidden"));
                 } else if (StringUtils.equalsAny(role.getRoleKey(), keys)) {
-                    throw new ServiceException("不允许使用系统内置管理员角色标识符!");
+                    throw new ServiceException(MessageUtils.message("system.role.builtin.admin.key.use.forbidden"));
                 }
             }
         }
@@ -269,7 +270,7 @@ public class SysRoleServiceImpl implements ISysRoleService, RoleService {
         }
         long count = baseMapper.selectRoleCount(roleIds);
         if (count != roleIds.size()) {
-            throw new ServiceException("没有权限访问部分角色数据！");
+            throw new ServiceException(MessageUtils.message("system.role.data.partial.no.permission"));
         }
     }
 
@@ -312,7 +313,7 @@ public class SysRoleServiceImpl implements ISysRoleService, RoleService {
         SysRole role = MapstructUtils.convert(bo, SysRole.class);
 
         if (SystemConstants.DISABLE.equals(role.getStatus()) && this.countUserRoleByRoleId(role.getRoleId()) > 0) {
-            throw new ServiceException("角色已分配，不能禁用!");
+            throw new ServiceException(MessageUtils.message("system.role.assigned.disable.forbidden"));
         }
         // 修改角色信息
         baseMapper.updateById(role);
@@ -331,7 +332,7 @@ public class SysRoleServiceImpl implements ISysRoleService, RoleService {
     @Override
     public int updateRoleStatus(Long roleId, String status) {
         if (SystemConstants.DISABLE.equals(status) && this.countUserRoleByRoleId(roleId) > 0) {
-            throw new ServiceException("角色已分配，不能禁用!");
+            throw new ServiceException(MessageUtils.message("system.role.assigned.disable.forbidden"));
         }
         return baseMapper.update(null,
             new LambdaUpdateWrapper<SysRole>()
@@ -432,7 +433,7 @@ public class SysRoleServiceImpl implements ISysRoleService, RoleService {
         for (SysRole role : roles) {
             checkRoleAllowed(BeanUtil.toBean(role, SysRoleBo.class));
             if (countUserRoleByRoleId(role.getRoleId()) > 0) {
-                throw new ServiceException(String.format("%1$s已分配，不能删除!", role.getRoleName()));
+                throw new ServiceException(MessageUtils.message("system.role.assigned.delete.forbidden", role.getRoleName()));
             }
         }
         // 删除角色与菜单关联
@@ -451,7 +452,7 @@ public class SysRoleServiceImpl implements ISysRoleService, RoleService {
     @Override
     public int deleteAuthUser(SysUserRole userRole) {
         if (LoginHelper.getUserId().equals(userRole.getUserId())) {
-            throw new ServiceException("不允许修改当前用户角色!");
+            throw new ServiceException(MessageUtils.message("system.role.current.user.update.forbidden"));
         }
         int rows = userRoleMapper.delete(new LambdaQueryWrapper<SysUserRole>()
             .eq(SysUserRole::getRoleId, userRole.getRoleId())
@@ -473,7 +474,7 @@ public class SysRoleServiceImpl implements ISysRoleService, RoleService {
     public int deleteAuthUsers(Long roleId, Long[] userIds) {
         List<Long> ids = List.of(userIds);
         if (ids.contains(LoginHelper.getUserId())) {
-            throw new ServiceException("不允许修改当前用户角色!");
+            throw new ServiceException(MessageUtils.message("system.role.current.user.update.forbidden"));
         }
         int rows = userRoleMapper.delete(new LambdaQueryWrapper<SysUserRole>()
             .eq(SysUserRole::getRoleId, roleId)
@@ -497,7 +498,7 @@ public class SysRoleServiceImpl implements ISysRoleService, RoleService {
         int rows = 1;
         List<Long> ids = List.of(userIds);
         if (ids.contains(LoginHelper.getUserId())) {
-            throw new ServiceException("不允许修改当前用户角色!");
+            throw new ServiceException(MessageUtils.message("system.role.current.user.update.forbidden"));
         }
         List<SysUserRole> list = StreamUtils.toList(ids, userId -> {
             SysUserRole ur = new SysUserRole();

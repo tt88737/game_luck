@@ -221,3 +221,7 @@
   - Routed OSS config, OSS file upload/download, and post service `ServiceException` messages through backend i18n keys.
   - Added Chinese and English keys for OSS config key uniqueness, built-in OSS config deletion, missing file data, empty uploads, and assigned post deletion guards.
   - Verified target hardcoded-message scan, backend compile, backend i18n key consistency, and menu icon guard.
+- Continued role service backend i18n pass:
+  - Routed role service `ServiceException` messages through backend i18n keys.
+  - Added Chinese and English keys for super admin role protection, built-in admin role key guards, role data-scope denial, assigned role disable/delete guards, and current-user role update guards.
+  - Verified target hardcoded-message scan, backend compile, backend i18n key consistency, and menu icon guard.
