@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import com.gameluck.common.core.constant.SystemConstants;
 import com.gameluck.common.core.exception.ServiceException;
 import com.gameluck.common.core.utils.MapstructUtils;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.StringUtils;
 import com.gameluck.common.mybatis.core.page.PageQuery;
 import com.gameluck.common.mybatis.core.page.TableDataInfo;
@@ -141,7 +142,7 @@ public class SysTenantPackageServiceImpl implements ISysTenantPackageService {
         if(isValid){
             boolean exists = tenantMapper.exists(new LambdaQueryWrapper<SysTenant>().in(SysTenant::getPackageId, ids));
             if (exists) {
-                throw new ServiceException("租户套餐已被使用");
+                throw new ServiceException(MessageUtils.message("system.tenant.package.used"));
             }
         }
         return baseMapper.deleteByIds(ids) > 0;

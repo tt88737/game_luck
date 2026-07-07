@@ -16,6 +16,7 @@ import com.gameluck.common.core.constant.SystemConstants;
 import com.gameluck.common.core.constant.TenantConstants;
 import com.gameluck.common.core.exception.ServiceException;
 import com.gameluck.common.core.utils.MapstructUtils;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.SpringUtils;
 import com.gameluck.common.core.utils.StreamUtils;
 import com.gameluck.common.core.utils.StringUtils;
@@ -129,7 +130,7 @@ public class SysTenantServiceImpl implements ISysTenantService {
         add.setTenantId(tenantId);
         boolean flag = baseMapper.insert(add) > 0;
         if (!flag) {
-            throw new ServiceException("创建租户失败");
+            throw new ServiceException(MessageUtils.message("system.tenant.create.fail"));
         }
         bo.setId(add.getId());
 
@@ -239,7 +240,7 @@ public class SysTenantServiceImpl implements ISysTenantService {
         // 获取租户套餐
         SysTenantPackage tenantPackage = tenantPackageMapper.selectById(packageId);
         if (ObjectUtil.isNull(tenantPackage)) {
-            throw new ServiceException("套餐不存在");
+            throw new ServiceException(MessageUtils.message("system.tenant.package.not.exists"));
         }
         // 获取套餐菜单id
         List<Long> menuIds = StringUtils.splitTo(tenantPackage.getMenuIds(), Convert::toLong);
@@ -304,7 +305,7 @@ public class SysTenantServiceImpl implements ISysTenantService {
         if (ObjectUtil.isNotNull(tenantId)
             && TenantConstants.DEFAULT_TENANT_ID.equals(tenantId)
             && !LoginHelper.isSuperAdmin()) {
-            throw new ServiceException("不允许操作管理租户");
+            throw new ServiceException(MessageUtils.message("system.tenant.admin.operation.forbidden"));
         }
     }
 
@@ -317,7 +318,7 @@ public class SysTenantServiceImpl implements ISysTenantService {
         if (isValid) {
             // 做一些业务上的校验,判断是否需要校验
             if (ids.contains(TenantConstants.SUPER_ADMIN_ID)) {
-                throw new ServiceException("超管租户不能删除");
+                throw new ServiceException(MessageUtils.message("system.tenant.super.admin.delete.forbidden"));
             }
         }
         return baseMapper.deleteByIds(ids) > 0;
