@@ -253,3 +253,7 @@
   - Routed Excel enum conversion, dropdown option, dictionary dropdown, and export/template exception messages through backend i18n keys.
   - Added Chinese and English keys for invalid cell types, dropdown option validation, missing dictionaries, export failures, and empty data.
   - Verified common-excel hardcoded-message scan, focused target scan, backend compile, backend i18n key consistency, and menu icon guard.
+- Continued common-mybatis backend i18n pass:
+  - Routed pagination sorting, auto-fill, MyBatis exception handler, data permission, and database type failure messages through backend i18n keys.
+  - Added Chinese and English keys for invalid sort parameters, auto-fill failures, duplicate records, missing data sources, data permission parsing, role data-scope validation, and database type detection failures.
+  - Verified common-mybatis hardcoded-message scan, full backend hardcoded-message distribution, backend compile with constrained Maven memory, backend i18n key consistency, and menu icon guard.

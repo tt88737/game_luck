@@ -12,6 +12,7 @@ import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import com.gameluck.common.core.domain.dto.RoleDTO;
 import com.gameluck.common.core.domain.model.LoginUser;
 import com.gameluck.common.core.exception.ServiceException;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.SpringUtils;
 import com.gameluck.common.core.utils.StreamUtils;
 import com.gameluck.common.core.utils.StringUtils;
@@ -83,7 +84,7 @@ public class PlusDataPermissionHandler {
                 return parenthesis;
             }
         } catch (JSQLParserException e) {
-            throw new ServiceException("数据权限解析异常 => " + e.getMessage());
+            throw new ServiceException(MessageUtils.message("mybatis.data.permission.parse.fail", e.getMessage()));
         } finally {
             DataPermissionHelper.removePermission();
         }
@@ -115,7 +116,7 @@ public class PlusDataPermissionHandler {
         Map<DataColumn, Boolean> ignoreMap = new HashMap<>();
         for (DataColumn dataColumn : dataPermission.value()) {
             if (dataColumn.key().length != dataColumn.value().length) {
-                throw new ServiceException("角色数据范围异常 => key与value长度不匹配");
+                throw new ServiceException(MessageUtils.message("mybatis.role.data.scope.key.value.mismatch"));
             }
             // 包含权限标识符 这直接跳过
             if (StringUtils.isNotBlank(dataColumn.permission()) &&
@@ -136,7 +137,7 @@ public class PlusDataPermissionHandler {
             // 获取角色权限泛型
             DataScopeType type = DataScopeType.findCode(role.getDataScope());
             if (ObjectUtil.isNull(type)) {
-                throw new ServiceException("角色数据范围异常 => " + role.getDataScope());
+                throw new ServiceException(MessageUtils.message("mybatis.role.data.scope.invalid", role.getDataScope()));
             }
             // 全部数据权限直接返回
             if (type == DataScopeType.ALL) {

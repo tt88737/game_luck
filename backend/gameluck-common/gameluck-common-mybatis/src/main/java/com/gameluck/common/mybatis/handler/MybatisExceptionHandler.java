@@ -28,7 +28,7 @@ public class MybatisExceptionHandler {
     public R<Void> handleDuplicateKeyException(DuplicateKeyException e, HttpServletRequest request) {
         String requestURI = request.getRequestURI();
         log.error("请求地址'{}',数据库中已存在记录'{}'", requestURI, e.getMessage());
-        return R.fail(HttpStatus.HTTP_CONFLICT, "数据库中已存在该记录，请联系管理员确认");
+        return R.fail(HttpStatus.HTTP_CONFLICT, MessageUtils.message("mybatis.record.duplicate"));
     }
 
     /**
@@ -44,7 +44,7 @@ public class MybatisExceptionHandler {
         }
         if (root instanceof CannotFindDataSourceException) {
             log.error("请求地址'{}', 未找到数据源", requestURI);
-            return R.fail(HttpStatus.HTTP_INTERNAL_ERROR, "未找到数据源，请联系管理员确认");
+            return R.fail(HttpStatus.HTTP_INTERNAL_ERROR, MessageUtils.message("mybatis.datasource.not.found"));
         }
         log.error("请求地址'{}', Mybatis系统异常", requestURI, e);
         return R.fail(HttpStatus.HTTP_INTERNAL_ERROR, e.getMessage());

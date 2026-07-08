@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.reflection.MetaObject;
 import com.gameluck.common.core.domain.model.LoginUser;
 import com.gameluck.common.core.exception.ServiceException;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.ObjectUtils;
 import com.gameluck.common.mybatis.core.domain.BaseEntity;
 import com.gameluck.common.satoken.utils.LoginHelper;
@@ -63,7 +64,7 @@ public class InjectionMetaObjectHandler implements MetaObjectHandler {
                 this.strictInsertFill(metaObject, "updateTime", Date.class, date);
             }
         } catch (Exception e) {
-            throw new ServiceException("自动注入异常 => " + e.getMessage(), HttpStatus.HTTP_UNAUTHORIZED);
+            throw new ServiceException(MessageUtils.message("mybatis.auto.fill.fail", e.getMessage()), HttpStatus.HTTP_UNAUTHORIZED);
         }
     }
 
@@ -91,7 +92,7 @@ public class InjectionMetaObjectHandler implements MetaObjectHandler {
                 this.strictUpdateFill(metaObject, "updateTime", Date.class, new Date());
             }
         } catch (Exception e) {
-            throw new ServiceException("自动注入异常 => " + e.getMessage(), HttpStatus.HTTP_UNAUTHORIZED);
+            throw new ServiceException(MessageUtils.message("mybatis.auto.fill.fail", e.getMessage()), HttpStatus.HTTP_UNAUTHORIZED);
         }
     }
 

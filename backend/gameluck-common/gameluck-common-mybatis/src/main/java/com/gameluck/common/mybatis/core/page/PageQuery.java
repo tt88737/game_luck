@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import com.gameluck.common.core.exception.ServiceException;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.StringUtils;
 import com.gameluck.common.core.utils.sql.SqlUtil;
 
@@ -95,7 +96,7 @@ public class PageQuery implements Serializable {
         String[] orderByArr = orderBy.split(StringUtils.SEPARATOR);
         String[] isAscArr = isAsc.split(StringUtils.SEPARATOR);
         if (isAscArr.length != 1 && isAscArr.length != orderByArr.length) {
-            throw new ServiceException("排序参数有误");
+            throw new ServiceException(MessageUtils.message("mybatis.page.sort.param.invalid"));
         }
 
         List<OrderItem> list = new ArrayList<>();
@@ -108,7 +109,7 @@ public class PageQuery implements Serializable {
             } else if ("desc".equals(isAscStr)) {
                 list.add(OrderItem.desc(orderByStr));
             } else {
-                throw new ServiceException("排序参数有误");
+                throw new ServiceException(MessageUtils.message("mybatis.page.sort.param.invalid"));
             }
         }
         return list;

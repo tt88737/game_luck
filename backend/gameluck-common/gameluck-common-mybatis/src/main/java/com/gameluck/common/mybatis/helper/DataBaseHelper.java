@@ -6,6 +6,7 @@ import com.baomidou.dynamic.datasource.toolkit.DynamicDataSourceContextHolder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import com.gameluck.common.core.exception.ServiceException;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.SpringUtils;
 import com.gameluck.common.core.utils.sql.SqlUtil;
 import com.gameluck.common.mybatis.enums.DataBaseType;
@@ -50,7 +51,7 @@ public class DataBaseHelper {
                 String databaseProductName = metaData.getDatabaseProductName();
                 return DataBaseType.find(databaseProductName);
             } catch (SQLException e) {
-                throw new RuntimeException("获取数据库类型失败", e);
+                throw new RuntimeException(MessageUtils.message("mybatis.database.type.get.fail"), e);
             }
         });
     }
@@ -70,7 +71,7 @@ public class DataBaseHelper {
                 String databaseProductName = metaData.getDatabaseProductName();
                 return DataBaseType.find(databaseProductName);
             } catch (SQLException e) {
-                throw new RuntimeException("获取数据库类型失败", e);
+                throw new RuntimeException(MessageUtils.message("mybatis.database.type.get.fail"), e);
             }
         });
     }
