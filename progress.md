@@ -261,3 +261,7 @@
   - Routed OSS client configuration, upload, download, delete, default service type, and missing config exceptions through backend i18n keys.
   - Added Chinese and English keys for OSS configuration, transfer, deletion, service type, and missing config failures.
   - Verified common-oss hardcoded-message scan, backend i18n key consistency, menu icon guard, and backend compile after temporarily freeing local JVM memory.
+- Continued common small-module backend i18n pass:
+  - Routed idempotent repeat-submit interval validation, rate limiter internal errors, Redis lock failure responses, and Sa-Token permission service lookup failures through backend i18n keys.
+  - Added Chinese and English keys for repeat-submit interval, rate limiter server errors, Redis lock failures, and missing PermissionService implementations.
+  - Verified target hardcoded-message scan, backend i18n key consistency, menu icon guard, and backend compile with constrained Maven memory.

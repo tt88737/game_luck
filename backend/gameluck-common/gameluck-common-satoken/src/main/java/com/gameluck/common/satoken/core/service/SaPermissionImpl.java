@@ -7,6 +7,7 @@ import com.gameluck.common.core.domain.model.LoginUser;
 import com.gameluck.common.core.enums.UserType;
 import com.gameluck.common.core.exception.ServiceException;
 import com.gameluck.common.core.service.PermissionService;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.SpringUtils;
 import com.gameluck.common.core.utils.StringUtils;
 import com.gameluck.common.satoken.utils.LoginHelper;
@@ -33,7 +34,7 @@ public class SaPermissionImpl implements StpInterface {
                 List<String> list = StringUtils.splitList(loginId.toString(), ":");
                 return new ArrayList<>(permissionService.getMenuPermission(Long.parseLong(list.get(1))));
             } else {
-                throw new ServiceException("PermissionService 实现类不存在");
+                throw new ServiceException(MessageUtils.message("satoken.permission.service.not.exists"));
             }
         }
         UserType userType = UserType.getUserType(loginUser.getUserType());
@@ -60,7 +61,7 @@ public class SaPermissionImpl implements StpInterface {
                 List<String> list = StringUtils.splitList(loginId.toString(), ":");
                 return new ArrayList<>(permissionService.getRolePermission(Long.parseLong(list.get(1))));
             } else {
-                throw new ServiceException("PermissionService 实现类不存在");
+                throw new ServiceException(MessageUtils.message("satoken.permission.service.not.exists"));
             }
         }
         UserType userType = UserType.getUserType(loginUser.getUserType());
