@@ -257,3 +257,7 @@
   - Routed pagination sorting, auto-fill, MyBatis exception handler, data permission, and database type failure messages through backend i18n keys.
   - Added Chinese and English keys for invalid sort parameters, auto-fill failures, duplicate records, missing data sources, data permission parsing, role data-scope validation, and database type detection failures.
   - Verified common-mybatis hardcoded-message scan, full backend hardcoded-message distribution, backend compile with constrained Maven memory, backend i18n key consistency, and menu icon guard.
+- Continued common-oss backend i18n pass:
+  - Routed OSS client configuration, upload, download, delete, default service type, and missing config exceptions through backend i18n keys.
+  - Added Chinese and English keys for OSS configuration, transfer, deletion, service type, and missing config failures.
+  - Verified common-oss hardcoded-message scan, backend i18n key consistency, menu icon guard, and backend compile after temporarily freeing local JVM memory.

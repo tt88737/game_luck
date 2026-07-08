@@ -5,6 +5,7 @@ import cn.hutool.core.util.IdUtil;
 import lombok.extern.slf4j.Slf4j;
 import com.gameluck.common.core.constant.Constants;
 import com.gameluck.common.core.utils.DateUtils;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.StringUtils;
 import com.gameluck.common.core.utils.file.FileUtils;
 import com.gameluck.common.oss.constant.OssConstant;
@@ -123,7 +124,7 @@ public class OssClient {
             if (e instanceof OssException) {
                 throw e;
             }
-            throw new OssException("配置错误! 请检查系统配置:[" + e.getMessage() + "]");
+            throw new OssException(MessageUtils.message("system.oss.config.invalid", e.getMessage()));
         }
     }
 
@@ -165,7 +166,7 @@ public class OssClient {
             return UploadResult.builder().url(getUrl() + StringUtils.SLASH + key).filename(key).eTag(eTag).build();
         } catch (Exception e) {
             // 捕获异常并抛出自定义异常
-            throw new OssException("上传文件失败，请检查配置信息:[" + e.getMessage() + "]");
+            throw new OssException(MessageUtils.message("system.oss.upload.fail", e.getMessage()));
         } finally {
             // 无论上传是否成功，最终都会删除临时文件
             FileUtils.del(filePath);
@@ -222,7 +223,7 @@ public class OssClient {
             // 提取上传结果中的 ETag，并构建一个自定义的 UploadResult 对象
             return UploadResult.builder().url(getUrl() + StringUtils.SLASH + key).filename(key).eTag(eTag).build();
         } catch (Exception e) {
-            throw new OssException("上传文件失败，请检查配置信息:[" + e.getMessage() + "]");
+            throw new OssException(MessageUtils.message("system.oss.upload.fail", e.getMessage()));
         }
     }
 
@@ -266,7 +267,7 @@ public class OssClient {
         try {
             this.download(key, consumer).writeTo(out);
         } catch (Exception e) {
-            throw new OssException("文件下载失败，错误信息:[" + e.getMessage() + "]");
+            throw new OssException(MessageUtils.message("system.oss.download.fail", e.getMessage()));
         }
     }
 
@@ -314,7 +315,7 @@ public class OssClient {
                 }
             };
         } catch (Exception e) {
-            throw new OssException("文件下载失败，错误信息:[" + e.getMessage() + "]");
+            throw new OssException(MessageUtils.message("system.oss.download.fail", e.getMessage()));
         }
     }
 
@@ -330,7 +331,7 @@ public class OssClient {
                     .key(removeBaseUrl(path))
                     .build());
         } catch (Exception e) {
-            throw new OssException("删除文件失败，请检查配置信息:[" + e.getMessage() + "]");
+            throw new OssException(MessageUtils.message("system.oss.delete.fail", e.getMessage()));
         }
     }
 

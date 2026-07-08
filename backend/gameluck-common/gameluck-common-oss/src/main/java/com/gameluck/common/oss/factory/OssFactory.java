@@ -2,6 +2,7 @@ package com.gameluck.common.oss.factory;
 
 import lombok.extern.slf4j.Slf4j;
 import com.gameluck.common.core.constant.CacheNames;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.StringUtils;
 import com.gameluck.common.json.utils.JsonUtils;
 import com.gameluck.common.oss.constant.OssConstant;
@@ -33,7 +34,7 @@ public class OssFactory {
         // 获取redis 默认类型
         String configKey = RedisUtils.getCacheObject(OssConstant.DEFAULT_CONFIG_KEY);
         if (StringUtils.isEmpty(configKey)) {
-            throw new OssException("文件存储服务类型无法找到!");
+            throw new OssException(MessageUtils.message("system.oss.service.type.not.found"));
         }
         return instance(configKey);
     }
@@ -44,7 +45,7 @@ public class OssFactory {
     public static OssClient instance(String configKey) {
         String json = CacheUtils.get(CacheNames.SYS_OSS_CONFIG, configKey);
         if (json == null) {
-            throw new OssException("系统异常, '" + configKey + "'配置信息不存在!");
+            throw new OssException(MessageUtils.message("system.oss.config.not.exists", configKey));
         }
         OssProperties properties = JsonUtils.parseObject(json, OssProperties.class);
         // 使用租户标识避免多个租户相同key实例覆盖
