@@ -20,6 +20,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import com.gameluck.common.core.constant.Constants;
 import com.gameluck.common.core.exception.ServiceException;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.SpringUtils;
 import com.gameluck.common.core.utils.StreamUtils;
 import com.gameluck.common.core.utils.StringUtils;
@@ -274,7 +275,7 @@ public class GenTableServiceImpl implements IGenTableService {
                 }
             }
         } catch (Exception e) {
-            throw new ServiceException("导入失败：" + e.getMessage());
+            throw new ServiceException(MessageUtils.message("generator.import.fail", e.getMessage()));
         }
     }
 
@@ -371,7 +372,7 @@ public class GenTableServiceImpl implements IGenTableService {
 
         List<GenTableColumn> dbTableColumns = SpringUtils.getAopProxy(this).selectDbTableColumnsByName(table.getTableName(), table.getDataName());
         if (CollUtil.isEmpty(dbTableColumns)) {
-            throw new ServiceException("同步数据失败，原表结构不存在");
+            throw new ServiceException(MessageUtils.message("generator.sync.table.not.exists"));
         }
         List<String> dbTableColumnNames = StreamUtils.toList(dbTableColumns, GenTableColumn::getColumnName);
 
@@ -474,11 +475,11 @@ public class GenTableServiceImpl implements IGenTableService {
             String options = JsonUtils.toJsonString(genTable.getParams());
             Dict paramsObj = JsonUtils.parseMap(options);
             if (StringUtils.isEmpty(paramsObj.getStr(GenConstants.TREE_CODE))) {
-                throw new ServiceException("树编码字段不能为空");
+                throw new ServiceException(MessageUtils.message("generator.tree.code.required"));
             } else if (StringUtils.isEmpty(paramsObj.getStr(GenConstants.TREE_PARENT_CODE))) {
-                throw new ServiceException("树父编码字段不能为空");
+                throw new ServiceException(MessageUtils.message("generator.tree.parent.code.required"));
             } else if (StringUtils.isEmpty(paramsObj.getStr(GenConstants.TREE_NAME))) {
-                throw new ServiceException("树名称字段不能为空");
+                throw new ServiceException(MessageUtils.message("generator.tree.name.required"));
             }
         }
     }
@@ -490,7 +491,7 @@ public class GenTableServiceImpl implements IGenTableService {
      */
     public void setPkColumn(GenTable table) {
         if (CollUtil.isEmpty(table.getColumns())) {
-            throw new ServiceException("表【" + table.getTableName() + "】字段为空，请检查表结构");
+            throw new ServiceException(MessageUtils.message("generator.table.column.empty", table.getTableName()));
         }
         for (GenTableColumn column : table.getColumns()) {
             if (column.isPk()) {

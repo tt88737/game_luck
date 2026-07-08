@@ -5,6 +5,7 @@ import com.aizuda.snailjob.client.job.core.annotation.JobExecutor;
 import com.aizuda.snailjob.client.job.core.dto.JobArgs;
 import com.aizuda.snailjob.common.log.SnailJobLog;
 import com.aizuda.snailjob.model.dto.ExecuteResult;
+import com.gameluck.common.core.utils.MessageUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -28,10 +29,10 @@ public class TestBroadcastJob {
         log.info("随机数: {}", randomInt);
         SnailJobLog.REMOTE.info("随机数: {},客户端端口:{}", randomInt, clientPort);
         if (randomInt < 50) {
-            throw new RuntimeException("随机数小于50，收集日志任务执行失败");
+            throw new RuntimeException(MessageUtils.message("job.broadcast.random.fail"));
         }
         // 获得jobArgs 中传入的相加的两个数
-        return ExecuteResult.success("随机数大于50，收集日志任务执行成功");
+        return ExecuteResult.success(MessageUtils.message("job.broadcast.random.success"));
     }
 
 }

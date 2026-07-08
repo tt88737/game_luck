@@ -265,3 +265,7 @@
   - Routed idempotent repeat-submit interval validation, rate limiter internal errors, Redis lock failure responses, and Sa-Token permission service lookup failures through backend i18n keys.
   - Added Chinese and English keys for repeat-submit interval, rate limiter server errors, Redis lock failures, and missing PermissionService implementations.
   - Verified target hardcoded-message scan, backend i18n key consistency, menu icon guard, and backend compile with constrained Maven memory.
+- Continued generator and job backend i18n pass:
+  - Routed code generator import, sync, tree-field validation, empty table-column, and broadcast job execution messages through backend i18n keys.
+  - Added Chinese and English keys for generator validation failures and broadcast job success/failure messages.
+  - Verified target hardcoded-message scan, full backend hardcoded-message scan, backend i18n key consistency, menu icon guard, and backend compile after freeing local JVM memory.
