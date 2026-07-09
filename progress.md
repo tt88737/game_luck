@@ -401,3 +401,5 @@
 - Wrote Phase 2 design spec `docs/superpowers/specs/2026-07-09-player-client-api-h5-design.md`.
 - Spec scope covers client bootstrap, demo member login, current member profile, wallet accounts, wallet ledger, game lobby, game launch placeholder, H5 shell/session behavior, error handling, seed data, testing strategy, and acceptance criteria.
 - Placeholder scan on the new spec returned no matches.
+- Wrote Phase 2 implementation plan `docs/superpowers/plans/2026-07-09-player-client-api-h5.md`.
+- Plan breaks execution into bootstrap API, demo auth/session, wallet read APIs, game lobby/launch stub, demo seed SQL, H5 API/session shell, H5 page integration, and final runtime smoke.
