@@ -493,3 +493,13 @@
     - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am package -Plocal -DskipTests`
     - API smoke for login, promotion list, promotion claim, redemption request, and redemption list
     - Playwright H5 browser smoke for mobile login, reward claim, wallet balance, redemption submit, and desktop promotions render
+
+## 2026-07-10 Phase 4 Admin Redemption Review
+
+- User confirmed the next phase direction as B-side redemption review backend closed loop.
+- Reviewed existing redemption admin page and backend service/controller implementation.
+- Confirmed the existing module already supports list, detail, create, approve, and reject, with wallet freeze, settle, and release integration.
+- Set Phase 4 scope as hardening the existing review flow rather than rebuilding it from scratch.
+- Wrote design spec `docs/superpowers/specs/2026-07-10-admin-redemption-review-design.md`.
+- Spec scope covers default pending-review focus, status quick filters, detail traceability, reject reason validation, submit locking, backend audit constraints, service tests, i18n, and verification commands.
+- Placeholder scan on the new spec returned no matches.
