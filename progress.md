@@ -465,3 +465,8 @@
     - `pnpm --dir admin-ui check:i18n`
     - `npm run build --prefix h5`
     - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal -DskipTests`
+- Continued Phase 3 client promotion and redemption H5 flow:
+  - Confirmed existing commits completed promotion client API, redemption client API, and demo promotion seed data.
+  - Added H5 typed client API support for promotions, promotion claim, redemptions, and redemption request.
+  - Verification passed:
+    - `npm run build --prefix h5`

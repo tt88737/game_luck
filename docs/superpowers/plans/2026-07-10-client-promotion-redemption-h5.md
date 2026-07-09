@@ -52,7 +52,7 @@ Do not modify existing admin controllers except when a compile error proves a sh
 - Modify: `backend/gameluck-modules/gameluck-promotion/src/main/resources/mapper/promotion/PromotionClaimMapper.xml`
 - Test: `backend/gameluck-modules/gameluck-promotion/src/test/java/com/gameluck/promotion/client/service/ClientPromotionServiceTest.java`
 
-- [ ] **Step 1: Add mapper method declarations**
+- [x] **Step 1: Add mapper method declarations**
 
 Modify `PromotionRewardMapper.java`:
 
@@ -67,7 +67,7 @@ List<PromotionClaim> selectClientClaimsByMember(@Param("tenantId") String tenant
                                                 @Param("memberId") Long memberId);
 ```
 
-- [ ] **Step 2: Add mapper SQL**
+- [x] **Step 2: Add mapper SQL**
 
 Add to `PromotionRewardMapper.xml`:
 
@@ -97,7 +97,7 @@ Add to `PromotionClaimMapper.xml`:
 </select>
 ```
 
-- [ ] **Step 3: Write promotion service tests**
+- [x] **Step 3: Write promotion service tests**
 
 Create `ClientPromotionServiceTest.java`:
 
@@ -199,7 +199,7 @@ class ClientPromotionServiceTest {
 }
 ```
 
-- [ ] **Step 4: Run promotion tests and verify failure**
+- [x] **Step 4: Run promotion tests and verify failure**
 
 Run:
 
@@ -209,7 +209,7 @@ C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-modules/gameluck-promotion
 
 Expected: compilation fails because client promotion classes and mapper methods do not exist.
 
-- [ ] **Step 5: Implement promotion client BO and VO**
+- [x] **Step 5: Implement promotion client BO and VO**
 
 Create `ClientPromotionClaimBo.java`:
 
@@ -248,7 +248,7 @@ public class ClientPromotionVo {
 }
 ```
 
-- [ ] **Step 6: Implement promotion client service**
+- [x] **Step 6: Implement promotion client service**
 
 Create `ClientPromotionService.java`:
 
@@ -340,7 +340,7 @@ public class ClientPromotionService {
 }
 ```
 
-- [ ] **Step 7: Implement promotion client controller**
+- [x] **Step 7: Implement promotion client controller**
 
 Create `ClientPromotionController.java`:
 
@@ -386,7 +386,7 @@ public class ClientPromotionController {
 }
 ```
 
-- [ ] **Step 8: Add promotion i18n keys**
+- [x] **Step 8: Add promotion i18n keys**
 
 Add to `messages.properties` and `messages_zh_CN.properties`:
 
@@ -400,7 +400,7 @@ Add to `messages_en_US.properties`:
 client.promotion.id.required=Promotion id is required.
 ```
 
-- [ ] **Step 9: Run promotion tests and compile**
+- [x] **Step 9: Run promotion tests and compile**
 
 Run:
 
@@ -411,7 +411,7 @@ C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal 
 
 Expected: both commands pass.
 
-- [ ] **Step 10: Commit promotion client API**
+- [x] **Step 10: Commit promotion client API**
 
 Run:
 
@@ -433,7 +433,7 @@ Expected: commit succeeds.
 - Modify: `backend/gameluck-modules/gameluck-redemption/src/main/resources/mapper/redemption/RedemptionOrderMapper.xml`
 - Test: `backend/gameluck-modules/gameluck-redemption/src/test/java/com/gameluck/redemption/client/service/ClientRedemptionServiceTest.java`
 
-- [ ] **Step 1: Add mapper method declaration**
+- [x] **Step 1: Add mapper method declaration**
 
 Modify `RedemptionOrderMapper.java`:
 
@@ -444,7 +444,7 @@ List<RedemptionOrder> selectClientOrders(@Param("tenantId") String tenantId,
                                          @Param("pageSize") Integer pageSize);
 ```
 
-- [ ] **Step 2: Add mapper SQL**
+- [x] **Step 2: Add mapper SQL**
 
 Add to `RedemptionOrderMapper.xml`:
 
@@ -460,7 +460,7 @@ Add to `RedemptionOrderMapper.xml`:
 </select>
 ```
 
-- [ ] **Step 3: Write redemption service tests**
+- [x] **Step 3: Write redemption service tests**
 
 Create `ClientRedemptionServiceTest.java`:
 
@@ -556,7 +556,7 @@ class ClientRedemptionServiceTest {
 }
 ```
 
-- [ ] **Step 4: Run redemption tests and verify failure**
+- [x] **Step 4: Run redemption tests and verify failure**
 
 Run:
 
@@ -566,7 +566,7 @@ C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-modules/gameluck-redemptio
 
 Expected: compilation fails because client redemption classes and mapper method do not exist.
 
-- [ ] **Step 5: Implement redemption client BO and VO**
+- [x] **Step 5: Implement redemption client BO and VO**
 
 Create `ClientRedemptionRequestBo.java`:
 
@@ -610,7 +610,7 @@ public class ClientRedemptionVo {
 }
 ```
 
-- [ ] **Step 6: Implement redemption client service**
+- [x] **Step 6: Implement redemption client service**
 
 Create `ClientRedemptionService.java`:
 
@@ -688,7 +688,7 @@ public class ClientRedemptionService {
 }
 ```
 
-- [ ] **Step 7: Implement redemption client controller**
+- [x] **Step 7: Implement redemption client controller**
 
 Create `ClientRedemptionController.java`:
 
@@ -734,7 +734,7 @@ public class ClientRedemptionController {
 }
 ```
 
-- [ ] **Step 8: Add redemption i18n keys**
+- [x] **Step 8: Add redemption i18n keys**
 
 Add to `messages.properties` and `messages_zh_CN.properties`:
 
@@ -756,7 +756,7 @@ client.redemption.amount.positive=Redemption amount must be greater than 0.
 client.redemption.request.remark=H5 client redemption request
 ```
 
-- [ ] **Step 9: Run redemption tests and compile**
+- [x] **Step 9: Run redemption tests and compile**
 
 Run:
 
@@ -767,7 +767,7 @@ C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal 
 
 Expected: both commands pass.
 
-- [ ] **Step 10: Commit redemption client API**
+- [x] **Step 10: Commit redemption client API**
 
 Run:
 
@@ -783,7 +783,7 @@ Expected: commit succeeds.
 **Files:**
 - Modify: `backend/script/sql/gameluck_client_demo.sql`
 
-- [ ] **Step 1: Add demo promotion cleanup and seed**
+- [x] **Step 1: Add demo promotion cleanup and seed**
 
 Modify the top of `gameluck_client_demo.sql` so demo claim rows are removed before demo reward rows:
 
@@ -805,7 +805,7 @@ INSERT INTO gl_promotion_reward (
 );
 ```
 
-- [ ] **Step 2: Import demo seed locally**
+- [x] **Step 2: Import demo seed locally**
 
 Run:
 
@@ -815,7 +815,7 @@ cmd /c "mysql -uroot -proot gameluck_vue < backend\script\sql\gameluck_client_de
 
 Expected: command exits 0.
 
-- [ ] **Step 3: Verify demo reward and wallet reset**
+- [x] **Step 3: Verify demo reward and wallet reset**
 
 Run:
 
@@ -831,7 +831,7 @@ GC 1000.000000 0.000000
 SC 25.000000 0.000000
 ```
 
-- [ ] **Step 4: Commit demo seed**
+- [x] **Step 4: Commit demo seed**
 
 Run:
 
@@ -848,7 +848,7 @@ Expected: commit succeeds.
 - Modify: `h5/src/types/client.ts`
 - Modify: `h5/src/api/client.ts`
 
-- [ ] **Step 1: Add H5 types**
+- [x] **Step 1: Add H5 types**
 
 Add to `h5/src/types/client.ts`:
 
@@ -878,7 +878,7 @@ export interface ClientRedemption {
 }
 ```
 
-- [ ] **Step 2: Add H5 API client methods**
+- [x] **Step 2: Add H5 API client methods**
 
 Modify the import block in `h5/src/api/client.ts`:
 
@@ -915,7 +915,7 @@ Add methods inside `clientApi`:
     }),
 ```
 
-- [ ] **Step 3: Run H5 build**
+- [x] **Step 3: Run H5 build**
 
 Run:
 
@@ -925,7 +925,7 @@ npm run build --prefix h5
 
 Expected: build succeeds.
 
-- [ ] **Step 4: Commit H5 API foundation**
+- [x] **Step 4: Commit H5 API foundation**
 
 Run:
 

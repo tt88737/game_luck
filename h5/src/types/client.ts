@@ -90,3 +90,27 @@ export interface ClientGameLaunch {
   launchUrl: string
   message: string
 }
+
+export interface ClientPromotion {
+  promotionId: number
+  promotionNo: string
+  promotionName: string
+  currencyCode: string
+  rewardAmount: string
+  status: string
+  claimStatus: string
+  claimNo: string
+  walletTransactionNo: string
+  canClaim: boolean
+}
+
+export interface ClientRedemption {
+  orderId: number
+  orderNo: string
+  currencyCode: string
+  amount: string
+  status: string
+  walletFreezeNo: string
+  reviewRemark: string
+  createdAt: string
+}

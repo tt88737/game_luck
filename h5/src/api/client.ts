@@ -6,6 +6,8 @@ import type {
   ClientLoginResponse,
   ClientMember,
   ClientPage,
+  ClientPromotion,
+  ClientRedemption,
   WalletAccount,
   WalletLedger,
 } from '../types/client'
@@ -65,5 +67,17 @@ export const clientApi = {
     request<ClientGameLaunch>('/api/client/games/launch', {
       method: 'POST',
       body: JSON.stringify({ providerCode, gameCode, currencyCode }),
+    }),
+  promotions: () => request<ClientPromotion[]>('/api/client/promotions'),
+  claimPromotion: (promotionId: number) =>
+    request<ClientPromotion>('/api/client/promotions/claim', {
+      method: 'POST',
+      body: JSON.stringify({ promotionId }),
+    }),
+  redemptions: () => request<ClientRedemption[]>('/api/client/redemptions'),
+  requestRedemption: (currencyCode: string, amount: string) =>
+    request<ClientRedemption>('/api/client/redemptions/request', {
+      method: 'POST',
+      body: JSON.stringify({ currencyCode, amount }),
     }),
 }
