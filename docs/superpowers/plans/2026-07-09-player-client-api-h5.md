@@ -1362,7 +1362,7 @@ Expected: commit succeeds.
 - Create: `h5/src/stores/session.ts`
 - Modify: `h5/src/App.vue`
 
-- [ ] **Step 1: Create client API types**
+- [x] **Step 1: Create client API types**
 
 Create `h5/src/types/client.ts`:
 
@@ -1461,7 +1461,7 @@ export interface ClientGameLaunch {
 }
 ```
 
-- [ ] **Step 2: Create API client**
+- [x] **Step 2: Create API client**
 
 Create `h5/src/api/client.ts`:
 
@@ -1537,7 +1537,7 @@ export const clientApi = {
 }
 ```
 
-- [ ] **Step 3: Create session store**
+- [x] **Step 3: Create session store**
 
 Create `h5/src/stores/session.ts`:
 
@@ -1593,7 +1593,7 @@ export function logout() {
 }
 ```
 
-- [ ] **Step 4: Update app shell for session-aware navigation**
+- [x] **Step 4: Update app shell for session-aware navigation**
 
 Modify `h5/src/App.vue` so it imports session state and loads bootstrap/session on mount:
 
@@ -1659,7 +1659,7 @@ Add CSS for `.session-chip button` in `h5/src/style.css`:
 }
 ```
 
-- [ ] **Step 5: Run H5 build**
+- [x] **Step 5: Run H5 build**
 
 Run:
 
@@ -1669,7 +1669,7 @@ npm run build --prefix h5
 
 Expected: build succeeds.
 
-- [ ] **Step 6: Commit H5 API foundation**
+- [x] **Step 6: Commit H5 API foundation**
 
 Run:
 

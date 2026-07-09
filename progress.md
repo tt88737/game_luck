@@ -440,3 +440,10 @@
   - Imported the seed into local `gameluck_vue` with `cmd /c "mysql -uroot -proot gameluck_vue < backend\script\sql\gameluck_client_demo.sql"`.
   - Verified `demo_player` exists with GC `1000.000000` and SC `25.000000` wallet accounts.
   - Error handled: PowerShell rejected `<` redirection, so import used `cmd /c`; initial import also exposed that `gl_wallet_account.status` is `CHAR(1)` and `gl_wallet_transaction.request_hash` is required, so the seed SQL was aligned to the actual DDL.
+- Completed Phase 2 Task 6 H5 API client and session shell:
+  - Added typed client API contracts under `h5/src/types/client.ts`.
+  - Added `h5/src/api/client.ts` with bootstrap, login, current member, wallet, ledger, game lobby, and game launch requests.
+  - Added `h5/src/stores/session.ts` for bootstrap loading, token persistence, session restore, login, and logout.
+  - Updated `h5/src/App.vue` top navigation to show backend brand and logged-in member state.
+  - Verification passed:
+    - `npm run build --prefix h5`

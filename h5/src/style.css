@@ -129,6 +129,18 @@ h2 {
   color: var(--text);
 }
 
+.session-chip {
+  gap: 8px;
+}
+
+.session-chip button {
+  border: 0;
+  background: transparent;
+  color: var(--brand-strong);
+  cursor: pointer;
+  font-weight: 760;
+}
+
 .page-wrap {
   width: min(1120px, 100%);
   margin: 0 auto;
