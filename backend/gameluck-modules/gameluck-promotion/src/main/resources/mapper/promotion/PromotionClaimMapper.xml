@@ -14,4 +14,13 @@
         LIMIT 1
     </select>
 
+    <select id="selectClientClaimsByMember" resultType="com.gameluck.promotion.domain.PromotionClaim">
+        SELECT *
+        FROM gl_promotion_claim
+        WHERE tenant_id = #{tenantId}
+          AND member_id = #{memberId}
+          AND del_flag = '0'
+        ORDER BY create_time DESC
+    </select>
+
 </mapper>

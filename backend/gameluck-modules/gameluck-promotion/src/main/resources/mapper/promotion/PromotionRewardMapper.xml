@@ -12,4 +12,15 @@
         FOR UPDATE
     </select>
 
+    <select id="selectClientActiveRewards" resultType="com.gameluck.promotion.domain.PromotionReward">
+        SELECT *
+        FROM gl_promotion_reward
+        WHERE tenant_id = #{tenantId}
+          AND status = 'ACTIVE'
+          AND del_flag = '0'
+          AND (start_time IS NULL OR start_time &lt;= NOW())
+          AND (end_time IS NULL OR end_time &gt;= NOW())
+        ORDER BY create_time DESC
+    </select>
+
 </mapper>

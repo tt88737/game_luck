@@ -5,6 +5,8 @@ import com.gameluck.promotion.domain.PromotionClaim;
 import com.gameluck.promotion.domain.vo.PromotionClaimVo;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * Promotion claim mapper.
  */
@@ -13,4 +15,7 @@ public interface PromotionClaimMapper extends BaseMapperPlus<PromotionClaim, Pro
     PromotionClaim selectByPromotionAndMember(@Param("tenantId") String tenantId,
                                               @Param("promotionId") Long promotionId,
                                               @Param("memberId") Long memberId);
+
+    List<PromotionClaim> selectClientClaimsByMember(@Param("tenantId") String tenantId,
+                                                    @Param("memberId") Long memberId);
 }
