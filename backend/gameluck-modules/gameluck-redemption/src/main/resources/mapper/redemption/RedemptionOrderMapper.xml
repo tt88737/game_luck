@@ -12,4 +12,14 @@
         FOR UPDATE
     </select>
 
+    <select id="selectClientOrders" resultType="com.gameluck.redemption.domain.RedemptionOrder">
+        SELECT *
+        FROM gl_redemption_order
+        WHERE tenant_id = #{tenantId}
+          AND member_id = #{memberId}
+          AND del_flag = '0'
+        ORDER BY create_time DESC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
 </mapper>
