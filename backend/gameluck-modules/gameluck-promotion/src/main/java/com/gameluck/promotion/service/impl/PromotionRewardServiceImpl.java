@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.gameluck.common.core.constant.SystemConstants;
 import com.gameluck.common.core.exception.ServiceException;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.StringUtils;
 import com.gameluck.common.mybatis.core.page.PageQuery;
 import com.gameluck.common.mybatis.core.page.TableDataInfo;
@@ -94,7 +95,7 @@ public class PromotionRewardServiceImpl implements IPromotionRewardService {
     public Boolean updateByBo(PromotionRewardBo bo) {
         PromotionReward reward = rewardMapper.selectById(bo.getId());
         if (reward == null) {
-            throw new ServiceException("promotion does not exist");
+            throw new ServiceException(MessageUtils.message("promotion.reward.not.exists"));
         }
         PromotionReward update = BeanUtil.toBean(bo, PromotionReward.class);
         update.setCurrencyCode(StringUtils.blankToDefault(bo.getCurrencyCode(), reward.getCurrencyCode()));
@@ -186,21 +187,21 @@ public class PromotionRewardServiceImpl implements IPromotionRewardService {
     private PromotionReward lockReward(Long id) {
         PromotionReward reward = rewardMapper.selectByIdForUpdate(id);
         if (reward == null) {
-            throw new ServiceException("promotion does not exist");
+            throw new ServiceException(MessageUtils.message("promotion.reward.not.exists"));
         }
         return reward;
     }
 
     private void validateClaimable(PromotionReward reward) {
         if (!PromotionRewardStatus.ACTIVE.name().equals(reward.getStatus())) {
-            throw new ServiceException("promotion is not active");
+            throw new ServiceException(MessageUtils.message("promotion.reward.not.active"));
         }
         Date now = new Date();
         if (reward.getStartTime() != null && now.before(reward.getStartTime())) {
-            throw new ServiceException("promotion has not started");
+            throw new ServiceException(MessageUtils.message("promotion.reward.not.started"));
         }
         if (reward.getEndTime() != null && now.after(reward.getEndTime())) {
-            throw new ServiceException("promotion has ended");
+            throw new ServiceException(MessageUtils.message("promotion.reward.ended"));
         }
     }
 
@@ -208,7 +209,7 @@ public class PromotionRewardServiceImpl implements IPromotionRewardService {
         try {
             PromotionRewardStatus.valueOf(status);
         } catch (Exception ex) {
-            throw new ServiceException("invalid promotion status");
+            throw new ServiceException(MessageUtils.message("promotion.reward.status.invalid"));
         }
     }
 
@@ -222,7 +223,7 @@ public class PromotionRewardServiceImpl implements IPromotionRewardService {
         bo.setAmount(claim.getRewardAmount());
         bo.setReleaseMode(WalletReleaseMode.NEVER.name());
         bo.setRequiredTurnover(BigDecimal.ZERO);
-        bo.setRemark("Simulated promotion reward");
+        bo.setRemark(MessageUtils.message("promotion.wallet.remark.simulated.reward"));
         return bo;
     }
 
@@ -238,7 +239,7 @@ public class PromotionRewardServiceImpl implements IPromotionRewardService {
     private BigDecimal normalizePositive(BigDecimal value) {
         BigDecimal normalized = value == null ? null : value.setScale(MONEY_SCALE, RoundingMode.HALF_UP);
         if (normalized == null || normalized.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new ServiceException("rewardAmount must be greater than 0");
+            throw new ServiceException(MessageUtils.message("promotion.reward.amount.positive"));
         }
         return normalized;
     }

@@ -36,7 +36,7 @@ public class RegionUtils {
     public static final int DEFAULT_CACHE_SLICE_BYTES = 1024 * 1024 * 15;
 
     // 未知地址
-    public static final String UNKNOWN_ADDRESS = "未知";
+    public static final String UNKNOWN_ADDRESS = "UNKNOWN";
 
     // Ip2Region服务实例
     private static Ip2Region ip2Region;
@@ -91,12 +91,12 @@ public class RegionUtils {
         try {
             String region = ip2Region.search(ipString);
             if (StringUtils.isBlank(region)) {
-                return UNKNOWN_ADDRESS;
+                return unknownAddress();
             }
-            return StringUtils.replace(region, "0", UNKNOWN_ADDRESS);
+            return StringUtils.replace(region, "0", unknownAddress());
         } catch (Exception e) {
             log.error("IP地址离线获取城市异常 {}", ipString);
-            return UNKNOWN_ADDRESS;
+            return unknownAddress();
         }
 
     }
@@ -110,13 +110,17 @@ public class RegionUtils {
         try {
             String region = ip2Region.search(ipBytes);
             if (StringUtils.isBlank(region)) {
-                return UNKNOWN_ADDRESS;
+                return unknownAddress();
             }
-            return StringUtils.replace(region, "0", UNKNOWN_ADDRESS);
+            return StringUtils.replace(region, "0", unknownAddress());
         } catch (Exception e) {
             log.error("IP地址离线获取城市异常 {}", Util.ipToString(ipBytes));
-            return UNKNOWN_ADDRESS;
+            return unknownAddress();
         }
+    }
+
+    private static String unknownAddress() {
+        return MessageUtils.message("ip.unknown.address");
     }
 
     /**

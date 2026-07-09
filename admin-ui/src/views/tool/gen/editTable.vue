@@ -152,7 +152,7 @@ const submitForm = () => {
         parentMenuId: info.value.parentMenuId
       };
       const response = await updateGenTable(genTable);
-      proxy?.$modal.msgSuccess(response.msg);
+      proxy?.$modal.msgSuccess(tt(response.msg));
       if (response.code === 200) {
         close();
       }

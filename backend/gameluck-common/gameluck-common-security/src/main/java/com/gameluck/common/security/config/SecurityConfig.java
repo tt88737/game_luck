@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import com.gameluck.common.core.constant.HttpStatus;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.ServletUtils;
 import com.gameluck.common.core.utils.SpringUtils;
 import com.gameluck.common.core.utils.StringUtils;
@@ -69,7 +70,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                         if (!StringUtils.equalsAny(clientId, headerCid, paramCid)) {
                             // token 无效
                             throw NotLoginException.newInstance(StpUtil.getLoginType(),
-                                "-100", "客户端ID与Token不匹配",
+                                "-100", MessageUtils.message("security.client.token.mismatch"),
                                 StpUtil.getTokenValue());
                         }
 

@@ -25,37 +25,37 @@ public enum BusinessStatusEnum {
     /**
      * 已撤销
      */
-    CANCEL("cancel", "已撤销"),
+    CANCEL("cancel", "business.status.cancel"),
 
     /**
      * 草稿
      */
-    DRAFT("draft", "草稿"),
+    DRAFT("draft", "business.status.draft"),
 
     /**
      * 待审核
      */
-    WAITING("waiting", "待审核"),
+    WAITING("waiting", "business.status.waiting"),
 
     /**
      * 已完成
      */
-    FINISH("finish", "已完成"),
+    FINISH("finish", "business.status.finish"),
 
     /**
      * 已作废
      */
-    INVALID("invalid", "已作废"),
+    INVALID("invalid", "business.status.invalid"),
 
     /**
      * 已退回
      */
-    BACK("back", "已退回"),
+    BACK("back", "business.status.back"),
 
     /**
      * 已终止
      */
-    TERMINATION("termination", "已终止");
+    TERMINATION("termination", "business.status.termination");
 
     /**
      * 状态
@@ -66,6 +66,10 @@ public enum BusinessStatusEnum {
      * 描述
      */
     private final String desc;
+
+    public String getDesc() {
+        return MessageUtils.message(desc);
+    }
 
     private static final Map<String, BusinessStatusEnum> STATUS_MAP = Arrays.stream(BusinessStatusEnum.values())
         .collect(Collectors.toConcurrentMap(BusinessStatusEnum::getStatus, Function.identity()));

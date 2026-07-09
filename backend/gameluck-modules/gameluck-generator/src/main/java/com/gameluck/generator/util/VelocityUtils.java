@@ -6,6 +6,7 @@ import cn.hutool.core.lang.Dict;
 import com.gameluck.common.mybatis.enums.DataBaseType;
 import com.gameluck.generator.constant.GenConstants;
 import com.gameluck.common.core.utils.DateUtils;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.StringUtils;
 import com.gameluck.common.json.utils.JsonUtils;
 import com.gameluck.common.mybatis.helper.DataBaseHelper;
@@ -55,7 +56,7 @@ public class VelocityUtils {
         VelocityContext velocityContext = new VelocityContext();
         velocityContext.put("tplCategory", genTable.getTplCategory());
         velocityContext.put("tableName", genTable.getTableName());
-        velocityContext.put("functionName", StringUtils.isNotEmpty(functionName) ? functionName : "【请填写功能名称】");
+        velocityContext.put("functionName", StringUtils.isNotEmpty(functionName) ? functionName : MessageUtils.message("generator.function.name.placeholder"));
         velocityContext.put("ClassName", genTable.getClassName());
         velocityContext.put("className", StringUtils.uncapitalize(genTable.getClassName()));
         velocityContext.put("moduleName", genTable.getModuleName());

@@ -9,6 +9,7 @@ import cn.idev.excel.event.AnalysisEventListener;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import com.gameluck.common.core.exception.ServiceException;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.SpringUtils;
 import com.gameluck.common.core.utils.StreamUtils;
 import com.gameluck.common.core.utils.ValidatorUtils;
@@ -65,7 +66,7 @@ public class SysUserImportListener extends AnalysisEventListener<SysUserImportVo
                 user.setCreateBy(operUserId);
                 userService.insertUser(user);
                 successNum++;
-                successMsg.append("<br/>").append(successNum).append("、账号 ").append(user.getUserName()).append(" 导入成功");
+                successMsg.append(MessageUtils.message("system.user.import.row.success", successNum, user.getUserName()));
             } else if (isUpdateSupport) {
                 Long userId = sysUser.getUserId();
                 SysUserBo user = BeanUtil.toBean(userVo, SysUserBo.class);
@@ -76,14 +77,14 @@ public class SysUserImportListener extends AnalysisEventListener<SysUserImportVo
                 user.setUpdateBy(operUserId);
                 userService.updateUser(user);
                 successNum++;
-                successMsg.append("<br/>").append(successNum).append("、账号 ").append(user.getUserName()).append(" 更新成功");
+                successMsg.append(MessageUtils.message("system.user.import.row.update.success", successNum, user.getUserName()));
             } else {
                 failureNum++;
-                failureMsg.append("<br/>").append(failureNum).append("、账号 ").append(sysUser.getUserName()).append(" 已存在");
+                failureMsg.append(MessageUtils.message("system.user.import.row.exists", failureNum, sysUser.getUserName()));
             }
         } catch (Exception e) {
             failureNum++;
-            String msg = "<br/>" + failureNum + "、账号 " + HtmlUtil.cleanHtmlTag(userVo.getUserName()) + " 导入失败：";
+            String msg = MessageUtils.message("system.user.import.row.fail", failureNum, HtmlUtil.cleanHtmlTag(userVo.getUserName()));
             String message = e.getMessage();
             if (e instanceof ConstraintViolationException cvException) {
                 message = StreamUtils.join(cvException.getConstraintViolations(), ConstraintViolation::getMessage, ", ");
@@ -105,10 +106,10 @@ public class SysUserImportListener extends AnalysisEventListener<SysUserImportVo
             @Override
             public String getAnalysis() {
                 if (failureNum > 0) {
-                    failureMsg.insert(0, "很抱歉，导入失败！共 " + failureNum + " 条数据格式不正确，错误如下：");
+                    failureMsg.insert(0, MessageUtils.message("system.user.import.failure.summary", failureNum));
                     throw new ServiceException(failureMsg.toString());
                 } else {
-                    successMsg.insert(0, "恭喜您，数据已全部导入成功！共 " + successNum + " 条，数据如下：");
+                    successMsg.insert(0, MessageUtils.message("system.user.import.success.summary", successNum));
                 }
                 return successMsg.toString();
             }

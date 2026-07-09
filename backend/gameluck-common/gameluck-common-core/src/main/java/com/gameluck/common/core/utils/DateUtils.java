@@ -212,7 +212,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         long day = TimeUnit.MILLISECONDS.toDays(diffInMillis);
         long hour = TimeUnit.MILLISECONDS.toHours(diffInMillis) % 24;
         long min = TimeUnit.MILLISECONDS.toMinutes(diffInMillis) % 60;
-        return String.format("%d天 %d小时 %d分钟", day, hour, min);
+        return MessageUtils.message("date.duration.day.hour.minute", day, hour, min);
     }
 
     /**
@@ -231,18 +231,25 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         // 构建时间差字符串，条件是值不为0才显示
         StringBuilder result = new StringBuilder();
         if (day > 0) {
-            result.append(String.format("%d天 ", day));
+            appendDurationUnit(result, day, "date.unit.day");
         }
         if (hour > 0) {
-            result.append(String.format("%d小时 ", hour));
+            appendDurationUnit(result, hour, "date.unit.hour");
         }
         if (min > 0) {
-            result.append(String.format("%d分钟 ", min));
+            appendDurationUnit(result, min, "date.unit.minute");
         }
         if (sec > 0) {
-            result.append(String.format("%d秒", sec));
+            appendDurationUnit(result, sec, "date.unit.second");
         }
-        return result.length() > 0 ? result.toString().trim() : "0秒";
+        return result.length() > 0 ? result.toString().trim() : MessageUtils.message("date.duration.zero.seconds");
+    }
+
+    private static void appendDurationUnit(StringBuilder result, long value, String unitKey) {
+        if (!result.isEmpty()) {
+            result.append(' ');
+        }
+        result.append(value).append(MessageUtils.message(unitKey));
     }
 
     /**
@@ -308,15 +315,15 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     public static String getTodayHour(Date date) {
         int hour = DateUtil.hour(date, true);
         if (hour <= 6) {
-            return "凌晨";
+            return MessageUtils.message("date.period.before.dawn");
         } else if (hour < 12) {
-            return "上午";
+            return MessageUtils.message("date.period.morning");
         } else if (hour == 12) {
-            return "中午";
+            return MessageUtils.message("date.period.noon");
         } else if (hour <= 18) {
-            return "下午";
+            return MessageUtils.message("date.period.afternoon");
         } else {
-            return "晚上";
+            return MessageUtils.message("date.period.evening");
         }
     }
 
@@ -352,22 +359,22 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         if (DateUtil.isSameDay(date, now)) {
             long minutes = DateUtil.between(date, now, DateUnit.MINUTE);
             if (minutes < 1) {
-                return "刚刚";
+                return MessageUtils.message("date.friendly.just.now");
             }
             if (minutes < 60) {
-                return minutes + "分钟前";
+                return MessageUtils.message("date.friendly.minutes.ago", minutes);
             }
             return getTodayHour(date) + " " + DateUtil.format(date, "HH:mm");
         }
 
         // 昨天
         if (DateUtil.isSameDay(date, DateUtil.yesterday())) {
-            return "昨天 " + DateUtil.format(date, "HH:mm");
+            return MessageUtils.message("date.friendly.yesterday") + " " + DateUtil.format(date, "HH:mm");
         }
 
         // 本周
         if (DateUtil.isSameWeek(date, now, true)) {
-            return DateUtil.dayOfWeekEnum(date).toChinese("周")
+            return MessageUtils.message("date.weekday." + DateUtil.dayOfWeek(date))
                 + " " + DateUtil.format(date, "HH:mm");
         }
 

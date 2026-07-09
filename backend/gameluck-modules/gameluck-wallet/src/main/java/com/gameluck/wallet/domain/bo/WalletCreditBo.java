@@ -13,28 +13,28 @@ import java.math.BigDecimal;
 @Data
 public class WalletCreditBo {
 
-    @NotBlank(message = "幂等键不能为空")
+    @NotBlank(message = "{wallet.idempotency.key.required}")
     private String idempotencyKey;
 
-    @NotNull(message = "会员ID不能为空")
+    @NotNull(message = "{member.id.required}")
     private Long memberId;
 
-    @NotBlank(message = "币种不能为空")
+    @NotBlank(message = "{wallet.currency.required}")
     private String currencyCode;
 
-    @NotBlank(message = "来源类型不能为空")
+    @NotBlank(message = "{wallet.source.type.required}")
     private String sourceType;
 
-    @NotBlank(message = "业务单号不能为空")
+    @NotBlank(message = "{wallet.business.no.required}")
     private String businessNo;
 
-    @NotNull(message = "金额不能为空")
-    @DecimalMin(value = "0.000001", message = "金额必须大于0")
+    @NotNull(message = "{wallet.amount.required}")
+    @DecimalMin(value = "0.000001", message = "{wallet.amount.positive}")
     private BigDecimal amount;
 
     private String releaseMode;
 
-    @DecimalMin(value = "0", message = "所需流水不能小于0")
+    @DecimalMin(value = "0", message = "{wallet.required.turnover.nonnegative}")
     private BigDecimal requiredTurnover;
 
     private Long operatorId;

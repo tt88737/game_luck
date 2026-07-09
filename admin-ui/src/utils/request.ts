@@ -124,7 +124,7 @@ service.interceptors.response.use(
     // 未设置状态码则默认成功状态
     const code = res.data.code || HttpStatus.SUCCESS;
     // 获取错误信息
-    const msg = errorCode[code] || res.data.msg || errorCode['default'];
+    const msg = tt(errorCode[code] || res.data.msg || errorCode['default']);
     // 二进制数据则直接返回
     if (res.request.responseType === 'blob' || res.request.responseType === 'arraybuffer') {
       return res.data;
@@ -200,7 +200,7 @@ export function download(url: string, params: any, fileName: string) {
         const resText = await blob.text();
         const rspObj = JSON.parse(resText);
         const errMsg = errorCode[rspObj.code] || rspObj.msg || errorCode['default'];
-        ElMessage.error(errMsg);
+        ElMessage.error(tt(errMsg));
       }
       downloadLoadingInstance.close();
     }).catch((r: any) => {

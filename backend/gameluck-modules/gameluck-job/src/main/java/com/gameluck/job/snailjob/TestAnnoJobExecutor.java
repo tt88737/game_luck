@@ -5,6 +5,7 @@ import com.aizuda.snailjob.client.job.core.dto.JobArgs;
 import com.aizuda.snailjob.common.core.util.JsonUtil;
 import com.aizuda.snailjob.common.log.SnailJobLog;
 import com.aizuda.snailjob.model.dto.ExecuteResult;
+import com.gameluck.common.core.utils.MessageUtils;
 import org.springframework.stereotype.Component;
 
 /**
@@ -20,6 +21,6 @@ public class TestAnnoJobExecutor {
     public ExecuteResult jobExecute(JobArgs jobArgs) {
         SnailJobLog.LOCAL.info("testJobExecutor. jobArgs:{}", JsonUtil.toJsonString(jobArgs));
         SnailJobLog.REMOTE.info("testJobExecutor. jobArgs:{}", JsonUtil.toJsonString(jobArgs));
-        return ExecuteResult.success("测试成功");
+        return ExecuteResult.success(MessageUtils.message("job.test.success"));
     }
 }

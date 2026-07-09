@@ -1,6 +1,6 @@
 package com.gameluck.common.excel.core;
 
-import cn.hutool.core.util.StrUtil;
+import com.gameluck.common.core.utils.MessageUtils;
 import lombok.Setter;
 
 import java.util.ArrayList;
@@ -61,10 +61,10 @@ public class DefaultExcelResult<T> implements ExcelResult<T> {
         int successCount = list.size();
         int errorCount = errorList.size();
         if (successCount == 0) {
-            return "读取失败，未解析到数据";
+            return MessageUtils.message("excel.import.read.empty");
         } else {
             if (errorCount == 0) {
-                return StrUtil.format("恭喜您，全部读取成功！共{}条", successCount);
+                return MessageUtils.message("excel.import.read.success", successCount);
             } else {
                 return "";
             }

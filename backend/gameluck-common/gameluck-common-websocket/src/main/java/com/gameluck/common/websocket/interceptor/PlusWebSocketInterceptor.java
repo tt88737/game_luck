@@ -4,6 +4,7 @@ import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.stp.StpUtil;
 import lombok.extern.slf4j.Slf4j;
 import com.gameluck.common.core.domain.model.LoginUser;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.ServletUtils;
 import com.gameluck.common.core.utils.StringUtils;
 import com.gameluck.common.satoken.utils.LoginHelper;
@@ -47,7 +48,7 @@ public class PlusWebSocketInterceptor implements HandshakeInterceptor {
             if (!StringUtils.equalsAny(clientId, headerCid, paramCid)) {
                 // token 无效
                 throw NotLoginException.newInstance(StpUtil.getLoginType(),
-                    "-100", "客户端ID与Token不匹配",
+                    "-100", MessageUtils.message("security.client.token.mismatch"),
                     StpUtil.getTokenValue());
             }
 

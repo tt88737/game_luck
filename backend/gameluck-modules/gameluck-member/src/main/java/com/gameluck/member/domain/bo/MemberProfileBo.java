@@ -20,7 +20,7 @@ public class MemberProfileBo {
 
     private String memberNo;
 
-    @NotBlank(message = "username is required")
+    @NotBlank(message = "{member.username.required}")
     private String username;
 
     private String nickname;

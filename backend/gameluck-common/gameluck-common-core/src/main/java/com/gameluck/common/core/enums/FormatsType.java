@@ -2,6 +2,7 @@ package com.gameluck.common.core.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.StringUtils;
 
 /*
@@ -141,6 +142,6 @@ public enum FormatsType {
                 return value;
             }
         }
-        throw new RuntimeException("'FormatsType' not found By " + str);
+        throw new RuntimeException(MessageUtils.message("formats.type.not.found", str));
     }
 }

@@ -22,13 +22,13 @@ public class DepositOrderBo {
 
     private String depositOrderNo;
 
-    @NotNull(message = "会员ID不能为空")
+    @NotNull(message = "{member.id.required}")
     private Long memberId;
 
     private String currencyCode;
 
-    @NotNull(message = "充值金额不能为空")
-    @DecimalMin(value = "0.000001", message = "充值金额必须大于0")
+    @NotNull(message = "{payment.deposit.amount.required}")
+    @DecimalMin(value = "0.000001", message = "{payment.deposit.amount.positive}")
     private BigDecimal amount;
 
     private String payMethod;

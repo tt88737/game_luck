@@ -37,17 +37,17 @@ public class SysUserBo extends BaseEntity {
     /**
      * 用户账号
      */
-    @Xss(message = "用户账号不能包含脚本字符")
-    @NotBlank(message = "用户账号不能为空")
-    @Size(min = 2, max = 30, message = "用户账号长度必须在{min}到{max}个字符之间")
+    @Xss(message = "{system.user.name.xss}")
+    @NotBlank(message = "{system.user.name.required}")
+    @Size(min = 2, max = 30, message = "{system.user.name.length}")
     private String userName;
 
     /**
      * 用户昵称
      */
-    @Xss(message = "用户昵称不能包含脚本字符")
-    @NotBlank(message = "用户昵称不能为空")
-    @Size(min = 0, max = 30, message = "用户昵称长度不能超过{max}个字符")
+    @Xss(message = "{system.user.nick.name.xss}")
+    @NotBlank(message = "{system.user.nick.name.required}")
+    @Size(min = 0, max = 30, message = "{system.user.nick.name.length}")
     private String nickName;
 
     /**
@@ -58,8 +58,8 @@ public class SysUserBo extends BaseEntity {
     /**
      * 用户邮箱
      */
-    @Email(message = "邮箱格式不正确")
-    @Size(min = 0, max = 50, message = "邮箱长度不能超过{max}个字符")
+    @Email(message = "{user.email.not.valid}")
+    @Size(min = 0, max = 50, message = "{system.user.email.length}")
     private String email;
 
     /**
@@ -90,7 +90,7 @@ public class SysUserBo extends BaseEntity {
     /**
      * 角色组
      */
-    @Size(min = 1, message = "用户角色不能为空")
+    @Size(min = 1, message = "{system.user.role.required}")
     private Long[] roleIds;
 
     /**

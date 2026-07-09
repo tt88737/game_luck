@@ -72,7 +72,11 @@
       >
         <el-table-column type="selection" width="50" align="center" />
         <el-table-column :label="tt('日志编号')" align="center" prop="operId" />
-        <el-table-column :label="tt('系统模块')" align="center" prop="title" :show-overflow-tooltip="true" />
+        <el-table-column :label="tt('系统模块')" align="center" prop="title" :show-overflow-tooltip="true">
+          <template #default="scope">
+            <span>{{ tt(scope.row.title) }}</span>
+          </template>
+        </el-table-column>
         <el-table-column :label="tt('操作类型')" align="center" prop="businessType">
           <template #default="scope">
             <dict-tag :options="sys_oper_type" :value="scope.row.businessType" />

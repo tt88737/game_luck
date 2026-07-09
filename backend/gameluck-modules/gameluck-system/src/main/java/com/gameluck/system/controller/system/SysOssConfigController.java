@@ -53,7 +53,7 @@ public class SysOssConfigController extends BaseController {
      */
     @SaCheckPermission("system:ossConfig:list")
     @GetMapping("/{ossConfigId}")
-    public R<SysOssConfigVo> getInfo(@NotNull(message = "主键不能为空")
+    public R<SysOssConfigVo> getInfo(@NotNull(message = "{common.primary.key.required}")
                                      @PathVariable Long ossConfigId) {
         return R.ok(ossConfigService.queryById(ossConfigId));
     }
@@ -88,7 +88,7 @@ public class SysOssConfigController extends BaseController {
     @SaCheckPermission("system:ossConfig:remove")
     @Log(title = "对象存储配置", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ossConfigIds}")
-    public R<Void> remove(@NotEmpty(message = "主键不能为空")
+    public R<Void> remove(@NotEmpty(message = "{common.primary.key.required}")
                           @PathVariable Long[] ossConfigIds) {
         return toAjax(ossConfigService.deleteWithValidByIds(List.of(ossConfigIds), true));
     }

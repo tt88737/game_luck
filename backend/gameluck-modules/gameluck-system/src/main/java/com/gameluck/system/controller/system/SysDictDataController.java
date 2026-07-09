@@ -55,7 +55,7 @@ public class SysDictDataController extends BaseController {
     @PostMapping("/export")
     public void export(SysDictDataBo dictData, HttpServletResponse response) {
         List<SysDictDataVo> list = dictDataService.selectDictDataList(dictData);
-        ExcelUtil.exportExcel(list, "字典数据", SysDictDataVo.class, response);
+        ExcelUtil.exportExcel(list, MessageUtils.message("excel.export.dict.data"), SysDictDataVo.class, response);
     }
 
     /**

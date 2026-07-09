@@ -50,7 +50,7 @@ const handldDelOnline = (row: any) => {
         proxy?.$modal.msgSuccess(tt('删除成功'));
         proxy?.$tab.refreshPage();
       } else {
-        proxy?.$modal.msgError(res.msg);
+        proxy?.$modal.msgError(tt(res.msg));
       }
     })
     .catch(() => {});

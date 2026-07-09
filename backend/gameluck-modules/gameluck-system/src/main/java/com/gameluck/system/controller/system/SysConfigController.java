@@ -51,7 +51,7 @@ public class SysConfigController extends BaseController {
     @PostMapping("/export")
     public void export(SysConfigBo config, HttpServletResponse response) {
         List<SysConfigVo> list = configService.selectConfigList(config);
-        ExcelUtil.exportExcel(list, "参数数据", SysConfigVo.class, response);
+        ExcelUtil.exportExcel(list, MessageUtils.message("excel.export.config"), SysConfigVo.class, response);
     }
 
     /**

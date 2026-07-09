@@ -367,14 +367,14 @@ const handleExport = () => {
 const handleSyncTenantDict = async () => {
   await proxy?.$modal.confirm(tt('确认要同步所有租户字典吗？'));
   const res = await syncTenantDict();
-  proxy?.$modal.msgSuccess(res.msg);
+  proxy?.$modal.msgSuccess(tt(res.msg));
 };
 
 /**同步租户参数配置*/
 const handleSyncTenantConfig = async () => {
   await proxy?.$modal.confirm(tt('确认要同步所有租户参数配置吗？'));
   const res = await syncTenantConfig();
-  proxy?.$modal.msgSuccess(res.msg);
+  proxy?.$modal.msgSuccess(tt(res.msg));
 };
 
 onMounted(() => {

@@ -28,7 +28,7 @@ public class SysPostBo extends BaseEntity {
     /**
      * 部门id（单部门）
      */
-    @NotNull(message = "部门id不能为空")
+    @NotNull(message = "{system.dept.id.required}")
     private Long deptId;
 
     /**
@@ -39,27 +39,27 @@ public class SysPostBo extends BaseEntity {
     /**
      * 岗位编码
      */
-    @NotBlank(message = "岗位编码不能为空")
-    @Size(min = 0, max = 64, message = "岗位编码长度不能超过{max}个字符")
+    @NotBlank(message = "{system.post.code.required}")
+    @Size(min = 0, max = 64, message = "{system.post.code.length}")
     private String postCode;
 
     /**
      * 岗位名称
      */
-    @NotBlank(message = "岗位名称不能为空")
-    @Size(min = 0, max = 50, message = "岗位名称长度不能超过{max}个字符")
+    @NotBlank(message = "{system.post.name.required}")
+    @Size(min = 0, max = 50, message = "{system.post.name.length}")
     private String postName;
 
     /**
      * 岗位类别编码
      */
-    @Size(min = 0, max = 100, message = "类别编码长度不能超过{max}个字符")
+    @Size(min = 0, max = 100, message = "{system.post.category.length}")
     private String postCategory;
 
     /**
      * 显示顺序
      */
-    @NotNull(message = "显示顺序不能为空")
+    @NotNull(message = "{system.display.sort.required}")
     private Integer postSort;
 
     /**

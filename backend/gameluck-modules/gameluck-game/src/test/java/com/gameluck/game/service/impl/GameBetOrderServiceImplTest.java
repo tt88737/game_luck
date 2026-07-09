@@ -30,7 +30,7 @@ class GameBetOrderServiceImplTest {
 
         ServiceException exception = assertThrows(ServiceException.class, () -> service.cancel(1L));
 
-        assertEquals("已结算订单不能取消退款", exception.getMessage());
+        assertEquals("game.bet.order.refund.cancel.settled.forbidden", exception.getMessage());
         verifyNoInteractions(walletCoreService);
     }
 }

@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import com.gameluck.common.core.constant.CacheConstants;
 import com.gameluck.common.core.domain.R;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.excel.utils.ExcelUtil;
 import com.gameluck.common.idempotent.annotation.RepeatSubmit;
 import com.gameluck.common.log.annotation.Log;
@@ -52,7 +53,7 @@ public class SysLogininforController extends BaseController {
     @PostMapping("/export")
     public void export(SysLogininforBo logininfor, HttpServletResponse response) {
         List<SysLogininforVo> list = logininforService.selectLogininforList(logininfor);
-        ExcelUtil.exportExcel(list, "登录日志", SysLogininforVo.class, response);
+        ExcelUtil.exportExcel(list, MessageUtils.message("excel.export.login.log"), SysLogininforVo.class, response);
     }
 
     /**

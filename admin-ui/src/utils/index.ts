@@ -1,4 +1,5 @@
 import { parseTime } from '@/utils/gameluck';
+import { tt } from '@/utils/i18nText';
 
 /**
  * 表格时间格式化
@@ -33,19 +34,22 @@ export const formatTime = (time: string, option: string) => {
   const diff = (now - d) / 1000;
 
   if (diff < 30) {
-    return '刚刚';
+    return tt('刚刚');
   } else if (diff < 3600) {
     // less 1 hour
-    return Math.ceil(diff / 60) + '分钟前';
+    return Math.ceil(diff / 60) + tt('分钟前');
   } else if (diff < 3600 * 24) {
-    return Math.ceil(diff / 3600) + '小时前';
+    return Math.ceil(diff / 3600) + tt('小时前');
   } else if (diff < 3600 * 24 * 2) {
-    return '1天前';
+    return `1${tt('天前')}`;
   }
   if (option) {
     return parseTime(t, option);
   } else {
-    return d.getMonth() + 1 + '月' + d.getDate() + '日' + d.getHours() + '时' + d.getMinutes() + '分';
+    if (tt('月') === '/') {
+      return `${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`;
+    }
+    return d.getMonth() + 1 + tt('月') + d.getDate() + tt('日') + d.getHours() + tt('时') + d.getMinutes() + tt('分');
   }
 };
 

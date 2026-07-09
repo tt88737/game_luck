@@ -1,3 +1,5 @@
+import { tt } from '@/utils/i18nText';
+
 // 日期格式化
 export function parseTime(time: any, pattern?: string) {
   if (arguments.length === 0 || !time) {
@@ -34,7 +36,7 @@ export function parseTime(time: any, pattern?: string) {
     let value = formatObj[key];
     // Note: getDay() returns 0 on Sunday
     if (key === 'a') {
-      return ['日', '一', '二', '三', '四', '五', '六'][value];
+      return tt(['周日', '周一', '周二', '周三', '周四', '周五', '周六'][value]);
     }
     if (result.length > 0 && value < 10) {
       value = '0' + value;

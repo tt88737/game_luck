@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.gameluck.common.core.constant.SystemConstants;
 import com.gameluck.common.core.exception.ServiceException;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.StringUtils;
 import com.gameluck.common.mybatis.core.page.PageQuery;
 import com.gameluck.common.mybatis.core.page.TableDataInfo;
@@ -155,20 +156,20 @@ public class RedemptionOrderServiceImpl implements IRedemptionOrderService {
     private RedemptionOrder lockOrder(Long id) {
         RedemptionOrder order = baseMapper.selectByIdForUpdate(id);
         if (order == null) {
-            throw new ServiceException("redemption order does not exist");
+            throw new ServiceException(MessageUtils.message("redemption.order.not.exists"));
         }
         return order;
     }
 
     private void requirePending(RedemptionOrder order) {
         if (!RedemptionOrderStatus.PENDING.name().equals(order.getStatus())) {
-            throw new ServiceException("only pending redemption orders can be operated");
+            throw new ServiceException(MessageUtils.message("redemption.order.only.pending.allowed"));
         }
     }
 
     private void requireWalletSuccess(WalletTransaction transaction) {
         if (!WalletTransactionStatus.SUCCESS.name().equals(transaction.getStatus())) {
-            throw new ServiceException("wallet operation failed");
+            throw new ServiceException(MessageUtils.message("redemption.wallet.operation.fail"));
         }
     }
 
@@ -181,7 +182,7 @@ public class RedemptionOrderServiceImpl implements IRedemptionOrderService {
         bo.setSourceType(SOURCE_TYPE);
         bo.setBusinessNo(order.getRedemptionOrderNo());
         bo.setIdempotencyKey(idempotencyKey);
-        bo.setRemark("Simulated redemption");
+        bo.setRemark(MessageUtils.message("redemption.wallet.remark.simulated"));
         return bo;
     }
 
@@ -205,7 +206,7 @@ public class RedemptionOrderServiceImpl implements IRedemptionOrderService {
     private BigDecimal normalizePositive(BigDecimal value) {
         BigDecimal normalized = value == null ? null : value.setScale(MONEY_SCALE, RoundingMode.HALF_UP);
         if (normalized == null || normalized.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new ServiceException("amount must be greater than 0");
+            throw new ServiceException(MessageUtils.message("redemption.amount.positive"));
         }
         return normalized;
     }

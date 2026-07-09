@@ -22,13 +22,13 @@ public class RedemptionOrderBo {
 
     private String redemptionOrderNo;
 
-    @NotNull(message = "memberId is required")
+    @NotNull(message = "{redemption.member.id.required}")
     private Long memberId;
 
     private String currencyCode;
 
-    @NotNull(message = "amount is required")
-    @DecimalMin(value = "0.000001", message = "amount must be greater than 0")
+    @NotNull(message = "{redemption.amount.required}")
+    @DecimalMin(value = "0.000001", message = "{redemption.amount.positive}")
     private BigDecimal amount;
 
     private String redemptionMethod;

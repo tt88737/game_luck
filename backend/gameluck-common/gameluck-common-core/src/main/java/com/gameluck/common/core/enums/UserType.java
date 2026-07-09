@@ -2,6 +2,7 @@ package com.gameluck.common.core.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.StringUtils;
 
 /**
@@ -34,6 +35,6 @@ public enum UserType {
                 return value;
             }
         }
-        throw new RuntimeException("'UserType' not found By " + str);
+        throw new RuntimeException(MessageUtils.message("user.type.not.found", str));
     }
 }

@@ -70,7 +70,7 @@ public class SysTenantPackageController extends BaseController {
     @PostMapping("/export")
     public void export(SysTenantPackageBo bo, HttpServletResponse response) {
         List<SysTenantPackageVo> list = tenantPackageService.queryList(bo);
-        ExcelUtil.exportExcel(list, "租户套餐", SysTenantPackageVo.class, response);
+        ExcelUtil.exportExcel(list, MessageUtils.message("excel.export.tenant.package"), SysTenantPackageVo.class, response);
     }
 
     /**
@@ -81,7 +81,7 @@ public class SysTenantPackageController extends BaseController {
     @SaCheckRole(TenantConstants.SUPER_ADMIN_ROLE_KEY)
     @SaCheckPermission("system:tenantPackage:query")
     @GetMapping("/{packageId}")
-    public R<SysTenantPackageVo> getInfo(@NotNull(message = "主键不能为空")
+    public R<SysTenantPackageVo> getInfo(@NotNull(message = "{common.primary.key.required}")
                                      @PathVariable Long packageId) {
         return R.ok(tenantPackageService.queryById(packageId));
     }
@@ -137,7 +137,7 @@ public class SysTenantPackageController extends BaseController {
     @SaCheckPermission("system:tenantPackage:remove")
     @Log(title = "租户套餐", businessType = BusinessType.DELETE)
     @DeleteMapping("/{packageIds}")
-    public R<Void> remove(@NotEmpty(message = "主键不能为空")
+    public R<Void> remove(@NotEmpty(message = "{common.primary.key.required}")
                           @PathVariable Long[] packageIds) {
         return toAjax(tenantPackageService.deleteWithValidByIds(List.of(packageIds), true));
     }

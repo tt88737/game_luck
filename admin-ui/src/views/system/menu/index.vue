@@ -46,7 +46,11 @@
         :load="getChildrenList"
         :expand-change="expandMenuHandle"
       >
-        <el-table-column prop="menuName" :label="tt('菜单名称')" :show-overflow-tooltip="true" width="160"></el-table-column>
+        <el-table-column prop="menuName" :label="tt('菜单名称')" :show-overflow-tooltip="true" width="160">
+          <template #default="scope">
+            {{ translateTitle(scope.row.menuName) }}
+          </template>
+        </el-table-column>
         <el-table-column prop="icon" :label="tt('图标')" align="center" width="100">
           <template #default="scope">
             <svg-icon :icon-class="scope.row.icon" />
@@ -89,7 +93,7 @@
               <el-tree-select
                 v-model="form.parentId"
                 :data="menuOptions"
-                :props="{ value: 'menuId', label: 'menuName', children: 'children' } as any"
+                :props="{ value: 'menuId', label: 'displayMenuName', children: 'children' } as any"
                 value-key="menuId"
                 :placeholder="tt('选择上级菜单')"
                 check-strictly
@@ -287,7 +291,7 @@
         :check-strictly="false"
         :empty-text="tt('加载中，请稍候')"
         :default-expanded-keys="[0]"
-        :props="{ value: 'menuId', label: 'menuName', children: 'children' } as any"
+        :props="{ value: 'menuId', label: 'displayMenuName', children: 'children' } as any"
       />
       <template #footer>
         <div class="dialog-footer">
@@ -301,6 +305,7 @@
 
 <script setup name="Menu" lang="ts">
 import { tt } from '@/utils/i18nText';
+import { translateTitle } from '@/utils/i18nTitle';
 import { addMenu, cascadeDelMenu, delMenu, getMenu, listMenu, updateMenu } from '@/api/system/menu';
 import { MenuForm, MenuQuery, MenuVO } from '@/api/system/menu/types';
 import { MenuTypeEnum } from '@/enums/MenuTypeEnum';
@@ -308,6 +313,7 @@ import { MenuTypeEnum } from '@/enums/MenuTypeEnum';
 interface MenuOptionsType {
   menuId: number;
   menuName: string;
+  displayMenuName?: string;
   children: MenuOptionsType[] | undefined;
 }
 
@@ -359,6 +365,14 @@ const data = reactive<PageData<MenuForm, MenuQuery>>({
 const menuTableRef = ref<ElTableInstance>();
 
 const { queryParams, form, rules } = toRefs<PageData<MenuForm, MenuQuery>>(data);
+
+const localizeMenuOptions = (menus?: MenuOptionsType[]): MenuOptionsType[] => {
+  return (menus ?? []).map((menu) => ({
+    ...menu,
+    displayMenuName: translateTitle(menu.menuName),
+    children: localizeMenuOptions(menu.children)
+  }));
+};
 
 /** 获取子菜单列表 */
 const getChildrenList = async (row: any, treeNode: unknown, resolve: (data: any[]) => void) => {
@@ -432,8 +446,8 @@ const getList = async () => {
 const getTreeselect = async () => {
   menuOptions.value = [];
   const response = await listMenu();
-  const menu: MenuOptionsType = { menuId: 0, menuName: tt('主类目'), children: [] };
-  menu.children = proxy?.handleTree<MenuOptionsType>(response.data, 'menuId');
+  const menu: MenuOptionsType = { menuId: 0, menuName: tt('主类目'), displayMenuName: tt('主类目'), children: [] };
+  menu.children = localizeMenuOptions(proxy?.handleTree<MenuOptionsType>(response.data, 'menuId'));
   menuOptions.value.push(menu);
 };
 /** 取消按钮 */
@@ -488,7 +502,7 @@ const submitForm = () => {
 };
 /** 删除按钮操作 */
 const handleDelete = async (row: MenuVO) => {
-  await proxy?.$modal.confirm(tt('是否确认删除名称为') + '"' + row.menuName + '"' + tt('的数据项?'));
+  await proxy?.$modal.confirm(tt('是否确认删除名称为') + '"' + translateTitle(row.menuName) + '"' + tt('的数据项?'));
   await delMenu(row.menuId);
   await getList();
   proxy?.$modal.msgSuccess(tt('删除成功'));

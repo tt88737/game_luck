@@ -86,7 +86,7 @@ public class AuthController {
         Long userId = LoginHelper.getUserId();
         scheduledExecutorService.schedule(() -> {
             SseMessageDto dto = new SseMessageDto();
-            dto.setMessage(DateUtils.getTodayHour(new Date()) + ", welcome to GameLuck Admin");
+            dto.setMessage(MessageUtils.message("auth.login.welcome", DateUtils.getTodayHour(new Date())));
             dto.setUserIds(List.of(userId));
             SseMessageUtils.publishMessage(dto);
         }, 5, TimeUnit.SECONDS);

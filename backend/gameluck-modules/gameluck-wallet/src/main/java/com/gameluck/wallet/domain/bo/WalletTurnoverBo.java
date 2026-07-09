@@ -13,22 +13,22 @@ import java.math.BigDecimal;
 @Data
 public class WalletTurnoverBo {
 
-    @NotNull(message = "会员ID不能为空")
+    @NotNull(message = "{member.id.required}")
     private Long memberId;
 
-    @NotBlank(message = "币种不能为空")
+    @NotBlank(message = "{wallet.currency.required}")
     private String currencyCode;
 
-    @NotBlank(message = "来源类型不能为空")
+    @NotBlank(message = "{wallet.source.type.required}")
     private String sourceType;
 
-    @NotBlank(message = "业务单号不能为空")
+    @NotBlank(message = "{wallet.business.no.required}")
     private String businessNo;
 
-    @NotBlank(message = "幂等键不能为空")
+    @NotBlank(message = "{wallet.idempotency.key.required}")
     private String idempotencyKey;
 
-    @NotNull(message = "有效流水不能为空")
-    @DecimalMin(value = "0.000001", message = "有效流水必须大于0")
+    @NotNull(message = "{wallet.valid.turnover.required}")
+    @DecimalMin(value = "0.000001", message = "{wallet.valid.turnover.positive}")
     private BigDecimal validTurnoverAmount;
 }

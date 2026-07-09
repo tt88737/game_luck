@@ -375,10 +375,12 @@ public class ExcelDownHandler implements SheetWriteHandler {
             dataValidation.setSuppressDropDownArrow(true);
             //错误提示
             dataValidation.setErrorStyle(DataValidation.ErrorStyle.STOP);
-            dataValidation.createErrorBox("提示", "此值与单元格定义数据不一致");
+            dataValidation.createErrorBox(MessageUtils.message("excel.validation.prompt.title"),
+                MessageUtils.message("excel.validation.error.value.mismatch"));
             dataValidation.setShowErrorBox(true);
             //选定提示
-            dataValidation.createPromptBox("填写说明：", "填写内容只能为下拉中数据，其他数据将导致导入失败");
+            dataValidation.createPromptBox(MessageUtils.message("excel.validation.input.title"),
+                MessageUtils.message("excel.validation.input.content"));
             dataValidation.setShowPromptBox(true);
             sheet.addValidationData(dataValidation);
         } else {

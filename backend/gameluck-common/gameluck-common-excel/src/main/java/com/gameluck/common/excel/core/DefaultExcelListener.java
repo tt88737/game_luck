@@ -1,10 +1,10 @@
 package com.gameluck.common.excel.core;
 
-import cn.hutool.core.util.StrUtil;
 import cn.idev.excel.context.AnalysisContext;
 import cn.idev.excel.event.AnalysisEventListener;
 import cn.idev.excel.exception.ExcelAnalysisException;
 import cn.idev.excel.exception.ExcelDataConvertException;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.StreamUtils;
 import com.gameluck.common.core.utils.ValidatorUtils;
 import com.gameluck.common.json.utils.JsonUtils;
@@ -59,7 +59,7 @@ public class DefaultExcelListener<T> extends AnalysisEventListener<T> implements
             // 如果是某一个单元格的转换异常 能获取到具体行号
             Integer rowIndex = excelDataConvertException.getRowIndex();
             Integer columnIndex = excelDataConvertException.getColumnIndex();
-            errMsg = StrUtil.format("第{}行-第{}列-表头{}: 解析异常<br/>",
+            errMsg = MessageUtils.message("excel.import.cell.parse.error",
                 rowIndex + 1, columnIndex + 1, headMap.get(columnIndex));
             if (log.isDebugEnabled()) {
                 log.error(errMsg);
@@ -68,7 +68,8 @@ public class DefaultExcelListener<T> extends AnalysisEventListener<T> implements
         if (exception instanceof ConstraintViolationException constraintViolationException) {
             Set<ConstraintViolation<?>> constraintViolations = constraintViolationException.getConstraintViolations();
             String constraintViolationsMsg = StreamUtils.join(constraintViolations, ConstraintViolation::getMessage, ", ");
-            errMsg = StrUtil.format("第{}行数据校验异常: {}", context.readRowHolder().getRowIndex() + 1, constraintViolationsMsg);
+            errMsg = MessageUtils.message("excel.import.row.validation.error",
+                context.readRowHolder().getRowIndex() + 1, constraintViolationsMsg);
             if (log.isDebugEnabled()) {
                 log.error(errMsg);
             }

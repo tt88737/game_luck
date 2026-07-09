@@ -101,7 +101,8 @@ public class CaptchaController {
         String code = RandomUtil.randomNumbers(4);
         RedisUtils.setCacheObject(key, code, Duration.ofMinutes(Constants.CAPTCHA_EXPIRATION));
         try {
-            MailUtils.sendText(email, "登录验证码", "您本次验证码为：" + code + "，有效性为" + Constants.CAPTCHA_EXPIRATION + "分钟，请尽快填写。");
+            MailUtils.sendText(email, MessageUtils.message("captcha.email.subject"),
+                MessageUtils.message("captcha.email.content", code, Constants.CAPTCHA_EXPIRATION));
         } catch (Exception e) {
             log.error("验证码短信发送异常 => {}", e.getMessage());
             throw new ServiceException(e.getMessage());

@@ -22,13 +22,13 @@ public class WalletRuleBo extends BaseEntity {
 
     private String tenantId;
 
-    @NotBlank(message = "币种不能为空")
+    @NotBlank(message = "{wallet.currency.required}")
     private String currencyCode;
 
-    @NotBlank(message = "来源类型不能为空")
+    @NotBlank(message = "{wallet.source.type.required}")
     private String sourceType;
 
-    @NotBlank(message = "规则名称不能为空")
+    @NotBlank(message = "{wallet.rule.name.required}")
     private String ruleName;
 
     private String creditEnabled;
@@ -39,12 +39,12 @@ public class WalletRuleBo extends BaseEntity {
 
     private String exchangeEnabled;
 
-    @NotBlank(message = "释放模式不能为空")
+    @NotBlank(message = "{wallet.release.mode.required}")
     private String releaseMode;
 
     private String turnoverRequired;
 
-    @DecimalMin(value = "0", message = "默认所需流水不能小于0")
+    @DecimalMin(value = "0", message = "{wallet.default.required.turnover.nonnegative}")
     private BigDecimal defaultRequiredTurnover;
 
     private String status;

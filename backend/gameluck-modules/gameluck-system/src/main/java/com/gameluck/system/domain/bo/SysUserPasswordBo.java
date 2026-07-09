@@ -18,12 +18,12 @@ public class SysUserPasswordBo implements Serializable {
     /**
      * 旧密码
      */
-    @NotBlank(message = "旧密码不能为空")
+    @NotBlank(message = "{system.profile.password.old.required}")
     private String oldPassword;
 
     /**
      * 新密码
      */
-    @NotBlank(message = "新密码不能为空")
+    @NotBlank(message = "{system.profile.password.new.required}")
     private String newPassword;
 }

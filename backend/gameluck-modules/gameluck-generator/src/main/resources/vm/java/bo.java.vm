@@ -37,9 +37,9 @@ public class ${ClassName}Bo extends BaseEntity {
 #end
 #if($column.required)
 #if($column.javaType == 'String')
-    @NotBlank(message = "$column.columnComment不能为空", groups = { $Group })
+    @NotBlank(message = "{not.null}", groups = { $Group })
 #else
-    @NotNull(message = "$column.columnComment不能为空", groups = { $Group })
+    @NotNull(message = "{not.null}", groups = { $Group })
 #end
 #end
     private $column.javaType $column.javaField;

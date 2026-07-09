@@ -5,6 +5,7 @@ import com.baomidou.lock.annotation.Lock4j;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import com.gameluck.common.core.domain.R;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.excel.utils.ExcelUtil;
 import com.gameluck.common.log.annotation.Log;
 import com.gameluck.common.log.enums.BusinessType;
@@ -49,7 +50,7 @@ public class SysOperlogController extends BaseController {
     @PostMapping("/export")
     public void export(SysOperLogBo operLog, HttpServletResponse response) {
         List<SysOperLogVo> list = operLogService.selectOperLogList(operLog);
-        ExcelUtil.exportExcel(list, "操作日志", SysOperLogVo.class, response);
+        ExcelUtil.exportExcel(list, MessageUtils.message("excel.export.operation.log"), SysOperLogVo.class, response);
     }
 
     /**

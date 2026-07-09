@@ -30,7 +30,7 @@ class RedemptionOrderServiceImplTest {
 
         ServiceException exception = assertThrows(ServiceException.class, () -> service.reject(1L, "duplicate reject"));
 
-        assertEquals("only pending redemption orders can be operated", exception.getMessage());
+        assertEquals("redemption.order.only.pending.allowed", exception.getMessage());
         verifyNoInteractions(walletCoreService);
     }
 }

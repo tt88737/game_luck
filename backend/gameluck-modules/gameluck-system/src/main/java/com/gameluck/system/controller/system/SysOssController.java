@@ -54,7 +54,7 @@ public class SysOssController extends BaseController {
      */
     @SaCheckPermission("system:oss:query")
     @GetMapping("/listByIds/{ossIds}")
-    public R<List<SysOssVo>> listByIds(@NotEmpty(message = "主键不能为空")
+    public R<List<SysOssVo>> listByIds(@NotEmpty(message = "{common.primary.key.required}")
                                        @PathVariable Long[] ossIds) {
         List<SysOssVo> list = ossService.listByIds(Arrays.asList(ossIds));
         return R.ok(list);
@@ -96,7 +96,7 @@ public class SysOssController extends BaseController {
     @SaCheckPermission("system:oss:remove")
     @Log(title = "OSS对象存储", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ossIds}")
-    public R<Void> remove(@NotEmpty(message = "主键不能为空")
+    public R<Void> remove(@NotEmpty(message = "{common.primary.key.required}")
                           @PathVariable Long[] ossIds) {
         return toAjax(ossService.deleteWithValidByIds(List.of(ossIds), true));
     }

@@ -32,7 +32,7 @@ public @interface EnumPattern {
      */
     String fieldName();
 
-    String message() default "输入值不在枚举范围内";
+    String message() default "{validation.enum.invalid}";
 
     Class<?>[] groups() default {};
 

@@ -3,6 +3,7 @@ package com.gameluck.job.snailjob;
 import com.aizuda.snailjob.client.job.core.dto.JobArgs;
 import com.aizuda.snailjob.client.job.core.executor.AbstractJobExecutor;
 import com.aizuda.snailjob.model.dto.ExecuteResult;
+import com.gameluck.common.core.utils.MessageUtils;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,6 +15,6 @@ public class TestClassJobExecutor extends AbstractJobExecutor {
 
     @Override
     protected ExecuteResult doJobExecute(JobArgs jobArgs) {
-        return ExecuteResult.success("TestJobExecutor测试成功");
+        return ExecuteResult.success(MessageUtils.message("job.test.executor.success"));
     }
 }

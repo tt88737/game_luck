@@ -58,7 +58,7 @@ public class SysPostController extends BaseController {
     @PostMapping("/export")
     public void export(SysPostBo post, HttpServletResponse response) {
         List<SysPostVo> list = postService.selectPostList(post);
-        ExcelUtil.exportExcel(list, "岗位数据", SysPostVo.class, response);
+        ExcelUtil.exportExcel(list, MessageUtils.message("excel.export.post"), SysPostVo.class, response);
     }
 
     /**

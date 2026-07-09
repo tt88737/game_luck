@@ -110,7 +110,7 @@ const handleImportTable = async () => {
     return;
   }
   const res = await importTable({ tables: tableNames, dataName: queryParams.dataName });
-  proxy?.$modal.msgSuccess(res.msg);
+  proxy?.$modal.msgSuccess(tt(res.msg));
   if (res.code === 200) {
     visible.value = false;
     emit('ok');

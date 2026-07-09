@@ -25,13 +25,13 @@ public class SysTenantPackageBo extends BaseEntity {
     /**
      * 租户套餐id
      */
-    @NotNull(message = "租户套餐id不能为空", groups = { EditGroup.class })
+    @NotNull(message = "{system.tenant.package.id.required}", groups = { EditGroup.class })
     private Long packageId;
 
     /**
      * 套餐名称
      */
-    @NotBlank(message = "套餐名称不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotBlank(message = "{system.tenant.package.name.required}", groups = { AddGroup.class, EditGroup.class })
     private String packageName;
 
     /**

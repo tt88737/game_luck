@@ -52,7 +52,7 @@ public class SysDictTypeController extends BaseController {
     @PostMapping("/export")
     public void export(SysDictTypeBo dictType, HttpServletResponse response) {
         List<SysDictTypeVo> list = dictTypeService.selectDictTypeList(dictType);
-        ExcelUtil.exportExcel(list, "字典类型", SysDictTypeVo.class, response);
+        ExcelUtil.exportExcel(list, MessageUtils.message("excel.export.dict.type"), SysDictTypeVo.class, response);
     }
 
     /**

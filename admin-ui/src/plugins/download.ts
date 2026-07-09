@@ -61,6 +61,6 @@ export default {
     const resText = await data.text();
     const rspObj = JSON.parse(resText);
     const errMsg = errorCode[rspObj.code] || rspObj.msg || errorCode['default'];
-    ElMessage.error(errMsg);
+    ElMessage.error(tt(errMsg));
   }
 };

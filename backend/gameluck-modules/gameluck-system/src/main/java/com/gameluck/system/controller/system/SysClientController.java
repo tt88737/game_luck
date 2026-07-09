@@ -55,7 +55,7 @@ public class SysClientController extends BaseController {
     @PostMapping("/export")
     public void export(SysClientBo bo, HttpServletResponse response) {
         List<SysClientVo> list = sysClientService.queryList(bo);
-        ExcelUtil.exportExcel(list, "客户端管理", SysClientVo.class, response);
+        ExcelUtil.exportExcel(list, MessageUtils.message("excel.export.client"), SysClientVo.class, response);
     }
 
     /**
@@ -65,7 +65,7 @@ public class SysClientController extends BaseController {
      */
     @SaCheckPermission("system:client:query")
     @GetMapping("/{id}")
-    public R<SysClientVo> getInfo(@NotNull(message = "主键不能为空")
+    public R<SysClientVo> getInfo(@NotNull(message = "{common.primary.key.required}")
                                   @PathVariable Long id) {
         return R.ok(sysClientService.queryById(id));
     }
@@ -116,7 +116,7 @@ public class SysClientController extends BaseController {
     @SaCheckPermission("system:client:remove")
     @Log(title = "客户端管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
-    public R<Void> remove(@NotEmpty(message = "主键不能为空")
+    public R<Void> remove(@NotEmpty(message = "{common.primary.key.required}")
                           @PathVariable Long[] ids) {
         return toAjax(sysClientService.deleteWithValidByIds(List.of(ids), true));
     }

@@ -99,7 +99,7 @@ class PromotionRewardServiceImplTest {
 
         ServiceException exception = assertThrows(ServiceException.class, () -> service.claim(claimBo()));
 
-        assertEquals("promotion is not active", exception.getMessage());
+        assertEquals("promotion.reward.not.active", exception.getMessage());
         verifyNoInteractions(walletCoreService);
     }
 

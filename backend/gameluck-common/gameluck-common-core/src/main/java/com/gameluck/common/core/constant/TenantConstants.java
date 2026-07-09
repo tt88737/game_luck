@@ -25,7 +25,7 @@ public interface TenantConstants {
     /**
      * 租户管理员角色名称
      */
-    String TENANT_ADMIN_ROLE_NAME = "管理员";
+    String TENANT_ADMIN_ROLE_NAME = "admin";
 
     /**
      * 默认租户ID

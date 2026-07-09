@@ -23,13 +23,13 @@ public class PromotionRewardBo {
 
     private String promotionNo;
 
-    @NotBlank(message = "promotionName is required")
+    @NotBlank(message = "{promotion.reward.name.required}")
     private String promotionName;
 
     private String currencyCode;
 
-    @NotNull(message = "rewardAmount is required")
-    @DecimalMin(value = "0.000001", message = "rewardAmount must be greater than 0")
+    @NotNull(message = "{promotion.reward.amount.required}")
+    @DecimalMin(value = "0.000001", message = "{promotion.reward.amount.positive}")
     private BigDecimal rewardAmount;
 
     private String status;

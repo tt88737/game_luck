@@ -59,7 +59,7 @@ public class SysRoleController extends BaseController {
     @PostMapping("/export")
     public void export(SysRoleBo role, HttpServletResponse response) {
         List<SysRoleVo> list = roleService.selectRoleList(role);
-        ExcelUtil.exportExcel(list, "角色数据", SysRoleVo.class, response);
+        ExcelUtil.exportExcel(list, MessageUtils.message("excel.export.role"), SysRoleVo.class, response);
     }
 
     /**

@@ -75,7 +75,7 @@ public class SysUserController extends BaseController {
     @PostMapping("/export")
     public void export(SysUserBo user, HttpServletResponse response) {
         List<SysUserExportVo> list = userService.selectUserExportList(user);
-        ExcelUtil.exportExcel(list, "用户数据", SysUserExportVo.class, response);
+        ExcelUtil.exportExcel(list, MessageUtils.message("excel.export.user"), SysUserExportVo.class, response);
     }
 
     /**
@@ -97,7 +97,7 @@ public class SysUserController extends BaseController {
      */
     @PostMapping("/importTemplate")
     public void importTemplate(HttpServletResponse response) {
-        ExcelUtil.exportExcel(new ArrayList<>(), "用户数据", SysUserImportVo.class, response);
+        ExcelUtil.exportExcel(new ArrayList<>(), MessageUtils.message("excel.export.user"), SysUserImportVo.class, response);
     }
 
     /**

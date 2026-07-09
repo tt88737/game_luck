@@ -6,6 +6,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.plugins.IgnoreStrategy;
 import com.baomidou.mybatisplus.core.plugins.InterceptorIgnoreHelper;
+import com.gameluck.common.core.utils.MessageUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import com.gameluck.common.core.utils.reflect.ReflectUtils;
@@ -96,7 +97,7 @@ public class DataPermissionHelper {
         if (attribute instanceof Map map) {
             return map;
         }
-        throw new NullPointerException("data permission context type exception");
+        throw new NullPointerException(MessageUtils.message("mybatis.data.permission.context.type.error"));
     }
 
     private static IgnoreStrategy getIgnoreStrategy() {

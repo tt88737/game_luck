@@ -1,5 +1,6 @@
 package com.gameluck.common.oss.enums;
 
+import com.gameluck.common.core.utils.MessageUtils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import software.amazon.awssdk.services.s3.model.BucketCannedACL;
@@ -50,7 +51,7 @@ public enum AccessPolicyType {
                 return value;
             }
         }
-        throw new RuntimeException("'type' not found By " + type);
+        throw new RuntimeException(MessageUtils.message("system.oss.access.policy.type.not.found", type));
     }
 
 }

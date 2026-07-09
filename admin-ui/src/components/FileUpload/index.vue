@@ -169,7 +169,7 @@ const handleUploadSuccess = (res: any, file: UploadFile) => {
   } else {
     number.value--;
     proxy?.$modal.closeLoading();
-    proxy?.$modal.msgError(res.msg);
+    proxy?.$modal.msgError(tt(res.msg));
     fileUploadRef.value?.handleRemove(file);
     uploadedSuccessfully();
   }

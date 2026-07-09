@@ -64,7 +64,7 @@ public class SysTenantController extends BaseController {
     @PostMapping("/export")
     public void export(SysTenantBo bo, HttpServletResponse response) {
         List<SysTenantVo> list = tenantService.queryList(bo);
-        ExcelUtil.exportExcel(list, "租户", SysTenantVo.class, response);
+        ExcelUtil.exportExcel(list, MessageUtils.message("excel.export.tenant"), SysTenantVo.class, response);
     }
 
     /**
@@ -75,7 +75,7 @@ public class SysTenantController extends BaseController {
     @SaCheckRole(TenantConstants.SUPER_ADMIN_ROLE_KEY)
     @SaCheckPermission("system:tenant:query")
     @GetMapping("/{id}")
-    public R<SysTenantVo> getInfo(@NotNull(message = "主键不能为空")
+    public R<SysTenantVo> getInfo(@NotNull(message = "{common.primary.key.required}")
                                   @PathVariable Long id) {
         return R.ok(tenantService.queryById(id));
     }
@@ -135,7 +135,7 @@ public class SysTenantController extends BaseController {
     @SaCheckPermission("system:tenant:remove")
     @Log(title = "租户管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
-    public R<Void> remove(@NotEmpty(message = "主键不能为空")
+    public R<Void> remove(@NotEmpty(message = "{common.primary.key.required}")
                           @PathVariable Long[] ids) {
         return toAjax(tenantService.deleteWithValidByIds(List.of(ids), true));
     }
@@ -147,7 +147,7 @@ public class SysTenantController extends BaseController {
      */
     @SaCheckRole(TenantConstants.SUPER_ADMIN_ROLE_KEY)
     @GetMapping("/dynamic/{tenantId}")
-    public R<Void> dynamicTenant(@NotBlank(message = "租户ID不能为空") @PathVariable String tenantId) {
+    public R<Void> dynamicTenant(@NotBlank(message = "{system.tenant.id.required}") @PathVariable String tenantId) {
         TenantHelper.setDynamic(tenantId, true);
         return R.ok();
     }
@@ -174,8 +174,8 @@ public class SysTenantController extends BaseController {
     @Log(title = "租户管理", businessType = BusinessType.UPDATE)
     @Lock4j
     @GetMapping("/syncTenantPackage")
-    public R<Void> syncTenantPackage(@NotBlank(message = "租户ID不能为空") String tenantId,
-                                     @NotNull(message = "套餐ID不能为空") Long packageId) {
+    public R<Void> syncTenantPackage(@NotBlank(message = "{system.tenant.id.required}") String tenantId,
+                                     @NotNull(message = "{system.tenant.package.id.required}") Long packageId) {
         return toAjax(TenantHelper.ignore(() -> tenantService.syncTenantPackage(tenantId, packageId)));
     }
 

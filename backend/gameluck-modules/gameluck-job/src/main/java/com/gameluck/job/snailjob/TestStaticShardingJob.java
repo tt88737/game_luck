@@ -5,6 +5,7 @@ import com.aizuda.snailjob.client.job.core.annotation.JobExecutor;
 import com.aizuda.snailjob.client.job.core.dto.JobArgs;
 import com.aizuda.snailjob.common.log.SnailJobLog;
 import com.aizuda.snailjob.model.dto.ExecuteResult;
+import com.gameluck.common.core.utils.MessageUtils;
 import org.springframework.stereotype.Component;
 
 /**
@@ -30,8 +31,8 @@ public class TestStaticShardingJob {
             Thread.sleep(3000);
             SnailJobLog.REMOTE.info("对id范围:{}进行加密处理完成", fromId + "-" + toId);
         } catch (InterruptedException e) {
-            return ExecuteResult.failure("任务执行失败");
+            return ExecuteResult.failure(MessageUtils.message("job.test.sharding.fail"));
         }
-        return ExecuteResult.success("执行分片任务完成");
+        return ExecuteResult.success(MessageUtils.message("job.test.sharding.success"));
     }
 }

@@ -15,7 +15,7 @@ public class MonitorAdminApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(MonitorAdminApplication.class, args);
-        System.out.println("Admin 监控启动成功");
+        System.out.println("Admin monitor started successfully");
     }
 
 }

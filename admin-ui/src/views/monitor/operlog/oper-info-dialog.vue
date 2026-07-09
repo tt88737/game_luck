@@ -14,7 +14,7 @@
         <template #default> {{ info.requestMethod }} {{ info.operUrl }} </template>
       </el-descriptions-item>
       <el-descriptions-item :label="tt('操作模块')">
-        <template #default> {{ info.title }} / {{ typeFormat(info) }} </template>
+        <template #default> {{ tt(info.title) }} / {{ typeFormat(info) }} </template>
       </el-descriptions-item>
       <el-descriptions-item :label="tt('操作方法')">
         <template #default>

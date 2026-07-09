@@ -9,6 +9,7 @@ import { useUserStore } from '@/store/modules/user';
 import { useSettingsStore } from '@/store/modules/settings';
 import { usePermissionStore } from '@/store/modules/permission';
 import { ElMessage } from 'element-plus/es';
+import { tt } from '@/utils/i18nText';
 
 NProgress.configure({ showSpinner: false });
 const whiteList = ['/login', '/register', '/register*', '/register/*'];
@@ -34,7 +35,7 @@ router.beforeEach(async (to, from, next) => {
         const [err] = await tos(useUserStore().getInfo());
         if (err) {
           await useUserStore().logout();
-          ElMessage.error(err);
+          ElMessage.error(tt(String(err)));
           next({ path: '/' });
         } else {
           isRelogin.show = false;

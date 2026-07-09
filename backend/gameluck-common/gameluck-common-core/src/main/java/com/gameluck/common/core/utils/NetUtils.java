@@ -5,6 +5,7 @@ import cn.hutool.core.net.NetUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.regex.RegexUtils;
 
 import java.net.Inet6Address;
@@ -66,7 +67,7 @@ public class NetUtils extends NetUtil {
             }
         } catch (UnknownHostException e) {
             // 注意，isInnerIPv6方法和isIPv6方法的适用范围不同，所以此处不能忽略其异常信息。
-            throw new IllegalArgumentException("Invalid IPv6 address!", e);
+            throw new IllegalArgumentException(MessageUtils.message("net.ipv6.address.invalid"), e);
         }
         return false;
     }

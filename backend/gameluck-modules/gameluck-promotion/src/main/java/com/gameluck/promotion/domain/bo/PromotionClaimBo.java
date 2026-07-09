@@ -24,7 +24,7 @@ public class PromotionClaimBo {
 
     private String promotionNo;
 
-    @NotNull(message = "memberId is required")
+    @NotNull(message = "{promotion.claim.member.id.required}")
     private Long memberId;
 
     private String currencyCode;

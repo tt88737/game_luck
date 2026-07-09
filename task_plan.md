@@ -30,7 +30,7 @@
 | 9. 本地启动配置 | complete | 新增 local profile 配置和本地启动说明 | application-local.yml、docs/implementation/backend-local-startup.md |
 | 10. 后端构建验证 | complete | 安装 Maven、初始化数据库、构建 backend | Maven 3.9.16、gameluck_vue、BUILD SUCCESS |
 | 11. 后端启动验证 | complete | 启动 gameluck-admin 并验证 8080 | java -jar 启动成功，GET / 返回 200 |
-| 12. Admin UI 全站多语言 | in_progress | 统一菜单、首页、公共组件和业务页面文案的中英文切换 | 已完成新增业务页；当前推进公共层和系统内置页 |
+| 12. Admin UI 全站多语言 | complete | 统一菜单、首页、公共组件和业务页面文案的中英文切换 | 已完成前后端全站多语言、后端 i18n key 守门、前端 build 前 i18n 检查 |
 
 ## 关键决策
 

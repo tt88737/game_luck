@@ -31,7 +31,7 @@ public @interface DictPattern {
     /**
      * 默认校验失败提示信息
      */
-    String message() default "字典值无效";
+    String message() default "{validation.dict.invalid}";
 
     Class<?>[] groups() default {};
 

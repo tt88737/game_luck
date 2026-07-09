@@ -39,13 +39,13 @@ public class CustomNotifier extends AbstractEventNotifier {
                 // 获取服务URL
                 String serviceUrl = instance.getRegistration().getServiceUrl();
                 String statusName = switch (status) {
-                    case STATUS_UP -> "服务上线"; // 实例成功启动并可以正常处理请求
-                    case STATUS_OFFLINE -> "服务离线"; //实例被手动或自动地从服务中移除
-                    case STATUS_RESTRICTED -> "服务受限"; //表示实例在某些方面受限，可能无法完全提供所有服务
-                    case STATUS_OUT_OF_SERVICE -> "停止服务状态"; //表示实例已被标记为停止提供服务，可能是计划内维护或测试
-                    case STATUS_DOWN -> "服务下线"; //实例因崩溃、错误或其他原因停止运行
-                    case STATUS_UNKNOWN -> "服务未知异常"; //监控系统无法确定实例的当前状态
-                    default -> "未知状态"; //没有匹配的状态
+                    case STATUS_UP -> "Service up"; // 实例成功启动并可以正常处理请求
+                    case STATUS_OFFLINE -> "Service offline"; //实例被手动或自动地从服务中移除
+                    case STATUS_RESTRICTED -> "Service restricted"; //表示实例在某些方面受限，可能无法完全提供所有服务
+                    case STATUS_OUT_OF_SERVICE -> "Service out of service"; //表示实例已被标记为停止提供服务，可能是计划内维护或测试
+                    case STATUS_DOWN -> "Service down"; //实例因崩溃、错误或其他原因停止运行
+                    case STATUS_UNKNOWN -> "Service status unknown"; //监控系统无法确定实例的当前状态
+                    default -> "Unknown status"; //没有匹配的状态
                 };
                 log.info("Instance Status Change: 状态名称【{}】, 注册名称【{}】, 实例ID【{}】, 状态【{}】, 服务URL【{}】",
                     statusName, registName, instanceId, status, serviceUrl);

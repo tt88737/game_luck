@@ -2,6 +2,7 @@ package com.gameluck.common.doc.core.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.gameluck.common.core.utils.MessageUtils;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -79,20 +80,22 @@ public class SaTokenSecurityMetadata {
      */
     public String toMarkdownString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("<br><h3>访问权限</h3><br>");
+        sb.append("<br><h3>").append(MessageUtils.message("doc.security.access.permission")).append("</h3><br>");
 
         if (ignore) {
-            sb.append("> **权限策略**：忽略权限检查<br>");
+            sb.append("> **").append(MessageUtils.message("doc.security.permission.strategy")).append("**: ")
+                .append(MessageUtils.message("doc.security.strategy.ignore")).append("<br>");
             return sb.toString();
         }
 
         if (!ignore && permissions.isEmpty() && roles.isEmpty()){
-            sb.append("> **权限策略**：需要登录<br><br>");
+            sb.append("> **").append(MessageUtils.message("doc.security.permission.strategy")).append("**: ")
+                .append(MessageUtils.message("doc.security.strategy.login.required")).append("<br><br>");
             return sb.toString();
         }
 
         if (!permissions.isEmpty()) {
-            sb.append("**权限校验：**<br><br>");
+            sb.append("**").append(MessageUtils.message("doc.security.permission.check")).append(":**<br><br>");
 
             permissions.forEach(p -> {
                 String permTags = Arrays.stream(p.getValues())
@@ -105,7 +108,7 @@ public class SaTokenSecurityMetadata {
                     String orTags = Arrays.stream(p.getOrValues())
                         .map(v -> "`" + v + "`")
                         .collect(Collectors.joining(p.getModeSymbol()));
-                    sb.append("  - 或角色：").append(orTags).append("<br>");
+                    sb.append("  - ").append(MessageUtils.message("doc.security.or.role")).append(": ").append(orTags).append("<br>");
                 }
             });
 
@@ -113,7 +116,7 @@ public class SaTokenSecurityMetadata {
         }
 
         if (!roles.isEmpty()) {
-            sb.append("**角色校验：**<br><br>");
+            sb.append("**").append(MessageUtils.message("doc.security.role.check")).append(":**<br><br>");
 
             roles.forEach(r -> {
 

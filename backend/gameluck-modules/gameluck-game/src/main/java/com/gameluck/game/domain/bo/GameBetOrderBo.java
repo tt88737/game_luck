@@ -17,19 +17,19 @@ public class GameBetOrderBo {
     private String tenantId;
     private String betOrderNo;
 
-    @NotNull(message = "memberId is required")
+    @NotNull(message = "{member.id.required}")
     private Long memberId;
 
     private String currencyCode;
     private String gameCode;
     private String roundNo;
 
-    @NotNull(message = "betAmount is required")
-    @DecimalMin(value = "0.000001", message = "betAmount must be greater than 0")
+    @NotNull(message = "{game.bet.order.bet.amount.required}")
+    @DecimalMin(value = "0.000001", message = "{game.bet.order.bet.amount.positive.required}")
     private BigDecimal betAmount;
 
-    @NotNull(message = "payoutAmount is required")
-    @DecimalMin(value = "0", message = "payoutAmount cannot be negative")
+    @NotNull(message = "{game.bet.order.payout.amount.required}")
+    @DecimalMin(value = "0", message = "{game.bet.order.payout.amount.non.negative.required}")
     private BigDecimal payoutAmount;
 
     private String status;

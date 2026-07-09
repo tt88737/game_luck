@@ -24,7 +24,7 @@ public @interface JsonPattern {
     /**
      * 校验失败时的提示消息
      */
-    String message() default "不是有效的 JSON 格式";
+    String message() default "{validation.json.invalid}";
 
     Class<?>[] groups() default {};
 
