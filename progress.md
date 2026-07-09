@@ -371,3 +371,8 @@
   - Installed H5 dependencies with `npm install --prefix h5` and verified `npm run build --prefix h5` succeeds.
   - Marked Task 1, Task 2, and Task 5 complete in `docs/superpowers/plans/2026-06-25-phase-1-mvp.md`.
   - Left Task 3 and Task 4 unchecked because `backend/docs/business-modules.md` and `backend/sql/package_wallet_001.sql` do not exist yet.
+- Completed Phase 1 Task 3 backend business module mapping:
+  - Created `backend/docs/business-modules.md`.
+  - Mapped tenant, member, wallet, payment, game, promotion, redemption, report, channel, and audit responsibilities to existing or reserved backend module locations.
+  - Added rules that business modules must call wallet-center instead of directly changing balances.
+  - Marked Task 3 steps complete in `docs/superpowers/plans/2026-06-25-phase-1-mvp.md`.
