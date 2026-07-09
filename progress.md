@@ -376,3 +376,9 @@
   - Mapped tenant, member, wallet, payment, game, promotion, redemption, report, channel, and audit responsibilities to existing or reserved backend module locations.
   - Added rules that business modules must call wallet-center instead of directly changing balances.
   - Marked Task 3 steps complete in `docs/superpowers/plans/2026-06-25-phase-1-mvp.md`.
+- Completed Phase 1 Task 4 wallet SQL draft:
+  - Created `backend/sql/package_wallet_001.sql`.
+  - Added draft MySQL DDL for wallet currency config, tenant currency config, member wallet account, wallet ledger, wallet transaction, freeze records, and manual review records.
+  - Verified the draft contains 7 `CREATE TABLE` statements and the key tenant/idempotency/member uniqueness constraints.
+  - Marked Task 4 steps complete in `docs/superpowers/plans/2026-06-25-phase-1-mvp.md`.
+  - Note: this is a design draft under `backend/sql`; the currently runnable module SQL remains `backend/script/sql/gameluck_wallet.sql` with `gl_wallet_*` tables.
