@@ -409,6 +409,24 @@ h2 {
   margin-top: 18px;
 }
 
+.inline-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.inline-form input {
+  min-width: 120px;
+  flex: 1;
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 12px;
+  background: white;
+  color: var(--text);
+}
+
 .tabbar {
   display: none;
 }

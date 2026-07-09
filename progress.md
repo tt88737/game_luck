@@ -475,3 +475,8 @@
   - Added logged-out, loading, empty, error, success, claim-in-progress, and claimed states.
   - Verification passed:
     - `npm run build --prefix h5`
+- Completed Phase 3 Task 6 H5 redemption page integration:
+  - Replaced static redemption demo data with session-aware wallet balance, redemption history loading, and SC redemption request submission.
+  - Added logged-out, loading, empty, error, success, submitting, and disabled-submit states.
+  - Verification passed:
+    - `npm run build --prefix h5`

@@ -1054,7 +1054,7 @@ Expected: commit succeeds.
 **Files:**
 - Modify: `h5/src/views/RedemptionsView.vue`
 
-- [ ] **Step 1: Replace static redemption page with backend state**
+- [x] **Step 1: Replace static redemption page with backend state**
 
 Replace `RedemptionsView.vue` with:
 
@@ -1165,7 +1165,7 @@ onMounted(loadRedemptions)
 </template>
 ```
 
-- [ ] **Step 2: Add inline form CSS if needed**
+- [x] **Step 2: Add inline form CSS if needed**
 
 If `inline-form` is not already styled in `h5/src/style.css`, add:
 
@@ -1187,7 +1187,7 @@ If `inline-form` is not already styled in `h5/src/style.css`, add:
 }
 ```
 
-- [ ] **Step 3: Run H5 build**
+- [x] **Step 3: Run H5 build**
 
 Run:
 
@@ -1197,7 +1197,7 @@ npm run build --prefix h5
 
 Expected: build succeeds.
 
-- [ ] **Step 4: Commit H5 redemption page**
+- [x] **Step 4: Commit H5 redemption page**
 
 Run:
 
