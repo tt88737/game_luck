@@ -941,7 +941,7 @@ Expected: commit succeeds.
 **Files:**
 - Modify: `h5/src/views/PromotionsView.vue`
 
-- [ ] **Step 1: Replace static promotion page with backend state**
+- [x] **Step 1: Replace static promotion page with backend state**
 
 Replace `PromotionsView.vue` with:
 
@@ -1028,7 +1028,7 @@ onMounted(loadPromotions)
 </template>
 ```
 
-- [ ] **Step 2: Run H5 build**
+- [x] **Step 2: Run H5 build**
 
 Run:
 
@@ -1038,7 +1038,7 @@ npm run build --prefix h5
 
 Expected: build succeeds.
 
-- [ ] **Step 3: Commit H5 promotion page**
+- [x] **Step 3: Commit H5 promotion page**
 
 Run:
 

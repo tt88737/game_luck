@@ -470,3 +470,8 @@
   - Added H5 typed client API support for promotions, promotion claim, redemptions, and redemption request.
   - Verification passed:
     - `npm run build --prefix h5`
+- Completed Phase 3 Task 5 H5 promotion page integration:
+  - Replaced static promotion demo data with session-aware `/api/client/promotions` loading and `/api/client/promotions/claim` action.
+  - Added logged-out, loading, empty, error, success, claim-in-progress, and claimed states.
+  - Verification passed:
+    - `npm run build --prefix h5`
