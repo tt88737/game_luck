@@ -269,3 +269,93 @@
   - Routed code generator import, sync, tree-field validation, empty table-column, and broadcast job execution messages through backend i18n keys.
   - Added Chinese and English keys for generator validation failures and broadcast job success/failure messages.
   - Verified target hardcoded-message scan, full backend hardcoded-message scan, backend i18n key consistency, menu icon guard, and backend compile after freeing local JVM memory.
+- Continued business backend validation i18n pass:
+  - Routed redemption and promotion service-facing errors and wallet operation remarks through backend `MessageUtils` keys.
+  - Routed wallet, payment, game, member, redemption, and promotion BO validation messages through `{i18n.key}` annotation messages.
+  - Added Chinese and English keys for business validation messages, redemption order errors, and promotion reward errors.
+  - Updated affected no-context unit tests to assert message-key fallback behavior consistently.
+  - Verified business-module annotation scan, backend i18n key consistency, focused wallet/game/redemption/promotion tests, backend admin compile, and menu icon guard.
+- Continued system/generator backend validation i18n pass:
+  - Routed system tenant/client/OSS controller path-parameter validation messages through `{i18n.key}` annotation messages.
+  - Routed code generator table and column validation messages through `{i18n.key}` annotation messages.
+  - Added Chinese and English keys for common primary-key validation, tenant/package IDs, and generator form fields.
+  - Verified target hardcoded-message scan, backend i18n key consistency, system/generator compile, full `gameluck-admin` compile, and menu icon guard.
+- Continued common runtime backend i18n pass:
+  - Routed remaining common-core/common-oss/common-mybatis internal runtime exception messages through backend i18n keys.
+  - Added Chinese and English keys for invalid IPv6 address, missing user/format/access-policy types, and data-permission context type errors.
+  - Verified common targeted scans, backend i18n key consistency, focused common module compiles, full `gameluck-admin` compile, and menu icon guard.
+- Continued system BO backend validation i18n pass:
+  - Routed system user/profile/password, role, post, menu, client, config, department, dictionary, notice, tenant, tenant package, and OSS config BO validation messages through `{i18n.key}` annotation messages.
+  - Added Chinese and English keys for system BO required, length, XSS, JSON, pattern, email, phone, client, tenant, and OSS config validation messages.
+  - Verified system BO hardcoded-message scan, backend i18n key consistency, duplicate-key scan, system compile, full `gameluck-admin` compile, system/generator annotation scan, and menu icon guard.
+- Continued generator template i18n pass:
+  - Routed generated controller and BO validation messages through backend i18n annotation keys.
+  - Updated single-table and tree-table Vue generator templates to use the frontend `tt()` bridge for generated labels, placeholders, buttons, tooltips, validation messages, dialogs, and delete confirmations.
+  - Added frontend English mappings for generated dictionary placeholders, root tree node labels, and generic delete-confirmation fragments.
+  - Verified generator template hardcoded-message scans, backend i18n key consistency, duplicate-key scan, generator compile, full `gameluck-admin` compile, and menu icon guard.
+- Continued frontend utility i18n pass:
+  - Routed common relative-time text in `formatTime` through the frontend `tt()` bridge.
+  - Routed weekday labels in `parseTime` through dedicated weekday translation keys.
+  - Added English mappings for relative-time fragments and weekday abbreviations.
+  - Verified frontend menu icon guard, filtered frontend runtime hardcoded-text scan, and `pnpm --dir admin-ui build:dev`.
+- Continued frontend title i18n pass:
+  - Routed dynamic browser document title through the existing `translateTitle()` route-title bridge.
+  - Kept the product title suffix from `VITE_APP_TITLE` unchanged while translating the route/page title segment.
+  - Verified document-title assignment scan and `pnpm --dir admin-ui build:dev`.
+- Continued frontend backend-response fallback i18n pass:
+  - Wrapped direct backend response message display points with `tt(...)` in code generation import/edit pages, tenant sync actions, profile online-device delete fallback, file/image upload failures, request/download blob error handlers, and route-permission user-info failures.
+  - Kept backend `Content-Language` localization as the primary source while allowing frontend static mappings to translate known fallback text.
+  - Verified direct response-message scan, `pnpm --dir admin-ui check:menu-icons`, and `pnpm --dir admin-ui build:dev`.
+- Continued frontend import-result fallback i18n pass:
+  - Wrapped the user-import result dialog's backend `response.msg` with `tt(...)` while preserving the existing HTML result container.
+  - Verified the remaining response-message scan only reports already wrapped `tt(response.msg)` usages and reran `pnpm --dir admin-ui build:dev` successfully.
+- Continued global residual i18n scan:
+  - Routed backend runtime-visible date/time friendly text, login welcome SSE text, IP fallback labels, tenant admin default role name, SnailJob sample task results, user/business status enum display labels, generator default function-name placeholder, and Sa-Token API-doc permission Markdown through `MessageUtils`.
+  - Replaced a WeChat mini-program secret placeholder with a non-display ASCII placeholder to remove remaining hardcoded Chinese from runtime code.
+  - Added matching keys to `messages.properties`, `messages_zh_CN.properties`, and `messages_en_US.properties`.
+  - Confirmed backend i18n bundle key consistency and duplicate-key scan produce no output.
+  - Confirmed target backend hardcoded-message scan and annotation default-message scan produce no output.
+  - Confirmed frontend residual scan only reports translated source strings (`tt()` / `errorCode` Proxy) and comments.
+  - Verification passed:
+    - `pnpm --dir admin-ui check:menu-icons`
+    - `pnpm --dir admin-ui build:dev`
+    - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal -DskipTests`
+- Added i18n development guardrail:
+  - Added `admin-ui/scripts/check-i18n.mjs` to block new frontend/backend hardcoded visible Chinese text, verify backend i18n bundle key consistency, and reject duplicate backend i18n keys.
+  - Wired `pnpm --dir admin-ui check:i18n` into `prebuild:dev` and `prebuild:prod` alongside the existing menu icon guard.
+  - Added `docs/implementation/i18n-development-guard.md` with frontend/backend i18n rules for future development.
+  - Routed system Excel export filenames through backend `MessageUtils` keys and added Chinese/English filename translations.
+  - Converted monitor-admin startup/status log strings and frontend WebSocket console strings to English non-UI diagnostics to remove remaining hardcoded Chinese from guarded code paths.
+  - Verification passed:
+    - `pnpm --dir admin-ui check:i18n`
+    - `pnpm --dir admin-ui build:dev`
+    - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal -DskipTests`
+    - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-extend/gameluck-monitor-admin -am compile -Plocal -DskipTests`
+- Continued Phase 1 Flutter App scaffold:
+  - Installed Flutter stable SDK to `C:\tools\flutter` after confirming `flutter`, `dart`, and `winget` were not available on PATH.
+  - Verified Flutter `3.44.5`, Dart `3.12.2`.
+  - Created standard Flutter app scaffold under `app/` with `C:\tools\flutter\bin\flutter.bat create app`.
+  - Added `app/ROUTES.md` documenting planned player app routes: splash, login, home, wallet, games, promotions, and profile.
+  - Ran `C:\tools\flutter\bin\flutter.bat test` in `app/`; default widget smoke test passed.
+  - Updated `docs/superpowers/plans/2026-06-25-phase-1-mvp.md` Task 6 steps 1-4 to complete; commit step remains pending.
+- Fixed remaining English menu names in System Management / Menu Management:
+  - Routed menu table `menuName` display through `translateTitle()` so seeded English names such as Redemption Center, Promotion Center, Member Center, and Report Center display localized.
+  - Added localized `displayMenuName` labels for parent-menu tree select and cascade-delete tree.
+  - Routed delete confirmation menu name through `translateTitle()`.
+  - Verification passed:
+    - `pnpm --dir admin-ui check:i18n`
+    - `pnpm --dir admin-ui check:menu-icons`
+    - `pnpm --dir admin-ui build:dev`
+- Completed global menu-title translation coverage scan:
+  - Scanned SQL `sys_menu` seed/update data for English menu names and compared them against `admin-ui/src/utils/i18nTitle.ts`.
+  - Added route-title mappings for remaining button-level business menu names: member profile query/add/edit/remove, promotion reward query/add/edit/remove/claim, and redemption order query/add/approve/reject.
+  - Added matching Chinese and English route keys in `zh_CN.ts` and `en_US.ts`.
+  - Confirmed all non-brand English `sys_menu` names found in SQL are covered by `i18nTitle.ts`.
+  - Verification passed:
+    - `pnpm --dir admin-ui check:i18n`
+    - `pnpm --dir admin-ui check:menu-icons`
+    - `pnpm --dir admin-ui build:dev`
+- Continued Phase 1 Cocos reserved integration:
+  - Verified `games/README.md` exists and matches the planned Cocos Creator reserved integration rules.
+  - Marked Task 7 Step 1 complete in `docs/superpowers/plans/2026-06-25-phase-1-mvp.md`.
+  - Deferred the Task 6/7 commit steps because the current worktree contains many existing uncommitted i18n/backend/app changes that should not be bundled into one mixed commit.
