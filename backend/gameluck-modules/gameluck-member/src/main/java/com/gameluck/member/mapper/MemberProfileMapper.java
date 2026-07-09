@@ -11,4 +11,6 @@ import org.apache.ibatis.annotations.Param;
 public interface MemberProfileMapper extends BaseMapperPlus<MemberProfile, MemberProfileVo> {
 
     MemberProfile selectByUsername(@Param("tenantId") String tenantId, @Param("username") String username);
+
+    MemberProfile selectClientMember(@Param("tenantId") String tenantId, @Param("memberId") Long memberId);
 }

@@ -409,3 +409,12 @@
   - Verification passed:
     - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-modules/gameluck-member -am -Plocal -DskipTests=false "-Dtest=ClientBootstrapServiceTest" "-Dsurefire.failIfNoSpecifiedTests=false" test`
     - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal -DskipTests`
+- Completed Phase 2 Task 2 client demo auth/session API:
+  - Added `ClientTokenService`, client login BO/VOs, current-member VO, `ClientAuthService`, and `ClientAuthController`.
+  - Added member mapper support for resolving the current client member by tenant/member id.
+  - Added backend i18n keys for client auth validation, auth errors, and reserved game validation messages.
+  - Added `ClientAuthServiceTest` using TDD; initial run failed before the auth classes existed.
+  - Verification passed:
+    - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-modules/gameluck-member -am -Plocal -DskipTests=false "-Dtest=ClientAuthServiceTest" "-Dsurefire.failIfNoSpecifiedTests=false" test`
+    - `pnpm --dir admin-ui check:i18n`
+    - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal -DskipTests`

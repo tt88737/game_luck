@@ -276,7 +276,7 @@ Expected: commit succeeds.
 - Modify: backend message bundles under `backend/gameluck-admin/src/main/resources/i18n/messages*.properties`
 - Test: `backend/gameluck-modules/gameluck-member/src/test/java/com/gameluck/member/client/service/ClientAuthServiceTest.java`
 
-- [ ] **Step 1: Add mapper method declarations**
+- [x] **Step 1: Add mapper method declarations**
 
 Modify `MemberProfileMapper.java`:
 
@@ -288,7 +288,7 @@ MemberProfile selectClientMember(@Param("tenantId") String tenantId, @Param("mem
 
 Keep the existing `selectByUsername` method and add only `selectClientMember`.
 
-- [ ] **Step 2: Add mapper SQL**
+- [x] **Step 2: Add mapper SQL**
 
 Modify `MemberProfileMapper.xml`:
 
@@ -303,7 +303,7 @@ Modify `MemberProfileMapper.xml`:
 </select>
 ```
 
-- [ ] **Step 3: Write auth service tests**
+- [x] **Step 3: Write auth service tests**
 
 Create `ClientAuthServiceTest.java`:
 
@@ -384,7 +384,7 @@ class ClientAuthServiceTest {
 }
 ```
 
-- [ ] **Step 4: Run auth tests and verify failure**
+- [x] **Step 4: Run auth tests and verify failure**
 
 Run:
 
@@ -394,7 +394,7 @@ C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-modules/gameluck-member -a
 
 Expected: compilation fails because client auth classes do not exist.
 
-- [ ] **Step 5: Implement auth BO and VO classes**
+- [x] **Step 5: Implement auth BO and VO classes**
 
 Create `ClientLoginBo.java`:
 
@@ -448,7 +448,7 @@ public class ClientLoginVo {
 }
 ```
 
-- [ ] **Step 6: Implement token and auth services**
+- [x] **Step 6: Implement token and auth services**
 
 Create `backend/gameluck-common/gameluck-common-core/src/main/java/com/gameluck/common/core/client/ClientTokenService.java`:
 
@@ -563,7 +563,7 @@ public class ClientAuthService {
 }
 ```
 
-- [ ] **Step 7: Implement auth controller**
+- [x] **Step 7: Implement auth controller**
 
 Create `ClientAuthController.java`:
 
@@ -605,7 +605,7 @@ public class ClientAuthController {
 }
 ```
 
-- [ ] **Step 8: Add backend i18n keys**
+- [x] **Step 8: Add backend i18n keys**
 
 Add these keys to `backend/gameluck-admin/src/main/resources/i18n/messages.properties`:
 
@@ -646,7 +646,7 @@ game.provider.required=Game provider is required.
 game.code.required=Game code is required.
 ```
 
-- [ ] **Step 9: Run auth verification**
+- [x] **Step 9: Run auth verification**
 
 Run:
 
@@ -658,7 +658,7 @@ C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal 
 
 Expected: all commands pass.
 
-- [ ] **Step 10: Commit auth API**
+- [x] **Step 10: Commit auth API**
 
 Run:
 
