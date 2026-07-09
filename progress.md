@@ -403,3 +403,9 @@
 - Placeholder scan on the new spec returned no matches.
 - Wrote Phase 2 implementation plan `docs/superpowers/plans/2026-07-09-player-client-api-h5.md`.
 - Plan breaks execution into bootstrap API, demo auth/session, wallet read APIs, game lobby/launch stub, demo seed SQL, H5 API/session shell, H5 page integration, and final runtime smoke.
+- Completed Phase 2 Task 1 client bootstrap API:
+  - Added `ClientBootstrapVo`, `ClientBootstrapService`, and `ClientBootstrapController` under `gameluck-member`.
+  - Added `ClientBootstrapServiceTest` using TDD; initial run failed because client bootstrap classes did not exist.
+  - Verification passed:
+    - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-modules/gameluck-member -am -Plocal -DskipTests=false "-Dtest=ClientBootstrapServiceTest" "-Dsurefire.failIfNoSpecifiedTests=false" test`
+    - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal -DskipTests`

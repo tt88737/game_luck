@@ -52,7 +52,7 @@ Do not modify admin controllers for member, wallet, or game unless a compile err
 - Create: `backend/gameluck-modules/gameluck-member/src/main/java/com/gameluck/member/client/controller/ClientBootstrapController.java`
 - Test: `backend/gameluck-modules/gameluck-member/src/test/java/com/gameluck/member/client/service/ClientBootstrapServiceTest.java`
 
-- [ ] **Step 1: Write bootstrap service test**
+- [x] **Step 1: Write bootstrap service test**
 
 Create `ClientBootstrapServiceTest.java`:
 
@@ -90,7 +90,7 @@ class ClientBootstrapServiceTest {
 }
 ```
 
-- [ ] **Step 2: Run test and verify it fails**
+- [x] **Step 2: Run test and verify it fails**
 
 Run:
 
@@ -100,7 +100,7 @@ C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-modules/gameluck-member -a
 
 Expected: compilation fails because `ClientBootstrapService` and `ClientBootstrapVo` do not exist.
 
-- [ ] **Step 3: Implement bootstrap VO**
+- [x] **Step 3: Implement bootstrap VO**
 
 Create `ClientBootstrapVo.java`:
 
@@ -150,7 +150,7 @@ public class ClientBootstrapVo {
 }
 ```
 
-- [ ] **Step 4: Implement bootstrap service**
+- [x] **Step 4: Implement bootstrap service**
 
 Create `ClientBootstrapService.java`:
 
@@ -209,7 +209,7 @@ public class ClientBootstrapService {
 }
 ```
 
-- [ ] **Step 5: Implement bootstrap controller**
+- [x] **Step 5: Implement bootstrap controller**
 
 Create `ClientBootstrapController.java`:
 
@@ -240,7 +240,7 @@ public class ClientBootstrapController {
 }
 ```
 
-- [ ] **Step 6: Run bootstrap test and compile**
+- [x] **Step 6: Run bootstrap test and compile**
 
 Run:
 
@@ -251,7 +251,7 @@ C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal 
 
 Expected: both commands pass.
 
-- [ ] **Step 7: Commit bootstrap API**
+- [x] **Step 7: Commit bootstrap API**
 
 Run:
 
