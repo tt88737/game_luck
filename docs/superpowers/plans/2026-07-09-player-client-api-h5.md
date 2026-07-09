@@ -1030,7 +1030,7 @@ Expected: commit succeeds.
 - Create: `backend/gameluck-modules/gameluck-game/src/main/java/com/gameluck/game/client/controller/ClientGameController.java`
 - Test: `backend/gameluck-modules/gameluck-game/src/test/java/com/gameluck/game/client/service/ClientGameServiceTest.java`
 
-- [ ] **Step 1: Write game client tests**
+- [x] **Step 1: Write game client tests**
 
 Create `ClientGameServiceTest.java`:
 
@@ -1082,7 +1082,7 @@ class ClientGameServiceTest {
 }
 ```
 
-- [ ] **Step 2: Run game tests and verify failure**
+- [x] **Step 2: Run game tests and verify failure**
 
 Run:
 
@@ -1092,7 +1092,7 @@ C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-modules/gameluck-game -am 
 
 Expected: compilation fails because client game classes do not exist.
 
-- [ ] **Step 3: Implement game BO and VO classes**
+- [x] **Step 3: Implement game BO and VO classes**
 
 Create `ClientGameLaunchBo.java`:
 
@@ -1152,7 +1152,7 @@ public class ClientGameLaunchVo {
 }
 ```
 
-- [ ] **Step 4: Implement game service and controller**
+- [x] **Step 4: Implement game service and controller**
 
 Create `ClientGameService.java`:
 
@@ -1247,7 +1247,7 @@ public class ClientGameController {
 }
 ```
 
-- [ ] **Step 5: Run game verification**
+- [x] **Step 5: Run game verification**
 
 Run:
 
@@ -1258,7 +1258,7 @@ C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal 
 
 Expected: both commands pass.
 
-- [ ] **Step 6: Commit game APIs**
+- [x] **Step 6: Commit game APIs**
 
 Run:
 

@@ -426,3 +426,11 @@
   - Verification passed:
     - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-modules/gameluck-wallet -am -Plocal -DskipTests=false "-Dtest=ClientWalletServiceTest" "-Dsurefire.failIfNoSpecifiedTests=false" test`
     - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal -DskipTests`
+- Completed Phase 2 Task 4 client game lobby and launch stub APIs:
+  - Added `/api/client/games` and `/api/client/games/launch`.
+  - Added client game launch BO, game VO, and launch VO.
+  - Added mock game lobby data for GC/SC and a token-protected launch stub that does not debit wallet balance.
+  - Added `ClientGameServiceTest` using TDD; initial run failed before game client BO/VOs existed.
+  - Verification passed:
+    - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-modules/gameluck-game -am -Plocal -DskipTests=false "-Dtest=ClientGameServiceTest" "-Dsurefire.failIfNoSpecifiedTests=false" test`
+    - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal -DskipTests`
