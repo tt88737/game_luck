@@ -12,13 +12,13 @@ async function loadGames() {
   try {
     games.value = await clientApi.games('GC')
   } catch (err) {
-    error.value = err instanceof Error ? err.message : 'Game lobby load failed'
+    error.value = err instanceof Error ? err.message : '游戏大厅加载失败'
   }
 }
 
 async function launch(game: ClientGame) {
   if (!sessionState.member) {
-    error.value = 'Login required'
+    error.value = '请先登录'
     return
   }
   const result = await clientApi.launchGame(game.providerCode, game.gameCode, 'GC')
@@ -30,9 +30,9 @@ onMounted(loadGames)
 
 <template>
   <section class="page-heading">
-    <p class="eyebrow">Games</p>
-    <h1>Simulated game lobby</h1>
-    <p class="muted">The lobby is loaded from the backend client game API.</p>
+    <p class="eyebrow">游戏</p>
+    <h1>模拟游戏大厅</h1>
+    <p class="muted">大厅数据来自后端玩家端游戏 API。</p>
   </section>
 
   <p v-if="error" class="error-text">{{ error }}</p>
@@ -43,9 +43,9 @@ onMounted(loadGames)
       <div>
         <small>{{ game.providerCode }} | {{ game.supportedCurrencies.join(', ') }}</small>
         <h2>{{ game.gameName }}</h2>
-        <p>{{ game.maintenance ? 'Maintenance' : 'Available' }}</p>
+        <p>{{ game.maintenance ? '维护中' : '可进入' }}</p>
       </div>
-      <button class="btn compact" :disabled="game.maintenance" @click="launch(game)">Launch</button>
+      <button class="btn compact" :disabled="game.maintenance" @click="launch(game)">启动</button>
     </article>
   </section>
 </template>

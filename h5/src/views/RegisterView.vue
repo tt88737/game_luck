@@ -1,25 +1,25 @@
 <template>
   <section class="form-screen">
     <div>
-      <p class="eyebrow">Player register</p>
-      <h1>Create an account after tenant rules load.</h1>
-      <p class="muted">Registration is disabled until channel switches and tenant policies are connected.</p>
+      <p class="eyebrow">玩家注册</p>
+      <h1>租户规则加载后再开放注册</h1>
+      <p class="muted">注册入口将在渠道开关和租户策略接入后开放。</p>
     </div>
 
     <form class="panel-form">
       <label>
-        Username
-        <input placeholder="Choose username" />
+        用户名
+        <input placeholder="请输入用户名" />
       </label>
       <label>
-        Referral code
-        <input placeholder="Optional" />
+        邀请码
+        <input placeholder="选填" />
       </label>
       <label class="check-row">
         <input type="checkbox" />
-        I meet the local eligibility requirements
+        我已满足本地资格要求
       </label>
-      <button class="btn primary" type="button" disabled>Registration disabled</button>
+      <button class="btn primary" type="button" disabled>注册暂未开放</button>
     </form>
   </section>
 </template>

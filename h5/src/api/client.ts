@@ -37,14 +37,14 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const response = await fetch(`${API_BASE}${path}`, { ...options, headers })
   if (response.status === 401) {
     clearClientToken()
-    throw new Error('Login required')
+    throw new Error('请先登录')
   }
   if (!response.ok) {
-    throw new Error(`Request failed: ${response.status}`)
+    throw new Error(`请求失败：${response.status}`)
   }
   const payload = (await response.json()) as ApiResponse<T>
   if (payload.code !== 200 && payload.code !== 0) {
-    throw new Error(payload.msg || payload.message || 'Request failed')
+    throw new Error(payload.msg || payload.message || '请求失败')
   }
   return payload.data
 }

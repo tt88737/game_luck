@@ -1,6 +1,7 @@
 package com.gameluck.member.client.service;
 
 import cn.hutool.core.util.StrUtil;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.member.client.domain.vo.ClientBootstrapVo;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +18,9 @@ public class ClientBootstrapService {
         vo.setBrandName("GameLuck");
         vo.setTheme(theme());
         vo.setFeatures(features());
-        vo.setCurrencies(List.of(currency("GC", "Gold Coin"), currency("SC", "Sweep Coin")));
+        vo.setCurrencies(List.of(
+            currency("GC", MessageUtils.message("client.currency.gc")),
+            currency("SC", MessageUtils.message("client.currency.sc"))));
         return vo;
     }
 

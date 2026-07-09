@@ -36,7 +36,7 @@ export async function login(username: string, password: string) {
     sessionState.member = result.member
     return result.member
   } catch (error) {
-    sessionState.error = error instanceof Error ? error.message : 'Login failed'
+    sessionState.error = error instanceof Error ? error.message : '登录失败'
     throw error
   } finally {
     sessionState.loading = false

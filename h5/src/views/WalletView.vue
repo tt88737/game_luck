@@ -20,7 +20,7 @@ async function loadWallet() {
     const currency = accounts.value[0]?.currencyCode || 'GC'
     ledgers.value = (await clientApi.walletLedgers(currency)).records
   } catch (err) {
-    error.value = err instanceof Error ? err.message : 'Wallet load failed'
+    error.value = err instanceof Error ? err.message : '钱包加载失败'
   } finally {
     loading.value = false
   }
@@ -32,30 +32,30 @@ watch(() => sessionState.member?.memberId, () => loadWallet())
 
 <template>
   <section class="page-heading">
-    <p class="eyebrow">Wallet</p>
-    <h1>Balances and recent ledger</h1>
-    <p class="muted">Balances are loaded from the backend client wallet API.</p>
+    <p class="eyebrow">钱包</p>
+    <h1>余额与最近流水</h1>
+    <p class="muted">余额数据来自后端玩家端钱包 API。</p>
   </section>
 
   <section v-if="!sessionState.member" class="empty-state">
-    <strong>Login required</strong>
-    <RouterLink class="btn primary" to="/login">Login</RouterLink>
+    <strong>请先登录</strong>
+    <RouterLink class="btn primary" to="/login">登录</RouterLink>
   </section>
 
   <template v-else>
-    <p v-if="loading" class="muted">Loading wallet...</p>
+    <p v-if="loading" class="muted">正在加载钱包...</p>
     <p v-if="error" class="error-text">{{ error }}</p>
 
     <section class="data-grid">
       <article v-for="account in accounts" :key="account.currencyCode" class="metric-card">
         <span>{{ account.currencyName }}</span>
         <strong>{{ account.availableBalance }}</strong>
-        <small>Locked: {{ account.frozenBalance }} | {{ account.playable ? 'Playable' : 'Disabled' }}</small>
+        <small>冻结：{{ account.frozenBalance }} | {{ account.playable ? '可用于游戏' : '已停用' }}</small>
       </article>
     </section>
 
     <section class="table-panel">
-      <h2>Recent ledger</h2>
+      <h2>最近流水</h2>
       <div v-if="ledgers.length" class="table-list">
         <div v-for="row in ledgers" :key="row.ledgerId" class="table-row">
           <span>{{ row.createdAt }}</span>
@@ -64,7 +64,7 @@ watch(() => sessionState.member?.memberId, () => loadWallet())
           <em>{{ row.bizType }}</em>
         </div>
       </div>
-      <p v-else class="muted">No ledger records.</p>
+      <p v-else class="muted">暂无流水记录。</p>
     </section>
   </template>
 </template>

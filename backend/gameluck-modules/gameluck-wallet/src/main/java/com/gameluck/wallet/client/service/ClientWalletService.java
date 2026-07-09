@@ -1,6 +1,7 @@
 package com.gameluck.wallet.client.service;
 
 import com.gameluck.common.core.client.ClientTokenService;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.wallet.client.domain.vo.ClientPageVo;
 import com.gameluck.wallet.client.domain.vo.ClientWalletAccountVo;
 import com.gameluck.wallet.client.domain.vo.ClientWalletLedgerVo;
@@ -47,7 +48,9 @@ public class ClientWalletService {
     private ClientWalletAccountVo toAccount(WalletAccount account) {
         ClientWalletAccountVo vo = new ClientWalletAccountVo();
         vo.setCurrencyCode(account.getCurrencyCode());
-        vo.setCurrencyName("GC".equals(account.getCurrencyCode()) ? "Gold Coin" : "Sweep Coin");
+        vo.setCurrencyName("GC".equals(account.getCurrencyCode())
+            ? MessageUtils.message("client.currency.gc")
+            : MessageUtils.message("client.currency.sc"));
         vo.setAvailableBalance(account.getAvailableBalance().setScale(2).toPlainString());
         vo.setFrozenBalance(account.getFrozenBalance().setScale(2).toPlainString());
         vo.setDecimalScale(2);

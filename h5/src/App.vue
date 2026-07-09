@@ -16,28 +16,28 @@ onMounted(async () => {
         <span class="brand-mark">GL</span>
         <span>{{ sessionState.bootstrap?.brandName || 'GameLuck' }}</span>
       </RouterLink>
-      <nav class="topnav" aria-label="Primary">
-        <RouterLink to="/wallet">Wallet</RouterLink>
-        <RouterLink to="/games">Games</RouterLink>
-        <RouterLink to="/promotions">Rewards</RouterLink>
-        <RouterLink to="/redemptions">Redeem</RouterLink>
+      <nav class="topnav" aria-label="主导航">
+        <RouterLink to="/wallet">钱包</RouterLink>
+        <RouterLink to="/games">游戏</RouterLink>
+        <RouterLink to="/promotions">奖励</RouterLink>
+        <RouterLink to="/redemptions">兑换</RouterLink>
       </nav>
       <div v-if="sessionState.member" class="login-link session-chip">
         <span>{{ sessionState.member.nickname || sessionState.member.username }}</span>
-        <button type="button" @click="logout">Logout</button>
+        <button type="button" @click="logout">退出</button>
       </div>
-      <RouterLink v-else class="login-link" to="/login">Login</RouterLink>
+      <RouterLink v-else class="login-link" to="/login">登录</RouterLink>
     </header>
 
     <main class="page-wrap">
       <RouterView />
     </main>
 
-    <footer class="tabbar" aria-label="Mobile navigation">
-      <RouterLink to="/">Home</RouterLink>
-      <RouterLink to="/wallet">Wallet</RouterLink>
-      <RouterLink to="/games">Games</RouterLink>
-      <RouterLink to="/help">Help</RouterLink>
+    <footer class="tabbar" aria-label="移动端导航">
+      <RouterLink to="/">首页</RouterLink>
+      <RouterLink to="/wallet">钱包</RouterLink>
+      <RouterLink to="/games">游戏</RouterLink>
+      <RouterLink to="/help">帮助</RouterLink>
     </footer>
   </div>
 </template>

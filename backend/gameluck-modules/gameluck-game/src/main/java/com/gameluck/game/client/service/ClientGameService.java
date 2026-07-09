@@ -1,6 +1,7 @@
 package com.gameluck.game.client.service;
 
 import com.gameluck.common.core.client.ClientTokenService;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.game.client.domain.bo.ClientGameLaunchBo;
 import com.gameluck.game.client.domain.vo.ClientGameLaunchVo;
 import com.gameluck.game.client.domain.vo.ClientGameVo;
@@ -24,7 +25,7 @@ public class ClientGameService {
         ClientGameVo game = new ClientGameVo();
         game.setProviderCode("mock");
         game.setGameCode("mock-slot-001");
-        game.setGameName("Mock Slot");
+        game.setGameName(MessageUtils.message("client.game.mock.slot"));
         game.setStatus("enabled");
         game.setSupportedCurrencies(List.of("GC", "SC"));
         game.setThumbnailUrl("");
@@ -38,7 +39,7 @@ public class ClientGameService {
         vo.setSessionNo("GS" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
         vo.setLaunchMode("stub");
         vo.setLaunchUrl("");
-        vo.setMessage("Game launch is not live yet.");
+        vo.setMessage(MessageUtils.message("client.game.launch.not.live"));
         return vo;
     }
 }
