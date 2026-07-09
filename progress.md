@@ -447,3 +447,11 @@
   - Updated `h5/src/App.vue` top navigation to show backend brand and logged-in member state.
   - Verification passed:
     - `npm run build --prefix h5`
+- Completed Phase 2 Task 7 H5 page integration:
+  - Wired `HomeView.vue` to backend bootstrap/session state.
+  - Wired `LoginView.vue` to demo client login and wallet redirect.
+  - Wired `WalletView.vue` to wallet accounts and ledger APIs, including login-required and loading/error states.
+  - Wired `GamesView.vue` to game lobby and launch stub APIs.
+  - Added empty, error, and success state styles.
+  - Verification passed:
+    - `npm run build --prefix h5`

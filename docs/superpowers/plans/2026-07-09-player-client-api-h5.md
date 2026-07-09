@@ -1689,7 +1689,7 @@ Expected: commit succeeds.
 - Modify: `h5/src/views/GamesView.vue`
 - Modify: `h5/src/style.css`
 
-- [ ] **Step 1: Wire home page to bootstrap and session state**
+- [x] **Step 1: Wire home page to bootstrap and session state**
 
 Replace demo imports in `HomeView.vue` with `sessionState` and render bootstrap currencies/features:
 
@@ -1750,7 +1750,7 @@ import { sessionState } from '../stores/session'
 </template>
 ```
 
-- [ ] **Step 2: Wire login page**
+- [x] **Step 2: Wire login page**
 
 Replace `LoginView.vue` with:
 
@@ -1799,7 +1799,7 @@ async function submit() {
 </template>
 ```
 
-- [ ] **Step 3: Wire wallet page**
+- [x] **Step 3: Wire wallet page**
 
 Replace `WalletView.vue` with:
 
@@ -1875,7 +1875,7 @@ onMounted(loadWallet)
 </template>
 ```
 
-- [ ] **Step 4: Wire games page**
+- [x] **Step 4: Wire games page**
 
 Replace `GamesView.vue` with:
 
@@ -1933,7 +1933,7 @@ onMounted(loadGames)
 </template>
 ```
 
-- [ ] **Step 5: Add missing state styles**
+- [x] **Step 5: Add missing state styles**
 
 Add to `h5/src/style.css`:
 
@@ -1958,7 +1958,7 @@ Add to `h5/src/style.css`:
 }
 ```
 
-- [ ] **Step 6: Run H5 build**
+- [x] **Step 6: Run H5 build**
 
 Run:
 
@@ -1968,7 +1968,7 @@ npm run build --prefix h5
 
 Expected: build succeeds.
 
-- [ ] **Step 7: Commit H5 page integration**
+- [x] **Step 7: Commit H5 page integration**
 
 Run:
 
