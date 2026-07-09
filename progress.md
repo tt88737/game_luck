@@ -365,3 +365,9 @@
   - Created `4912b26 docs: mark phase 1 scaffold commits complete`.
   - Pushed `main` to `https://github.com/tt88737/game_luck.git`.
   - Verified local and remote `main` both point to `4912b267a900dd25ff9613bf2eb25acb3f930af1`.
+- Calibrated Phase 1 plan status for completed early tasks:
+  - Verified Task 1 governance files exist and placeholder scan returns no matches.
+  - Verified Task 2 backend import artifacts exist: `backend/` and `docs/upstream/gameluck-vue-plus.md` with upstream commit `e49f02f89e17ee5a4cc14048af99cc83d72872a7`.
+  - Installed H5 dependencies with `npm install --prefix h5` and verified `npm run build --prefix h5` succeeds.
+  - Marked Task 1, Task 2, and Task 5 complete in `docs/superpowers/plans/2026-06-25-phase-1-mvp.md`.
+  - Left Task 3 and Task 4 unchecked because `backend/docs/business-modules.md` and `backend/sql/package_wallet_001.sql` do not exist yet.
