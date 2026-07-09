@@ -9,15 +9,18 @@ import com.gameluck.promotion.enums.PromotionRewardStatus;
 import com.gameluck.promotion.mapper.PromotionClaimMapper;
 import com.gameluck.promotion.mapper.PromotionRewardMapper;
 import com.gameluck.wallet.domain.WalletTransaction;
+import com.gameluck.wallet.domain.bo.WalletCreditBo;
 import com.gameluck.wallet.enums.WalletTransactionStatus;
 import com.gameluck.wallet.service.IWalletCoreService;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -52,7 +55,11 @@ class PromotionRewardServiceImplTest {
         assertEquals(1001L, claim.getMemberId());
         assertEquals("SUCCESS", claim.getStatus());
         assertEquals("WT_PROMOTION_1", claim.getWalletTransactionNo());
-        verify(walletCoreService).credit(any());
+        ArgumentCaptor<WalletCreditBo> creditCaptor = ArgumentCaptor.forClass(WalletCreditBo.class);
+        verify(walletCoreService).credit(creditCaptor.capture());
+        assertEquals("SC", creditCaptor.getValue().getCurrencyCode());
+        assertNull(creditCaptor.getValue().getReleaseMode());
+        assertNull(creditCaptor.getValue().getRequiredTurnover());
     }
 
     @Test

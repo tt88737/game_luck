@@ -480,3 +480,16 @@
   - Added logged-out, loading, empty, error, success, submitting, and disabled-submit states.
   - Verification passed:
     - `npm run build --prefix h5`
+- Completed Phase 3 final verification and runtime smoke:
+  - Fixed promotion reward wallet credit to defer release mode and required turnover to wallet rules instead of hardcoding `NEVER`.
+  - Added regression coverage that captures `WalletCreditBo` and verifies promotion claims do not override wallet release rules.
+  - Extended `gameluck_client_demo.sql` to clean demo promotion/redemption wallet transaction, release, and freeze records before reseeding.
+  - Added H5 login-state watchers to promotion and redemption pages so direct route visits load data after session restore.
+  - Verification passed:
+    - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-modules/gameluck-promotion -am -Plocal -DskipTests=false "-Dtest=PromotionRewardServiceImplTest" "-Dsurefire.failIfNoSpecifiedTests=false" test`
+    - `pnpm --dir admin-ui check:i18n`
+    - `npm run build --prefix h5`
+    - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal -DskipTests`
+    - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am package -Plocal -DskipTests`
+    - API smoke for login, promotion list, promotion claim, redemption request, and redemption list
+    - Playwright H5 browser smoke for mobile login, reward claim, wallet balance, redemption submit, and desktop promotions render

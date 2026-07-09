@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { clientApi } from '../api/client'
 import { sessionState } from '../stores/session'
 import type { ClientRedemption, WalletAccount } from '../types/client'
@@ -56,6 +56,7 @@ async function submit() {
 }
 
 onMounted(loadRedemptions)
+watch(() => sessionState.member?.memberId, () => loadRedemptions())
 </script>
 
 <template>

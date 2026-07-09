@@ -1215,7 +1215,7 @@ Expected: commit succeeds.
 - Modify: `task_plan.md`
 - Modify: this plan file by checking completed steps during execution
 
-- [ ] **Step 1: Run static verification**
+- [x] **Step 1: Run static verification**
 
 Run:
 
@@ -1227,7 +1227,7 @@ C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal 
 
 Expected: all commands pass.
 
-- [ ] **Step 2: Package backend**
+- [x] **Step 2: Package backend**
 
 If a previous backend jar process is running, stop only the process whose command line contains `C:\codex\project\backend\gameluck-admin\target\gameluck-admin.jar`.
 
@@ -1239,7 +1239,7 @@ C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am package -Plocal 
 
 Expected: package succeeds and writes `backend/gameluck-admin/target/gameluck-admin.jar`.
 
-- [ ] **Step 3: Start backend and H5**
+- [x] **Step 3: Start backend and H5**
 
 Start backend:
 
@@ -1260,7 +1260,7 @@ http://localhost:8080/api/client/bootstrap returns 200
 http://127.0.0.1:5174/ returns 200
 ```
 
-- [ ] **Step 4: Run API smoke**
+- [x] **Step 4: Run API smoke**
 
 Run:
 
@@ -1282,7 +1282,7 @@ $redemption.data.status is PENDING
 $rows.data contains at least one row
 ```
 
-- [ ] **Step 5: Run browser smoke**
+- [x] **Step 5: Run browser smoke**
 
 Use Playwright from a temp directory as in previous smoke tests. The smoke must:
 
@@ -1302,7 +1302,7 @@ See recent redemption row
 
 Expected: Playwright exits 0.
 
-- [ ] **Step 6: Update progress and root plan**
+- [x] **Step 6: Update progress and root plan**
 
 Append to `progress.md`:
 
@@ -1316,7 +1316,7 @@ Append to `progress.md`:
 
 Update `task_plan.md` Phase 13 status from `in_progress` to `complete` if Phase 2 and Phase 3 client acceptance are both satisfied, or add a new Phase 14 row for the completed Phase 3 scope if preserving Phase 13 as the broader player-client epic.
 
-- [ ] **Step 7: Commit final docs**
+- [x] **Step 7: Commit final docs**
 
 Run:
 
@@ -1327,7 +1327,7 @@ git commit -m "docs: mark phase 3 client flow progress"
 
 Expected: commit succeeds.
 
-- [ ] **Step 8: Push and verify remote**
+- [x] **Step 8: Push and verify remote**
 
 Run:
 

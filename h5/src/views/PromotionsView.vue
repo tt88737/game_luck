@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { clientApi } from '../api/client'
 import { sessionState } from '../stores/session'
 import type { ClientPromotion } from '../types/client'
@@ -41,6 +41,7 @@ async function claim(promotion: ClientPromotion) {
 }
 
 onMounted(loadPromotions)
+watch(() => sessionState.member?.memberId, () => loadPromotions())
 </script>
 
 <template>

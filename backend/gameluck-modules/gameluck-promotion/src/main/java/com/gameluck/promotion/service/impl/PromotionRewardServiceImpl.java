@@ -25,7 +25,6 @@ import com.gameluck.promotion.mapper.PromotionRewardMapper;
 import com.gameluck.promotion.service.IPromotionRewardService;
 import com.gameluck.wallet.domain.WalletTransaction;
 import com.gameluck.wallet.domain.bo.WalletCreditBo;
-import com.gameluck.wallet.enums.WalletReleaseMode;
 import com.gameluck.wallet.enums.WalletTransactionStatus;
 import com.gameluck.wallet.service.IWalletCoreService;
 import lombok.RequiredArgsConstructor;
@@ -221,8 +220,6 @@ public class PromotionRewardServiceImpl implements IPromotionRewardService {
         bo.setSourceType(SOURCE_TYPE);
         bo.setBusinessNo(claim.getClaimNo());
         bo.setAmount(claim.getRewardAmount());
-        bo.setReleaseMode(WalletReleaseMode.NEVER.name());
-        bo.setRequiredTurnover(BigDecimal.ZERO);
         bo.setRemark(MessageUtils.message("promotion.wallet.remark.simulated.reward"));
         return bo;
     }

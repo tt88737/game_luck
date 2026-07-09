@@ -1,7 +1,9 @@
 DELETE FROM gl_promotion_claim WHERE tenant_id = '000000' AND promotion_no = 'PR-DEMO-DAILY-SC' AND member_id = 1001;
 DELETE FROM gl_promotion_reward WHERE tenant_id = '000000' AND promotion_no = 'PR-DEMO-DAILY-SC';
 DELETE FROM gl_redemption_order WHERE tenant_id = '000000' AND member_id = 1001 AND account_ref = 'H5_DEMO';
-DELETE FROM gl_wallet_transaction WHERE tenant_id = '000000' AND member_id = 1001 AND source_type = 'demo_seed';
+DELETE FROM gl_wallet_release WHERE tenant_id = '000000' AND member_id = 1001 AND source_type IN ('PROMOTION', 'REDEMPTION');
+DELETE FROM gl_wallet_freeze WHERE tenant_id = '000000' AND member_id = 1001 AND source_type IN ('PROMOTION', 'REDEMPTION');
+DELETE FROM gl_wallet_transaction WHERE tenant_id = '000000' AND member_id = 1001 AND source_type IN ('demo_seed', 'PROMOTION', 'REDEMPTION');
 DELETE FROM gl_wallet_account WHERE tenant_id = '000000' AND member_id = 1001;
 DELETE FROM gl_member_profile WHERE tenant_id = '000000' AND id = 1001;
 
