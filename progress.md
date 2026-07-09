@@ -434,3 +434,9 @@
   - Verification passed:
     - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-modules/gameluck-game -am -Plocal -DskipTests=false "-Dtest=ClientGameServiceTest" "-Dsurefire.failIfNoSpecifiedTests=false" test`
     - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal -DskipTests`
+- Completed Phase 2 Task 5 demo client seed SQL:
+  - Added idempotent seed SQL at `backend/script/sql/gameluck_client_demo.sql` for demo member `demo_player`, GC/SC accounts, and initial wallet ledger rows.
+  - Verified schema references in `backend/script/sql/gameluck_wallet.sql`.
+  - Imported the seed into local `gameluck_vue` with `cmd /c "mysql -uroot -proot gameluck_vue < backend\script\sql\gameluck_client_demo.sql"`.
+  - Verified `demo_player` exists with GC `1000.000000` and SC `25.000000` wallet accounts.
+  - Error handled: PowerShell rejected `<` redirection, so import used `cmd /c`; initial import also exposed that `gl_wallet_account.status` is `CHAR(1)` and `gl_wallet_transaction.request_hash` is required, so the seed SQL was aligned to the actual DDL.

@@ -1275,7 +1275,7 @@ Expected: commit succeeds.
 - Create: `backend/script/sql/gameluck_client_demo.sql`
 - Modify: `progress.md`
 
-- [ ] **Step 1: Create idempotent demo seed SQL**
+- [x] **Step 1: Create idempotent demo seed SQL**
 
 Create `gameluck_client_demo.sql`:
 
@@ -1312,7 +1312,7 @@ INSERT INTO gl_wallet_transaction (
    0.000000, 'SUCCESS', 'Demo SC seed', NOW(), NOW());
 ```
 
-- [ ] **Step 2: Verify SQL references existing tables**
+- [x] **Step 2: Verify SQL references existing tables**
 
 Run:
 
@@ -1323,7 +1323,7 @@ Get-Content backend\script\sql\gameluck_client_demo.sql
 
 Expected: existing schema references are visible and seed SQL is readable.
 
-- [ ] **Step 3: Import demo seed locally**
+- [x] **Step 3: Import demo seed locally**
 
 Run:
 
@@ -1333,7 +1333,7 @@ mysql -uroot -proot gameluck_vue < backend\script\sql\gameluck_client_demo.sql
 
 Expected: import succeeds. If local MySQL password differs, use the password documented in `docs/implementation/backend-local-startup.md`.
 
-- [ ] **Step 4: Verify seed data**
+- [x] **Step 4: Verify seed data**
 
 Run:
 
@@ -1343,7 +1343,7 @@ mysql -uroot -proot gameluck_vue -e "SELECT id, username, status FROM gl_member_
 
 Expected: `demo_player` exists and has GC plus SC wallet accounts.
 
-- [ ] **Step 5: Commit demo seed**
+- [x] **Step 5: Commit demo seed**
 
 Run:
 
