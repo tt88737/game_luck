@@ -390,3 +390,11 @@
     - `npm run build --prefix h5`
     - `C:\tools\flutter\bin\flutter.bat test`
     - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal -DskipTests`
+
+## 2026-07-09 Phase 2 Planning
+
+- Started Phase 2 scope discovery after Phase 1 closure.
+- Existing backend business modules are present under `backend/gameluck-modules`: member, wallet, game, payment, promotion, redemption, report, and system/generator/job modules.
+- Existing H5 app has static Vue routes for home, login, register, wallet, games, promotions, redemptions, and help.
+- Recommended Phase 2 scope is a player-facing minimum closed loop: client bootstrap, member session, wallet balances, game lobby data, and H5 integration against those APIs.
+- Deferred real payment, KYC, app store release, and third-party game provider integration from this immediate Phase 2 slice.
