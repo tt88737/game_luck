@@ -382,3 +382,11 @@
   - Verified the draft contains 7 `CREATE TABLE` statements and the key tenant/idempotency/member uniqueness constraints.
   - Marked Task 4 steps complete in `docs/superpowers/plans/2026-06-25-phase-1-mvp.md`.
   - Note: this is a design draft under `backend/sql`; the currently runnable module SQL remains `backend/script/sql/gameluck_wallet.sql` with `gl_wallet_*` tables.
+- Completed Phase 1 MVP plan closure:
+  - Confirmed all executable checkboxes in `docs/superpowers/plans/2026-06-25-phase-1-mvp.md` are complete; the remaining `- [ ]` text is only the explanatory syntax example in the plan introduction.
+  - Marked `task_plan.md` Phase 5 implementation plan as complete.
+  - Fresh verification passed:
+    - `pnpm --dir admin-ui check:i18n`
+    - `npm run build --prefix h5`
+    - `C:\tools\flutter\bin\flutter.bat test`
+    - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal -DskipTests`
