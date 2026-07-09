@@ -455,3 +455,13 @@
   - Added empty, error, and success state styles.
   - Verification passed:
     - `npm run build --prefix h5`
+- Completed Phase 2 Task 8 runtime smoke and final verification:
+  - Added `@SaIgnore` to client bootstrap, auth, wallet, and game controllers so `/api/client/**` uses the H5 client token flow instead of the admin Sa-Token login gate.
+  - Added a Vite dev proxy for H5 `/api` requests to `http://localhost:8080`, so local browser smoke works without extra environment setup.
+  - Repackaged the backend after stopping the previous jar process that locked `gameluck-admin.jar`.
+  - Runtime API smoke passed for bootstrap, demo login, wallet accounts, game lobby, and game launch stub.
+  - H5 browser smoke passed for home bootstrap rendering, demo login, wallet balances, mock game launch message, and logout.
+  - Final verification passed:
+    - `pnpm --dir admin-ui check:i18n`
+    - `npm run build --prefix h5`
+    - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal -DskipTests`

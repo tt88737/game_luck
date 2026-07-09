@@ -1,5 +1,6 @@
 package com.gameluck.member.client.controller;
 
+import cn.dev33.satoken.annotation.SaIgnore;
 import com.gameluck.common.core.domain.R;
 import com.gameluck.member.client.domain.bo.ClientLoginBo;
 import com.gameluck.member.client.domain.vo.ClientLoginVo;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Validated
 @RequiredArgsConstructor
+@SaIgnore
 @RestController
 @RequestMapping("/api/client")
 public class ClientAuthController {

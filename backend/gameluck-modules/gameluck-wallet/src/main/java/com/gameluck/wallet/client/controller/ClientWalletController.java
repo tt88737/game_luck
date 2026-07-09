@@ -1,5 +1,6 @@
 package com.gameluck.wallet.client.controller;
 
+import cn.dev33.satoken.annotation.SaIgnore;
 import com.gameluck.common.core.domain.R;
 import com.gameluck.wallet.client.domain.vo.ClientPageVo;
 import com.gameluck.wallet.client.domain.vo.ClientWalletAccountVo;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RequiredArgsConstructor
+@SaIgnore
 @RestController
 @RequestMapping("/api/client/wallet")
 public class ClientWalletController {

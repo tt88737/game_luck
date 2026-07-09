@@ -1985,7 +1985,7 @@ Expected: commit succeeds.
 - Modify: `progress.md`
 - Modify: this plan file by checking off completed steps during execution
 
-- [ ] **Step 1: Run backend and frontend static verification**
+- [x] **Step 1: Run backend and frontend static verification**
 
 Run:
 
@@ -1997,7 +1997,7 @@ C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal 
 
 Expected: all commands pass.
 
-- [ ] **Step 2: Start backend locally**
+- [x] **Step 2: Start backend locally**
 
 Run from `backend`:
 
@@ -2007,7 +2007,7 @@ java -jar gameluck-admin\target\gameluck-admin.jar --spring.profiles.active=loca
 
 Expected: backend listens on `http://localhost:8080`.
 
-- [ ] **Step 3: Smoke bootstrap and login API**
+- [x] **Step 3: Smoke bootstrap and login API**
 
 Run:
 
@@ -2018,7 +2018,7 @@ Invoke-RestMethod -Method Post -Uri "http://localhost:8080/api/client/auth/login
 
 Expected: bootstrap returns currencies and login returns `accessToken`.
 
-- [ ] **Step 4: Smoke wallet and game APIs**
+- [x] **Step 4: Smoke wallet and game APIs**
 
 Store the token from login, then run:
 
@@ -2031,7 +2031,7 @@ Invoke-RestMethod -Method Post -Uri "http://localhost:8080/api/client/games/laun
 
 Expected: wallet returns GC/SC accounts, games returns one mock game, launch returns `launchMode=stub`.
 
-- [ ] **Step 5: Start H5 dev server**
+- [x] **Step 5: Start H5 dev server**
 
 Run:
 
@@ -2041,7 +2041,7 @@ npm run dev --prefix h5 -- --host 127.0.0.1 --port 5174
 
 Expected: H5 is available at `http://127.0.0.1:5174/`.
 
-- [ ] **Step 6: Browser smoke**
+- [x] **Step 6: Browser smoke**
 
 Open `http://127.0.0.1:5174/` and verify:
 
@@ -2054,7 +2054,7 @@ Launch shows launch stub message.
 Logout returns shell to logged-out state.
 ```
 
-- [ ] **Step 7: Update progress**
+- [x] **Step 7: Update progress**
 
 Append to `progress.md`:
 
@@ -2066,7 +2066,7 @@ Append to `progress.md`:
   - Verification passed: i18n guard, H5 build, backend compile, and runtime smoke.
 ```
 
-- [ ] **Step 8: Commit final plan/progress updates**
+- [x] **Step 8: Commit final plan/progress updates**
 
 Run:
 
@@ -2077,7 +2077,7 @@ git commit -m "docs: mark phase 2 client api progress"
 
 Expected: commit succeeds.
 
-- [ ] **Step 9: Push and verify remote**
+- [x] **Step 9: Push and verify remote**
 
 Run:
 

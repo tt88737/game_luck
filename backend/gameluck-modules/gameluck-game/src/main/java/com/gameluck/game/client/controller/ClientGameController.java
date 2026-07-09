@@ -1,5 +1,6 @@
 package com.gameluck.game.client.controller;
 
+import cn.dev33.satoken.annotation.SaIgnore;
 import com.gameluck.common.core.domain.R;
 import com.gameluck.game.client.domain.bo.ClientGameLaunchBo;
 import com.gameluck.game.client.domain.vo.ClientGameLaunchVo;
@@ -20,6 +21,7 @@ import java.util.List;
 
 @Validated
 @RequiredArgsConstructor
+@SaIgnore
 @RestController
 @RequestMapping("/api/client/games")
 public class ClientGameController {
