@@ -11,4 +11,26 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
           and idempotency_key = #{idempotencyKey}
         limit 1
     </select>
+
+    <select id="selectClientLedgers" resultType="com.gameluck.wallet.domain.WalletTransaction">
+        select *
+        from gl_wallet_transaction
+        where tenant_id = #{tenantId}
+          and member_id = #{memberId}
+          <if test="currencyCode != null and currencyCode != ''">
+            and currency_code = #{currencyCode}
+          </if>
+        order by create_time desc, id desc
+        limit #{offset}, #{pageSize}
+    </select>
+
+    <select id="countClientLedgers" resultType="java.lang.Long">
+        select count(1)
+        from gl_wallet_transaction
+        where tenant_id = #{tenantId}
+          and member_id = #{memberId}
+          <if test="currencyCode != null and currencyCode != ''">
+            and currency_code = #{currencyCode}
+          </if>
+    </select>
 </mapper>

@@ -418,3 +418,11 @@
     - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-modules/gameluck-member -am -Plocal -DskipTests=false "-Dtest=ClientAuthServiceTest" "-Dsurefire.failIfNoSpecifiedTests=false" test`
     - `pnpm --dir admin-ui check:i18n`
     - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal -DskipTests`
+- Completed Phase 2 Task 3 client wallet read APIs:
+  - Added `/api/client/wallet/accounts` and `/api/client/wallet/ledgers`.
+  - Added client wallet account, ledger, and page VOs.
+  - Added mapper methods and SQL for member-scoped wallet account and ledger reads.
+  - Added `ClientWalletServiceTest` using TDD; initial run failed before wallet client VOs existed.
+  - Verification passed:
+    - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-modules/gameluck-wallet -am -Plocal -DskipTests=false "-Dtest=ClientWalletServiceTest" "-Dsurefire.failIfNoSpecifiedTests=false" test`
+    - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal -DskipTests`

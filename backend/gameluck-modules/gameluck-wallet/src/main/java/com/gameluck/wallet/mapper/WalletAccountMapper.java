@@ -5,6 +5,8 @@ import com.gameluck.wallet.domain.WalletAccount;
 import com.gameluck.wallet.domain.vo.WalletAccountVo;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * Wallet account mapper.
  */
@@ -13,4 +15,6 @@ public interface WalletAccountMapper extends BaseMapperPlus<WalletAccount, Walle
     WalletAccount selectByBizKeyForUpdate(@Param("tenantId") String tenantId,
                                           @Param("memberId") Long memberId,
                                           @Param("currencyCode") String currencyCode);
+
+    List<WalletAccount> selectClientAccounts(@Param("tenantId") String tenantId, @Param("memberId") Long memberId);
 }

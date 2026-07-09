@@ -680,7 +680,7 @@ Expected: commit succeeds.
 - Modify: `WalletAccountMapper.java`, `WalletTransactionMapper.java`, `WalletAccountMapper.xml`, `WalletTransactionMapper.xml`
 - Test: `backend/gameluck-modules/gameluck-wallet/src/test/java/com/gameluck/wallet/client/service/ClientWalletServiceTest.java`
 
-- [ ] **Step 1: Add wallet mapper methods**
+- [x] **Step 1: Add wallet mapper methods**
 
 Modify `WalletAccountMapper.java`:
 
@@ -702,7 +702,7 @@ Long countClientLedgers(@Param("tenantId") String tenantId,
                         @Param("currencyCode") String currencyCode);
 ```
 
-- [ ] **Step 2: Add wallet mapper SQL**
+- [x] **Step 2: Add wallet mapper SQL**
 
 Add to `WalletAccountMapper.xml`:
 
@@ -743,7 +743,7 @@ Add to `WalletTransactionMapper.xml`:
 </select>
 ```
 
-- [ ] **Step 3: Write wallet service tests**
+- [x] **Step 3: Write wallet service tests**
 
 Create `ClientWalletServiceTest.java`:
 
@@ -818,7 +818,7 @@ class ClientWalletServiceTest {
 }
 ```
 
-- [ ] **Step 4: Run wallet tests and verify failure**
+- [x] **Step 4: Run wallet tests and verify failure**
 
 Run:
 
@@ -828,7 +828,7 @@ C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-modules/gameluck-wallet -a
 
 Expected: compilation fails because client wallet classes and mapper methods do not exist.
 
-- [ ] **Step 5: Implement wallet client VO classes**
+- [x] **Step 5: Implement wallet client VO classes**
 
 Create `ClientWalletAccountVo.java`:
 
@@ -884,7 +884,7 @@ public class ClientPageVo<T> {
 }
 ```
 
-- [ ] **Step 6: Implement wallet service and controller**
+- [x] **Step 6: Implement wallet service and controller**
 
 Create `ClientWalletService.java`:
 
@@ -998,7 +998,7 @@ public class ClientWalletController {
 }
 ```
 
-- [ ] **Step 7: Run wallet verification**
+- [x] **Step 7: Run wallet verification**
 
 Run:
 
@@ -1009,7 +1009,7 @@ C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal 
 
 Expected: both commands pass.
 
-- [ ] **Step 8: Commit wallet APIs**
+- [x] **Step 8: Commit wallet APIs**
 
 Run:
 
