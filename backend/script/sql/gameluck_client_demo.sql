@@ -1,3 +1,6 @@
+DELETE FROM gl_promotion_claim WHERE tenant_id = '000000' AND promotion_no = 'PR-DEMO-DAILY-SC' AND member_id = 1001;
+DELETE FROM gl_promotion_reward WHERE tenant_id = '000000' AND promotion_no = 'PR-DEMO-DAILY-SC';
+DELETE FROM gl_redemption_order WHERE tenant_id = '000000' AND member_id = 1001 AND account_ref = 'H5_DEMO';
 DELETE FROM gl_wallet_transaction WHERE tenant_id = '000000' AND member_id = 1001 AND source_type = 'demo_seed';
 DELETE FROM gl_wallet_account WHERE tenant_id = '000000' AND member_id = 1001;
 DELETE FROM gl_member_profile WHERE tenant_id = '000000' AND id = 1001;
@@ -28,3 +31,11 @@ INSERT INTO gl_wallet_transaction (
   (12002, '000000', 'WT-DEMO-SC-INIT', 'demo:1001:sc:init', 1001, 'SC', 'credit',
    'demo_seed', 'DEMO-SC-INIT', 25.000000, 0.000000, 25.000000, 0.000000,
    0.000000, 'demo-seed-sc', 'SUCCESS', 'Demo SC seed', NOW(), NOW());
+
+INSERT INTO gl_promotion_reward (
+  id, tenant_id, promotion_no, promotion_name, currency_code, reward_amount, status,
+  start_time, end_time, remark, version, del_flag, create_time, update_time
+) VALUES (
+  13001, '000000', 'PR-DEMO-DAILY-SC', '每日 SC 奖励', 'SC', 8.000000, 'ACTIVE',
+  NULL, NULL, 'H5 demo promotion reward', 0, '0', NOW(), NOW()
+);
