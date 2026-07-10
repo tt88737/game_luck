@@ -506,3 +506,13 @@
 - Wrote implementation plan `docs/superpowers/plans/2026-07-10-admin-redemption-review.md`.
 - Plan breaks execution into backend review rule tests, backend reject reason guard, Admin UI workflow changes, Admin UI i18n additions, and final verification/closure.
 - Plan self-review found no incomplete marker text and confirmed coverage for the Phase 4 spec requirements.
+- Completed Phase 4 admin redemption review closed-loop hardening:
+  - Added service tests for duplicate review prevention, reject reason validation, approval success, rejection success, and wallet failure protection.
+  - Added backend reject reason validation and i18n messages.
+  - Updated admin redemption order page with pending default filter, status quick filters, reject reason validation, and submit locking.
+  - Added Chinese and English labels for the redemption review status filters and reject reason validation.
+  - Verification passed:
+    - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-modules/gameluck-redemption -am -Plocal -DskipTests=false "-Dtest=RedemptionOrderServiceImplTest" "-Dsurefire.failIfNoSpecifiedTests=false" test`
+    - `pnpm --dir admin-ui check:i18n`
+    - `pnpm --dir admin-ui build:dev`
+    - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal -DskipTests`
