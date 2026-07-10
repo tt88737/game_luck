@@ -40,6 +40,8 @@ export default {
     reportCenter: '报表中心',
     reportOverview: '数据总览',
     reportOverviewQuery: '报表总览查询',
+    reportTrends: '趋势看板',
+    reportTrendsQuery: '趋势看板查询',
     memberCenter: '会员中心',
     memberProfiles: '会员资料',
     memberQuery: '会员资料查询',
@@ -453,6 +455,41 @@ export default {
     },
     messages: {
       loadFailed: '报表总览加载失败'
+    }
+  },
+  reportTrends: {
+    title: '每日趋势',
+    subtitle: '按日期查看近期全业务经营趋势。',
+    refresh: '刷新',
+    empty: '暂无趋势数据',
+    range: {
+      seven: '最近 7 天',
+      thirty: '最近 30 天'
+    },
+    cards: {
+      depositAmount: '充值金额',
+      gameNet: '游戏净额',
+      rewards: '奖励金额',
+      approvedRedeem: '通过兑换',
+      pendingRedeem: '待审兑换'
+    },
+    columns: {
+      date: '日期',
+      members: '新增会员',
+      depositOrders: '充值订单',
+      depositAmount: '充值金额',
+      gameOrders: '投注订单',
+      betAmount: '投注额',
+      payoutAmount: '派彩额',
+      gameNet: '游戏净额',
+      promotionClaims: '领取次数',
+      rewardAmount: '奖励金额',
+      redemptionOrders: '兑换订单',
+      pendingRedeem: '待审核',
+      approvedRedeemAmount: '通过金额'
+    },
+    messages: {
+      loadFailed: '每日趋势加载失败'
     }
   }
 };

@@ -42,7 +42,7 @@ Do not modify the existing `Report Overview` API or page behavior.
 **Files:**
 - Create: `backend/gameluck-modules/gameluck-report/src/test/java/com/gameluck/report/service/impl/ReportTrendServiceImplTest.java`
 
-- [ ] **Step 1: Write focused failing service tests**
+- [x] **Step 1: Write focused failing service tests**
 
 Create `ReportTrendServiceImplTest.java`:
 
@@ -139,7 +139,7 @@ class ReportTrendServiceImplTest {
 }
 ```
 
-- [ ] **Step 2: Run the focused test and verify RED**
+- [x] **Step 2: Run the focused test and verify RED**
 
 Run:
 
@@ -149,7 +149,7 @@ C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-modules/gameluck-report -a
 
 Expected: compilation fails because `ReportTrendServiceImpl`, `ReportTrendMapper`, and `ReportDailyTrendVo` do not exist yet.
 
-- [ ] **Step 3: Commit the red test**
+- [x] **Step 3: Commit the red test**
 
 ```powershell
 git add backend/gameluck-modules/gameluck-report/src/test/java/com/gameluck/report/service/impl/ReportTrendServiceImplTest.java
@@ -169,7 +169,7 @@ Expected: commit succeeds with only the new test file.
 - Create: `backend/gameluck-modules/gameluck-report/src/main/java/com/gameluck/report/service/impl/ReportTrendServiceImpl.java`
 - Create: `backend/gameluck-modules/gameluck-report/src/main/java/com/gameluck/report/controller/ReportTrendController.java`
 
-- [ ] **Step 1: Add query BO and daily trend VO**
+- [x] **Step 1: Add query BO and daily trend VO**
 
 Create `ReportDailyTrendQueryBo.java`:
 
@@ -212,7 +212,7 @@ public class ReportDailyTrendVo {
 }
 ```
 
-- [ ] **Step 2: Add mapper interface**
+- [x] **Step 2: Add mapper interface**
 
 Create `ReportTrendMapper.java`:
 
@@ -248,7 +248,7 @@ public interface ReportTrendMapper {
 }
 ```
 
-- [ ] **Step 3: Add mapper SQL**
+- [x] **Step 3: Add mapper SQL**
 
 Create `ReportTrendMapper.xml`:
 
@@ -319,7 +319,7 @@ Create `ReportTrendMapper.xml`:
 </mapper>
 ```
 
-- [ ] **Step 4: Add service contract and implementation**
+- [x] **Step 4: Add service contract and implementation**
 
 Create `IReportTrendService.java`:
 
@@ -448,7 +448,7 @@ public class ReportTrendServiceImpl implements IReportTrendService {
 }
 ```
 
-- [ ] **Step 5: Add controller**
+- [x] **Step 5: Add controller**
 
 Create `ReportTrendController.java`:
 
@@ -486,7 +486,7 @@ public class ReportTrendController extends BaseController {
 }
 ```
 
-- [ ] **Step 6: Run backend tests and compile**
+- [x] **Step 6: Run backend tests and compile**
 
 Run:
 
@@ -497,7 +497,7 @@ C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal 
 
 Expected: both commands pass.
 
-- [ ] **Step 7: Commit backend trend API**
+- [x] **Step 7: Commit backend trend API**
 
 ```powershell
 git add backend/gameluck-modules/gameluck-report/src/main/java/com/gameluck/report/domain/bo/ReportDailyTrendQueryBo.java backend/gameluck-modules/gameluck-report/src/main/java/com/gameluck/report/domain/vo/ReportDailyTrendVo.java backend/gameluck-modules/gameluck-report/src/main/java/com/gameluck/report/mapper/ReportTrendMapper.java backend/gameluck-modules/gameluck-report/src/main/resources/mapper/report/ReportTrendMapper.xml backend/gameluck-modules/gameluck-report/src/main/java/com/gameluck/report/service/IReportTrendService.java backend/gameluck-modules/gameluck-report/src/main/java/com/gameluck/report/service/impl/ReportTrendServiceImpl.java backend/gameluck-modules/gameluck-report/src/main/java/com/gameluck/report/controller/ReportTrendController.java
@@ -514,7 +514,7 @@ Expected: commit succeeds.
 - Modify: `admin-ui/src/lang/en_US.ts`
 - Modify: `admin-ui/src/utils/i18nTitle.ts`
 
-- [ ] **Step 1: Add report trends menu SQL**
+- [x] **Step 1: Add report trends menu SQL**
 
 In `backend/script/sql/gameluck_wallet.sql`, extend the existing `INSERT INTO sys_menu ... VALUES` block around menu ids `2000`, `2001`, and `2011` so it contains:
 
@@ -528,7 +528,7 @@ In `backend/script/sql/gameluck_wallet.sql`, extend the existing `INSERT INTO sy
 
 Keep the existing `ON DUPLICATE KEY UPDATE` block unchanged.
 
-- [ ] **Step 2: Add route i18n keys**
+- [x] **Step 2: Add route i18n keys**
 
 In `admin-ui/src/lang/en_US.ts`, inside `route`, add:
 
@@ -544,7 +544,7 @@ reportTrends: '趋势看板',
 reportTrendsQuery: '趋势看板查询',
 ```
 
-- [ ] **Step 3: Add title translation mapping**
+- [x] **Step 3: Add title translation mapping**
 
 In `admin-ui/src/utils/i18nTitle.ts`, add:
 
@@ -555,7 +555,7 @@ In `admin-ui/src/utils/i18nTitle.ts`, add:
 趋势看板查询: 'route.reportTrendsQuery',
 ```
 
-- [ ] **Step 4: Verify menu icons**
+- [x] **Step 4: Verify menu icons**
 
 Run:
 
@@ -565,7 +565,7 @@ pnpm --dir admin-ui check:menu-icons
 
 Expected: command passes and accepts `chart` for page menu plus `#` for function menu.
 
-- [ ] **Step 5: Commit menu and route i18n**
+- [x] **Step 5: Commit menu and route i18n**
 
 ```powershell
 git add backend/script/sql/gameluck_wallet.sql admin-ui/src/lang/zh_CN.ts admin-ui/src/lang/en_US.ts admin-ui/src/utils/i18nTitle.ts
@@ -583,7 +583,7 @@ Expected: commit succeeds.
 - Modify: `admin-ui/src/lang/zh_CN.ts`
 - Modify: `admin-ui/src/lang/en_US.ts`
 
-- [ ] **Step 1: Add API types**
+- [x] **Step 1: Add API types**
 
 Create `admin-ui/src/api/report/trends/types.ts`:
 
@@ -605,7 +605,7 @@ export interface ReportDailyTrendVO {
 }
 ```
 
-- [ ] **Step 2: Add API wrapper**
+- [x] **Step 2: Add API wrapper**
 
 Create `admin-ui/src/api/report/trends/index.ts`:
 
@@ -623,7 +623,7 @@ export function listReportDailyTrends(range: number): AxiosPromise<ReportDailyTr
 }
 ```
 
-- [ ] **Step 3: Add frontend i18n keys**
+- [x] **Step 3: Add frontend i18n keys**
 
 In `admin-ui/src/lang/en_US.ts`, add root-level `reportTrends` block after the existing `reportOverview` block:
 
@@ -705,7 +705,7 @@ reportTrends: {
 },
 ```
 
-- [ ] **Step 4: Add trends page**
+- [x] **Step 4: Add trends page**
 
 Create `admin-ui/src/views/report/trends/index.vue`:
 
@@ -895,7 +895,7 @@ onMounted(() => {
 </style>
 ```
 
-- [ ] **Step 5: Run frontend checks**
+- [x] **Step 5: Run frontend checks**
 
 Run:
 
@@ -906,7 +906,7 @@ pnpm --dir admin-ui build:dev
 
 Expected: both commands pass.
 
-- [ ] **Step 6: Commit frontend trends page**
+- [x] **Step 6: Commit frontend trends page**
 
 ```powershell
 git add admin-ui/src/api/report/trends admin-ui/src/views/report/trends/index.vue admin-ui/src/lang/zh_CN.ts admin-ui/src/lang/en_US.ts
@@ -920,7 +920,7 @@ Expected: commit succeeds.
 **Files:**
 - Modify local database only through existing SQL import script.
 
-- [ ] **Step 1: Import menu SQL**
+- [x] **Step 1: Import menu SQL**
 
 Run:
 
@@ -930,7 +930,7 @@ Run:
 
 Expected: command exits 0.
 
-- [ ] **Step 2: Verify menu rows**
+- [x] **Step 2: Verify menu rows**
 
 Run:
 
@@ -945,7 +945,7 @@ Expected output includes:
 2021    Report Trends Query    2002    report:trends:query    #
 ```
 
-- [ ] **Step 3: Package backend**
+- [x] **Step 3: Package backend**
 
 If a previous backend jar process is running, stop only the process whose command line contains `C:\codex\project\backend\gameluck-admin\target\gameluck-admin.jar`.
 
@@ -957,7 +957,7 @@ C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am package -Plocal 
 
 Expected: BUILD SUCCESS.
 
-- [ ] **Step 4: Start or restart backend**
+- [x] **Step 4: Start or restart backend**
 
 Run:
 
@@ -971,7 +971,7 @@ curl.exe -I --max-time 15 http://localhost:8080/
 
 Expected: backend responds with HTTP 200.
 
-- [ ] **Step 5: Runtime API smoke through authenticated Admin UI**
+- [x] **Step 5: Runtime API smoke through authenticated Admin UI**
 
 Open `http://localhost:5173/`, log in with the local admin account, then open browser DevTools Network panel and visit the Trends page added in Task 4.
 
@@ -985,7 +985,7 @@ Response data contains 30 rows
 The first row has reportDate and numeric metric fields
 ```
 
-- [ ] **Step 6: Browser smoke**
+- [x] **Step 6: Browser smoke**
 
 With Admin UI running at `http://localhost:5173/`, open the admin console and verify:
 
@@ -1006,7 +1006,7 @@ No text overlaps on desktop width
 - Modify: `task_plan.md`
 - Modify: `docs/superpowers/plans/2026-07-10-report-daily-trends.md`
 
-- [ ] **Step 1: Run full targeted verification**
+- [x] **Step 1: Run full targeted verification**
 
 Run:
 
@@ -1020,7 +1020,7 @@ pnpm --dir admin-ui build:dev
 
 Expected: all commands pass.
 
-- [ ] **Step 2: Update root plan**
+- [x] **Step 2: Update root plan**
 
 Append this row to `task_plan.md` after Phase 15:
 
@@ -1028,7 +1028,7 @@ Append this row to `task_plan.md` after Phase 15:
 | 16. Phase 5 B端每日趋势看板 | complete | 新增 Report Center / Trends，支持最近 7/30 天全业务经营趋势查询 | docs/superpowers/specs/2026-07-10-report-daily-trends-design.md、docs/superpowers/plans/2026-07-10-report-daily-trends.md |
 ```
 
-- [ ] **Step 3: Update progress log**
+- [x] **Step 3: Update progress log**
 
 Append to `progress.md`:
 
@@ -1047,11 +1047,11 @@ Append to `progress.md`:
     - `pnpm --dir admin-ui build:dev`
 ```
 
-- [ ] **Step 4: Mark this plan complete**
+- [x] **Step 4: Mark this plan complete**
 
 Change every executable checkbox in this file from `- [ ]` to `- [x]` after the corresponding step has actually been completed and verified.
 
-- [ ] **Step 5: Commit closure docs**
+- [x] **Step 5: Commit closure docs**
 
 ```powershell
 git add docs/superpowers/plans/2026-07-10-report-daily-trends.md progress.md task_plan.md

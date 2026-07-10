@@ -215,7 +215,9 @@ INSERT INTO sys_menu
 VALUES
 (2000, 'Report Center', 0, 12, 'report', NULL, '', 1, 0, 'M', '0', '0', '', 'chart', 103, 1, NOW(), NULL, NULL, 'Report center directory'),
 (2001, 'Overview', 2000, 1, 'overview', 'report/overview/index', '', 1, 0, 'C', '0', '0', 'report:overview:list', 'chart', 103, 1, NOW(), NULL, NULL, 'Report overview menu'),
-(2011, 'Report Overview Query', 2001, 1, '#', '', '', 1, 0, 'F', '0', '0', 'report:overview:query', '#', 103, 1, NOW(), NULL, NULL, '')
+(2002, 'Trends', 2000, 2, 'trends', 'report/trends/index', '', 1, 0, 'C', '0', '0', 'report:trends:list', 'chart', 103, 1, NOW(), NULL, NULL, 'Report trends menu'),
+(2011, 'Report Overview Query', 2001, 1, '#', '', '', 1, 0, 'F', '0', '0', 'report:overview:query', '#', 103, 1, NOW(), NULL, NULL, ''),
+(2021, 'Report Trends Query', 2002, 1, '#', '', '', 1, 0, 'F', '0', '0', 'report:trends:query', '#', 103, 1, NOW(), NULL, NULL, '')
 ON DUPLICATE KEY UPDATE
   menu_name = VALUES(menu_name),
   parent_id = VALUES(parent_id),

@@ -516,3 +516,17 @@
     - `pnpm --dir admin-ui check:i18n`
     - `pnpm --dir admin-ui build:dev`
     - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal -DskipTests`
+## 2026-07-10 Phase 5 Report Daily Trends
+
+- Completed Phase 5 B-side daily operating trends:
+  - Added `/report/trends/daily?range=7|30`.
+  - Added continuous date-fill service logic in `gameluck-report`.
+  - Added `Report Center / Trends` menu and Admin UI page.
+  - SQL import and runtime smoke passed for menu rows, backend API, and Admin UI browser flow.
+  - Verification passed:
+    - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-modules/gameluck-report -am -Plocal -DskipTests=false "-Dtest=ReportTrendServiceImplTest" "-Dsurefire.failIfNoSpecifiedTests=false" test`
+    - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal -DskipTests`
+    - `pnpm --dir admin-ui check:i18n`
+    - `pnpm --dir admin-ui check:menu-icons`
+    - `pnpm --dir admin-ui build:dev`
+    - Browser smoke for `/report/trends`: 7 rows, 30 rows, refresh, and no console errors.
