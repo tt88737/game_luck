@@ -38,7 +38,7 @@
 **Files:**
 - Modify: `backend/gameluck-modules/gameluck-redemption/src/test/java/com/gameluck/redemption/service/impl/RedemptionOrderServiceImplTest.java`
 
-- [ ] **Step 1: Replace the test file with expanded failing coverage**
+- [x] **Step 1: Replace the test file with expanded failing coverage**
 
 Use this complete file content:
 
@@ -232,7 +232,7 @@ class RedemptionOrderServiceImplTest {
 }
 ```
 
-- [ ] **Step 2: Run the focused test and verify it fails for the missing reject-reason rule**
+- [x] **Step 2: Run the focused test and verify it fails for the missing reject-reason rule**
 
 Run:
 
@@ -242,7 +242,7 @@ C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-modules/gameluck-redemptio
 
 Expected: FAIL on `rejectBlankReasonDoesNotCallWallet` because `reject()` does not yet validate blank reasons.
 
-- [ ] **Step 3: Commit the failing tests**
+- [x] **Step 3: Commit the failing tests**
 
 ```powershell
 git add backend/gameluck-modules/gameluck-redemption/src/test/java/com/gameluck/redemption/service/impl/RedemptionOrderServiceImplTest.java
@@ -257,7 +257,7 @@ git commit -m "test(redemption): cover admin review edge cases"
 - Modify: `backend/gameluck-admin/src/main/resources/i18n/messages_zh_CN.properties`
 - Modify: `backend/gameluck-admin/src/main/resources/i18n/messages_en_US.properties`
 
-- [ ] **Step 1: Add the reject reason guard**
+- [x] **Step 1: Add the reject reason guard**
 
 In `RedemptionOrderServiceImpl.reject`, insert `requireRejectReason(reason);` after `requirePending(order);`:
 
@@ -279,7 +279,7 @@ private void requireRejectReason(String reason) {
 }
 ```
 
-- [ ] **Step 2: Add backend i18n keys**
+- [x] **Step 2: Add backend i18n keys**
 
 Append this line to `backend/gameluck-admin/src/main/resources/i18n/messages.properties`:
 
@@ -299,7 +299,7 @@ Append this line to `backend/gameluck-admin/src/main/resources/i18n/messages_en_
 redemption.audit.reject.reason.required=Rejection reason is required.
 ```
 
-- [ ] **Step 3: Run the focused backend test and verify it passes**
+- [x] **Step 3: Run the focused backend test and verify it passes**
 
 Run:
 
@@ -309,7 +309,7 @@ C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-modules/gameluck-redemptio
 
 Expected: BUILD SUCCESS.
 
-- [ ] **Step 4: Run backend compile**
+- [x] **Step 4: Run backend compile**
 
 Run:
 
@@ -319,7 +319,7 @@ C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal 
 
 Expected: BUILD SUCCESS.
 
-- [ ] **Step 5: Commit backend implementation**
+- [x] **Step 5: Commit backend implementation**
 
 ```powershell
 git add backend/gameluck-modules/gameluck-redemption/src/main/java/com/gameluck/redemption/service/impl/RedemptionOrderServiceImpl.java backend/gameluck-admin/src/main/resources/i18n/messages.properties backend/gameluck-admin/src/main/resources/i18n/messages_zh_CN.properties backend/gameluck-admin/src/main/resources/i18n/messages_en_US.properties
@@ -331,7 +331,7 @@ git commit -m "fix(redemption): require reason for rejected reviews"
 **Files:**
 - Modify: `admin-ui/src/views/redemption/order/index.vue`
 
-- [ ] **Step 1: Add status quick filters to the table header**
+- [x] **Step 1: Add status quick filters to the table header**
 
 Inside the `<template #header>` row, after the add button column and before `right-toolbar`, add:
 
@@ -341,7 +341,7 @@ Inside the `<template #header>` row, after the add button column and before `rig
 </el-col>
 ```
 
-- [ ] **Step 2: Make the audit form validate reject reason**
+- [x] **Step 2: Make the audit form validate reject reason**
 
 Change the audit dialog form from:
 
@@ -367,7 +367,7 @@ to:
 <el-button :type="auditDialog.action === 'approve' ? 'success' : 'danger'" :loading="auditSubmitting" @click="submitAudit">{{ t('common.confirm') }}</el-button>
 ```
 
-- [ ] **Step 3: Add state and computed options in the script**
+- [x] **Step 3: Add state and computed options in the script**
 
 After `const orderFormRef = ref<ElFormInstance>();`, add:
 
@@ -421,7 +421,7 @@ const auditRules = computed(() => ({
 }));
 ```
 
-- [ ] **Step 4: Add quick filter handler and reset behavior**
+- [x] **Step 4: Add quick filter handler and reset behavior**
 
 Add this function after `handleQuery`:
 
@@ -442,7 +442,7 @@ const resetQuery = () => {
 };
 ```
 
-- [ ] **Step 5: Harden audit submission**
+- [x] **Step 5: Harden audit submission**
 
 Change `openAudit` to clear validation:
 
@@ -487,7 +487,7 @@ const submitAudit = async () => {
 };
 ```
 
-- [ ] **Step 6: Run frontend build to catch TypeScript and template errors**
+- [x] **Step 6: Run frontend build to catch TypeScript and template errors**
 
 Run:
 
@@ -503,7 +503,7 @@ Expected before i18n additions: this may fail if new `redemptionOrder.filters.*`
 - Modify: `admin-ui/src/lang/zh_CN.ts`
 - Modify: `admin-ui/src/lang/en_US.ts`
 
-- [ ] **Step 1: Add Chinese frontend keys**
+- [x] **Step 1: Add Chinese frontend keys**
 
 In `admin-ui/src/lang/zh_CN.ts`, inside `redemptionOrder`, add this block after `status`:
 
@@ -525,7 +525,7 @@ rejectReason: '审核拒绝时必须填写原因'
 
 Keep commas valid. The final `rules` object should include `memberId`, `currency`, `amount`, and `rejectReason`.
 
-- [ ] **Step 2: Add English frontend keys**
+- [x] **Step 2: Add English frontend keys**
 
 In `admin-ui/src/lang/en_US.ts`, inside `redemptionOrder`, add this block after `status`:
 
@@ -547,7 +547,7 @@ rejectReason: 'A rejection reason is required'
 
 Keep commas valid. The final `rules` object should include `memberId`, `currency`, `amount`, and `rejectReason`.
 
-- [ ] **Step 3: Run i18n guard**
+- [x] **Step 3: Run i18n guard**
 
 Run:
 
@@ -557,7 +557,7 @@ pnpm --dir admin-ui check:i18n
 
 Expected: command passes with no missing-key or hardcoded visible Chinese failures.
 
-- [ ] **Step 4: Run frontend build**
+- [x] **Step 4: Run frontend build**
 
 Run:
 
@@ -567,7 +567,7 @@ pnpm --dir admin-ui build:dev
 
 Expected: build passes. Existing Vite large chunk warnings are acceptable.
 
-- [ ] **Step 5: Commit frontend workflow changes**
+- [x] **Step 5: Commit frontend workflow changes**
 
 ```powershell
 git add admin-ui/src/views/redemption/order/index.vue admin-ui/src/lang/zh_CN.ts admin-ui/src/lang/en_US.ts
@@ -580,7 +580,7 @@ git commit -m "feat(admin): focus redemption review workflow"
 - Modify: `progress.md`
 - Modify: `task_plan.md`
 
-- [ ] **Step 1: Run full targeted verification**
+- [x] **Step 1: Run full targeted verification**
 
 Run:
 
@@ -600,7 +600,7 @@ admin-ui build:dev: pass
 gameluck-admin compile: BUILD SUCCESS
 ```
 
-- [ ] **Step 2: Optional runtime smoke when backend and Admin UI are running**
+- [x] **Step 2: Optional runtime smoke when backend and Admin UI are running**
 
 Use the existing local startup flow. In the browser, log into Admin UI and open the redemption order page.
 
@@ -615,7 +615,7 @@ Approve succeeds for a pending order and writes a settlement transaction number.
 Reject succeeds for a pending order with reason and writes a release transaction number.
 ```
 
-- [ ] **Step 3: Update progress log**
+- [x] **Step 3: Update progress log**
 
 Append this section to `progress.md`:
 
@@ -631,7 +631,7 @@ Append this section to `progress.md`:
     - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal -DskipTests`
 ```
 
-- [ ] **Step 4: Mark Phase 4 complete in `task_plan.md`**
+- [x] **Step 4: Mark Phase 4 complete in `task_plan.md`**
 
 Change this row:
 
@@ -645,14 +645,14 @@ to:
 | 15. Phase 4 B端兑换审核后台闭环 | complete | 加固后台兑换审核列表、详情、通过/拒绝、审核原因和钱包闭环验收 | docs/superpowers/specs/2026-07-10-admin-redemption-review-design.md、docs/superpowers/plans/2026-07-10-admin-redemption-review.md |
 ```
 
-- [ ] **Step 5: Commit closure docs**
+- [x] **Step 5: Commit closure docs**
 
 ```powershell
 git add progress.md task_plan.md
 git commit -m "docs: close admin redemption review phase"
 ```
 
-- [ ] **Step 6: Check final worktree**
+- [x] **Step 6: Check final worktree**
 
 Run:
 
