@@ -25,6 +25,12 @@ docs/         项目规划、环境、接口和实施文档
 
 ## 本地启动
 
+一键启动 B 端本地环境：
+
+```powershell
+.\scripts\start-admin-local.ps1
+```
+
 后端：
 
 ```powershell
