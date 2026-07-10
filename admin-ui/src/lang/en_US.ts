@@ -460,5 +460,40 @@ export default {
     messages: {
       loadFailed: 'Failed to load report overview'
     }
+  },
+  reportTrends: {
+    title: 'Daily Trends',
+    subtitle: 'Recent all-business operating trends by date.',
+    refresh: 'Refresh',
+    empty: 'No trend data returned',
+    range: {
+      seven: 'Last 7 days',
+      thirty: 'Last 30 days'
+    },
+    cards: {
+      depositAmount: 'Deposit Amount',
+      gameNet: 'Game Net',
+      rewards: 'Rewards',
+      approvedRedeem: 'Approved Redeem',
+      pendingRedeem: 'Pending Redeem'
+    },
+    columns: {
+      date: 'Date',
+      members: 'New Members',
+      depositOrders: 'Deposit Orders',
+      depositAmount: 'Deposit Amount',
+      gameOrders: 'Game Orders',
+      betAmount: 'Bet Amount',
+      payoutAmount: 'Payout Amount',
+      gameNet: 'Game Net',
+      promotionClaims: 'Claims',
+      rewardAmount: 'Reward Amount',
+      redemptionOrders: 'Redeem Orders',
+      pendingRedeem: 'Pending',
+      approvedRedeemAmount: 'Approved Amount'
+    },
+    messages: {
+      loadFailed: 'Failed to load daily trends'
+    }
   }
 };
