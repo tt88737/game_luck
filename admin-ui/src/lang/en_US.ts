@@ -41,6 +41,8 @@ export default {
     reportCenter: 'Report Center',
     reportOverview: 'Overview',
     reportOverviewQuery: 'Report Overview Query',
+    reportTrends: 'Trends',
+    reportTrendsQuery: 'Report Trends Query',
     memberCenter: 'Member Center',
     memberProfiles: 'Member Profiles',
     memberQuery: 'Member Profile Query',

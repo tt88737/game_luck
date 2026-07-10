@@ -40,6 +40,8 @@ export default {
     reportCenter: '报表中心',
     reportOverview: '数据总览',
     reportOverviewQuery: '报表总览查询',
+    reportTrends: '趋势看板',
+    reportTrendsQuery: '趋势看板查询',
     memberCenter: '会员中心',
     memberProfiles: '会员资料',
     memberQuery: '会员资料查询',
