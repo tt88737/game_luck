@@ -39,6 +39,9 @@
           <el-col :span="1.5">
             <el-button v-hasPermi="['redemption:order:add']" type="primary" plain icon="Plus" @click="handleAdd">{{ t('common.add') }}</el-button>
           </el-col>
+          <el-col :span="12">
+            <el-segmented v-model="queryParams.status" :options="statusFilterOptions" @change="handleStatusFilterChange" />
+          </el-col>
           <right-toolbar v-model:show-search="showSearch" @query-table="getList"></right-toolbar>
         </el-row>
       </template>
@@ -110,7 +113,7 @@
     </el-dialog>
 
     <el-dialog v-model="auditDialog.visible" :title="auditTitle" width="480px" append-to-body>
-      <el-form :model="auditForm" label-width="90px">
+      <el-form ref="auditFormRef" :model="auditForm" :rules="auditRules" label-width="90px">
         <el-form-item :label="t('redemptionOrder.fields.redemptionOrderNo')">
           <span>{{ auditForm.redemptionOrderNo }}</span>
         </el-form-item>
@@ -120,7 +123,7 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button :type="auditDialog.action === 'approve' ? 'success' : 'danger'" @click="submitAudit">{{ t('common.confirm') }}</el-button>
+          <el-button :type="auditDialog.action === 'approve' ? 'success' : 'danger'" :loading="auditSubmitting" @click="submitAudit">{{ t('common.confirm') }}</el-button>
           <el-button @click="auditDialog.visible = false">{{ t('common.cancel') }}</el-button>
         </div>
       </template>
@@ -163,6 +166,8 @@ const total = ref(0);
 const detailOpen = ref(false);
 const queryFormRef = ref<ElFormInstance>();
 const orderFormRef = ref<ElFormInstance>();
+const auditFormRef = ref<ElFormInstance>();
+const auditSubmitting = ref(false);
 const detail = ref<Partial<RedemptionOrderVO>>({});
 
 const dialog = reactive({
@@ -188,15 +193,38 @@ const queryParams = ref<RedemptionOrderQuery>({
   redemptionOrderNo: '',
   memberId: '',
   currencyCode: '',
-  status: ''
+  status: 'PENDING'
 });
 
 const auditTitle = computed(() => t(auditDialog.action === 'approve' ? 'redemptionOrder.dialog.approve' : 'redemptionOrder.dialog.reject'));
+
+const statusFilterOptions = computed(() => [
+  { label: t('redemptionOrder.filters.pending'), value: 'PENDING' },
+  { label: t('redemptionOrder.filters.approved'), value: 'APPROVED' },
+  { label: t('redemptionOrder.filters.rejected'), value: 'REJECTED' },
+  { label: t('redemptionOrder.filters.failed'), value: 'FAILED' },
+  { label: t('redemptionOrder.filters.all'), value: '' }
+]);
 
 const rules = computed(() => ({
   memberId: [{ required: true, message: t('redemptionOrder.rules.memberId'), trigger: 'blur' }],
   currencyCode: [{ required: true, message: t('redemptionOrder.rules.currency'), trigger: 'change' }],
   amount: [{ required: true, message: t('redemptionOrder.rules.amount'), trigger: 'blur' }]
+}));
+
+const auditRules = computed(() => ({
+  auditReason: [
+    {
+      validator: (_rule: unknown, value: string, callback: (error?: Error) => void) => {
+        if (auditDialog.action === 'reject' && !value?.trim()) {
+          callback(new Error(t('redemptionOrder.rules.rejectReason')));
+          return;
+        }
+        callback();
+      },
+      trigger: 'blur'
+    }
+  ]
 }));
 
 const getList = async () => {
@@ -236,7 +264,13 @@ const handleQuery = () => {
 
 const resetQuery = () => {
   queryFormRef.value?.resetFields();
+  queryParams.value.status = 'PENDING';
   handleQuery();
+};
+
+const handleStatusFilterChange = () => {
+  queryParams.value.pageNum = 1;
+  getList();
 };
 
 const handleAdd = () => {
@@ -272,22 +306,32 @@ const openAudit = (row: RedemptionOrderVO, action: 'approve' | 'reject') => {
   auditForm.auditReason = '';
   auditDialog.action = action;
   auditDialog.visible = true;
+  nextTick(() => auditFormRef.value?.clearValidate());
 };
 
 const submitAudit = async () => {
-  if (!auditForm.id || !auditDialog.action) {
+  if (!auditForm.id || !auditDialog.action || auditSubmitting.value) {
+    return;
+  }
+  const valid = await auditFormRef.value?.validate().catch(() => false);
+  if (!valid) {
     return;
   }
   const actionText = auditDialog.action === 'approve' ? t('redemptionOrder.actions.approve') : t('redemptionOrder.actions.reject');
-  await proxy?.$modal.confirm(t('redemptionOrder.confirm.audit', { action: actionText }));
-  if (auditDialog.action === 'approve') {
-    await approveRedemptionOrder(auditForm.id, auditForm);
-  } else {
-    await rejectRedemptionOrder(auditForm.id, auditForm);
+  auditSubmitting.value = true;
+  try {
+    await proxy?.$modal.confirm(t('redemptionOrder.confirm.audit', { action: actionText }));
+    if (auditDialog.action === 'approve') {
+      await approveRedemptionOrder(auditForm.id, auditForm);
+    } else {
+      await rejectRedemptionOrder(auditForm.id, auditForm);
+    }
+    proxy?.$modal.msgSuccess(t('common.success.operate'));
+    auditDialog.visible = false;
+    await getList();
+  } finally {
+    auditSubmitting.value = false;
   }
-  proxy?.$modal.msgSuccess(t('common.success.operate'));
-  auditDialog.visible = false;
-  await getList();
 };
 
 onMounted(() => {
