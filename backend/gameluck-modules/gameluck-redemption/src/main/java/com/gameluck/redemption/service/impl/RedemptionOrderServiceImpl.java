@@ -125,6 +125,7 @@ public class RedemptionOrderServiceImpl implements IRedemptionOrderService {
     public RedemptionOrderVo reject(Long id, String reason) {
         RedemptionOrder order = lockOrder(id);
         requirePending(order);
+        requireRejectReason(reason);
         WalletTransaction transaction = walletCoreService.unfreeze(
             buildFreezeBo(order, order.getReleaseIdempotencyKey(), order.getFreezeNo()));
         requireWalletSuccess(transaction);
@@ -164,6 +165,12 @@ public class RedemptionOrderServiceImpl implements IRedemptionOrderService {
     private void requirePending(RedemptionOrder order) {
         if (!RedemptionOrderStatus.PENDING.name().equals(order.getStatus())) {
             throw new ServiceException(MessageUtils.message("redemption.order.only.pending.allowed"));
+        }
+    }
+
+    private void requireRejectReason(String reason) {
+        if (StringUtils.isBlank(reason)) {
+            throw new ServiceException(MessageUtils.message("redemption.audit.reject.reason.required"));
         }
     }
 
