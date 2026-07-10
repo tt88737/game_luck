@@ -33,7 +33,7 @@
 | 12. Admin UI 全站多语言 | complete | 统一菜单、首页、公共组件和业务页面文案的中英文切换 | 已完成前后端全站多语言、后端 i18n key 守门、前端 build 前 i18n 检查 |
 | 13. Phase 2 玩家端 API 与 H5 接入 | complete | 建立 C 端 bootstrap、demo 登录、钱包、游戏大厅 API 并接入 H5 | docs/superpowers/specs/2026-07-09-player-client-api-h5-design.md、docs/superpowers/plans/2026-07-09-player-client-api-h5.md |
 | 14. Phase 3 玩家端奖励与兑换 H5 流程 | complete | 建立 C 端活动奖励领取、兑换申请 API 并接入 H5 | docs/superpowers/specs/2026-07-10-client-promotion-redemption-h5-design.md、docs/superpowers/plans/2026-07-10-client-promotion-redemption-h5.md |
-| 15. Phase 4 B端兑换审核后台闭环 | in_progress | 加固后台兑换审核列表、详情、通过/拒绝、审核原因和钱包闭环验收 | docs/superpowers/specs/2026-07-10-admin-redemption-review-design.md |
+| 15. Phase 4 B端兑换审核后台闭环 | in_progress | 加固后台兑换审核列表、详情、通过/拒绝、审核原因和钱包闭环验收 | docs/superpowers/specs/2026-07-10-admin-redemption-review-design.md、docs/superpowers/plans/2026-07-10-admin-redemption-review.md |
 
 ## 关键决策
 
