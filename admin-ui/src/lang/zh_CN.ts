@@ -356,6 +356,13 @@ export default {
       REJECTED: '已拒绝',
       FAILED: '失败'
     },
+    filters: {
+      pending: '待审核',
+      approved: '已通过',
+      rejected: '已拒绝',
+      failed: '失败',
+      all: '全部'
+    },
     actions: {
       view: '查看详情',
       approve: '审核通过',
@@ -370,7 +377,8 @@ export default {
     rules: {
       memberId: '会员ID不能为空',
       currency: '币种不能为空',
-      amount: '金额不能为空'
+      amount: '金额不能为空',
+      rejectReason: '审核拒绝时必须填写原因'
     },
     confirm: {
       audit: '确认{action}该兑换订单？'

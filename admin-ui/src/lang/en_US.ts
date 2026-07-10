@@ -360,6 +360,13 @@ export default {
       REJECTED: 'Rejected',
       FAILED: 'Failed'
     },
+    filters: {
+      pending: 'Pending',
+      approved: 'Approved',
+      rejected: 'Rejected',
+      failed: 'Failed',
+      all: 'All'
+    },
     actions: {
       view: 'View detail',
       approve: 'Approve',
@@ -374,7 +381,8 @@ export default {
     rules: {
       memberId: 'Member ID is required',
       currency: 'Currency is required',
-      amount: 'Amount is required'
+      amount: 'Amount is required',
+      rejectReason: 'A rejection reason is required'
     },
     confirm: {
       audit: 'Confirm {action} this redemption order?'
