@@ -296,7 +296,7 @@ export default {
       claimNo: '领取单号',
       memberId: '会员ID',
       claimDate: '领取日期',
-      rewardSnapshot: '奖励快照',
+      rewardSnapshot: '实际发放奖励',
       walletTransactionNo: '钱包交易号',
       failReason: '失败原因',
       claimTime: '领取时间'

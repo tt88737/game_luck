@@ -300,7 +300,7 @@ export default {
       claimNo: 'Claim No.',
       memberId: 'Member ID',
       claimDate: 'Claim Date',
-      rewardSnapshot: 'Reward Snapshot',
+      rewardSnapshot: 'Issued Reward',
       walletTransactionNo: 'Wallet Transaction No.',
       failReason: 'Failure Reason',
       claimTime: 'Claimed At'

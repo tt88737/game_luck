@@ -197,7 +197,7 @@
         <el-table-column :label="t('promotionReward.fields.claimDate')" align="center" prop="claimDate" width="120" />
         <el-table-column :label="t('promotionReward.fields.rewardSnapshot')" align="center" min-width="180" show-overflow-tooltip>
           <template #default="scope">
-            {{ formatRewardSnapshot(scope.row.rewardSnapshot) }}
+            {{ formatRewardSnapshot(scope.row) }}
           </template>
         </el-table-column>
         <el-table-column :label="t('common.status')" align="center" prop="status" width="100">
@@ -390,7 +390,7 @@ const addRewardItem = () => {
 const removeRewardItem = (index: number) => {
   const items = parseRewardItems(form.value.rewardItems);
   items.splice(index, 1);
-  form.value.rewardItems = items.length ? items : defaultDailyRewardItems();
+  form.value.rewardItems = items;
 };
 
 const normalizePayload = (): PromotionRewardForm => {
@@ -412,14 +412,20 @@ const normalizePayload = (): PromotionRewardForm => {
     ...form.value,
     promotionType,
     claimCycle: 'ONCE',
-    dailyClaimLimit: undefined,
-    rewardItems: undefined
+    dailyClaimLimit: 1,
+    rewardItems: []
   };
 };
 
-const formatRewardSnapshot = (rewardSnapshot?: string) => {
-  const items = parseRewardItems(rewardSnapshot);
-  return items.length ? items.map((item) => `${item.rewardAmount} ${item.currencyCode}`).join(', ') : rewardSnapshot || '';
+const formatRewardSnapshot = (claim: PromotionClaimVO) => {
+  const items = parseRewardItems(claim.rewardSnapshot);
+  if (items.length) {
+    return items.map((item) => `${item.rewardAmount} ${item.currencyCode}`).join(', ');
+  }
+  if (claim.currencyCode && Number(claim.rewardAmount) > 0) {
+    return `${claim.rewardAmount} ${claim.currencyCode}`;
+  }
+  return '-';
 };
 
 const reset = () => {
@@ -465,7 +471,6 @@ const submitForm = () => {
   rewardFormRef.value?.validate(async (valid: boolean) => {
     if (valid) {
       if (form.value.promotionType === 'DAILY_LOGIN') {
-        ensureDailyRewardItems();
         if (!parseRewardItems(form.value.rewardItems).length) {
           proxy?.$modal.msgError(t('promotionReward.messages.rewardItemsRequired'));
           return;
