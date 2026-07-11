@@ -27,6 +27,8 @@ public class WalletReleaseVo implements Serializable {
 
     private Long memberId;
 
+    private String memberNo;
+
     private String currencyCode;
 
     private String sourceType;

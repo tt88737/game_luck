@@ -10,6 +10,7 @@ import org.apache.ibatis.builder.MapperBuilderAssistant;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -22,7 +23,7 @@ class WalletAccountServiceImplTest {
     void queryListCanFilterByMemberNo() {
         TableInfoHelper.initTableInfo(new MapperBuilderAssistant(new MybatisConfiguration(), ""), WalletAccount.class);
         WalletAccountMapper mapper = mock(WalletAccountMapper.class);
-        WalletAccountServiceImpl service = new WalletAccountServiceImpl(mapper);
+        WalletAccountServiceImpl service = new WalletAccountServiceImpl(mapper, mock(JdbcTemplate.class));
         WalletAccountBo bo = new WalletAccountBo();
         bo.setMemberNo("MB1001");
 

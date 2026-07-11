@@ -25,6 +25,7 @@ import com.gameluck.wallet.domain.bo.WalletDebitBo;
 import com.gameluck.wallet.enums.WalletTransactionStatus;
 import com.gameluck.wallet.service.IWalletCoreService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,17 +44,19 @@ public class GameBetOrderServiceImpl implements IGameBetOrderService {
 
     private final GameBetOrderMapper baseMapper;
     private final IWalletCoreService walletCoreService;
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public TableDataInfo<GameBetOrderVo> queryPageList(GameBetOrderBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<GameBetOrder> lqw = buildQueryWrapper(bo);
         Page<GameBetOrderVo> page = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        MemberNoQueryHelper.fillMemberNo(jdbcTemplate, page.getRecords(), GameBetOrderVo::getMemberId, GameBetOrderVo::setMemberNo);
         return TableDataInfo.build(page);
     }
 
     @Override
     public GameBetOrderVo queryById(Long id) {
-        return baseMapper.selectVoById(id);
+        return MemberNoQueryHelper.fillMemberNo(jdbcTemplate, baseMapper.selectVoById(id), GameBetOrderVo::getMemberId, GameBetOrderVo::setMemberNo);
     }
 
     @Override
@@ -89,7 +92,7 @@ public class GameBetOrderServiceImpl implements IGameBetOrderService {
         GameBetOrder order = lockOrder(id);
         if (GameBetOrderStatus.BET_SUCCESS.name().equals(order.getStatus())
             || GameBetOrderStatus.SETTLED.name().equals(order.getStatus())) {
-            return BeanUtil.toBean(order, GameBetOrderVo.class);
+            return MemberNoQueryHelper.fillMemberNo(jdbcTemplate, BeanUtil.toBean(order, GameBetOrderVo.class), GameBetOrderVo::getMemberId, GameBetOrderVo::setMemberNo);
         }
         requireStatus(order, GameBetOrderStatus.PENDING);
 
@@ -106,7 +109,7 @@ public class GameBetOrderServiceImpl implements IGameBetOrderService {
             order.setFailReason(StringUtils.substring(transaction.getFailReason(), 0, 500));
         }
         baseMapper.updateById(order);
-        return BeanUtil.toBean(order, GameBetOrderVo.class);
+        return MemberNoQueryHelper.fillMemberNo(jdbcTemplate, BeanUtil.toBean(order, GameBetOrderVo.class), GameBetOrderVo::getMemberId, GameBetOrderVo::setMemberNo);
     }
 
     @Override
@@ -114,7 +117,7 @@ public class GameBetOrderServiceImpl implements IGameBetOrderService {
     public GameBetOrderVo cancel(Long id) {
         GameBetOrder order = lockOrder(id);
         if (GameBetOrderStatus.CANCELLED.name().equals(order.getStatus())) {
-            return BeanUtil.toBean(order, GameBetOrderVo.class);
+            return MemberNoQueryHelper.fillMemberNo(jdbcTemplate, BeanUtil.toBean(order, GameBetOrderVo.class), GameBetOrderVo::getMemberId, GameBetOrderVo::setMemberNo);
         }
         requireCancelable(order);
 
@@ -130,7 +133,7 @@ public class GameBetOrderServiceImpl implements IGameBetOrderService {
             order.setFailReason(StringUtils.substring(transaction.getFailReason(), 0, 500));
         }
         baseMapper.updateById(order);
-        return BeanUtil.toBean(order, GameBetOrderVo.class);
+        return MemberNoQueryHelper.fillMemberNo(jdbcTemplate, BeanUtil.toBean(order, GameBetOrderVo.class), GameBetOrderVo::getMemberId, GameBetOrderVo::setMemberNo);
     }
 
     @Override
@@ -138,7 +141,7 @@ public class GameBetOrderServiceImpl implements IGameBetOrderService {
     public GameBetOrderVo settle(Long id) {
         GameBetOrder order = lockOrder(id);
         if (GameBetOrderStatus.SETTLED.name().equals(order.getStatus())) {
-            return BeanUtil.toBean(order, GameBetOrderVo.class);
+            return MemberNoQueryHelper.fillMemberNo(jdbcTemplate, BeanUtil.toBean(order, GameBetOrderVo.class), GameBetOrderVo::getMemberId, GameBetOrderVo::setMemberNo);
         }
         requireStatus(order, GameBetOrderStatus.BET_SUCCESS);
 
@@ -155,7 +158,7 @@ public class GameBetOrderServiceImpl implements IGameBetOrderService {
             order.setFailReason(StringUtils.substring(transaction.getFailReason(), 0, 500));
         }
         baseMapper.updateById(order);
-        return BeanUtil.toBean(order, GameBetOrderVo.class);
+        return MemberNoQueryHelper.fillMemberNo(jdbcTemplate, BeanUtil.toBean(order, GameBetOrderVo.class), GameBetOrderVo::getMemberId, GameBetOrderVo::setMemberNo);
     }
 
     private LambdaQueryWrapper<GameBetOrder> buildQueryWrapper(GameBetOrderBo bo) {

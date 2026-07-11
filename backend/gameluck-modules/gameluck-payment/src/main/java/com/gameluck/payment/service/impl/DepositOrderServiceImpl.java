@@ -24,6 +24,7 @@ import com.gameluck.wallet.domain.bo.WalletCreditBo;
 import com.gameluck.wallet.enums.WalletTransactionStatus;
 import com.gameluck.wallet.service.IWalletCoreService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,22 +47,26 @@ public class DepositOrderServiceImpl implements IDepositOrderService {
 
     private final DepositOrderMapper baseMapper;
     private final IWalletCoreService walletCoreService;
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public TableDataInfo<DepositOrderVo> queryPageList(DepositOrderBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<DepositOrder> lqw = buildQueryWrapper(bo);
         Page<DepositOrderVo> page = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        MemberNoQueryHelper.fillMemberNo(jdbcTemplate, page.getRecords(), DepositOrderVo::getMemberId, DepositOrderVo::setMemberNo);
         return TableDataInfo.build(page);
     }
 
     @Override
     public DepositOrderVo queryById(Long id) {
-        return baseMapper.selectVoById(id);
+        return MemberNoQueryHelper.fillMemberNo(jdbcTemplate, baseMapper.selectVoById(id), DepositOrderVo::getMemberId, DepositOrderVo::setMemberNo);
     }
 
     @Override
     public List<DepositOrderVo> queryList(DepositOrderBo bo) {
-        return baseMapper.selectVoList(buildQueryWrapper(bo));
+        List<DepositOrderVo> rows = baseMapper.selectVoList(buildQueryWrapper(bo));
+        MemberNoQueryHelper.fillMemberNo(jdbcTemplate, rows, DepositOrderVo::getMemberId, DepositOrderVo::setMemberNo);
+        return rows;
     }
 
     @Override
@@ -92,7 +97,7 @@ public class DepositOrderServiceImpl implements IDepositOrderService {
     public DepositOrderVo simulateSuccess(Long id) {
         DepositOrder order = lockOrder(id);
         if (DepositOrderStatus.SUCCESS.name().equals(order.getStatus())) {
-            return BeanUtil.toBean(order, DepositOrderVo.class);
+            return MemberNoQueryHelper.fillMemberNo(jdbcTemplate, BeanUtil.toBean(order, DepositOrderVo.class), DepositOrderVo::getMemberId, DepositOrderVo::setMemberNo);
         }
         requirePending(order);
 
@@ -108,7 +113,7 @@ public class DepositOrderServiceImpl implements IDepositOrderService {
             order.setFailReason(null);
             order.setUpdateTime(now);
             baseMapper.updateById(order);
-            return BeanUtil.toBean(order, DepositOrderVo.class);
+            return MemberNoQueryHelper.fillMemberNo(jdbcTemplate, BeanUtil.toBean(order, DepositOrderVo.class), DepositOrderVo::getMemberId, DepositOrderVo::setMemberNo);
         } catch (RuntimeException ex) {
             order.setStatus(DepositOrderStatus.FAILED.name());
             order.setFailReason(StringUtils.substring(ex.getMessage(), 0, 500));

@@ -33,7 +33,9 @@
         </el-row>
       </template>
       <el-table v-loading="loading" border :data="accountList">
-        <el-table-column :label="tt('会员ID')" align="center" prop="memberId" min-width="130" />
+        <el-table-column :label="tt('会员ID')" align="center" prop="memberNo" min-width="110">
+          <template #default="scope">{{ scope.row.memberNo || scope.row.memberId }}</template>
+        </el-table-column>
         <el-table-column :label="tt('币种')" align="center" prop="currencyCode" width="100" />
         <el-table-column :label="tt('可用余额')" align="right" prop="availableBalance" min-width="140" />
         <el-table-column :label="tt('冻结余额')" align="right" prop="frozenBalance" min-width="140" />

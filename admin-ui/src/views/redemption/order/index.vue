@@ -48,7 +48,9 @@
 
       <el-table v-loading="loading" border :data="orderList">
         <el-table-column :label="t('redemptionOrder.fields.redemptionOrderNo')" align="center" prop="redemptionOrderNo" min-width="180" show-overflow-tooltip />
-        <el-table-column :label="t('redemptionOrder.fields.memberId')" align="center" prop="memberId" width="120" />
+        <el-table-column :label="t('redemptionOrder.fields.memberId')" align="center" prop="memberNo" width="110">
+          <template #default="scope">{{ scope.row.memberNo || scope.row.memberId }}</template>
+        </el-table-column>
         <el-table-column :label="t('common.currency')" align="center" prop="currencyCode" width="90" />
         <el-table-column :label="t('common.amount')" align="right" prop="amount" width="130" />
         <el-table-column :label="t('redemptionOrder.fields.redemptionMethod')" align="center" prop="redemptionMethod" width="120" />
@@ -133,7 +135,7 @@
       <el-descriptions :column="2" border>
         <el-descriptions-item :label="t('redemptionOrder.fields.redemptionOrderNo')">{{ detail.redemptionOrderNo }}</el-descriptions-item>
         <el-descriptions-item :label="t('common.status')">{{ statusLabel(detail.status) }}</el-descriptions-item>
-        <el-descriptions-item :label="t('redemptionOrder.fields.memberId')">{{ detail.memberId }}</el-descriptions-item>
+        <el-descriptions-item :label="t('redemptionOrder.fields.memberId')">{{ detail.memberNo || detail.memberId }}</el-descriptions-item>
         <el-descriptions-item :label="t('common.currency')">{{ detail.currencyCode }}</el-descriptions-item>
         <el-descriptions-item :label="t('common.amount')">{{ detail.amount }}</el-descriptions-item>
         <el-descriptions-item :label="t('redemptionOrder.fields.redemptionMethod')">{{ detail.redemptionMethod }}</el-descriptions-item>

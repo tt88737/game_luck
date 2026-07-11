@@ -4,6 +4,7 @@ export interface TransactionVO extends BaseEntity {
   transactionNo: string;
   idempotencyKey: string;
   memberId: string | number;
+  memberNo: string;
   currencyCode: string;
   operation: string;
   sourceType: string;

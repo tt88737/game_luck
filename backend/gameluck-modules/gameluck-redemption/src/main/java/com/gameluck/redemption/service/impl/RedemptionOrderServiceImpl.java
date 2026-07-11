@@ -24,6 +24,7 @@ import com.gameluck.wallet.domain.bo.WalletFreezeOperationBo;
 import com.gameluck.wallet.enums.WalletTransactionStatus;
 import com.gameluck.wallet.service.IWalletCoreService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,22 +48,26 @@ public class RedemptionOrderServiceImpl implements IRedemptionOrderService {
 
     private final RedemptionOrderMapper baseMapper;
     private final IWalletCoreService walletCoreService;
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public TableDataInfo<RedemptionOrderVo> queryPageList(RedemptionOrderBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<RedemptionOrder> lqw = buildQueryWrapper(bo);
         Page<RedemptionOrderVo> page = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        MemberNoQueryHelper.fillMemberNo(jdbcTemplate, page.getRecords(), RedemptionOrderVo::getMemberId, RedemptionOrderVo::setMemberNo);
         return TableDataInfo.build(page);
     }
 
     @Override
     public RedemptionOrderVo queryById(Long id) {
-        return baseMapper.selectVoById(id);
+        return MemberNoQueryHelper.fillMemberNo(jdbcTemplate, baseMapper.selectVoById(id), RedemptionOrderVo::getMemberId, RedemptionOrderVo::setMemberNo);
     }
 
     @Override
     public List<RedemptionOrderVo> queryList(RedemptionOrderBo bo) {
-        return baseMapper.selectVoList(buildQueryWrapper(bo));
+        List<RedemptionOrderVo> rows = baseMapper.selectVoList(buildQueryWrapper(bo));
+        MemberNoQueryHelper.fillMemberNo(jdbcTemplate, rows, RedemptionOrderVo::getMemberId, RedemptionOrderVo::setMemberNo);
+        return rows;
     }
 
     @Override
@@ -118,7 +123,7 @@ public class RedemptionOrderServiceImpl implements IRedemptionOrderService {
         order.setFailReason(null);
         order.setUpdateTime(now);
         baseMapper.updateById(order);
-        return BeanUtil.toBean(order, RedemptionOrderVo.class);
+        return MemberNoQueryHelper.fillMemberNo(jdbcTemplate, BeanUtil.toBean(order, RedemptionOrderVo.class), RedemptionOrderVo::getMemberId, RedemptionOrderVo::setMemberNo);
     }
 
     @Override
@@ -139,7 +144,7 @@ public class RedemptionOrderServiceImpl implements IRedemptionOrderService {
         order.setFailReason(null);
         order.setUpdateTime(now);
         baseMapper.updateById(order);
-        return BeanUtil.toBean(order, RedemptionOrderVo.class);
+        return MemberNoQueryHelper.fillMemberNo(jdbcTemplate, BeanUtil.toBean(order, RedemptionOrderVo.class), RedemptionOrderVo::getMemberId, RedemptionOrderVo::setMemberNo);
     }
 
     private LambdaQueryWrapper<RedemptionOrder> buildQueryWrapper(RedemptionOrderBo bo) {

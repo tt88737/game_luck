@@ -29,6 +29,8 @@ public class WalletTransactionVo implements Serializable {
 
     private Long memberId;
 
+    private String memberNo;
+
     private String currencyCode;
 
     private String operation;

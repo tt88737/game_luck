@@ -9,6 +9,7 @@ import com.gameluck.wallet.enums.WalletTransactionStatus;
 import com.gameluck.wallet.service.IWalletCoreService;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.math.BigDecimal;
 
@@ -30,7 +31,7 @@ class RedemptionOrderServiceImplTest {
     void rejectApprovedOrderDoesNotCallWalletAgain() {
         RedemptionOrderMapper mapper = mock(RedemptionOrderMapper.class);
         IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
-        RedemptionOrderServiceImpl service = new RedemptionOrderServiceImpl(mapper, walletCoreService);
+        RedemptionOrderServiceImpl service = new RedemptionOrderServiceImpl(mapper, walletCoreService, mock(JdbcTemplate.class));
 
         RedemptionOrder order = pendingOrder();
         order.setStatus(RedemptionOrderStatus.APPROVED.name());
@@ -47,7 +48,7 @@ class RedemptionOrderServiceImplTest {
     void approveRejectedOrderDoesNotCallWalletAgain() {
         RedemptionOrderMapper mapper = mock(RedemptionOrderMapper.class);
         IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
-        RedemptionOrderServiceImpl service = new RedemptionOrderServiceImpl(mapper, walletCoreService);
+        RedemptionOrderServiceImpl service = new RedemptionOrderServiceImpl(mapper, walletCoreService, mock(JdbcTemplate.class));
 
         RedemptionOrder order = pendingOrder();
         order.setStatus(RedemptionOrderStatus.REJECTED.name());
@@ -64,7 +65,7 @@ class RedemptionOrderServiceImplTest {
     void rejectBlankReasonDoesNotCallWallet() {
         RedemptionOrderMapper mapper = mock(RedemptionOrderMapper.class);
         IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
-        RedemptionOrderServiceImpl service = new RedemptionOrderServiceImpl(mapper, walletCoreService);
+        RedemptionOrderServiceImpl service = new RedemptionOrderServiceImpl(mapper, walletCoreService, mock(JdbcTemplate.class));
 
         RedemptionOrder order = pendingOrder();
         when(mapper.selectByIdForUpdate(1L)).thenReturn(order);
@@ -81,7 +82,7 @@ class RedemptionOrderServiceImplTest {
     void approvePendingOrderSettlesFreezeAndWritesAuditFields() {
         RedemptionOrderMapper mapper = mock(RedemptionOrderMapper.class);
         IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
-        RedemptionOrderServiceImpl service = new RedemptionOrderServiceImpl(mapper, walletCoreService);
+        RedemptionOrderServiceImpl service = new RedemptionOrderServiceImpl(mapper, walletCoreService, mock(JdbcTemplate.class));
 
         RedemptionOrder order = pendingOrder();
         when(mapper.selectByIdForUpdate(1L)).thenReturn(order);
@@ -103,7 +104,7 @@ class RedemptionOrderServiceImplTest {
     void rejectPendingOrderReleasesFreezeAndWritesAuditFields() {
         RedemptionOrderMapper mapper = mock(RedemptionOrderMapper.class);
         IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
-        RedemptionOrderServiceImpl service = new RedemptionOrderServiceImpl(mapper, walletCoreService);
+        RedemptionOrderServiceImpl service = new RedemptionOrderServiceImpl(mapper, walletCoreService, mock(JdbcTemplate.class));
 
         RedemptionOrder order = pendingOrder();
         when(mapper.selectByIdForUpdate(1L)).thenReturn(order);
@@ -125,7 +126,7 @@ class RedemptionOrderServiceImplTest {
     void approveWalletFailureDoesNotUpdateOrderToApproved() {
         RedemptionOrderMapper mapper = mock(RedemptionOrderMapper.class);
         IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
-        RedemptionOrderServiceImpl service = new RedemptionOrderServiceImpl(mapper, walletCoreService);
+        RedemptionOrderServiceImpl service = new RedemptionOrderServiceImpl(mapper, walletCoreService, mock(JdbcTemplate.class));
 
         RedemptionOrder order = pendingOrder();
         when(mapper.selectByIdForUpdate(1L)).thenReturn(order);
@@ -143,7 +144,7 @@ class RedemptionOrderServiceImplTest {
     void rejectWalletFailureDoesNotUpdateOrderToRejected() {
         RedemptionOrderMapper mapper = mock(RedemptionOrderMapper.class);
         IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
-        RedemptionOrderServiceImpl service = new RedemptionOrderServiceImpl(mapper, walletCoreService);
+        RedemptionOrderServiceImpl service = new RedemptionOrderServiceImpl(mapper, walletCoreService, mock(JdbcTemplate.class));
 
         RedemptionOrder order = pendingOrder();
         when(mapper.selectByIdForUpdate(1L)).thenReturn(order);

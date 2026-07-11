@@ -20,6 +20,7 @@ public class GameBetOrderVo implements Serializable {
     private String tenantId;
     private String betOrderNo;
     private Long memberId;
+    private String memberNo;
     private String currencyCode;
     private String gameCode;
     private String roundNo;

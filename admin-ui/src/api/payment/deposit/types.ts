@@ -3,6 +3,7 @@ export interface DepositOrderVO extends BaseEntity {
   tenantId: string;
   depositOrderNo: string;
   memberId: string | number;
+  memberNo: string;
   currencyCode: string;
   amount: number;
   payMethod: string;

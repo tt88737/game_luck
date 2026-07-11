@@ -43,7 +43,9 @@
       </template>
       <el-table v-loading="loading" border :data="transactionList">
         <el-table-column :label="tt('交易号')" align="center" prop="transactionNo" min-width="180" :show-overflow-tooltip="true" />
-        <el-table-column :label="tt('会员ID')" align="center" prop="memberId" min-width="120" />
+        <el-table-column :label="tt('会员ID')" align="center" prop="memberNo" min-width="110">
+          <template #default="scope">{{ scope.row.memberNo || scope.row.memberId }}</template>
+        </el-table-column>
         <el-table-column :label="tt('币种')" align="center" prop="currencyCode" width="90" />
         <el-table-column :label="tt('操作')" align="center" prop="operation" width="110" />
         <el-table-column :label="tt('来源')" align="center" prop="sourceType" min-width="120" :show-overflow-tooltip="true" />

@@ -27,6 +27,8 @@ public class DepositOrderVo implements Serializable {
 
     private Long memberId;
 
+    private String memberNo;
+
     private String currencyCode;
 
     private BigDecimal amount;

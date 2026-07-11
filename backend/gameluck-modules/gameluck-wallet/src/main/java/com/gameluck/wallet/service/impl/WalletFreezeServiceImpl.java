@@ -13,6 +13,7 @@ import com.gameluck.wallet.domain.vo.WalletFreezeVo;
 import com.gameluck.wallet.mapper.WalletFreezeMapper;
 import com.gameluck.wallet.service.IWalletFreezeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,23 +26,27 @@ import java.util.List;
 public class WalletFreezeServiceImpl implements IWalletFreezeService {
 
     private final WalletFreezeMapper baseMapper;
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public TableDataInfo<WalletFreezeVo> queryPageList(WalletFreezeBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<WalletFreeze> lqw = buildQueryWrapper(bo);
         Page<WalletFreezeVo> page = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        MemberNoQueryHelper.fillMemberNo(jdbcTemplate, page.getRecords(), WalletFreezeVo::getMemberId, WalletFreezeVo::setMemberNo);
         return TableDataInfo.build(page);
     }
 
     @Override
     public WalletFreezeVo queryById(Long id) {
-        return baseMapper.selectVoById(id);
+        return MemberNoQueryHelper.fillMemberNo(jdbcTemplate, baseMapper.selectVoById(id), WalletFreezeVo::getMemberId, WalletFreezeVo::setMemberNo);
     }
 
     @Override
     public List<WalletFreezeVo> queryList(WalletFreezeBo bo) {
         LambdaQueryWrapper<WalletFreeze> lqw = buildQueryWrapper(bo);
-        return baseMapper.selectVoList(lqw);
+        List<WalletFreezeVo> rows = baseMapper.selectVoList(lqw);
+        MemberNoQueryHelper.fillMemberNo(jdbcTemplate, rows, WalletFreezeVo::getMemberId, WalletFreezeVo::setMemberNo);
+        return rows;
     }
 
     private LambdaQueryWrapper<WalletFreeze> buildQueryWrapper(WalletFreezeBo bo) {

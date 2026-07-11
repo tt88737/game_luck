@@ -3,6 +3,7 @@ export interface FreezeVO extends BaseEntity {
   tenantId: string;
   freezeNo: string;
   memberId: string | number;
+  memberNo: string;
   currencyCode: string;
   amount: number;
   sourceType: string;

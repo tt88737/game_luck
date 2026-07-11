@@ -46,7 +46,9 @@
 
       <el-table v-loading="loading" border :data="depositList">
         <el-table-column :label="tt('订单号')" align="center" prop="depositOrderNo" min-width="180" show-overflow-tooltip />
-        <el-table-column :label="tt('会员ID')" align="center" prop="memberId" width="120" />
+        <el-table-column :label="tt('会员ID')" align="center" prop="memberNo" width="110">
+          <template #default="scope">{{ scope.row.memberNo || scope.row.memberId }}</template>
+        </el-table-column>
         <el-table-column :label="tt('币种')" align="center" prop="currencyCode" width="90" />
         <el-table-column :label="tt('金额')" align="right" prop="amount" width="130" />
         <el-table-column :label="tt('支付方式')" align="center" prop="payMethod" width="120" />
@@ -105,7 +107,7 @@
       <el-descriptions :column="2" border>
         <el-descriptions-item :label="tt('订单号')">{{ detail.depositOrderNo }}</el-descriptions-item>
         <el-descriptions-item :label="tt('状态')">{{ statusLabel(detail.status) }}</el-descriptions-item>
-        <el-descriptions-item :label="tt('会员ID')">{{ detail.memberId }}</el-descriptions-item>
+        <el-descriptions-item :label="tt('会员ID')">{{ detail.memberNo || detail.memberId }}</el-descriptions-item>
         <el-descriptions-item :label="tt('币种')">{{ detail.currencyCode }}</el-descriptions-item>
         <el-descriptions-item :label="tt('金额')">{{ detail.amount }}</el-descriptions-item>
         <el-descriptions-item :label="tt('支付方式')">{{ detail.payMethod }}</el-descriptions-item>

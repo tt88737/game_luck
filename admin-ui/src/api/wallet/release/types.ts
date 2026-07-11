@@ -3,6 +3,7 @@ export interface ReleaseVO extends BaseEntity {
   tenantId: string;
   releaseNo: string;
   memberId: string | number;
+  memberNo: string;
   currencyCode: string;
   sourceType: string;
   businessNo: string;

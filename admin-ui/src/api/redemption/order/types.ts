@@ -3,6 +3,7 @@ export interface RedemptionOrderVO extends BaseEntity {
   tenantId: string;
   redemptionOrderNo: string;
   memberId: string | number;
+  memberNo: string;
   currencyCode: string;
   amount: number;
   redemptionMethod: string;

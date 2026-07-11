@@ -23,6 +23,7 @@ public class RedemptionOrderVo implements Serializable {
     private String tenantId;
     private String redemptionOrderNo;
     private Long memberId;
+    private String memberNo;
     private String currencyCode;
     private BigDecimal amount;
     private String redemptionMethod;

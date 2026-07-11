@@ -25,6 +25,8 @@ public class WalletAccountVo implements Serializable {
 
     private Long memberId;
 
+    private String memberNo;
+
     private String currencyCode;
 
     private BigDecimal availableBalance;

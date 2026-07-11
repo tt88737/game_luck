@@ -3,6 +3,7 @@ export interface GameBetOrderVO extends BaseEntity {
   tenantId: string;
   betOrderNo: string;
   memberId: string | number;
+  memberNo: string;
   currencyCode: string;
   gameCode: string;
   roundNo: string;

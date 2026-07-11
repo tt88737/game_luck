@@ -13,6 +13,7 @@ import com.gameluck.wallet.domain.vo.WalletAccountVo;
 import com.gameluck.wallet.mapper.WalletAccountMapper;
 import com.gameluck.wallet.service.IWalletAccountService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,23 +26,27 @@ import java.util.List;
 public class WalletAccountServiceImpl implements IWalletAccountService {
 
     private final WalletAccountMapper baseMapper;
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public TableDataInfo<WalletAccountVo> queryPageList(WalletAccountBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<WalletAccount> lqw = buildQueryWrapper(bo);
         Page<WalletAccountVo> page = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        MemberNoQueryHelper.fillMemberNo(jdbcTemplate, page.getRecords(), WalletAccountVo::getMemberId, WalletAccountVo::setMemberNo);
         return TableDataInfo.build(page);
     }
 
     @Override
     public WalletAccountVo queryById(Long id) {
-        return baseMapper.selectVoById(id);
+        return MemberNoQueryHelper.fillMemberNo(jdbcTemplate, baseMapper.selectVoById(id), WalletAccountVo::getMemberId, WalletAccountVo::setMemberNo);
     }
 
     @Override
     public List<WalletAccountVo> queryList(WalletAccountBo bo) {
         LambdaQueryWrapper<WalletAccount> lqw = buildQueryWrapper(bo);
-        return baseMapper.selectVoList(lqw);
+        List<WalletAccountVo> rows = baseMapper.selectVoList(lqw);
+        MemberNoQueryHelper.fillMemberNo(jdbcTemplate, rows, WalletAccountVo::getMemberId, WalletAccountVo::setMemberNo);
+        return rows;
     }
 
     private LambdaQueryWrapper<WalletAccount> buildQueryWrapper(WalletAccountBo bo) {

@@ -7,6 +7,7 @@ import com.gameluck.game.mapper.GameBetOrderMapper;
 import com.gameluck.wallet.service.IWalletCoreService;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -21,7 +22,7 @@ class GameBetOrderServiceImplTest {
     void cancelRejectsSettledOrderWithClearMessage() {
         GameBetOrderMapper mapper = mock(GameBetOrderMapper.class);
         IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
-        GameBetOrderServiceImpl service = new GameBetOrderServiceImpl(mapper, walletCoreService);
+        GameBetOrderServiceImpl service = new GameBetOrderServiceImpl(mapper, walletCoreService, mock(JdbcTemplate.class));
 
         GameBetOrder order = new GameBetOrder();
         order.setId(1L);

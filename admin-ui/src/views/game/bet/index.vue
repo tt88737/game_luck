@@ -51,7 +51,9 @@
 
       <el-table v-loading="loading" border :data="betList">
         <el-table-column :label="tt('注单号')" align="center" prop="betOrderNo" min-width="180" show-overflow-tooltip />
-        <el-table-column :label="tt('会员ID')" align="center" prop="memberId" width="120" />
+        <el-table-column :label="tt('会员ID')" align="center" prop="memberNo" width="110">
+          <template #default="scope">{{ scope.row.memberNo || scope.row.memberId }}</template>
+        </el-table-column>
         <el-table-column :label="tt('币种')" align="center" prop="currencyCode" width="90" />
         <el-table-column :label="tt('游戏')" align="center" prop="gameCode" width="120" show-overflow-tooltip />
         <el-table-column :label="tt('局号')" align="center" prop="roundNo" min-width="150" show-overflow-tooltip />
@@ -138,7 +140,7 @@
       <el-descriptions :column="2" border>
         <el-descriptions-item :label="tt('注单号')">{{ detail.betOrderNo }}</el-descriptions-item>
         <el-descriptions-item :label="tt('状态')">{{ statusLabel(detail.status) }}</el-descriptions-item>
-        <el-descriptions-item :label="tt('会员ID')">{{ detail.memberId }}</el-descriptions-item>
+        <el-descriptions-item :label="tt('会员ID')">{{ detail.memberNo || detail.memberId }}</el-descriptions-item>
         <el-descriptions-item :label="tt('币种')">{{ detail.currencyCode }}</el-descriptions-item>
         <el-descriptions-item :label="tt('游戏')">{{ detail.gameCode }}</el-descriptions-item>
         <el-descriptions-item :label="tt('局号')">{{ detail.roundNo }}</el-descriptions-item>
