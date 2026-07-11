@@ -14,6 +14,7 @@ import com.gameluck.common.core.utils.StringUtils;
 import com.gameluck.common.mybatis.core.page.PageQuery;
 import com.gameluck.common.mybatis.core.page.TableDataInfo;
 import com.gameluck.common.tenant.helper.TenantHelper;
+import com.gameluck.promotion.client.domain.vo.ClientDailyLoginRewardVo;
 import com.gameluck.promotion.domain.PromotionClaim;
 import com.gameluck.promotion.domain.PromotionReward;
 import com.gameluck.promotion.domain.bo.PromotionClaimBo;
@@ -236,6 +237,41 @@ public class PromotionRewardServiceImpl implements IPromotionRewardService {
         claim.setUpdateTime(new Date());
         claimMapper.updateById(claim);
         return BeanUtil.toBean(claim, PromotionClaimVo.class);
+    }
+
+    @Override
+    public ClientDailyLoginRewardVo dailyLoginReward(Long memberId) {
+        String tenantId = currentTenantId();
+        LocalDate today = LocalDate.now();
+        ClientDailyLoginRewardVo vo = new ClientDailyLoginRewardVo();
+        vo.setClaimDate(today);
+
+        PromotionReward reward = rewardMapper.selectActiveDailyLoginReward(tenantId);
+        if (reward == null) {
+            vo.setCanClaim(false);
+            vo.setClaimStatus("NOT_CONFIGURED");
+            vo.setRewardItems(List.of());
+            return vo;
+        }
+
+        vo.setPromotionId(reward.getId());
+        vo.setPromotionNo(reward.getPromotionNo());
+        vo.setPromotionName(reward.getPromotionName());
+        vo.setPromotionType(DAILY_LOGIN_TYPE);
+        vo.setRewardItems(rewardItems(reward));
+
+        PromotionClaim claim = claimMapper.selectDailyClaim(tenantId, reward.getId(), memberId, today);
+        if (claim == null) {
+            vo.setCanClaim(true);
+            vo.setClaimStatus("UNCLAIMED");
+            return vo;
+        }
+
+        vo.setCanClaim(false);
+        vo.setClaimStatus(claim.getStatus());
+        vo.setClaimNo(claim.getClaimNo());
+        vo.setWalletTransactionNo(claim.getWalletTransactionNo());
+        return vo;
     }
 
     private LambdaQueryWrapper<PromotionReward> buildRewardQueryWrapper(PromotionRewardBo bo) {

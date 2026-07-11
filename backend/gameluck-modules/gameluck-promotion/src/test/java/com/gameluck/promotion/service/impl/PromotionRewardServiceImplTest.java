@@ -1,6 +1,7 @@
 package com.gameluck.promotion.service.impl;
 
 import com.gameluck.common.core.exception.ServiceException;
+import com.gameluck.promotion.client.domain.vo.ClientDailyLoginRewardVo;
 import com.gameluck.promotion.domain.PromotionClaim;
 import com.gameluck.promotion.domain.PromotionReward;
 import com.gameluck.promotion.domain.bo.PromotionClaimBo;
@@ -21,8 +22,10 @@ import java.time.LocalDate;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -177,6 +180,89 @@ class PromotionRewardServiceImplTest {
 
         assertEquals(99L, claim.getId());
         assertEquals("WT_EXISTING", claim.getWalletTransactionNo());
+        verifyNoInteractions(walletCoreService);
+    }
+
+    @Test
+    @Tag("local")
+    void dailyLoginRewardStateReturnsNotConfiguredWhenNoActiveReward() {
+        PromotionRewardMapper rewardMapper = mock(PromotionRewardMapper.class);
+        PromotionClaimMapper claimMapper = mock(PromotionClaimMapper.class);
+        IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
+        PromotionRewardServiceImpl service = new PromotionRewardServiceImpl(rewardMapper, claimMapper, walletCoreService);
+
+        when(rewardMapper.selectActiveDailyLoginReward("000000")).thenReturn(null);
+
+        ClientDailyLoginRewardVo state = service.dailyLoginReward(1001L);
+
+        assertEquals(LocalDate.now(), state.getClaimDate());
+        assertEquals("NOT_CONFIGURED", state.getClaimStatus());
+        assertFalse(state.getCanClaim());
+        assertTrue(state.getRewardItems().isEmpty());
+        verifyNoInteractions(claimMapper);
+        verifyNoInteractions(walletCoreService);
+    }
+
+    @Test
+    @Tag("local")
+    void dailyLoginRewardStateReturnsUnclaimedWhenConfiguredAndNoClaimToday() {
+        PromotionRewardMapper rewardMapper = mock(PromotionRewardMapper.class);
+        PromotionClaimMapper claimMapper = mock(PromotionClaimMapper.class);
+        IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
+        PromotionRewardServiceImpl service = new PromotionRewardServiceImpl(rewardMapper, claimMapper, walletCoreService);
+
+        PromotionReward reward = activeReward();
+        reward.setPromotionType("DAILY_LOGIN");
+        reward.setRewardItems("[{\"currencyCode\":\"GC\",\"rewardAmount\":\"100.000000\"},{\"currencyCode\":\"SC\",\"rewardAmount\":\"1.000000\"}]");
+        when(rewardMapper.selectActiveDailyLoginReward("000000")).thenReturn(reward);
+        when(claimMapper.selectDailyClaim("000000", 10L, 1001L, LocalDate.now())).thenReturn(null);
+
+        ClientDailyLoginRewardVo state = service.dailyLoginReward(1001L);
+
+        assertEquals(10L, state.getPromotionId());
+        assertEquals("Daily simulated reward", state.getPromotionName());
+        assertEquals("DAILY_LOGIN", state.getPromotionType());
+        assertEquals(LocalDate.now(), state.getClaimDate());
+        assertEquals("UNCLAIMED", state.getClaimStatus());
+        assertTrue(state.getCanClaim());
+        assertEquals(2, state.getRewardItems().size());
+        assertEquals("GC", state.getRewardItems().get(0).getCurrencyCode());
+        assertEquals(new BigDecimal("100.000000"), state.getRewardItems().get(0).getRewardAmount());
+        assertNull(state.getClaimNo());
+        assertNull(state.getWalletTransactionNo());
+        verifyNoInteractions(walletCoreService);
+    }
+
+    @Test
+    @Tag("local")
+    void dailyLoginRewardStateReturnsClaimStatusWhenClaimedToday() {
+        PromotionRewardMapper rewardMapper = mock(PromotionRewardMapper.class);
+        PromotionClaimMapper claimMapper = mock(PromotionClaimMapper.class);
+        IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
+        PromotionRewardServiceImpl service = new PromotionRewardServiceImpl(rewardMapper, claimMapper, walletCoreService);
+
+        PromotionReward reward = activeReward();
+        reward.setPromotionType("DAILY_LOGIN");
+        reward.setRewardItems("[{\"currencyCode\":\"GC\",\"rewardAmount\":\"100.000000\"}]");
+        PromotionClaim existing = new PromotionClaim();
+        existing.setPromotionId(10L);
+        existing.setPromotionName("Daily simulated reward");
+        existing.setPromotionType("DAILY_LOGIN");
+        existing.setMemberId(1001L);
+        existing.setClaimNo("PC_EXISTING");
+        existing.setClaimDate(LocalDate.now());
+        existing.setStatus("SUCCESS");
+        existing.setWalletTransactionNo("WT_EXISTING");
+        when(rewardMapper.selectActiveDailyLoginReward("000000")).thenReturn(reward);
+        when(claimMapper.selectDailyClaim("000000", 10L, 1001L, LocalDate.now())).thenReturn(existing);
+
+        ClientDailyLoginRewardVo state = service.dailyLoginReward(1001L);
+
+        assertEquals("SUCCESS", state.getClaimStatus());
+        assertFalse(state.getCanClaim());
+        assertEquals("PC_EXISTING", state.getClaimNo());
+        assertEquals("WT_EXISTING", state.getWalletTransactionNo());
+        assertEquals(1, state.getRewardItems().size());
         verifyNoInteractions(walletCoreService);
     }
 

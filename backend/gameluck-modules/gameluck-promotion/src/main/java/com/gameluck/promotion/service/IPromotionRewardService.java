@@ -2,6 +2,7 @@ package com.gameluck.promotion.service;
 
 import com.gameluck.common.mybatis.core.page.PageQuery;
 import com.gameluck.common.mybatis.core.page.TableDataInfo;
+import com.gameluck.promotion.client.domain.vo.ClientDailyLoginRewardVo;
 import com.gameluck.promotion.domain.bo.PromotionClaimBo;
 import com.gameluck.promotion.domain.bo.PromotionRewardBo;
 import com.gameluck.promotion.domain.vo.PromotionClaimVo;
@@ -32,4 +33,6 @@ public interface IPromotionRewardService {
     PromotionClaimVo claim(PromotionClaimBo bo);
 
     PromotionClaimVo claimDailyLoginReward(Long memberId);
+
+    ClientDailyLoginRewardVo dailyLoginReward(Long memberId);
 }
