@@ -656,7 +656,7 @@ VALUES
 (1818, '规则新增', 1806, 2, '#', '', '', 1, 0, 'F', '0', '0', 'wallet:rule:add', '#', 103, 1, NOW(), NULL, NULL, ''),
 (1819, '规则编辑', 1806, 3, '#', '', '', 1, 0, 'F', '0', '0', 'wallet:rule:edit', '#', 103, 1, NOW(), NULL, NULL, ''),
 (1820, '补齐默认规则', 1806, 4, '#', '', '', 1, 0, 'F', '0', '0', 'wallet:rule:seed', '#', 103, 1, NOW(), NULL, NULL, ''),
-(1807, '人工调账', 1800, 7, 'manual-adjust', 'wallet/manual-adjust/index', '', 1, 0, 'C', '0', '0', 'wallet:manualAdjust:add', 'edit', 103, 1, NOW(), NULL, NULL, '后台人工调账菜单'),
+(1807, '人工调账', 1800, 7, 'manual-adjust', 'wallet/manual-adjust/index', '', 1, 0, 'C', '0', '0', 'wallet:manualAdjust:list', 'edit', 103, 1, NOW(), NULL, NULL, '后台人工调账菜单'),
 (1821, '人工调账操作', 1807, 1, '#', '', '', 1, 0, 'F', '0', '0', 'wallet:manualAdjust:add', '#', 103, 1, NOW(), NULL, NULL, '')
 ON DUPLICATE KEY UPDATE
   menu_name = VALUES(menu_name),
