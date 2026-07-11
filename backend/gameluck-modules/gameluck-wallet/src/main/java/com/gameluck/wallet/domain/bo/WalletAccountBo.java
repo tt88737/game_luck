@@ -20,6 +20,8 @@ public class WalletAccountBo extends BaseEntity {
 
     private Long memberId;
 
+    private String memberNo;
+
     private String currencyCode;
 
     private String status;

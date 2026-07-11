@@ -47,6 +47,8 @@ public class WalletAccountServiceImpl implements IWalletAccountService {
         LambdaQueryWrapper<WalletAccount> lqw = Wrappers.lambdaQuery();
         lqw.eq(StringUtils.isNotBlank(bo.getTenantId()), WalletAccount::getTenantId, bo.getTenantId());
         lqw.eq(bo.getMemberId() != null, WalletAccount::getMemberId, bo.getMemberId());
+        lqw.apply(StringUtils.isNotBlank(bo.getMemberNo()),
+            "member_id in (select id from gl_member_profile where member_no = {0} and del_flag = '0')", bo.getMemberNo());
         lqw.eq(StringUtils.isNotBlank(bo.getCurrencyCode()), WalletAccount::getCurrencyCode, bo.getCurrencyCode());
         lqw.eq(StringUtils.isNotBlank(bo.getStatus()), WalletAccount::getStatus, bo.getStatus());
         lqw.orderByDesc(WalletAccount::getCreateTime);

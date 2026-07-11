@@ -615,3 +615,29 @@
   - `pnpm --dir admin-ui build:dev`
   - `Invoke-WebRequest http://localhost:5173/` returned 200 and contained the app root.
 - Browser screenshot verification was not run because Playwright is not installed in `admin-ui` dependencies.
+
+## 2026-07-11 Wallet Account Member Number Search Fix
+
+- Fixed the B-side wallet account search error reported from `钱包中心 -> 钱包账户`.
+- Root cause:
+  - The page label said `会员ID`, but operators naturally copied the member number such as `MB2075851894760460289`.
+  - The frontend sent that value as `memberId`.
+  - Backend `WalletAccountBo.memberId` is `Long`, so `MB...` caused a parameter conversion failure and surfaced as an unknown system error.
+- Backend changes:
+  - Added `memberNo` to `WalletAccountBo`.
+  - Added wallet account filtering by `memberNo` through `gl_member_profile.member_no`.
+  - Added `WalletAccountServiceImplTest.queryListCanFilterByMemberNo()`.
+- Admin UI changes:
+  - Changed the wallet account search label to `会员ID/编号`.
+  - Added frontend query normalization: pure numeric input still uses `memberId`; non-numeric input uses `memberNo`.
+  - Added English i18n text for the new label and placeholder.
+- Verification passed:
+  - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-modules/gameluck-wallet -am -Plocal -DskipTests=false "-Dtest=WalletAccountServiceImplTest" "-Dsurefire.failIfNoSpecifiedTests=false" test`
+  - `pnpm --dir admin-ui check:i18n`
+  - `pnpm --dir admin-ui build:dev`
+  - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal -DskipTests`
+  - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am package -Plocal -DskipTests`
+- Runtime smoke:
+  - Restarted local backend from the newly packaged `gameluck-admin.jar` with captcha disabled only for smoke login.
+  - Encrypted admin login returned `code=200`.
+  - `GET /wallet/account/list?memberNo=MB2075851894760460289&pageNum=1&pageSize=10` returned `code=200`, `total=2`, with GC `1000.000000` and SC `25.000000`.

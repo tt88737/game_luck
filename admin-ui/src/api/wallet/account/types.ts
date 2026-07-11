@@ -11,6 +11,7 @@ export interface AccountVO extends BaseEntity {
 
 export interface AccountQuery extends PageQuery {
   memberId?: string | number;
+  memberNo?: string;
   currencyCode?: string;
   status?: string;
 }
