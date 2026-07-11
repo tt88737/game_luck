@@ -58,10 +58,19 @@ export function getCodeImg(): AxiosPromise<VerifyCodeResult> {
   return request({
     url: '/auth/code',
     headers: {
-      isToken: false
+      isToken: false,
+      silentError: true
     },
     method: 'get',
     timeout: 20000
+  }).catch(() => {
+    return Promise.resolve({
+      data: {
+        captchaEnabled: true,
+        uuid: '',
+        img: ''
+      }
+    } as any);
   });
 }
 
@@ -76,8 +85,22 @@ export function getTenantList(isToken: boolean): AxiosPromise<TenantInfo> {
   return request({
     url: '/auth/tenant/list',
     headers: {
-      isToken
+      isToken,
+      silentError: true
     },
     method: 'get'
+  }).catch(() => {
+    return Promise.resolve({
+      data: {
+        tenantEnabled: true,
+        voList: [
+          {
+            tenantId: '000000',
+            companyName: '000000',
+            domain: null
+          }
+        ]
+      }
+    } as any);
   });
 }

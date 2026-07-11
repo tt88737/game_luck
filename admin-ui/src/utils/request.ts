@@ -43,6 +43,7 @@ service.interceptors.request.use(
     config.headers['Content-Language'] = getLanguage();
 
     const isToken = config.headers?.isToken === false;
+    const silentError = config.headers?.silentError === true || config.headers?.silentError === 'true';
     // 是否需要防止数据重复提交
     const isRepeatSubmit = config.headers?.repeatSubmit === false;
     // 是否需要加密
@@ -95,6 +96,9 @@ service.interceptors.request.use(
     if (config.data instanceof FormData) {
       delete config.headers['Content-Type'];
     }
+    if (silentError) {
+      config.headers.silentError = 'true';
+    }
     return config;
   },
   (error: any) => {
@@ -123,6 +127,7 @@ service.interceptors.response.use(
     }
     // 未设置状态码则默认成功状态
     const code = res.data.code || HttpStatus.SUCCESS;
+    const silentError = res.config.headers?.silentError === true || res.config.headers?.silentError === 'true';
     // 获取错误信息
     const msg = tt(errorCode[code] || res.data.msg || errorCode['default']);
     // 二进制数据则直接返回
@@ -153,13 +158,19 @@ service.interceptors.response.use(
       }
       return Promise.reject(tt('无效的会话，或者会话已过期，请重新登录。'));
     } else if (code === HttpStatus.SERVER_ERROR) {
-      ElMessage({ message: msg, type: 'error' });
+      if (!silentError) {
+        ElMessage({ message: msg, type: 'error' });
+      }
       return Promise.reject(new Error(msg));
     } else if (code === HttpStatus.WARN) {
-      ElMessage({ message: msg, type: 'warning' });
+      if (!silentError) {
+        ElMessage({ message: msg, type: 'warning' });
+      }
       return Promise.reject(new Error(msg));
     } else if (code !== HttpStatus.SUCCESS) {
-      ElNotification.error({ title: msg });
+      if (!silentError) {
+        ElNotification.error({ title: msg });
+      }
       return Promise.reject('error');
     } else {
       return Promise.resolve(res.data);
@@ -167,6 +178,7 @@ service.interceptors.response.use(
   },
   (error: any) => {
     let { message } = error;
+    const silentError = error.config?.headers?.silentError === true || error.config?.headers?.silentError === 'true';
     if (message == 'Network Error') {
       message = tt('后端接口连接异常');
     } else if (message.includes('timeout')) {
@@ -174,7 +186,9 @@ service.interceptors.response.use(
     } else if (message.includes('Request failed with status code')) {
       message = tt('系统接口') + message.substr(message.length - 3) + tt('异常');
     }
-    ElMessage({ message: message, type: 'error', duration: 5 * 1000 });
+    if (!silentError) {
+      ElMessage({ message: message, type: 'error', duration: 5 * 1000 });
+    }
     return Promise.reject(error);
   }
 );

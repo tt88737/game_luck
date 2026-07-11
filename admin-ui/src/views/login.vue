@@ -39,9 +39,11 @@
         >
           <template #prefix><svg-icon icon-class="validCode" class="el-input__icon input-icon" /></template>
         </el-input>
-        <div class="login-code">
-          <img :src="codeUrl" class="login-code-img" @click="getCode" />
-        </div>
+        <button class="login-code" type="button" :disabled="captchaLoading" @click="getCode">
+          <span v-if="captchaLoading" class="login-code-state">{{ captchaLoadingText }}</span>
+          <img v-else-if="codeUrl && !captchaError" :src="codeUrl" class="login-code-img" :alt="proxy.$t('login.code')" />
+          <span v-else class="login-code-state is-error">{{ captchaReloadText }}</span>
+        </button>
       </el-form-item>
       <el-checkbox v-model="loginForm.rememberMe" style="margin: 0 0 25px 0">{{ proxy.$t('login.rememberPassword') }}</el-checkbox>
       <el-form-item style="width: 100%">
@@ -73,7 +75,7 @@ const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const title = import.meta.env.VITE_APP_TITLE;
 const userStore = useUserStore();
 const router = useRouter();
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 const loginForm = ref<LoginData>({
   tenantId: '000000',
@@ -93,6 +95,8 @@ const loginRules: ElFormRules = {
 
 const codeUrl = ref('');
 const loading = ref(false);
+const captchaLoading = ref(false);
+const captchaError = ref(false);
 // 验证码开关
 const captchaEnabled = ref(true);
 // 租户开关
@@ -104,6 +108,9 @@ const redirect = ref('/');
 const loginRef = ref<ElFormInstance>();
 // 租户列表
 const tenantList = ref<TenantVO[]>([]);
+const isEnglish = computed(() => String(locale.value).toLowerCase().startsWith('en'));
+const captchaLoadingText = computed(() => (isEnglish.value ? 'Loading' : '\u52a0\u8f7d\u4e2d'));
+const captchaReloadText = computed(() => (isEnglish.value ? 'Refresh' : '\u5237\u65b0\u9a8c\u8bc1\u7801'));
 
 watch(
   () => router.currentRoute.value,
@@ -159,8 +166,9 @@ const getCode = async () => {
   if (captchaEnabled.value) {
     // 刷新验证码时清空输入框
     loginForm.value.code = '';
-    codeUrl.value = 'data:image/gif;base64,' + data.img;
+    codeUrl.value = data.img ? 'data:image/gif;base64,' + data.img : '';
     loginForm.value.uuid = data.uuid;
+    captchaError.value = !data.img || !data.uuid;
   }
 };
 
@@ -292,6 +300,11 @@ onMounted(() => {
   overflow: hidden;
   background: rgba(255, 255, 255, 0.9);
   border: 1px solid var(--el-border-color-light);
+  padding: 0;
+  color: var(--el-text-color-secondary);
+  font-size: 13px;
+  line-height: 38px;
+  text-align: center;
 
   img {
     cursor: pointer;
@@ -301,6 +314,31 @@ onMounted(() => {
     height: 40px;
     object-fit: cover;
   }
+
+  &:not(:disabled) {
+    cursor: pointer;
+  }
+
+  &:hover:not(:disabled) {
+    border-color: var(--el-color-primary);
+  }
+
+  &:disabled {
+    cursor: default;
+  }
+}
+
+.login-code-state {
+  display: block;
+  width: 100%;
+  padding: 0 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.login-code-state.is-error {
+  color: var(--el-color-primary);
 }
 
 .el-login-footer {
