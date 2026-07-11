@@ -15,6 +15,7 @@ export interface ManualAdjustResultVO {
   tenantId?: string | number;
   transactionNo?: string;
   idempotencyKey?: string;
+  requestHash?: string;
   memberId?: string | number;
   currencyCode?: string;
   operation?: string;
@@ -32,6 +33,8 @@ export interface ManualAdjustResultVO {
   failReason?: string;
   operatorId?: string | number;
   remark?: string;
+  createTime?: string;
+  updateTime?: string;
 }
 
 export interface ApiDataResponse<T> {
