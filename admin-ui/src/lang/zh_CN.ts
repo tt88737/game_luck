@@ -288,11 +288,15 @@ export default {
     fields: {
       promotionNo: '活动编号',
       promotionName: '活动名称',
+      promotionType: '活动类型',
+      rewardItems: '奖励配置',
       rewardAmount: '奖励金额',
       startTime: '开始时间',
       endTime: '结束时间',
       claimNo: '领取单号',
       memberId: '会员ID',
+      claimDate: '领取日期',
+      rewardSnapshot: '奖励快照',
       walletTransactionNo: '钱包交易号',
       failReason: '失败原因',
       claimTime: '领取时间'
@@ -300,6 +304,7 @@ export default {
     placeholders: {
       promotionNo: '请输入活动编号',
       promotionName: '请输入活动名称',
+      promotionType: '请选择活动类型',
       currency: '请选择币种',
       status: '请选择状态',
       startTime: '不填则立即可用',
@@ -313,12 +318,18 @@ export default {
       SUCCESS: '成功',
       FAILED: '失败'
     },
+    types: {
+      GENERAL: '普通奖励',
+      DAILY_LOGIN: '每日登录'
+    },
     actions: {
       edit: '编辑配置',
       enable: '启用活动',
       disable: '停用活动',
       claim: '会员领取',
       claims: '领取记录',
+      addRewardItem: '新增奖励项',
+      removeRewardItem: '删除奖励项',
       delete: '删除配置'
     },
     dialog: {
@@ -329,6 +340,7 @@ export default {
     },
     rules: {
       promotionName: '活动名称不能为空',
+      promotionType: '活动类型不能为空',
       currency: '币种不能为空',
       rewardAmount: '奖励金额不能为空',
       status: '状态不能为空',
@@ -339,7 +351,8 @@ export default {
       delete: '确认删除选中的促销奖励？'
     },
     messages: {
-      claimSuccess: '领取成功'
+      claimSuccess: '领取成功',
+      rewardItemsRequired: '请至少配置一项奖励'
     }
   },
   redemptionOrder: {

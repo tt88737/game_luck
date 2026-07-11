@@ -10,6 +10,12 @@
             <el-form-item :label="t('promotionReward.fields.promotionName')" prop="promotionName">
               <el-input v-model="queryParams.promotionName" :placeholder="t('promotionReward.placeholders.promotionName')" clearable @keyup.enter="handleQuery" />
             </el-form-item>
+            <el-form-item :label="t('promotionReward.fields.promotionType')" prop="promotionType">
+              <el-select v-model="queryParams.promotionType" :placeholder="t('promotionReward.placeholders.promotionType')" clearable class="!w-150px">
+                <el-option :label="promotionTypeLabel('GENERAL')" value="GENERAL" />
+                <el-option :label="promotionTypeLabel('DAILY_LOGIN')" value="DAILY_LOGIN" />
+              </el-select>
+            </el-form-item>
             <el-form-item :label="t('common.currency')" prop="currencyCode">
               <el-select v-model="queryParams.currencyCode" :placeholder="t('promotionReward.placeholders.currency')" clearable class="!w-120px">
                 <el-option label="SC" value="SC" />
@@ -51,6 +57,11 @@
         <el-table-column type="selection" width="45" align="center" />
         <el-table-column :label="t('promotionReward.fields.promotionNo')" align="center" prop="promotionNo" min-width="170" show-overflow-tooltip />
         <el-table-column :label="t('promotionReward.fields.promotionName')" align="center" prop="promotionName" min-width="160" show-overflow-tooltip />
+        <el-table-column :label="t('promotionReward.fields.promotionType')" align="center" prop="promotionType" width="130">
+          <template #default="scope">
+            <el-tag :type="scope.row.promotionType === 'DAILY_LOGIN' ? 'warning' : 'info'">{{ promotionTypeLabel(scope.row.promotionType) }}</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column :label="t('common.currency')" align="center" prop="currencyCode" width="90" />
         <el-table-column :label="t('promotionReward.fields.rewardAmount')" align="right" prop="rewardAmount" width="130" />
         <el-table-column :label="t('common.status')" align="center" prop="status" width="100">
@@ -96,15 +107,37 @@
         <el-form-item :label="t('promotionReward.fields.promotionName')" prop="promotionName">
           <el-input v-model="form.promotionName" :placeholder="t('promotionReward.placeholders.promotionName')" />
         </el-form-item>
-        <el-form-item :label="t('common.currency')" prop="currencyCode">
+        <el-form-item :label="t('promotionReward.fields.promotionType')" prop="promotionType">
+          <el-select v-model="form.promotionType" :placeholder="t('promotionReward.placeholders.promotionType')" class="w-full">
+            <el-option :label="promotionTypeLabel('GENERAL')" value="GENERAL" />
+            <el-option :label="promotionTypeLabel('DAILY_LOGIN')" value="DAILY_LOGIN" />
+          </el-select>
+        </el-form-item>
+        <el-form-item v-if="form.promotionType !== 'DAILY_LOGIN'" :label="t('common.currency')" prop="currencyCode">
           <el-select v-model="form.currencyCode" class="w-full">
             <el-option label="SC" value="SC" />
             <el-option label="RC" value="RC" />
             <el-option label="GC" value="GC" />
           </el-select>
         </el-form-item>
-        <el-form-item :label="t('promotionReward.fields.rewardAmount')" prop="rewardAmount">
+        <el-form-item v-if="form.promotionType !== 'DAILY_LOGIN'" :label="t('promotionReward.fields.rewardAmount')" prop="rewardAmount">
           <el-input-number v-model="form.rewardAmount" :precision="6" :min="0.000001" class="w-full" />
+        </el-form-item>
+        <el-form-item v-else :label="t('promotionReward.fields.rewardItems')" prop="rewardItems">
+          <div class="reward-items-editor">
+            <div v-for="(item, index) in dailyRewardItems" :key="index" class="reward-item-row">
+              <el-select v-model="item.currencyCode" :placeholder="t('promotionReward.placeholders.currency')" class="!w-110px">
+                <el-option label="GC" value="GC" />
+                <el-option label="SC" value="SC" />
+                <el-option label="RC" value="RC" />
+              </el-select>
+              <el-input-number v-model="item.rewardAmount" :precision="6" :min="0.000001" class="reward-item-amount" />
+              <el-tooltip :content="t('promotionReward.actions.removeRewardItem')" placement="top">
+                <el-button icon="Delete" circle :disabled="dailyRewardItems.length <= 1" @click="removeRewardItem(index)" />
+              </el-tooltip>
+            </div>
+            <el-button icon="Plus" @click="addRewardItem">{{ t('promotionReward.actions.addRewardItem') }}</el-button>
+          </div>
         </el-form-item>
         <el-form-item :label="t('common.status')" prop="status">
           <el-radio-group v-model="form.status">
@@ -153,9 +186,20 @@
     <el-drawer v-model="claimDrawer.visible" :title="claimDrawerTitle" size="70%" append-to-body>
       <el-table v-loading="claimLoading" border :data="claimList">
         <el-table-column :label="t('promotionReward.fields.claimNo')" align="center" prop="claimNo" min-width="170" show-overflow-tooltip />
+        <el-table-column :label="t('promotionReward.fields.promotionType')" align="center" prop="promotionType" width="130">
+          <template #default="scope">
+            <el-tag :type="scope.row.promotionType === 'DAILY_LOGIN' ? 'warning' : 'info'">{{ promotionTypeLabel(scope.row.promotionType) }}</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column :label="t('promotionReward.fields.memberId')" align="center" prop="memberId" width="120" />
         <el-table-column :label="t('common.currency')" align="center" prop="currencyCode" width="90" />
         <el-table-column :label="t('promotionReward.fields.rewardAmount')" align="right" prop="rewardAmount" width="130" />
+        <el-table-column :label="t('promotionReward.fields.claimDate')" align="center" prop="claimDate" width="120" />
+        <el-table-column :label="t('promotionReward.fields.rewardSnapshot')" align="center" min-width="180" show-overflow-tooltip>
+          <template #default="scope">
+            {{ formatRewardSnapshot(scope.row.rewardSnapshot) }}
+          </template>
+        </el-table-column>
         <el-table-column :label="t('common.status')" align="center" prop="status" width="100">
           <template #default="scope">
             <el-tag :type="scope.row.status === 'SUCCESS' ? 'success' : 'danger'">{{ claimStatusLabel(scope.row.status) }}</el-tag>
@@ -181,7 +225,15 @@ import {
   updatePromotionReward,
   updatePromotionRewardStatus
 } from '@/api/promotion/reward';
-import { PromotionClaimForm, PromotionClaimQuery, PromotionClaimVO, PromotionRewardForm, PromotionRewardQuery, PromotionRewardVO } from '@/api/promotion/reward/types';
+import {
+  PromotionClaimForm,
+  PromotionClaimQuery,
+  PromotionClaimVO,
+  PromotionRewardForm,
+  PromotionRewardItem,
+  PromotionRewardQuery,
+  PromotionRewardVO
+} from '@/api/promotion/reward/types';
 import { useI18n } from 'vue-i18n';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -217,7 +269,9 @@ const claimDrawer = reactive({
 });
 
 const initFormData: PromotionRewardForm = {
+  promotionType: 'GENERAL',
   currencyCode: 'SC',
+  claimCycle: 'ONCE',
   status: 'INACTIVE'
 };
 
@@ -229,6 +283,7 @@ const queryParams = ref<PromotionRewardQuery>({
   pageSize: 10,
   promotionNo: '',
   promotionName: '',
+  promotionType: '',
   currencyCode: '',
   status: ''
 });
@@ -242,9 +297,11 @@ const claimQuery = ref<PromotionClaimQuery>({
 
 const dialogTitle = computed(() => t(dialog.mode === 'add' ? 'promotionReward.dialog.add' : 'promotionReward.dialog.edit'));
 const claimDrawerTitle = computed(() => t('promotionReward.dialog.claimRecords', { name: claimDrawer.promotionName }));
+const dailyRewardItems = computed<PromotionRewardItem[]>(() => (Array.isArray(form.value.rewardItems) ? form.value.rewardItems : []));
 
 const rules = computed(() => ({
   promotionName: [{ required: true, message: t('promotionReward.rules.promotionName'), trigger: 'blur' }],
+  promotionType: [{ required: true, message: t('promotionReward.rules.promotionType'), trigger: 'change' }],
   currencyCode: [{ required: true, message: t('promotionReward.rules.currency'), trigger: 'change' }],
   rewardAmount: [{ required: true, message: t('promotionReward.rules.rewardAmount'), trigger: 'blur' }],
   status: [{ required: true, message: t('promotionReward.rules.status'), trigger: 'change' }]
@@ -284,6 +341,87 @@ const claimStatusLabel = (status?: string) => {
   return status ? t(`promotionReward.status.${status}`) || status : '';
 };
 
+const promotionTypeLabel = (type?: string) => {
+  const promotionType = type || 'GENERAL';
+  return t(`promotionReward.types.${promotionType}`) || promotionType;
+};
+
+const defaultDailyRewardItems = (): PromotionRewardItem[] => [
+  { currencyCode: 'GC', rewardAmount: 100 },
+  { currencyCode: 'SC', rewardAmount: 1 }
+];
+
+const parseRewardItems = (rewardItems?: PromotionRewardItem[] | string): PromotionRewardItem[] => {
+  if (Array.isArray(rewardItems)) {
+    return rewardItems.filter((item) => item.currencyCode && Number(item.rewardAmount) > 0).map((item) => ({ currencyCode: item.currencyCode, rewardAmount: Number(item.rewardAmount) }));
+  }
+  if (typeof rewardItems === 'string' && rewardItems.trim()) {
+    try {
+      const parsed = JSON.parse(rewardItems) as PromotionRewardItem[];
+      return Array.isArray(parsed) ? parseRewardItems(parsed) : [];
+    } catch {
+      return [];
+    }
+  }
+  return [];
+};
+
+const rewardItemsFromReward = (reward: PromotionRewardVO | PromotionRewardForm): PromotionRewardItem[] => {
+  const parsed = parseRewardItems(reward.rewardItems);
+  if (parsed.length) {
+    return parsed;
+  }
+  if (reward.currencyCode && Number(reward.rewardAmount) > 0) {
+    return [{ currencyCode: reward.currencyCode, rewardAmount: Number(reward.rewardAmount) }];
+  }
+  return [];
+};
+
+const ensureDailyRewardItems = () => {
+  const items = parseRewardItems(form.value.rewardItems);
+  form.value.rewardItems = items.length ? items : defaultDailyRewardItems();
+};
+
+const addRewardItem = () => {
+  const items = parseRewardItems(form.value.rewardItems);
+  form.value.rewardItems = [...items, { currencyCode: 'GC', rewardAmount: 1 }];
+};
+
+const removeRewardItem = (index: number) => {
+  const items = parseRewardItems(form.value.rewardItems);
+  items.splice(index, 1);
+  form.value.rewardItems = items.length ? items : defaultDailyRewardItems();
+};
+
+const normalizePayload = (): PromotionRewardForm => {
+  const promotionType = form.value.promotionType || 'GENERAL';
+  if (promotionType === 'DAILY_LOGIN') {
+    const rewardItems = parseRewardItems(form.value.rewardItems);
+    const firstItem = rewardItems[0];
+    return {
+      ...form.value,
+      promotionType,
+      currencyCode: firstItem?.currencyCode || 'GC',
+      rewardAmount: firstItem?.rewardAmount || 100,
+      claimCycle: 'DAILY',
+      dailyClaimLimit: 1,
+      rewardItems
+    };
+  }
+  return {
+    ...form.value,
+    promotionType,
+    claimCycle: 'ONCE',
+    dailyClaimLimit: undefined,
+    rewardItems: undefined
+  };
+};
+
+const formatRewardSnapshot = (rewardSnapshot?: string) => {
+  const items = parseRewardItems(rewardSnapshot);
+  return items.length ? items.map((item) => `${item.rewardAmount} ${item.currencyCode}`).join(', ') : rewardSnapshot || '';
+};
+
 const reset = () => {
   form.value = { ...initFormData };
   rewardFormRef.value?.resetFields();
@@ -313,7 +451,12 @@ const handleAdd = () => {
 const handleUpdate = async (row: PromotionRewardVO) => {
   reset();
   const res = await getPromotionReward(row.id);
-  form.value = res.data;
+  form.value = {
+    ...res.data,
+    promotionType: res.data.promotionType || 'GENERAL',
+    claimCycle: res.data.claimCycle || (res.data.promotionType === 'DAILY_LOGIN' ? 'DAILY' : 'ONCE'),
+    rewardItems: rewardItemsFromReward(res.data)
+  };
   dialog.mode = 'edit';
   dialog.visible = true;
 };
@@ -321,11 +464,19 @@ const handleUpdate = async (row: PromotionRewardVO) => {
 const submitForm = () => {
   rewardFormRef.value?.validate(async (valid: boolean) => {
     if (valid) {
+      if (form.value.promotionType === 'DAILY_LOGIN') {
+        ensureDailyRewardItems();
+        if (!parseRewardItems(form.value.rewardItems).length) {
+          proxy?.$modal.msgError(t('promotionReward.messages.rewardItemsRequired'));
+          return;
+        }
+      }
+      const payload = normalizePayload();
       if (form.value.id) {
-        await updatePromotionReward(form.value);
+        await updatePromotionReward(payload);
         proxy?.$modal.msgSuccess(t('common.success.edit'));
       } else {
-        await addPromotionReward(form.value);
+        await addPromotionReward(payload);
         proxy?.$modal.msgSuccess(t('common.success.add'));
       }
       dialog.visible = false;
@@ -338,6 +489,20 @@ const cancel = () => {
   reset();
   dialog.visible = false;
 };
+
+watch(
+  () => form.value.promotionType,
+  (promotionType) => {
+    if (promotionType === 'DAILY_LOGIN') {
+      form.value.claimCycle = 'DAILY';
+      form.value.dailyClaimLimit = 1;
+      ensureDailyRewardItems();
+    } else {
+      form.value.claimCycle = 'ONCE';
+      form.value.dailyClaimLimit = undefined;
+    }
+  }
+);
 
 const handleStatus = async (row: PromotionRewardVO) => {
   const nextStatus = row.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
@@ -390,3 +555,23 @@ onMounted(() => {
   getList();
 });
 </script>
+
+<style scoped lang="scss">
+.reward-items-editor {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.reward-item-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reward-item-amount {
+  flex: 1;
+  min-width: 180px;
+}
+</style>

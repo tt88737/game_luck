@@ -1,10 +1,19 @@
+export interface PromotionRewardItem {
+  currencyCode: string;
+  rewardAmount: number;
+}
+
 export interface PromotionRewardVO extends BaseEntity {
   id: string | number;
   tenantId: string;
   promotionNo: string;
   promotionName: string;
+  promotionType?: string;
   currencyCode: string;
   rewardAmount: number;
+  claimCycle?: string;
+  dailyClaimLimit?: number;
+  rewardItems?: PromotionRewardItem[] | string;
   status: string;
   startTime: string;
   endTime: string;
@@ -20,9 +29,12 @@ export interface PromotionClaimVO extends BaseEntity {
   promotionId: string | number;
   promotionNo: string;
   promotionName: string;
+  promotionType?: string;
   memberId: string | number;
   currencyCode: string;
   rewardAmount: number;
+  claimDate?: string;
+  rewardSnapshot?: string;
   status: string;
   walletTransactionNo: string;
   idempotencyKey: string;
@@ -35,8 +47,12 @@ export interface PromotionClaimVO extends BaseEntity {
 export interface PromotionRewardForm {
   id?: string | number;
   promotionName?: string;
+  promotionType?: string;
   currencyCode?: string;
   rewardAmount?: number;
+  claimCycle?: string;
+  dailyClaimLimit?: number;
+  rewardItems?: PromotionRewardItem[] | string;
   status?: string;
   startTime?: string;
   endTime?: string;
@@ -52,6 +68,7 @@ export interface PromotionClaimForm {
 export interface PromotionRewardQuery extends PageQuery {
   promotionNo?: string;
   promotionName?: string;
+  promotionType?: string;
   currencyCode?: string;
   status?: string;
   beginTime?: string;
@@ -62,6 +79,7 @@ export interface PromotionClaimQuery extends PageQuery {
   claimNo?: string;
   promotionId?: string | number;
   promotionNo?: string;
+  promotionType?: string;
   memberId?: string | number;
   currencyCode?: string;
   status?: string;

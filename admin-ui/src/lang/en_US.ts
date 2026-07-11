@@ -292,11 +292,15 @@ export default {
     fields: {
       promotionNo: 'Promotion No.',
       promotionName: 'Promotion Name',
+      promotionType: 'Activity Type',
+      rewardItems: 'Reward Items',
       rewardAmount: 'Reward Amount',
       startTime: 'Start Time',
       endTime: 'End Time',
       claimNo: 'Claim No.',
       memberId: 'Member ID',
+      claimDate: 'Claim Date',
+      rewardSnapshot: 'Reward Snapshot',
       walletTransactionNo: 'Wallet Transaction No.',
       failReason: 'Failure Reason',
       claimTime: 'Claimed At'
@@ -304,6 +308,7 @@ export default {
     placeholders: {
       promotionNo: 'Enter promotion no.',
       promotionName: 'Enter promotion name',
+      promotionType: 'Select activity type',
       currency: 'Select currency',
       status: 'Select status',
       startTime: 'Leave empty to start immediately',
@@ -317,12 +322,18 @@ export default {
       SUCCESS: 'Success',
       FAILED: 'Failed'
     },
+    types: {
+      GENERAL: 'General Reward',
+      DAILY_LOGIN: 'Daily Login'
+    },
     actions: {
       edit: 'Edit configuration',
       enable: 'Enable promotion',
       disable: 'Disable promotion',
       claim: 'Member claim',
       claims: 'Claim records',
+      addRewardItem: 'Add reward item',
+      removeRewardItem: 'Remove reward item',
       delete: 'Delete configuration'
     },
     dialog: {
@@ -333,6 +344,7 @@ export default {
     },
     rules: {
       promotionName: 'Promotion name is required',
+      promotionType: 'Activity type is required',
       currency: 'Currency is required',
       rewardAmount: 'Reward amount is required',
       status: 'Status is required',
@@ -343,7 +355,8 @@ export default {
       delete: 'Confirm deleting the selected promotion rewards?'
     },
     messages: {
-      claimSuccess: 'Claimed successfully'
+      claimSuccess: 'Claimed successfully',
+      rewardItemsRequired: 'At least one reward item is required'
     }
   },
   redemptionOrder: {
