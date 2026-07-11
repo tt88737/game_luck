@@ -119,8 +119,34 @@ SET @sql := IF(@duplicate_claim_count > 0,
 );
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
+SET @daily_idx_exists := (
+  SELECT COUNT(*) FROM information_schema.STATISTICS
+  WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_promotion_claim' AND INDEX_NAME = 'uk_gl_promotion_claim_daily'
+);
+SET @sql := IF(@claim_idx_columns IS NOT NULL
+    AND @claim_idx_columns <> 'tenant_id,promotion_id,member_id,claim_date'
+    AND @daily_idx_exists = 0,
+  'ALTER TABLE gl_promotion_claim ADD UNIQUE KEY uk_gl_promotion_claim_daily (tenant_id, promotion_id, member_id, claim_date)',
+  'SELECT 1'
+);
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
 SET @sql := IF(@claim_idx_columns IS NOT NULL AND @claim_idx_columns <> 'tenant_id,promotion_id,member_id,claim_date',
   'ALTER TABLE gl_promotion_claim DROP INDEX uk_gl_promotion_claim_03',
+  'SELECT 1'
+);
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @claim_idx_exists := (
+  SELECT COUNT(*) FROM information_schema.STATISTICS
+  WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_promotion_claim' AND INDEX_NAME = 'uk_gl_promotion_claim_03'
+);
+SET @daily_idx_exists := (
+  SELECT COUNT(*) FROM information_schema.STATISTICS
+  WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_promotion_claim' AND INDEX_NAME = 'uk_gl_promotion_claim_daily'
+);
+SET @sql := IF(@claim_idx_exists = 0 AND @daily_idx_exists > 0,
+  'ALTER TABLE gl_promotion_claim RENAME INDEX uk_gl_promotion_claim_daily TO uk_gl_promotion_claim_03',
   'SELECT 1'
 );
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
