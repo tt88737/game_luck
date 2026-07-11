@@ -73,11 +73,18 @@ SET @duplicate_claim_count := (
     HAVING COUNT(*) > 1
   ) duplicate_claims
 );
-SET @sql := IF(@duplicate_claim_count > 0,
-  'SIGNAL SQLSTATE ''45000'' SET MESSAGE_TEXT = ''Duplicate promotion claims block daily login reward index migration''',
-  'SELECT 1'
-);
-PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+DROP PROCEDURE IF EXISTS gl_daily_login_reward_assert_no_duplicate_claims;
+DELIMITER //
+CREATE PROCEDURE gl_daily_login_reward_assert_no_duplicate_claims(IN duplicate_count BIGINT)
+BEGIN
+  IF duplicate_count > 0 THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Duplicate promotion claims block daily login reward index migration';
+  END IF;
+END//
+DELIMITER ;
+CALL gl_daily_login_reward_assert_no_duplicate_claims(@duplicate_claim_count);
+DROP PROCEDURE IF EXISTS gl_daily_login_reward_assert_no_duplicate_claims;
 
 UPDATE gl_promotion_claim
 SET claim_date = '1000-01-01'
