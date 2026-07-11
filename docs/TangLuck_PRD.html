@@ -1,0 +1,1052 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tang Luck 同类产品完整 PRD</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink:#172033;
+      --muted:#5b6475;
+      --line:#d9dfeb;
+      --soft:#eef2f8;
+      --bg:#f5f7fb;
+      --paper:#ffffff;
+      --accent:#b66a11;
+      --accent-soft:#fff5e7;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 16px/1.68 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+    }
+    .shell { max-width: 1320px; margin: 0 auto; padding: 36px 22px 72px; display: grid; grid-template-columns: 270px minmax(0, 1fr); gap: 24px; align-items: start; }
+    .toc { position: sticky; top: 20px; max-height: calc(100vh - 40px); overflow: auto; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 16px; box-shadow: 0 10px 28px rgba(23,32,51,.06); }
+    .toc-title { font-weight: 700; margin: 0 0 10px; color: var(--ink); }
+    .toc a { display: block; color: var(--muted); text-decoration: none; padding: 4px 0; line-height: 1.35; font-size: 13px; }
+    .toc a:hover { color: var(--accent); text-decoration: underline; }
+    .toc-l1 { font-weight: 700; color: var(--ink) !important; margin-top: 6px; }
+    .toc-l2 { padding-left: 10px !important; }
+    .toc-l3 { padding-left: 22px !important; font-size: 12px !important; }
+    article { min-width: 0; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 42px 48px; box-shadow: 0 12px 36px rgba(23,32,51,.08); }
+    h1 { margin: 0 0 22px; font-size: 34px; line-height: 1.2; letter-spacing: 0; }
+    h2 { margin: 40px 0 14px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 24px; line-height: 1.25; letter-spacing: 0; }
+    h3 { margin: 28px 0 10px; font-size: 19px; line-height: 1.35; letter-spacing: 0; }
+    h4, h5, h6 { margin: 22px 0 8px; line-height: 1.35; letter-spacing: 0; }
+    p { margin: 10px 0 14px; }
+    ul, ol { margin: 8px 0 14px 24px; padding: 0; }
+    li { margin: 4px 0; }
+    code { background: #f0f3f8; border: 1px solid #e2e7f0; border-radius: 5px; padding: 1px 5px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .92em; }
+    pre { overflow: auto; background: #101827; color: #f5f7fb; border-radius: 8px; padding: 16px; }
+    pre code { background: transparent; border: 0; color: inherit; padding: 0; }
+    .table-wrap { width: 100%; overflow-x: auto; margin: 18px 0 24px; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 680px; }
+    th, td { border: 1px solid var(--line); padding: 9px 11px; vertical-align: top; }
+    th { background: #f0f3f8; text-align: left; font-weight: 700; }
+    tbody tr:nth-child(even) td { background: #fbfcff; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .mermaid { margin: 20px 0 30px; padding: 18px; border: 1px solid var(--line); border-radius: 8px; background: #fff; overflow: auto; }
+    @media (max-width: 980px) {
+      .shell { display: block; padding: 18px 10px 48px; }
+      .toc { position: static; max-height: none; margin-bottom: 12px; }
+      article { padding: 26px 18px; }
+      h1 { font-size: 27px; }
+      h2 { font-size: 21px; }
+      table { min-width: 620px; }
+    }
+    @media print {
+      body { background: #fff; }
+      .shell { max-width: none; display: block; padding: 0; }
+      .toc { display: none; }
+      article { border: 0; box-shadow: none; padding: 0; }
+      a { color: inherit; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <nav class="toc" aria-label="目录">
+  <div class="toc-title">目录</div>
+  <a class="toc-l1" href="#tang-luck-同类产品完整-prd">Tang Luck 同类产品完整 PRD</a>
+  <a class="toc-l2" href="#0.-证据说明">0. 证据说明</a>
+  <a class="toc-l2" href="#1.-专业术语表">1. 专业术语表</a>
+  <a class="toc-l2" href="#2.-产品定位">2. 产品定位</a>
+  <a class="toc-l3" href="#2.1-产品一句话">2.1 产品一句话</a>
+  <a class="toc-l3" href="#2.2-产品目标">2.2 产品目标</a>
+  <a class="toc-l3" href="#2.3-不做范围">2.3 不做范围</a>
+  <a class="toc-l2" href="#3.-用户角色">3. 用户角色</a>
+  <a class="toc-l2" href="#4.-信息架构">4. 信息架构</a>
+  <a class="toc-l2" href="#5.-核心业务流程">5. 核心业务流程</a>
+  <a class="toc-l3" href="#5.1-新用户注册到首局游戏">5.1 新用户注册到首局游戏</a>
+  <a class="toc-l3" href="#5.2-充值流程">5.2 充值流程</a>
+  <a class="toc-l3" href="#5.3-兑换-提现流程">5.3 兑换 / 提现流程</a>
+  <a class="toc-l3" href="#5.4-kyc-与地理定位流程">5.4 KYC 与地理定位流程</a>
+  <a class="toc-l3" href="#5.5-活动参与流程">5.5 活动参与流程</a>
+  <a class="toc-l2" href="#6.-功能需求">6. 功能需求</a>
+  <a class="toc-l3" href="#6.1-app-shell-与基础能力">6.1 App Shell 与基础能力</a>
+  <a class="toc-l3" href="#6.2-账号登录与绑定">6.2 账号、登录与绑定</a>
+  <a class="toc-l3" href="#6.3-大厅与机台">6.3 大厅与机台</a>
+  <a class="toc-l3" href="#6.4-游戏承载与游戏内挂件">6.4 游戏承载与游戏内挂件</a>
+  <a class="toc-l3" href="#6.5-钱包余额与账本">6.5 钱包、余额与账本</a>
+  <a class="toc-l3" href="#6.6-充值-deposit">6.6 充值 Deposit</a>
+  <a class="toc-l3" href="#6.7-兑换-redeem-cashout">6.7 兑换 Redeem / Cashout</a>
+  <a class="toc-l3" href="#6.8-kyc-身份核验">6.8 KYC 身份核验</a>
+  <a class="toc-l3" href="#6.9-地理定位与地区准入">6.9 地理定位与地区准入</a>
+  <a class="toc-l3" href="#6.10-风控反欺诈与完整性">6.10 风控、反欺诈与完整性</a>
+  <a class="toc-l3" href="#6.11-online-rewards-在线奖励">6.11 Online Rewards 在线奖励</a>
+  <a class="toc-l3" href="#6.12-daily-mission-每日任务">6.12 Daily Mission 每日任务</a>
+  <a class="toc-l3" href="#6.13-jackpot-与中奖展示">6.13 Jackpot 与中奖展示</a>
+  <a class="toc-l3" href="#6.14-plinko-小游戏">6.14 Plinko 小游戏</a>
+  <a class="toc-l3" href="#6.15-充值活动与促销">6.15 充值活动与促销</a>
+  <a class="toc-l3" href="#6.16-blazing-challenge">6.16 Blazing Challenge</a>
+  <a class="toc-l3" href="#6.17-cheer-blessing-中奖气氛">6.17 Cheer / Blessing 中奖气氛</a>
+  <a class="toc-l3" href="#6.18-tang-club-club">6.18 Tang Club / Club</a>
+  <a class="toc-l3" href="#6.19-boss-money-tree">6.19 Boss / Money Tree</a>
+  <a class="toc-l3" href="#6.20-个人中心-me">6.20 个人中心 Me</a>
+  <a class="toc-l3" href="#6.21-inbox-消息中心">6.21 Inbox 消息中心</a>
+  <a class="toc-l3" href="#6.22-客服faq-与社媒">6.22 客服、FAQ 与社媒</a>
+  <a class="toc-l3" href="#6.23-push-推送与触达">6.23 Push 推送与触达</a>
+  <a class="toc-l3" href="#6.24-埋点归因与数据">6.24 埋点、归因与数据</a>
+  <a class="toc-l2" href="#7.-后台与管理端需求">7. 后台与管理端需求</a>
+  <a class="toc-l3" href="#7.1-后台模块">7.1 后台模块</a>
+  <a class="toc-l3" href="#7.2-配置中心">7.2 配置中心</a>
+  <a class="toc-l3" href="#7.3-内容配置">7.3 内容配置</a>
+  <a class="toc-l2" href="#8.-数据模型">8. 数据模型</a>
+  <a class="toc-l3" href="#8.1-核心实体">8.1 核心实体</a>
+  <a class="toc-l3" href="#8.2-钱包流水类型">8.2 钱包流水类型</a>
+  <a class="toc-l2" href="#9.-权限与隐私要求">9. 权限与隐私要求</a>
+  <a class="toc-l3" href="#9.1-android-权限映射">9.1 Android 权限映射</a>
+  <a class="toc-l3" href="#9.2-隐私原则">9.2 隐私原则</a>
+  <a class="toc-l2" href="#10.-非功能需求">10. 非功能需求</a>
+  <a class="toc-l2" href="#11.-页面清单">11. 页面清单</a>
+  <a class="toc-l2" href="#12.-验收清单">12. 验收清单</a>
+  <a class="toc-l3" href="#12.1-p0-必须通过">12.1 P0 必须通过</a>
+  <a class="toc-l3" href="#12.2-p1-完整复刻">12.2 P1 完整复刻</a>
+  <a class="toc-l3" href="#12.3-合规验收">12.3 合规验收</a>
+  <a class="toc-l2" href="#13.-仍需动态验证的点">13. 仍需动态验证的点</a>
+  <a class="toc-l2" href="#14.-交付里程碑建议">14. 交付里程碑建议</a>
+  <a class="toc-l2" href="#15.-最终产品定义">15. 最终产品定义</a>
+</nav>
+    <article>
+<h1 id="tang-luck-同类产品完整-prd">Tang Luck 同类产品完整 PRD</h1>
+<p>版本：v1.0 依据：<code>Tang+Luck_+Casino+Slots_1.0.51_APKPure.xapk</code> 静态解包证据 产物目标：如果要做一个覆盖原版全部功能面的同类产品，本 PRD 定义必须交付的产品范围、功能需求、后台能力、合规能力与验收标准。</p>
+<h2 id="0.-证据说明">0. 证据说明</h2>
+<p>本 PRD 基于静态分析，不包含登录后接口抓包和真实运行验证。需求标注分三类：</p>
+<div class="table-wrap"><table>
+<thead><tr><th>标记</th><th>含义</th><th>可用作实现依据</th></tr></thead>
+<tbody>
+<tr><td><code>[事实]</code></td><td>APK Manifest、Cocos 资源路径、prefab 名称、SDK 组件、权限、可读文本直接证明</td><td>可以直接纳入需求</td></tr>
+<tr><td><code>[推断]</code></td><td>原版有对应资源/SDK/权限，但业务规则需从产品常识推导</td><td>可以纳入需求，但需后续动态验证</td></tr>
+<tr><td><code>[需确认]</code></td><td>静态证据不足，只能定义为待确认项</td><td>不应直接定死规则</td></tr>
+</tbody></table></div>
+<p>关键原版事实：</p>
+<ul>
+<li><code>[事实]</code> 应用名 Tang Luck，包名 <code>com.spinshift.tangluck.us.gp</code>，版本 <code>1.0.51</code>。</li>
+<li><code>[事实]</code> 技术栈为 Cocos Creator 3.8.8 + Android 原生桥接，启动场景 <code>Lucky7.scene</code>。</li>
+<li><code>[事实]</code> 客户端资源包含 247 个 prefab，覆盖登录、大厅、钱包、充值、兑换、KYC、地理定位、活动、Jackpot、Tang Club、个人中心、Inbox、客服、支付风控。</li>
+<li><code>[事实]</code> 原生集成包括 Google Billing、Google Sign-In、Facebook、OneSignal、Firebase、AppsFlyer、AIHelp、Sumsub、GeoComply、Forter、ThreatMetrix、ThinkingData、Play Integrity / PairIP。</li>
+<li><code>[事实]</code> Manifest 声明定位、蓝牙、相机、录音、通知、广告 ID、内购、电话状态、存储、日历、NFC、开机广播、使用统计等权限。</li>
+<li><code>[推断]</code> 产品形态是“社交赌场/老虎机大厅 + 双币钱包 + 充值/兑换 + KYC/地理合规 + 活动运营 + 风控归因”的综合产品。理由：资源中存在 <code>GC/SC</code>、<code>Deposit</code>、<code>Redeem</code>、<code>Cashout</code>、<code>KYC</code>、<code>GeoComply</code>、<code>Jackpot</code>、多供应商机台图标。</li>
+</ul>
+<h2 id="1.-专业术语表">1. 专业术语表</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>术语</th><th>中文</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td>PRD</td><td>产品需求文档</td><td>定义产品目标、范围、流程、功能、验收标准</td></tr>
+<tr><td>IA</td><td>信息架构</td><td>页面、模块、导航关系</td></tr>
+<tr><td>Lobby</td><td>大厅</td><td>游戏列表和运营入口的首页</td></tr>
+<tr><td>Machine / Slot</td><td>机台 / 槽机</td><td>单个老虎机或赌场游戏入口</td></tr>
+<tr><td>Provider</td><td>游戏供应商</td><td>Infingame、TaDa、Evolution 等游戏内容方</td></tr>
+<tr><td>Wallet</td><td>钱包</td><td>管理余额、充值、兑换、交易记录</td></tr>
+<tr><td>Deposit</td><td>充值</td><td>用户购买虚拟币或权益包</td></tr>
+<tr><td>Redeem / Cashout</td><td>兑换 / 提现</td><td>用户把可兑换权益提交兑换</td></tr>
+<tr><td>GC</td><td>Gold Coin / 金币</td><td>从资源名推断的普通游戏币</td></tr>
+<tr><td>SC</td><td>Sweep Coin / 可兑换币</td><td>从资源名、Redeem、Cashout 推断的可兑换币</td></tr>
+<tr><td>KYC</td><td>Know Your Customer / 身份核验</td><td>年龄、证件、SSN、地址等身份验证</td></tr>
+<tr><td>POA</td><td>Proof of Address / 地址证明</td><td>水电账单、银行账单等地址材料</td></tr>
+<tr><td>SSN</td><td>Social Security Number / 社安号</td><td>美国身份/税务核验信息</td></tr>
+<tr><td>Geolocation</td><td>地理定位</td><td>获取位置判断地区合规</td></tr>
+<tr><td>Geofence</td><td>地理围栏</td><td>判断用户是否位于允许地区</td></tr>
+<tr><td>Risk Engine</td><td>风控引擎</td><td>识别欺诈、异常设备、异常支付/兑换</td></tr>
+<tr><td>Attribution</td><td>归因</td><td>识别用户来源、广告渠道和转化</td></tr>
+<tr><td>Push</td><td>推送通知</td><td>App 外触达用户</td></tr>
+<tr><td>Inbox</td><td>站内信</td><td>App 内消息中心</td></tr>
+<tr><td>CMS</td><td>内容管理系统</td><td>后台配置活动、文案、图片、公告</td></tr>
+<tr><td>Feature Flag</td><td>功能开关</td><td>按版本、地区、用户、人群控制功能展示</td></tr>
+<tr><td>Hot Update</td><td>热更新</td><td>不发版更新 Cocos 资源</td></tr>
+<tr><td>WebView</td><td>内嵌网页容器</td><td>支付页、游戏页、客服页等网页承载</td></tr>
+<tr><td>SDK</td><td>软件开发工具包</td><td>第三方原生能力集成</td></tr>
+<tr><td>Ledger</td><td>账本</td><td>钱包所有流水记录和余额计算依据</td></tr>
+</tbody></table></div>
+<h2 id="2.-产品定位">2. 产品定位</h2>
+<h3 id="2.1-产品一句话">2.1 产品一句话</h3>
+<p><code>[推断]</code> Tang Luck 同类产品是面向合规地区的移动端社交赌场大厅：用户注册后可浏览多供应商老虎机，使用双币体系参与游戏，通过充值、活动、任务获得奖励，并在满足 KYC、地理定位和风控要求后进行兑换。</p>
+<p>推断理由：客户端同时存在机台大厅、<code>Deposit</code>、<code>Redeem</code>、<code>KYC</code>、<code>GeoComply</code>、<code>GC/SC</code>、Jackpot、活动、支付和风控 SDK。</p>
+<h3 id="2.2-产品目标">2.2 产品目标</h3>
+<ul>
+<li>建立一个可运营的游戏大厅，承接多供应商机台内容。</li>
+<li>建立双币钱包和完整资金/权益流转闭环。</li>
+<li>建立合规准入：地理定位、KYC、年龄、SSN、地址证明、风控。</li>
+<li>建立活动体系，提高注册、留存、充值、游戏时长、兑换转化。</li>
+<li>建立客服、消息、推送、归因、数据分析和后台配置能力。</li>
+</ul>
+<h3 id="2.3-不做范围">2.3 不做范围</h3>
+<ul>
+<li>不定义真实赌博牌照策略、法务判断和具体州/国家准入规则。必须由法务/合规团队补充。</li>
+<li>不定义第三方游戏供应商实际 RTP、赔率和游戏内部算法。客户端证据只显示机台入口和供应商资源。</li>
+<li>不定义支付通道商务费率和结算周期。这里只定义产品功能面。</li>
+</ul>
+<h2 id="3.-用户角色">3. 用户角色</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>角色</th><th>说明</th><th>核心诉求</th></tr></thead>
+<tbody>
+<tr><td>游客用户</td><td>未登录或首次打开用户</td><td>快速理解产品、注册/登录</td></tr>
+<tr><td>注册用户</td><td>已登录但未充值/未 KYC</td><td>领取奖励、浏览机台、进入游戏</td></tr>
+<tr><td>充值用户</td><td>完成 Deposit 的用户</td><td>获得币包、参与活动、继续游戏</td></tr>
+<tr><td>兑换用户</td><td>发起 Redeem/Cashout 的用户</td><td>绑定提现账户、通过 KYC、查看状态</td></tr>
+<tr><td>高风险用户</td><td>位置、设备、支付或行为异常用户</td><td>被限制、要求验证、提交材料</td></tr>
+<tr><td>客服用户</td><td>需要帮助或反馈问题的用户</td><td>AIHelp、FAQ、工单、消息回复</td></tr>
+<tr><td>运营人员</td><td>后台配置活动/公告/奖励/机台</td><td>快速配置、分人群投放、查看数据</td></tr>
+<tr><td>合规人员</td><td>管理 KYC、地区限制、风控策略</td><td>审核、阻断、日志追溯</td></tr>
+<tr><td>财务人员</td><td>管理充值、兑换、账务对账</td><td>账本、订单、支付/兑换状态</td></tr>
+<tr><td>管理员</td><td>平台配置和权限管理</td><td>管理后台权限、配置和审计</td></tr>
+</tbody></table></div>
+<h2 id="4.-信息架构">4. 信息架构</h2>
+<div class="mermaid">mindmap
+  root((Tang Luck 同类产品))
+    App Shell
+      启动
+      热更新
+      深链
+      网络异常
+      WebView
+    账号
+      欢迎页
+      注册
+      登录
+      邮箱验证
+      账号绑定
+      推荐人
+    大厅
+      机台列表
+      搜索
+      收藏
+      分类/供应商
+      跑马灯
+      引导
+    游戏
+      进入机台
+      游戏 WebView
+      In-game 挂件
+      音效动画
+      Jackpot Cheer
+    钱包
+      余额
+      充值
+      兑换
+      支付方式
+      提现账户
+      交易历史
+    合规
+      地理定位
+      KYC
+      SSN
+      POA
+      风控
+    活动
+      Online Rewards
+      Daily Mission
+      Daily Bonus
+      Welcome Offer
+      Newbie Charge
+      Refill
+      Level Up
+      Wheel
+      Plinko
+      Jackpot
+      Blazing Challenge
+      Tang Club
+    个人中心
+      头像
+      Rewards Center
+      Login Bonus
+      Cashout
+      History
+      Settings
+    消息客服
+      Inbox
+      Push
+      AIHelp
+      FAQ
+      社媒
+    后台
+      CMS
+      钱包账本
+      订单
+      活动配置
+      KYC审核
+      风控配置
+      数据分析</div>
+<h2 id="5.-核心业务流程">5. 核心业务流程</h2>
+<h3 id="5.1-新用户注册到首局游戏">5.1 新用户注册到首局游戏</h3>
+<ol>
+<li>用户打开 App。</li>
+<li>App 完成启动、资源检查、热更新检查。</li>
+<li>展示欢迎页。</li>
+<li>用户选择邮箱注册、Google 登录或 Facebook 登录。</li>
+<li>用户可填写推荐人 ID。</li>
+<li>系统创建账号，初始化钱包余额、头像、默认设置。</li>
+<li>用户进入大厅。</li>
+<li>系统展示新手奖励、登录奖励、Welcome Offer、引导。</li>
+<li>用户浏览或搜索机台。</li>
+<li>进入机台前执行地区/网络/风控检查。</li>
+<li>检查通过后进入游戏。</li>
+</ol>
+<h3 id="5.2-充值流程">5.2 充值流程</h3>
+<ol>
+<li>用户点击 Store / Deposit。</li>
+<li>系统展示充值包、赠送规则、可获得 GC/SC。</li>
+<li>用户选择充值包。</li>
+<li>系统判断支付渠道可用性和地区限制。</li>
+<li>用户选择支付方式：Credit Card、PayPal、Venmo、Cash App、ACH、Google Billing、WebView 支付等。</li>
+<li>支付前执行风控、设备、地理位置检查。</li>
+<li>用户完成支付。</li>
+<li>后端确认订单，写入钱包账本。</li>
+<li>客户端展示成功、失败或处理中状态。</li>
+<li>系统触发充值活动、Inbox 消息、Push、归因事件。</li>
+</ol>
+<h3 id="5.3-兑换-提现流程">5.3 兑换 / 提现流程</h3>
+<ol>
+<li>用户进入 Redeem。</li>
+<li>系统展示可兑换余额、最低/最高兑换限制、兑换方式。</li>
+<li>用户选择或绑定提现账户：ACH、PayPal、Venmo、Cash App、Credit Card 等。</li>
+<li>系统检查 KYC、年龄、SSN、POA、地理位置、风控状态。</li>
+<li>若缺少验证，跳转对应验证弹窗。</li>
+<li>用户提交兑换申请。</li>
+<li>后端冻结对应余额，生成兑换订单。</li>
+<li>审核通过后付款；拒绝则解冻或按规则处理。</li>
+<li>客户端展示 Pending、Success、Failed、Review 等状态。</li>
+<li>用户可在 History / Cashout Detail 查看记录。</li>
+</ol>
+<h3 id="5.4-kyc-与地理定位流程">5.4 KYC 与地理定位流程</h3>
+<ol>
+<li>App 请求定位权限。</li>
+<li>GeoComply 执行地理定位/IP/设备环境检查。</li>
+<li>失败时展示权限失败、定位失败、IP 失败等差异化弹窗。</li>
+<li>触发 KYC 时，系统展示对应验证页：Age、ID、Passport、SSN、POA、Manual Review。</li>
+<li>Sumsub SDK 承接证件、人脸、资料提交。</li>
+<li>后端接收状态：Approved、Pending、Review、Failed。</li>
+<li>结果影响充值、进入游戏、兑换、活动领取等权限。</li>
+</ol>
+<h3 id="5.5-活动参与流程">5.5 活动参与流程</h3>
+<ol>
+<li>用户进入活动入口或被弹窗触达。</li>
+<li>系统根据用户状态、地区、等级、充值、游戏行为判断活动资格。</li>
+<li>用户完成任务、在线时长、签到、充值、下注或小游戏。</li>
+<li>系统发放奖励，写入钱包账本或奖励中心。</li>
+<li>用户可在 Rewards Center、Inbox、弹窗中领取或查看。</li>
+</ol>
+<h2 id="6.-功能需求">6. 功能需求</h2>
+<p>说明：</p>
+<ul>
+<li>优先级 P0：没有则无法覆盖原版核心产品。</li>
+<li>P1：原版有明显资源/入口，应作为完整复刻范围。</li>
+<li>P2：增强运营或体验能力，可后续迭代但需留接口。</li>
+</ul>
+<h3 id="6.1-app-shell-与基础能力">6.1 App Shell 与基础能力</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>编号</th><th>优先级</th><th>需求</th><th>证据</th></tr></thead>
+<tbody>
+<tr><td>APP-01</td><td>P0</td><td>App 必须有启动页、加载页和全局 Loading。</td><td><code>[事实]</code> <code>LoadingPopup</code>、loading spine、<code>Lucky7.scene</code></td></tr>
+<tr><td>APP-02</td><td>P0</td><td>支持 Cocos 资源热更新，能从远程 manifest 检查资源版本。</td><td><code>[事实]</code> <code>project.manifest</code>、<code>version.manifest</code>、CloudFront URL</td></tr>
+<tr><td>APP-03</td><td>P0</td><td>支持深链 <code>tangluck://</code>，用于登录回跳、支付回跳、活动跳转。</td><td><code>[事实]</code> Manifest 中 <code>tangluck</code> scheme</td></tr>
+<tr><td>APP-04</td><td>P0</td><td>支持网络异常弹窗和重试。</td><td><code>[事实]</code> <code>RequestNetworkPopup</code></td></tr>
+<tr><td>APP-05</td><td>P0</td><td>支持内嵌 WebView，用于支付、游戏或活动页面。</td><td><code>[事实]</code> <code>GameWebViewActivity</code>、<code>WebViewPopup</code>、<code>CreditCardWebView</code></td></tr>
+<tr><td>APP-06</td><td>P1</td><td>支持全局 Toast、通用弹窗、日期选择、下拉选择、账号选择。</td><td><code>[事实]</code> <code>Toast</code>、<code>CommonPopup*</code>、<code>DateSelectPopup</code>、<code>DropListPopup</code>、<code>AccountListPopup</code></td></tr>
+<tr><td>APP-07</td><td>P1</td><td>支持音效和动画开关，覆盖按钮、弹窗、机台进入/退出、金币飞入等反馈。</td><td><code>[事实]</code> <code>audio/*</code>、<code>FlyCoin</code>、<code>FlyCoins</code>、settings 资源</td></tr>
+</tbody></table></div>
+<p>验收标准：</p>
+<ul>
+<li>冷启动、热启动、断网、资源更新失败都必须有明确状态。</li>
+<li>深链在未登录、已登录、App 未启动三种场景都能落到正确页面或兜底首页。</li>
+<li>WebView 支持关闭、返回、加载失败、支付回跳、JS Bridge 回调。</li>
+</ul>
+<h3 id="6.2-账号登录与绑定">6.2 账号、登录与绑定</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>编号</th><th>优先级</th><th>需求</th><th>证据</th></tr></thead>
+<tbody>
+<tr><td>AUTH-01</td><td>P0</td><td>提供欢迎页，承接注册/登录入口。</td><td><code>[事实]</code> <code>prefabs/signup_signin/Welcome</code></td></tr>
+<tr><td>AUTH-02</td><td>P0</td><td>支持邮箱 + 密码注册/登录。</td><td><code>[事实]</code> <code>Email</code>、<code>Password</code> prefab</td></tr>
+<tr><td>AUTH-03</td><td>P0</td><td>支持推荐人 ID 输入和绑定。</td><td><code>[事实]</code> <code>ReferrerID</code>、<code>BindReferrerPopup</code></td></tr>
+<tr><td>AUTH-04</td><td>P0</td><td>支持 Google Sign-In。</td><td><code>[事实]</code> <code>GoogleSignInManager</code>、Google auth SDK</td></tr>
+<tr><td>AUTH-05</td><td>P0</td><td>支持 Facebook Login。</td><td><code>[事实]</code> <code>FacebookManager</code>、Facebook Activity</td></tr>
+<tr><td>AUTH-06</td><td>P1</td><td>支持邮箱绑定、邮箱验证。</td><td><code>[事实]</code> <code>BindEmail</code>、<code>VerifyEmail</code></td></tr>
+<tr><td>AUTH-07</td><td>P1</td><td>支持账号绑定、合并、绑定冲突处理。</td><td><code>[事实]</code> <code>AccountBindPopup</code>、<code>BindMergeEmail</code>、<code>MergeCompletePopup</code></td></tr>
+<tr><td>AUTH-08</td><td>P1</td><td>支持重置密码。</td><td><code>[事实]</code> <code>ResetPasswordPopup</code></td></tr>
+</tbody></table></div>
+<p>业务规则：</p>
+<ul>
+<li><code>[推断]</code> 推荐人 ID 应在注册期优先填写，登录后可通过绑定弹窗补充。理由：同时存在注册组件 <code>ReferrerID</code> 和 <code>BindReferrerPopup</code>。</li>
+<li><code>[推断]</code> 账号合并需要处理同一邮箱、第三方账号、设备游客身份之间的冲突。理由：存在 <code>BindMergeEmail</code>、<code>MergeCompletePopup</code>。</li>
+</ul>
+<p>验收标准：</p>
+<ul>
+<li>注册、登录、退出、重登、token 过期、绑定冲突都必须有明确 UI。</li>
+<li>第三方登录取消、失败、成功回调必须落到统一账号状态机。</li>
+</ul>
+<h3 id="6.3-大厅与机台">6.3 大厅与机台</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>编号</th><th>优先级</th><th>需求</th><th>证据</th></tr></thead>
+<tbody>
+<tr><td>LOBBY-01</td><td>P0</td><td>提供大厅首页，包含顶部余额、活动入口、底部主导航。</td><td><code>[事实]</code> <code>Lobby</code>、<code>top&amp;bottom</code>、<code>ActionButton</code></td></tr>
+<tr><td>LOBBY-02</td><td>P0</td><td>提供机台列表页，支持大图/普通图机台卡。</td><td><code>[事实]</code> <code>LobbyPage - Machine</code>、<code>MachineBigIcon</code>、<code>MachineIcon</code></td></tr>
+<tr><td>LOBBY-03</td><td>P0</td><td>支持多供应商机台展示。</td><td><code>[事实]</code> <code>images/machines/*</code>，供应商资源包含 Infingame、TaDa、Acewin、Evolution 等</td></tr>
+<tr><td>LOBBY-04</td><td>P0</td><td>支持进入机台。</td><td><code>[事实]</code> <code>enter_machine</code> 音效、WebView、机台资源</td></tr>
+<tr><td>LOBBY-05</td><td>P1</td><td>支持搜索、搜索历史、清空搜索。</td><td><code>[事实]</code> <code>MachineSearchBarHistoryItem</code>、searchbar 资源</td></tr>
+<tr><td>LOBBY-06</td><td>P1</td><td>支持收藏机台。</td><td><code>[事实]</code> <code>shoucang</code>、<code>shoucang_di</code> 资源</td></tr>
+<tr><td>LOBBY-07</td><td>P1</td><td>支持机台维护、限制、低兑换率提示。</td><td><code>[事实]</code> <code>maintenance</code>、<code>restrict</code>、<code>LowRateMachinePopup</code></td></tr>
+<tr><td>LOBBY-08</td><td>P1</td><td>支持跑马灯公告。</td><td><code>[事实]</code> <code>Marquee</code>、<code>MarqueeItem</code></td></tr>
+<tr><td>LOBBY-09</td><td>P1</td><td>支持新手引导。</td><td><code>[事实]</code> <code>GuidesPopup</code>、<code>images/lobby/guide/*</code></td></tr>
+<tr><td>LOBBY-10</td><td>P2</td><td>支持应用评价/点赞入口。</td><td><code>[事实]</code> <code>PraisePopup</code>、<code>images/lobby/praise/*</code></td></tr>
+</tbody></table></div>
+<p>机台数据字段：</p>
+<div class="table-wrap"><table>
+<thead><tr><th>字段</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td><code>game_id</code></td><td>机台唯一 ID</td></tr>
+<tr><td><code>provider</code></td><td>供应商</td></tr>
+<tr><td><code>name</code></td><td>机台名称</td></tr>
+<tr><td><code>icon</code></td><td>普通图</td></tr>
+<tr><td><code>big_icon</code></td><td>大图</td></tr>
+<tr><td><code>status</code></td><td>online / maintenance / restricted</td></tr>
+<tr><td><code>tags</code></td><td>new / hot / jackpot / favorite 等</td></tr>
+<tr><td><code>launch_url</code></td><td>WebView 或 SDK 启动地址</td></tr>
+<tr><td><code>min_bet</code></td><td>最低消耗</td></tr>
+<tr><td><code>currency_support</code></td><td>支持 GC / SC</td></tr>
+<tr><td><code>geo_allowed</code></td><td>地区限制</td></tr>
+<tr><td><code>sort_weight</code></td><td>排序权重</td></tr>
+</tbody></table></div>
+<h3 id="6.4-游戏承载与游戏内挂件">6.4 游戏承载与游戏内挂件</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>编号</th><th>优先级</th><th>需求</th><th>证据</th></tr></thead>
+<tbody>
+<tr><td>GAME-01</td><td>P0</td><td>支持游戏启动前检查登录、余额、地理定位、风控、机台状态。</td><td><code>[推断]</code> 理由：钱包、GeoComply、风控 SDK 与机台入口并存</td></tr>
+<tr><td>GAME-02</td><td>P0</td><td>支持通过 WebView 进入外部游戏。</td><td><code>[事实]</code> <code>GameWebViewActivity</code>、<code>PlayWebViewInterceptState</code></td></tr>
+<tr><td>GAME-03</td><td>P0</td><td>支持游戏退出回大厅。</td><td><code>[事实]</code> <code>out_machine</code> 音效、游戏 WebView</td></tr>
+<tr><td>GAME-04</td><td>P1</td><td>支持游戏内挂件：Logo、每日任务、在线奖励。</td><td><code>[事实]</code> <code>InGameLogoMountItem</code>、<code>InGameDailyMissionMountItem</code>、<code>InGameOnlineRewardsMountItem</code></td></tr>
+<tr><td>GAME-05</td><td>P1</td><td>支持 Jackpot Cheer / 全局中奖展示。</td><td><code>[事实]</code> <code>JackpotCheerLayer</code>、<code>cheer1-5</code>、Cheer 资源</td></tr>
+<tr><td>GAME-06</td><td>P1</td><td>支持低兑换率或受限机台提示。</td><td><code>[事实]</code> <code>LowRateMachinePopup</code>、<code>restrict</code> 资源</td></tr>
+</tbody></table></div>
+<p>验收标准：</p>
+<ul>
+<li>游戏 WebView 必须支持加载中、加载失败、返回、关闭、支付/活动回跳拦截。</li>
+<li>从游戏返回大厅后，余额、任务进度、奖励状态必须刷新。</li>
+</ul>
+<h3 id="6.5-钱包余额与账本">6.5 钱包、余额与账本</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>编号</th><th>优先级</th><th>需求</th><th>证据</th></tr></thead>
+<tbody>
+<tr><td>WALLET-01</td><td>P0</td><td>支持顶部余额展示和币种切换。</td><td><code>[事实]</code> <code>money_gc</code>、<code>money_sc</code>、<code>money_switch_bg</code></td></tr>
+<tr><td>WALLET-02</td><td>P0</td><td>支持 GC/SC 双币账本。</td><td><code>[推断]</code> 理由：多处资源含 <code>gc/sc</code>，且有 Deposit/Redeem</td></tr>
+<tr><td>WALLET-03</td><td>P0</td><td>所有余额变动必须写入服务端账本。</td><td><code>[推断]</code> 理由：充值、兑换、奖励、活动均会改变余额</td></tr>
+<tr><td>WALLET-04</td><td>P1</td><td>支持余额历史、下注历史、Gameplay 历史。</td><td><code>[事实]</code> <code>HistoryItem</code>、<code>HistoryItemBet</code>、<code>HistoryItemGamePlay</code></td></tr>
+<tr><td>WALLET-05</td><td>P1</td><td>支持待处理提现展示。</td><td><code>[事实]</code> <code>MePendingCashouts</code></td></tr>
+</tbody></table></div>
+<p>账本要求：</p>
+<ul>
+<li>账本必须不可直接覆盖余额，只能通过流水累计或快照校验。</li>
+<li>每笔流水必须包含：用户、币种、金额、方向、来源、关联订单、前后余额、时间、风控标签。</li>
+<li>支持订单幂等，避免支付回调重复加币。</li>
+</ul>
+<h3 id="6.6-充值-deposit">6.6 充值 Deposit</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>编号</th><th>优先级</th><th>需求</th><th>证据</th></tr></thead>
+<tbody>
+<tr><td>DEP-01</td><td>P0</td><td>提供充值页和充值包列表。</td><td><code>[事实]</code> <code>LobbyPage - Deposite</code>、<code>DepositeItem</code></td></tr>
+<tr><td>DEP-02</td><td>P0</td><td>支持支付方式选择。</td><td><code>[事实]</code> <code>PaymentChoosePopup</code>、<code>PaymentChooseInGame</code></td></tr>
+<tr><td>DEP-03</td><td>P0</td><td>支持 Google Play Billing / In-App Purchase。</td><td><code>[事实]</code> <code>com.android.vending.BILLING</code>、Billing 7.1.0</td></tr>
+<tr><td>DEP-04</td><td>P0</td><td>支持 Credit Card WebView 支付。</td><td><code>[事实]</code> <code>CreditCardWebView</code>、<code>DepositeWebPopup</code></td></tr>
+<tr><td>DEP-05</td><td>P1</td><td>支持 PayPal、Venmo、Cash App、ACH 等方式。</td><td><code>[事实]</code> 对应 <code>Create<em>Popup</code>、<code>WithdrawAccountItem_</em></code></td></tr>
+<tr><td>DEP-06</td><td>P1</td><td>支持游戏内支付弹窗。</td><td><code>[事实]</code> <code>PaymentChooseInGame</code></td></tr>
+<tr><td>DEP-07</td><td>P1</td><td>支持支付失败、账户错误、放弃奖励提示。</td><td><code>[事实]</code> <code>DepositeFailedPopup</code>、<code>AccountErrorPopup</code>、<code>BonusGiveUp</code></td></tr>
+<tr><td>DEP-08</td><td>P1</td><td>支持 Free Spin、Week Card、充值活动绑定。</td><td><code>[事实]</code> <code>FreeSpinPopup</code>、<code>WeekCardPopup</code>、<code>NewbieChargePopup</code>、<code>RefillPopup</code></td></tr>
+<tr><td>DEP-09</td><td>P2</td><td>支持 Apple Pay 资源级入口，但 Android 端展示需后台开关。</td><td><code>[事实]</code> <code>ApplePayPopup</code>；<code>[推断]</code> 理由：Android 包内存在 Apple Pay 资源，较可能为跨端共享资源</td></tr>
+</tbody></table></div>
+<p>充值包字段：</p>
+<div class="table-wrap"><table>
+<thead><tr><th>字段</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td><code>package_id</code></td><td>充值包 ID</td></tr>
+<tr><td><code>price</code></td><td>售价</td></tr>
+<tr><td><code>currency</code></td><td>法币</td></tr>
+<tr><td><code>gc_amount</code></td><td>获得 GC</td></tr>
+<tr><td><code>sc_bonus</code></td><td>赠送 SC</td></tr>
+<tr><td><code>extra_bonus</code></td><td>额外奖励</td></tr>
+<tr><td><code>tag</code></td><td>best value / limited / newbie</td></tr>
+<tr><td><code>payment_methods</code></td><td>支持支付方式</td></tr>
+<tr><td><code>limit_rule</code></td><td>限购规则</td></tr>
+<tr><td><code>activity_binding</code></td><td>绑定活动</td></tr>
+</tbody></table></div>
+<h3 id="6.7-兑换-redeem-cashout">6.7 兑换 Redeem / Cashout</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>编号</th><th>优先级</th><th>需求</th><th>证据</th></tr></thead>
+<tbody>
+<tr><td>RED-01</td><td>P0</td><td>提供 Redeem 页面。</td><td><code>[事实]</code> <code>LobbyPage - Redeem</code>、<code>Redeem</code></td></tr>
+<tr><td>RED-02</td><td>P0</td><td>支持提现账户列表和账户绑定。</td><td><code>[事实]</code> <code>WithdrawAccountsPopup</code>、<code>WithdrawAccountItem_*</code></td></tr>
+<tr><td>RED-03</td><td>P0</td><td>支持 ACH、PayPal、Venmo、Cash App、Credit Card 账户类型。</td><td><code>[事实]</code> 对应账户 item 和 create popup</td></tr>
+<tr><td>RED-04</td><td>P0</td><td>提交兑换前校验 KYC、地理位置、风控、余额、额度。</td><td><code>[推断]</code> 理由：Redeem 与 KYC、Geo、Risk SDK 同时存在</td></tr>
+<tr><td>RED-05</td><td>P0</td><td>支持兑换摘要和确认。</td><td><code>[事实]</code> <code>WithdrawSummaryPopup</code></td></tr>
+<tr><td>RED-06</td><td>P0</td><td>支持成功、失败、审核中、错误状态。</td><td><code>[事实]</code> <code>WithdrawSuccessPopup</code>、<code>KycPendingPopup</code>、<code>AccountErrorPopup</code></td></tr>
+<tr><td>RED-07</td><td>P1</td><td>支持大额/小额提现提示。</td><td><code>[事实]</code> <code>WithdrawLargeTips</code>、<code>WithdrawMiniTips</code></td></tr>
+<tr><td>RED-08</td><td>P1</td><td>支持 Redemption Code。</td><td><code>[事实]</code> <code>RedemptionCodePopup</code></td></tr>
+<tr><td>RED-09</td><td>P1</td><td>支持提现详情和历史。</td><td><code>[事实]</code> <code>CashoutDetailPopup</code>、<code>CashoutItem</code></td></tr>
+</tbody></table></div>
+<p>兑换订单状态：</p>
+<div class="table-wrap"><table>
+<thead><tr><th>状态</th><th>中文</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td><code>draft</code></td><td>草稿</td><td>用户填写中</td></tr>
+<tr><td><code>blocked</code></td><td>被阻断</td><td>缺 KYC、地区失败、风控失败或余额不足</td></tr>
+<tr><td><code>submitted</code></td><td>已提交</td><td>用户确认兑换</td></tr>
+<tr><td><code>pending_review</code></td><td>待审核</td><td>等待人工或自动审核</td></tr>
+<tr><td><code>approved</code></td><td>已通过</td><td>等待付款</td></tr>
+<tr><td><code>paid</code></td><td>已付款</td><td>兑换完成</td></tr>
+<tr><td><code>failed</code></td><td>失败</td><td>支付失败或账户错误</td></tr>
+<tr><td><code>rejected</code></td><td>拒绝</td><td>审核拒绝</td></tr>
+<tr><td><code>cancelled</code></td><td>已取消</td><td>用户或系统取消</td></tr>
+</tbody></table></div>
+<h3 id="6.8-kyc-身份核验">6.8 KYC 身份核验</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>编号</th><th>优先级</th><th>需求</th><th>证据</th></tr></thead>
+<tbody>
+<tr><td>KYC-01</td><td>P0</td><td>支持年龄验证。</td><td><code>[事实]</code> <code>KycAgePopup</code></td></tr>
+<tr><td>KYC-02</td><td>P0</td><td>支持证件验证。</td><td><code>[事实]</code> <code>KycIDPopup</code>、<code>banner_id</code></td></tr>
+<tr><td>KYC-03</td><td>P0</td><td>支持驾照/护照验证。</td><td><code>[事实]</code> <code>banner_driver</code>、<code>KycPassportPopup</code></td></tr>
+<tr><td>KYC-04</td><td>P0</td><td>支持 SSN 验证。</td><td><code>[事实]</code> <code>KycSSNPopup</code>、<code>socialsecurity</code></td></tr>
+<tr><td>KYC-05</td><td>P0</td><td>支持地址证明 POA。</td><td><code>[事实]</code> <code>KycPOAPopup</code></td></tr>
+<tr><td>KYC-06</td><td>P0</td><td>支持人工审核状态。</td><td><code>[事实]</code> <code>KycManualPopup</code>、<code>KycReviewPopup</code></td></tr>
+<tr><td>KYC-07</td><td>P0</td><td>支持 Approved、Pending、Failed 状态。</td><td><code>[事实]</code> <code>KycApprovedPopup</code>、<code>KycPendingPopup</code>、<code>KycFailPopup</code></td></tr>
+<tr><td>KYC-08</td><td>P0</td><td>集成 Sumsub SDK。</td><td><code>[事实]</code> <code>SumsubManager</code>、<code>SNSAppActivity</code></td></tr>
+<tr><td>KYC-09</td><td>P1</td><td>KYC 结果必须影响充值、兑换、游戏准入和活动领取。</td><td><code>[推断]</code> 理由：KYC 与钱包、兑换模块强绑定</td></tr>
+</tbody></table></div>
+<p>业务规则：</p>
+<ul>
+<li><code>[事实]</code> SSN 弹窗文本显示累计兑换达到 <code>$2,000</code> 后需要 SSN 验证。</li>
+<li><code>[推断]</code> 触发阈值、材料要求、是否允许跳过必须由后台按地区配置。理由：合规规则通常按地区、额度、风险等级不同。</li>
+<li><code>[推断]</code> KYC 状态应有服务端 authoritative source（权威来源），客户端只展示结果。理由：客户端可被篡改，且 KYC 会影响兑换和合规准入，必须由服务端裁决。</li>
+</ul>
+<p>验收标准：</p>
+<ul>
+<li>每个 KYC 状态必须有明确 UI、下一步按钮和客服入口。</li>
+<li>KYC SDK token 过期、取消、异常、Pending、Rejected 都必须回调到 App 状态机。</li>
+</ul>
+<h3 id="6.9-地理定位与地区准入">6.9 地理定位与地区准入</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>编号</th><th>优先级</th><th>需求</th><th>证据</th></tr></thead>
+<tbody>
+<tr><td>GEO-01</td><td>P0</td><td>请求定位权限前展示解释弹窗。</td><td><code>[事实]</code> <code>GeoLocationPermissionPopup</code></td></tr>
+<tr><td>GEO-02</td><td>P0</td><td>支持横/竖版本定位弹窗。</td><td><code>[事实]</code> <code>GeoLocationPermissionHPopup</code></td></tr>
+<tr><td>GEO-03</td><td>P0</td><td>集成 GeoComply。</td><td><code>[事实]</code> GeoComply service/provider/manager</td></tr>
+<tr><td>GEO-04</td><td>P0</td><td>支持定位失败提示。</td><td><code>[事实]</code> <code>GeoLocationCheckFailedPopup</code></td></tr>
+<tr><td>GEO-05</td><td>P0</td><td>支持二级定位失败提示。</td><td><code>[事实]</code> <code>GeoLocationCheckFailed2Popup</code></td></tr>
+<tr><td>GEO-06</td><td>P0</td><td>支持 IP 检查失败提示。</td><td><code>[事实]</code> <code>GeoIPCheckFailedPopup</code></td></tr>
+<tr><td>GEO-07</td><td>P0</td><td>定位结果必须影响游戏、充值、兑换和活动。</td><td><code>[推断]</code> 理由：产品使用 GeoComply 的目的即地区合规</td></tr>
+</tbody></table></div>
+<p>权限策略：</p>
+<ul>
+<li>只在需要地区判断时请求精确定位。</li>
+<li>蓝牙、Wi-Fi、网络状态等高敏权限必须在隐私政策中说明用途。</li>
+<li>用户拒绝权限时，提供重试、设置页跳转、客服说明。</li>
+</ul>
+<h3 id="6.10-风控反欺诈与完整性">6.10 风控、反欺诈与完整性</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>编号</th><th>优先级</th><th>需求</th><th>证据</th></tr></thead>
+<tbody>
+<tr><td>RISK-01</td><td>P0</td><td>集成设备风控和支付风控。</td><td><code>[事实]</code> Forter、ThreatMetrix、RiskSentry</td></tr>
+<tr><td>RISK-02</td><td>P0</td><td>支持 Play Integrity / PairIP 授权与完整性检查。</td><td><code>[事实]</code> Play Integrity、PairIP LicenseActivity</td></tr>
+<tr><td>RISK-03</td><td>P0</td><td>支持安装归因和反作弊归因信号。</td><td><code>[事实]</code> AppsFlyer、Install Referrer</td></tr>
+<tr><td>RISK-04</td><td>P0</td><td>支持设备、网络、位置、支付、兑换、账号行为风控规则。</td><td><code>[推断]</code> 理由：多风控 SDK 与钱包、兑换场景同时存在</td></tr>
+<tr><td>RISK-05</td><td>P1</td><td>支持风控结果分级：通过、加强验证、限制、人工审核、封禁。</td><td><code>[推断]</code> 理由：产品必须处理兑换和支付风险</td></tr>
+</tbody></table></div>
+<p>风控触发点：</p>
+<ul>
+<li>注册 / 登录</li>
+<li>进入机台</li>
+<li>充值下单</li>
+<li>支付回调确认</li>
+<li>兑换提交</li>
+<li>提现账户绑定</li>
+<li>KYC 提交</li>
+<li>设备切换</li>
+<li>地区变化</li>
+<li>高频领取奖励</li>
+</ul>
+<h3 id="6.11-online-rewards-在线奖励">6.11 Online Rewards 在线奖励</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>编号</th><th>优先级</th><th>需求</th><th>证据</th></tr></thead>
+<tbody>
+<tr><td>OR-01</td><td>P0</td><td>支持 Online Rewards 主入口和详情页。</td><td><code>[事实]</code> <code>OnlineRewards*Popup</code></td></tr>
+<tr><td>OR-02</td><td>P0</td><td>支持 Level 1-4 奖励体系。</td><td><code>[事实]</code> <code>Level1-4Item</code>、<code>Level1-4Popup</code></td></tr>
+<tr><td>OR-03</td><td>P0</td><td>支持奖励进度条和等级说明。</td><td><code>[事实]</code> <code>barhelp</code>、<code>OnlineRewardsBarDetailsPopup</code></td></tr>
+<tr><td>OR-04</td><td>P1</td><td>支持刮刮卡。</td><td><code>[事实]</code> <code>RedScrathCard</code>、scratch card spine</td></tr>
+<tr><td>OR-05</td><td>P1</td><td>支持转盘奖励。</td><td><code>[事实]</code> <code>wheel</code> 资源、<code>WheelPopup</code></td></tr>
+<tr><td>OR-06</td><td>P1</td><td>支持 Plinko 奖励入口。</td><td><code>[事实]</code> <code>icon_plinko</code>、<code>PlinkoGame</code></td></tr>
+<tr><td>OR-07</td><td>P1</td><td>支持 Wild Machine 类奖励入口。</td><td><code>[事实]</code> <code>WildMachine</code> 资源</td></tr>
+<tr><td>OR-08</td><td>P1</td><td>支持奖励领取按钮、明细列表、倍率/加减/重置类玩法。</td><td><code>[事实]</code> <code>btn_claim</code>、<code>ItemPlusGC/SC</code>、<code>ItemMinusGC/SC</code>、<code>ItemRate</code></td></tr>
+</tbody></table></div>
+<p>业务规则：</p>
+<ul>
+<li><code>[推断]</code> 在线奖励应按在线时长、等级、活动周期、充值/游戏行为配置。理由：资源有多等级、进度、详情、奖励明细。</li>
+<li>奖励必须写入钱包账本或 Rewards Center，不允许只在客户端改余额。</li>
+</ul>
+<h3 id="6.12-daily-mission-每日任务">6.12 Daily Mission 每日任务</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>编号</th><th>优先级</th><th>需求</th><th>证据</th></tr></thead>
+<tbody>
+<tr><td>DM-01</td><td>P0</td><td>支持每日任务入口。</td><td><code>[事实]</code> <code>DailyMissionPopup</code>、<code>DailyMissionHPopup</code></td></tr>
+<tr><td>DM-02</td><td>P0</td><td>支持每日任务详情。</td><td><code>[事实]</code> <code>DailyMissionDetailsPopup</code></td></tr>
+<tr><td>DM-03</td><td>P0</td><td>支持游戏内任务挂件。</td><td><code>[事实]</code> <code>InGameDailyMissionMountItem</code></td></tr>
+<tr><td>DM-04</td><td>P1</td><td>支持任务帮助说明。</td><td><code>[事实]</code> <code>images/activity/daily_mission/help/*</code></td></tr>
+<tr><td>DM-05</td><td>P1</td><td>支持任务完成后领奖。</td><td><code>[推断]</code> 理由：每日任务通常与奖励发放绑定，资源有奖励相关图标</td></tr>
+</tbody></table></div>
+<p>任务类型建议：</p>
+<ul>
+<li>登录</li>
+<li>在线时长</li>
+<li>进入指定机台</li>
+<li>游戏次数</li>
+<li>充值</li>
+<li>领取活动奖励</li>
+<li>完成 KYC</li>
+</ul>
+<p>以上为 <code>[推断]</code>，需动态验证原版任务配置。</p>
+<h3 id="6.13-jackpot-与中奖展示">6.13 Jackpot 与中奖展示</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>编号</th><th>优先级</th><th>需求</th><th>证据</th></tr></thead>
+<tbody>
+<tr><td>JP-01</td><td>P0</td><td>支持 Jackpot 活动页。</td><td><code>[事实]</code> <code>JackpotPopup</code>、<code>Jackpot2Popup</code></td></tr>
+<tr><td>JP-02</td><td>P0</td><td>支持 Grand、Major、Minor、Mini 奖池展示。</td><td><code>[事实]</code> <code>GRAND_w</code>、<code>MAJOR_w</code>、<code>MINOR_w</code>、<code>MINI_w</code></td></tr>
+<tr><td>JP-03</td><td>P0</td><td>支持 Daily、Hourly、Quick Jackpot。</td><td><code>[事实]</code> <code>daily</code>、<code>hourly</code>、<code>quick</code> 资源</td></tr>
+<tr><td>JP-04</td><td>P1</td><td>支持 Jackpot 排名和中奖排行。</td><td><code>[事实]</code> <code>JackpotWinRanksPopup</code></td></tr>
+<tr><td>JP-05</td><td>P1</td><td>支持中奖弹窗和全局 Cheer 动画。</td><td><code>[事实]</code> <code>JackpotWinPopup</code>、cheer spine</td></tr>
+<tr><td>JP-06</td><td>P1</td><td>支持下注门槛提示。</td><td><code>[事实]</code> <code>bet0.5+</code>、<code>bet1+</code>、<code>bet2+</code>、<code>bet4+</code></td></tr>
+</tbody></table></div>
+<h3 id="6.14-plinko-小游戏">6.14 Plinko 小游戏</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>编号</th><th>优先级</th><th>需求</th><th>证据</th></tr></thead>
+<tbody>
+<tr><td>PL-01</td><td>P1</td><td>支持 Plinko 游戏弹窗。</td><td><code>[事实]</code> <code>PlinkoGame</code>、<code>PlinkoBox</code></td></tr>
+<tr><td>PL-02</td><td>P1</td><td>支持球、金币、障碍块、结果展示。</td><td><code>[事实]</code> <code>Ball</code>、<code>Coin</code>、<code>block</code>、<code>anim/plinko/result</code></td></tr>
+<tr><td>PL-03</td><td>P1</td><td>支持概率/倍率展示。</td><td><code>[推断]</code> 理由：Plinko 常规玩法需要倍率表达，且存在 <code>num_plinko</code> 字体</td></tr>
+</tbody></table></div>
+<h3 id="6.15-充值活动与促销">6.15 充值活动与促销</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>编号</th><th>优先级</th><th>需求</th><th>证据</th></tr></thead>
+<tbody>
+<tr><td>PROMO-01</td><td>P0</td><td>支持 Welcome Offer。</td><td><code>[事实]</code> <code>WelcomeOfferPopup</code></td></tr>
+<tr><td>PROMO-02</td><td>P0</td><td>支持 Newbie Charge。</td><td><code>[事实]</code> <code>NewbieChargePopup</code>、<code>NewbieChargeHPopup</code></td></tr>
+<tr><td>PROMO-03</td><td>P0</td><td>支持 Refill。</td><td><code>[事实]</code> <code>RefillPopup</code>、<code>RefillHPopup</code></td></tr>
+<tr><td>PROMO-04</td><td>P1</td><td>支持 Level Up 奖励。</td><td><code>[事实]</code> <code>LevelUpPopup</code>、<code>LevelUpHPopup</code></td></tr>
+<tr><td>PROMO-05</td><td>P1</td><td>支持 Daily Bonus。</td><td><code>[事实]</code> <code>DailyBonusPopup</code></td></tr>
+<tr><td>PROMO-06</td><td>P1</td><td>支持 Week Card。</td><td><code>[事实]</code> <code>WeekCard</code>、<code>WeekCardPopup</code>、<code>WeekCardItem</code></td></tr>
+<tr><td>PROMO-07</td><td>P1</td><td>支持 Luck Tomorrow。</td><td><code>[事实]</code> <code>LuckTomorrowPopup</code></td></tr>
+<tr><td>PROMO-08</td><td>P1</td><td>支持 Free Spin / Back for Spin。</td><td><code>[事实]</code> <code>FreeSpinPopup</code>、<code>Back4SpinPopup</code></td></tr>
+</tbody></table></div>
+<p>活动后台必须支持：</p>
+<ul>
+<li>活动时间</li>
+<li>用户资格</li>
+<li>地区限制</li>
+<li>展示入口</li>
+<li>弹窗频控</li>
+<li>奖励配置</li>
+<li>领取状态</li>
+<li>实验分组</li>
+<li>下线/灰度</li>
+</ul>
+<h3 id="6.16-blazing-challenge">6.16 Blazing Challenge</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>编号</th><th>优先级</th><th>需求</th><th>证据</th></tr></thead>
+<tbody>
+<tr><td>BC-01</td><td>P1</td><td>支持 Blazing Challenge 活动页。</td><td><code>[事实]</code> <code>BlazingChallenge</code>、<code>BlazingChallengeH</code></td></tr>
+<tr><td>BC-02</td><td>P1</td><td>支持挑战任务条目。</td><td><code>[事实]</code> <code>ChallengeItem</code>、<code>ChallengeItemH</code></td></tr>
+<tr><td>BC-03</td><td>P1</td><td>支持活动详情和帮助说明。</td><td><code>[事实]</code> <code>BlazingChallengeDetailsPopup</code>、help 资源</td></tr>
+</tbody></table></div>
+<h3 id="6.17-cheer-blessing-中奖气氛">6.17 Cheer / Blessing 中奖气氛</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>编号</th><th>优先级</th><th>需求</th><th>证据</th></tr></thead>
+<tbody>
+<tr><td>CH-01</td><td>P1</td><td>支持 Cheer 动画 1-5。</td><td><code>[事实]</code> <code>cheer1</code> 到 <code>cheer5</code></td></tr>
+<tr><td>CH-02</td><td>P1</td><td>支持 Cheer Blessing。</td><td><code>[事实]</code> <code>cheerBlessing</code></td></tr>
+<tr><td>CH-03</td><td>P1</td><td>支持 Daily/Grand Jackpot Cheer 展示。</td><td><code>[事实]</code> <code>dailyjp</code>、<code>grandjp</code></td></tr>
+</tbody></table></div>
+<h3 id="6.18-tang-club-club">6.18 Tang Club / Club</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>编号</th><th>优先级</th><th>需求</th><th>证据</th></tr></thead>
+<tbody>
+<tr><td>CLUB-01</td><td>P0</td><td>支持 Tang Club 主入口。</td><td><code>[事实]</code> <code>tangClub</code>、<code>ClubPopup</code></td></tr>
+<tr><td>CLUB-02</td><td>P0</td><td>支持 Club Details。</td><td><code>[事实]</code> <code>ClubDetailsPopup</code></td></tr>
+<tr><td>CLUB-03</td><td>P1</td><td>支持 Club Icon / Gate。</td><td><code>[事实]</code> <code>ClubIcon</code>、<code>clubgate</code></td></tr>
+<tr><td>CLUB-04</td><td>P1</td><td>支持 Tang Club 排名。</td><td><code>[事实]</code> <code>TangClubRankPopup</code></td></tr>
+<tr><td>CLUB-05</td><td>P1</td><td>支持 Tang Club 帮助说明。</td><td><code>[事实]</code> <code>TangClubHelpPopup</code></td></tr>
+<tr><td>CLUB-06</td><td>P1</td><td>支持 Pending 和 Win 状态。</td><td><code>[事实]</code> <code>TangClubPendingPopup</code>、<code>TangClubWinPopup</code></td></tr>
+<tr><td>CLUB-07</td><td>P1</td><td>支持 FAQ 图文页。</td><td><code>[事实]</code> <code>images/club_detail/faq_img*</code></td></tr>
+</tbody></table></div>
+<p><code>[推断]</code> Tang Club 是会员/俱乐部/排名型活动。理由：资源包含 club、rank、pending、win、help、FAQ、TangCup 动画。</p>
+<h3 id="6.19-boss-money-tree">6.19 Boss / Money Tree</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>编号</th><th>优先级</th><th>需求</th><th>证据</th></tr></thead>
+<tbody>
+<tr><td>BOSS-01</td><td>P1</td><td>支持 Money Tree 入口。</td><td><code>[事实]</code> <code>MoneyTree</code></td></tr>
+<tr><td>BOSS-02</td><td>P1</td><td>支持成员列表。</td><td><code>[事实]</code> <code>MoneyTreeMembers</code>、<code>MemberItem</code></td></tr>
+<tr><td>BOSS-03</td><td>P1</td><td>支持返利列表。</td><td><code>[事实]</code> <code>MoneyTreeRebate</code>、<code>RebateItem</code></td></tr>
+</tbody></table></div>
+<p><code>[推断]</code> 该模块可能是团队/代理/邀请返利系统。理由：同时存在 members、rebate、boss 图标和推荐人绑定。</p>
+<h3 id="6.20-个人中心-me">6.20 个人中心 Me</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>编号</th><th>优先级</th><th>需求</th><th>证据</th></tr></thead>
+<tbody>
+<tr><td>ME-01</td><td>P0</td><td>支持 Me 页面。</td><td><code>[事实]</code> <code>LobbyPage - Me</code></td></tr>
+<tr><td>ME-02</td><td>P0</td><td>支持头像展示和更换。</td><td><code>[事实]</code> <code>HeadpicItem</code>、<code>UpdateHeadpicPopup</code></td></tr>
+<tr><td>ME-03</td><td>P0</td><td>支持 Rewards Center。</td><td><code>[事实]</code> <code>RewardsCenterPopup</code>、<code>RewardsCenter2Popup</code></td></tr>
+<tr><td>ME-04</td><td>P0</td><td>支持 Login Bonus。</td><td><code>[事实]</code> <code>LoginBonus</code>、<code>LoginBonusDay</code>、<code>LoginBonusBox</code></td></tr>
+<tr><td>ME-05</td><td>P0</td><td>支持 Cashout 入口和详情。</td><td><code>[事实]</code> <code>CashoutPopup</code>、<code>CashoutDetailPopup</code></td></tr>
+<tr><td>ME-06</td><td>P0</td><td>支持 History。</td><td><code>[事实]</code> <code>HistoryPopup</code></td></tr>
+<tr><td>ME-07</td><td>P1</td><td>支持 Settings。</td><td><code>[事实]</code> <code>SettingsPopup</code></td></tr>
+<tr><td>ME-08</td><td>P1</td><td>支持 Rules。</td><td><code>[事实]</code> <code>RulesPopup2</code></td></tr>
+</tbody></table></div>
+<h3 id="6.21-inbox-消息中心">6.21 Inbox 消息中心</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>编号</th><th>优先级</th><th>需求</th><th>证据</th></tr></thead>
+<tbody>
+<tr><td>INBOX-01</td><td>P0</td><td>支持 Inbox 页面。</td><td><code>[事实]</code> <code>LobbyPage - Inbox</code></td></tr>
+<tr><td>INBOX-02</td><td>P0</td><td>支持公告消息。</td><td><code>[事实]</code> <code>AnnouncementMessageItem</code>、<code>AnnouncementMessagePopup</code></td></tr>
+<tr><td>INBOX-03</td><td>P0</td><td>支持奖励消息。</td><td><code>[事实]</code> <code>RewardsMessageItem</code>、<code>RewardsMessagePopup</code></td></tr>
+<tr><td>INBOX-04</td><td>P1</td><td>支持促销消息。</td><td><code>[事实]</code> <code>PromotionMessageItem</code></td></tr>
+<tr><td>INBOX-05</td><td>P1</td><td>支持充值包消息。</td><td><code>[事实]</code> <code>ChargePackMessageItem</code></td></tr>
+<tr><td>INBOX-06</td><td>P1</td><td>支持反馈消息。</td><td><code>[事实]</code> <code>FeedbackMessageItem</code></td></tr>
+<tr><td>INBOX-07</td><td>P1</td><td>支持推送消息落站内信。</td><td><code>[事实]</code> <code>PushMessageItem</code></td></tr>
+</tbody></table></div>
+<p>消息字段：</p>
+<div class="table-wrap"><table>
+<thead><tr><th>字段</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td><code>message_id</code></td><td>消息 ID</td></tr>
+<tr><td><code>type</code></td><td>announcement / reward / promotion / charge_pack / feedback / push</td></tr>
+<tr><td><code>title</code></td><td>标题</td></tr>
+<tr><td><code>content</code></td><td>内容</td></tr>
+<tr><td><code>image</code></td><td>图片</td></tr>
+<tr><td><code>deep_link</code></td><td>点击跳转</td></tr>
+<tr><td><code>read_status</code></td><td>已读状态</td></tr>
+<tr><td><code>claim_status</code></td><td>是否可领取</td></tr>
+<tr><td><code>expire_at</code></td><td>过期时间</td></tr>
+</tbody></table></div>
+<h3 id="6.22-客服faq-与社媒">6.22 客服、FAQ 与社媒</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>编号</th><th>优先级</th><th>需求</th><th>证据</th></tr></thead>
+<tbody>
+<tr><td>CS-01</td><td>P0</td><td>集成 AIHelp 客服。</td><td><code>[事实]</code> <code>AIHelpManager</code>、<code>AIHelp_Domain=tangluck.aihelp.net</code></td></tr>
+<tr><td>CS-02</td><td>P0</td><td>支持未读消息数。</td><td><code>[事实]</code> dex 字符串 <code>AIHelp.unreadMsg</code></td></tr>
+<tr><td>CS-03</td><td>P0</td><td>支持登录/更新用户信息到客服系统。</td><td><code>[事实]</code> <code>AIHelp.login</code>、<code>AIHelp.updateUserInfo</code></td></tr>
+<tr><td>CS-04</td><td>P1</td><td>支持 FAQ / Help。</td><td><code>[事实]</code> AIHelp HostActivity、Help 资源</td></tr>
+<tr><td>CS-05</td><td>P1</td><td>支持社媒入口：Facebook、Instagram、X、YouTube。</td><td><code>[事实]</code> <code>SocialMedia</code>、media icon</td></tr>
+</tbody></table></div>
+<h3 id="6.23-push-推送与触达">6.23 Push 推送与触达</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>编号</th><th>优先级</th><th>需求</th><th>证据</th></tr></thead>
+<tbody>
+<tr><td>PUSH-01</td><td>P0</td><td>集成 OneSignal。</td><td><code>[事实]</code> OneSignal receivers/services、<code>onesignal_app_id</code></td></tr>
+<tr><td>PUSH-02</td><td>P0</td><td>集成 Firebase FCM。</td><td><code>[事实]</code> FirebaseMessagingService</td></tr>
+<tr><td>PUSH-03</td><td>P0</td><td>支持通知权限请求。</td><td><code>[事实]</code> <code>POST_NOTIFICATIONS</code></td></tr>
+<tr><td>PUSH-04</td><td>P1</td><td>支持角标。</td><td><code>[事实]</code> 多厂商 badge 权限</td></tr>
+<tr><td>PUSH-05</td><td>P1</td><td>支持通知点击落地到页面。</td><td><code>[推断]</code> 理由：OneSignal NotificationOpenedActivity 与 deep link 同时存在</td></tr>
+</tbody></table></div>
+<p>推送场景：</p>
+<ul>
+<li>登录奖励提醒</li>
+<li>在线奖励可领取</li>
+<li>充值促销</li>
+<li>Jackpot 中奖</li>
+<li>兑换状态更新</li>
+<li>KYC 状态更新</li>
+<li>客服回复</li>
+</ul>
+<h3 id="6.24-埋点归因与数据">6.24 埋点、归因与数据</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>编号</th><th>优先级</th><th>需求</th><th>证据</th></tr></thead>
+<tbody>
+<tr><td>DATA-01</td><td>P0</td><td>集成 AppsFlyer 归因。</td><td><code>[事实]</code> AppsFlyer SDK 6.14.0、dev key</td></tr>
+<tr><td>DATA-02</td><td>P0</td><td>支持 Install Referrer。</td><td><code>[事实]</code> AppsFlyer/Forter receiver</td></tr>
+<tr><td>DATA-03</td><td>P1</td><td>集成 ThinkingData。</td><td><code>[事实]</code> <code>cn.thinkingdata.android.TDReceiver</code></td></tr>
+<tr><td>DATA-04</td><td>P1</td><td>关键事件必须打点。</td><td><code>[推断]</code> 理由：已集成 ThinkingData / AppsFlyer，且运营型游戏产品需要转化与留存分析</td></tr>
+</tbody></table></div>
+<p>核心埋点事件：</p>
+<div class="table-wrap"><table>
+<thead><tr><th>事件</th><th>触发</th></tr></thead>
+<tbody>
+<tr><td><code>app_launch</code></td><td>App 启动</td></tr>
+<tr><td><code>resource_update_check</code></td><td>热更新检查</td></tr>
+<tr><td><code>signup_start/success/fail</code></td><td>注册</td></tr>
+<tr><td><code>login_success/fail</code></td><td>登录</td></tr>
+<tr><td><code>geo_check_start/success/fail</code></td><td>地理定位</td></tr>
+<tr><td><code>kyc_start/submit/result</code></td><td>KYC</td></tr>
+<tr><td><code>lobby_view</code></td><td>进入大厅</td></tr>
+<tr><td><code>game_impression</code></td><td>机台曝光</td></tr>
+<tr><td><code>game_click</code></td><td>点击机台</td></tr>
+<tr><td><code>game_launch_success/fail</code></td><td>进入游戏</td></tr>
+<tr><td><code>deposit_view/package_select/pay_start/pay_success/pay_fail</code></td><td>充值</td></tr>
+<tr><td><code>redeem_start/submit/result</code></td><td>兑换</td></tr>
+<tr><td><code>reward_claim</code></td><td>奖励领取</td></tr>
+<tr><td><code>activity_view/join/complete</code></td><td>活动</td></tr>
+<tr><td><code>inbox_open/message_click</code></td><td>消息</td></tr>
+<tr><td><code>support_open</code></td><td>客服</td></tr>
+</tbody></table></div>
+<h2 id="7.-后台与管理端需求">7. 后台与管理端需求</h2>
+<p>客户端事实只能证明前台功能。以下后台能力为 <code>[推断]</code>，理由是要完整实现原版功能，必须有对应服务端配置、状态和审计能力。</p>
+<h3 id="7.1-后台模块">7.1 后台模块</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>模块</th><th>必要能力</th></tr></thead>
+<tbody>
+<tr><td>用户中心</td><td>注册、登录、第三方绑定、推荐人、账号合并、封禁</td></tr>
+<tr><td>钱包账本</td><td>GC/SC 余额、流水、冻结、解冻、奖励发放、对账</td></tr>
+<tr><td>支付订单</td><td>充值包、支付通道、订单状态、回调、退款、风控</td></tr>
+<tr><td>兑换订单</td><td>提现账户、兑换申请、审核、付款、失败重试</td></tr>
+<tr><td>KYC 管理</td><td>Sumsub token、结果同步、人工审核、材料状态</td></tr>
+<tr><td>地理合规</td><td>GeoComply 配置、地区规则、失败原因、日志</td></tr>
+<tr><td>风控中心</td><td>规则、评分、设备指纹、名单、拦截、人工复核</td></tr>
+<tr><td>游戏聚合</td><td>供应商、机台、启动链接、维护、排序、限制</td></tr>
+<tr><td>活动 CMS</td><td>活动配置、奖励、入口、弹窗、频控、人群</td></tr>
+<tr><td>消息中心</td><td>Inbox、Push、模板、发送、已读、领取</td></tr>
+<tr><td>客服</td><td>AIHelp 用户映射、工单、未读同步</td></tr>
+<tr><td>数据分析</td><td>事件、漏斗、留存、充值、兑换、活动 ROI</td></tr>
+<tr><td>权限管理</td><td>管理员、角色、操作审计</td></tr>
+</tbody></table></div>
+<h3 id="7.2-配置中心">7.2 配置中心</h3>
+<p>必须支持按以下维度配置：</p>
+<ul>
+<li>App 版本</li>
+<li>渠道</li>
+<li>国家/州/地区</li>
+<li>用户等级</li>
+<li>KYC 状态</li>
+<li>风控等级</li>
+<li>注册时间</li>
+<li>充值历史</li>
+<li>活动参与状态</li>
+<li>A/B 实验分组</li>
+</ul>
+<h3 id="7.3-内容配置">7.3 内容配置</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>内容</th><th>配置项</th></tr></thead>
+<tbody>
+<tr><td>机台</td><td>名称、图标、供应商、排序、状态、地区、币种、标签</td></tr>
+<tr><td>充值包</td><td>价格、币数、赠送、限购、支付渠道、活动绑定</td></tr>
+<tr><td>活动</td><td>时间、入口、弹窗、资格、任务、奖励、频控</td></tr>
+<tr><td>Jackpot</td><td>奖池类型、门槛、展示值、排行、中奖公告</td></tr>
+<tr><td>KYC 文案</td><td>不同状态、材料说明、错误提示</td></tr>
+<tr><td>Geo 文案</td><td>权限说明、失败原因、客服入口</td></tr>
+<tr><td>Inbox</td><td>消息模板、跳转、领取奖励、有效期</td></tr>
+<tr><td>Push</td><td>标题、正文、跳转、发送人群、发送时间</td></tr>
+</tbody></table></div>
+<h2 id="8.-数据模型">8. 数据模型</h2>
+<h3 id="8.1-核心实体">8.1 核心实体</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>实体</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td>User</td><td>用户账号</td></tr>
+<tr><td>AuthIdentity</td><td>邮箱、Google、Facebook 等身份</td></tr>
+<tr><td>Wallet</td><td>用户钱包</td></tr>
+<tr><td>LedgerEntry</td><td>钱包流水</td></tr>
+<tr><td>PaymentOrder</td><td>充值订单</td></tr>
+<tr><td>RedeemOrder</td><td>兑换订单</td></tr>
+<tr><td>WithdrawAccount</td><td>提现账户</td></tr>
+<tr><td>KycProfile</td><td>KYC 档案</td></tr>
+<tr><td>GeoSession</td><td>地理定位会话</td></tr>
+<tr><td>RiskProfile</td><td>风控档案</td></tr>
+<tr><td>GameProvider</td><td>游戏供应商</td></tr>
+<tr><td>GameMachine</td><td>机台</td></tr>
+<tr><td>GameSession</td><td>游戏会话</td></tr>
+<tr><td>ActivityCampaign</td><td>活动</td></tr>
+<tr><td>Reward</td><td>奖励</td></tr>
+<tr><td>InboxMessage</td><td>站内信</td></tr>
+<tr><td>PushTask</td><td>推送任务</td></tr>
+<tr><td>SupportUserMap</td><td>客服用户映射</td></tr>
+</tbody></table></div>
+<h3 id="8.2-钱包流水类型">8.2 钱包流水类型</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>类型</th><th>中文</th></tr></thead>
+<tbody>
+<tr><td><code>deposit_credit</code></td><td>充值入账</td></tr>
+<tr><td><code>bonus_credit</code></td><td>奖励入账</td></tr>
+<tr><td><code>game_debit</code></td><td>游戏消耗</td></tr>
+<tr><td><code>game_credit</code></td><td>游戏返还/中奖</td></tr>
+<tr><td><code>redeem_freeze</code></td><td>兑换冻结</td></tr>
+<tr><td><code>redeem_paid</code></td><td>兑换付款</td></tr>
+<tr><td><code>redeem_unfreeze</code></td><td>兑换解冻</td></tr>
+<tr><td><code>manual_adjustment</code></td><td>人工调整</td></tr>
+<tr><td><code>chargeback</code></td><td>拒付/撤销</td></tr>
+</tbody></table></div>
+<h2 id="9.-权限与隐私要求">9. 权限与隐私要求</h2>
+<h3 id="9.1-android-权限映射">9.1 Android 权限映射</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>权限</th><th>中文用途</th><th>使用场景</th></tr></thead>
+<tbody>
+<tr><td><code>INTERNET</code></td><td>网络</td><td>登录、游戏、支付、活动</td></tr>
+<tr><td><code>ACCESS_FINE_LOCATION</code> / <code>ACCESS_COARSE_LOCATION</code></td><td>定位</td><td>GeoComply 地区合规</td></tr>
+<tr><td><code>BLUETOOTH_SCAN</code> / <code>BLUETOOTH_CONNECT</code></td><td>蓝牙信号</td><td>GeoComply / 风控</td></tr>
+<tr><td><code>ACCESS_WIFI_STATE</code> / <code>CHANGE_WIFI_STATE</code></td><td>Wi-Fi 状态</td><td>地理合规 / 风控</td></tr>
+<tr><td><code>CAMERA</code></td><td>相机</td><td>KYC 拍照、人脸</td></tr>
+<tr><td><code>RECORD_AUDIO</code></td><td>录音</td><td>KYC/客服附件或 SDK 需求，需确认实际触发</td></tr>
+<tr><td><code>READ_PHONE_STATE</code></td><td>设备/电话状态</td><td>设备风控</td></tr>
+<tr><td><code>POST_NOTIFICATIONS</code></td><td>通知</td><td>Push</td></tr>
+<tr><td><code>AD_ID</code></td><td>广告 ID</td><td>归因</td></tr>
+<tr><td><code>BILLING</code></td><td>内购</td><td>Google Billing</td></tr>
+<tr><td><code>READ/WRITE_EXTERNAL_STORAGE</code></td><td>存储</td><td>KYC/客服附件，旧系统兼容</td></tr>
+<tr><td><code>READ/WRITE_CALENDAR</code></td><td>日历</td><td><code>[需确认]</code> 静态证据有权限，但产品触发点未确认</td></tr>
+<tr><td><code>NFC</code></td><td>近场通信</td><td><code>[需确认]</code> 可能来自身份/支付 SDK</td></tr>
+<tr><td><code>PACKAGE_USAGE_STATS</code></td><td>使用统计</td><td><code>[需确认]</code> 高敏权限，需合规确认</td></tr>
+<tr><td><code>WRITE_SETTINGS</code></td><td>修改系统设置</td><td><code>[需确认]</code> 高敏权限，需确认是否必须</td></tr>
+</tbody></table></div>
+<h3 id="9.2-隐私原则">9.2 隐私原则</h3>
+<ul>
+<li>所有高敏权限必须延迟到实际需要时请求。</li>
+<li>每次权限请求前必须有业务解释。</li>
+<li>KYC、SSN、地址证明不得在客户端明文长期保存。</li>
+<li>风控 SDK 采集范围必须写入隐私政策。</li>
+<li>用户必须可访问 Terms、Privacy、Responsible Social Gameplay。</li>
+</ul>
+<h2 id="10.-非功能需求">10. 非功能需求</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>类别</th><th>要求</th></tr></thead>
+<tbody>
+<tr><td>性能</td><td>冷启动可感知加载，资源热更新可断点/失败重试</td></tr>
+<tr><td>稳定性</td><td>支付、KYC、Geo、WebView 回调失败不得导致余额错乱</td></tr>
+<tr><td>安全</td><td>HTTPS 优先；明文流量必须有白名单和理由</td></tr>
+<tr><td>可用性</td><td>核心弹窗必须有关闭、重试、联系客服路径</td></tr>
+<tr><td>可配置</td><td>机台、活动、支付方式、地区、KYC 阈值均后台配置</td></tr>
+<tr><td>审计</td><td>钱包、KYC、兑换、风控、后台操作必须留审计日志</td></tr>
+<tr><td>合规</td><td>按地区控制游戏、充值、兑换、活动展示</td></tr>
+<tr><td>多端</td><td>资源显示有横/竖版本；Android 端需适配多屏幕密度</td></tr>
+<tr><td>可观测</td><td>所有关键流程有日志、埋点、错误码</td></tr>
+</tbody></table></div>
+<h2 id="11.-页面清单">11. 页面清单</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>页面/弹窗</th><th>优先级</th><th>来源</th></tr></thead>
+<tbody>
+<tr><td>Welcome</td><td>P0</td><td><code>[事实]</code></td></tr>
+<tr><td>Lobby</td><td>P0</td><td><code>[事实]</code></td></tr>
+<tr><td>Machine Page</td><td>P0</td><td><code>[事实]</code></td></tr>
+<tr><td>Store / Deposit</td><td>P0</td><td><code>[事实]</code></td></tr>
+<tr><td>Redeem</td><td>P0</td><td><code>[事实]</code></td></tr>
+<tr><td>Inbox</td><td>P0</td><td><code>[事实]</code></td></tr>
+<tr><td>Me</td><td>P0</td><td><code>[事实]</code></td></tr>
+<tr><td>Payment Choose</td><td>P0</td><td><code>[事实]</code></td></tr>
+<tr><td>Credit Card WebView</td><td>P0</td><td><code>[事实]</code></td></tr>
+<tr><td>Withdraw Accounts</td><td>P0</td><td><code>[事实]</code></td></tr>
+<tr><td>Withdraw Summary</td><td>P0</td><td><code>[事实]</code></td></tr>
+<tr><td>KYC Age / ID / Passport / SSN / POA</td><td>P0</td><td><code>[事实]</code></td></tr>
+<tr><td>Geo Permission / Failed / IP Failed</td><td>P0</td><td><code>[事实]</code></td></tr>
+<tr><td>Online Rewards Level 1-4</td><td>P0</td><td><code>[事实]</code></td></tr>
+<tr><td>Daily Mission</td><td>P0</td><td><code>[事实]</code></td></tr>
+<tr><td>Rewards Center</td><td>P0</td><td><code>[事实]</code></td></tr>
+<tr><td>Cashout / Cashout Detail</td><td>P0</td><td><code>[事实]</code></td></tr>
+<tr><td>History</td><td>P0</td><td><code>[事实]</code></td></tr>
+<tr><td>Jackpot / Jackpot2</td><td>P1</td><td><code>[事实]</code></td></tr>
+<tr><td>Tang Club</td><td>P1</td><td><code>[事实]</code></td></tr>
+<tr><td>Wheel</td><td>P1</td><td><code>[事实]</code></td></tr>
+<tr><td>Plinko</td><td>P1</td><td><code>[事实]</code></td></tr>
+<tr><td>Blazing Challenge</td><td>P1</td><td><code>[事实]</code></td></tr>
+<tr><td>Welcome Offer</td><td>P1</td><td><code>[事实]</code></td></tr>
+<tr><td>Newbie Charge</td><td>P1</td><td><code>[事实]</code></td></tr>
+<tr><td>Refill</td><td>P1</td><td><code>[事实]</code></td></tr>
+<tr><td>Level Up</td><td>P1</td><td><code>[事实]</code></td></tr>
+<tr><td>Week Card</td><td>P1</td><td><code>[事实]</code></td></tr>
+<tr><td>Money Tree</td><td>P1</td><td><code>[事实]</code></td></tr>
+<tr><td>Settings</td><td>P1</td><td><code>[事实]</code></td></tr>
+<tr><td>AIHelp Host</td><td>P0</td><td><code>[事实]</code></td></tr>
+<tr><td>Social Media</td><td>P2</td><td><code>[事实]</code></td></tr>
+</tbody></table></div>
+<h2 id="12.-验收清单">12. 验收清单</h2>
+<h3 id="12.1-p0-必须通过">12.1 P0 必须通过</h3>
+<ul>
+<li>用户能注册、登录、第三方登录、绑定邮箱。</li>
+<li>用户能进入大厅，看到机台列表和余额。</li>
+<li>用户能搜索机台、进入游戏、退出回大厅。</li>
+<li>用户能打开 Deposit，选择充值包，完成至少一种支付闭环。</li>
+<li>用户能打开 Redeem，绑定提现账户，提交兑换申请。</li>
+<li>KYC 全状态可展示：Age、ID、Passport、SSN、POA、Pending、Approved、Failed、Review。</li>
+<li>Geo 全状态可展示：权限说明、定位失败、IP 失败、重试。</li>
+<li>钱包账本能正确记录充值、奖励、消耗、兑换冻结/解冻。</li>
+<li>Online Rewards、Daily Mission、Rewards Center 可领取并入账。</li>
+<li>Inbox 可展示公告、奖励、促销、Push 消息。</li>
+<li>Push、AIHelp、AppsFlyer、风控 SDK 具备初始化和用户态同步。</li>
+<li>后台可配置机台、充值包、活动、地区、KYC 阈值、消息。</li>
+</ul>
+<h3 id="12.2-p1-完整复刻">12.2 P1 完整复刻</h3>
+<ul>
+<li>Jackpot、Tang Club、Wheel、Plinko、Blazing Challenge、Welcome Offer、Newbie、Refill、Week Card、Money Tree 全部有入口、详情、状态和奖励闭环。</li>
+<li>机台维护、限制、低兑换率提示可按后台配置生效。</li>
+<li>提现账户支持 ACH、PayPal、Venmo、Cash App、Credit Card。</li>
+<li>AIHelp 未读消息、客服用户信息同步正常。</li>
+<li>Push 点击能跳转指定页面。</li>
+<li>活动弹窗支持频控、分人群、有效期。</li>
+</ul>
+<h3 id="12.3-合规验收">12.3 合规验收</h3>
+<ul>
+<li>未通过地区检查的用户不能进入受限游戏、充值或兑换。</li>
+<li>未通过 KYC 的用户在兑换或额度触发时必须被阻断。</li>
+<li>SSN、证件、地址材料不在客户端明文落盘。</li>
+<li>所有高敏权限都有前置说明和拒绝处理。</li>
+<li>兑换、KYC、风控、后台人工操作全部有审计日志。</li>
+</ul>
+<h2 id="13.-仍需动态验证的点">13. 仍需动态验证的点</h2>
+<p>以下不是缺失，而是静态包无法证明的规则：</p>
+<ul>
+<li>GC/SC 的准确命名、兑换比例和法务定义。</li>
+<li>每个活动的真实规则、概率、奖励值、冷却时间。</li>
+<li>机台启动协议和供应商接口。</li>
+<li>Jackpot 数值来源、中奖条件、排行规则。</li>
+<li>KYC 精确触发阈值，除 SSN <code>$2,000</code> 文案线索外。</li>
+<li>GeoComply 实际允许/禁止地区。</li>
+<li>支付通道真实可用性和回调协议。</li>
+<li>风控规则和拒绝原因映射。</li>
+<li>Calendar、NFC、PACKAGE_USAGE_STATS、WRITE_SETTINGS 等高敏权限的真实触发场景。</li>
+</ul>
+<h2 id="14.-交付里程碑建议">14. 交付里程碑建议</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>阶段</th><th>目标</th><th>范围</th></tr></thead>
+<tbody>
+<tr><td>M1</td><td>可登录可进大厅</td><td>App Shell、Auth、Lobby、机台列表</td></tr>
+<tr><td>M2</td><td>可游戏</td><td>游戏 WebView、机台状态、余额刷新</td></tr>
+<tr><td>M3</td><td>可充值</td><td>Wallet、Deposit、Billing/WebView 支付、账本</td></tr>
+<tr><td>M4</td><td>可兑换</td><td>Redeem、提现账户、KYC 阻断、兑换订单</td></tr>
+<tr><td>M5</td><td>合规闭环</td><td>GeoComply、Sumsub、风控、审计</td></tr>
+<tr><td>M6</td><td>运营闭环</td><td>Online Rewards、Daily Mission、Inbox、Push、CMS</td></tr>
+<tr><td>M7</td><td>完整活动复刻</td><td>Jackpot、Tang Club、Wheel、Plinko、Blazing、充值活动</td></tr>
+<tr><td>M8</td><td>数据与增长</td><td>AppsFlyer、ThinkingData、A/B、看板</td></tr>
+</tbody></table></div>
+<h2 id="15.-最终产品定义">15. 最终产品定义</h2>
+<p>完整交付不是“做一个老虎机页面”，而是交付以下闭环：</p>
+<ol>
+<li>用户闭环：注册、登录、绑定、找回、客服。</li>
+<li>游戏闭环：大厅、机台、进入、退出、状态刷新。</li>
+<li>钱包闭环：充值、奖励、消耗、兑换、账本。</li>
+<li>合规闭环：地理定位、KYC、SSN、POA、风控。</li>
+<li>活动闭环：任务、奖励、Jackpot、会员、促销。</li>
+<li>运营闭环：配置、消息、推送、归因、数据。</li>
+<li>审计闭环：支付、兑换、KYC、风控、后台操作可追溯。</li>
+</ol>
+<p>只有以上七个闭环都完成，才算覆盖原版产品功能面。</p>
+    </article>
+  </main>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: true, securityLevel: 'loose', theme: 'default' });
+  </script>
+</body>
+</html>

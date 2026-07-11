@@ -1,6 +1,6 @@
 import { reactive } from 'vue'
 import { clientApi, clearClientToken, getClientToken, setClientToken } from '../api/client'
-import type { ClientBootstrap, ClientMember } from '../types/client'
+import type { ClientBootstrap, ClientMember, ClientRegisterRequest } from '../types/client'
 
 export const sessionState = reactive({
   bootstrap: null as ClientBootstrap | null,
@@ -37,6 +37,22 @@ export async function login(username: string, password: string) {
     return result.member
   } catch (error) {
     sessionState.error = error instanceof Error ? error.message : '登录失败'
+    throw error
+  } finally {
+    sessionState.loading = false
+  }
+}
+
+export async function register(payload: ClientRegisterRequest) {
+  sessionState.loading = true
+  sessionState.error = ''
+  try {
+    const result = await clientApi.register(payload)
+    setClientToken(result.accessToken)
+    sessionState.member = result.member
+    return result.member
+  } catch (error) {
+    sessionState.error = error instanceof Error ? error.message : '注册失败'
     throw error
   } finally {
     sessionState.loading = false

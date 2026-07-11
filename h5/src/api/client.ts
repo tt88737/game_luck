@@ -7,6 +7,7 @@ import type {
   ClientMember,
   ClientPage,
   ClientPromotion,
+  ClientRegisterRequest,
   ClientRedemption,
   WalletAccount,
   WalletLedger,
@@ -57,6 +58,11 @@ export const clientApi = {
     request<ClientLoginResponse>('/api/client/auth/login', {
       method: 'POST',
       body: JSON.stringify({ username, password }),
+    }),
+  register: (payload: ClientRegisterRequest) =>
+    request<ClientLoginResponse>('/api/client/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(payload),
     }),
   me: () => request<ClientMember>('/api/client/member/me'),
   walletAccounts: () => request<WalletAccount[]>('/api/client/wallet/accounts'),

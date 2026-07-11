@@ -530,3 +530,66 @@
     - `pnpm --dir admin-ui check:menu-icons`
     - `pnpm --dir admin-ui build:dev`
     - Browser smoke for `/report/trends`: 7 rows, 30 rows, refresh, and no console errors.
+
+## 2026-07-11 TangLuck Solo Vibe Coding Roadmap
+
+- Created `docs/TangLuck单人vibe-coding完整落地规划.md`.
+- The roadmap fixes the solo development approach around vertical slices instead of broad module-by-module implementation.
+- It defines platform-level constraints for:
+  - business statuses in `sys_dict_type` / `sys_dict_data`
+  - Chinese and English internationalization
+  - wallet-only balance changes
+  - audit requirements
+  - compliance baseline for GC/SC, AMOE, No Purchase Necessary, and redemption controls
+- It proposes the first `gl_*` dictionary set for member, KYC, geo, risk, wallet, promotion, game, deposit, and redemption states.
+- It breaks execution into Phase 0 through Phase 5, with 15-day, 30-day, and 60-day solo delivery targets.
+
+## 2026-07-11 Phase 0 Dictionary and H5 I18n
+
+- Created implementation plan `docs/superpowers/plans/2026-07-11-phase-0-dictionary-i18n.md`.
+- Added platform dictionary seed SQL `backend/script/sql/gameluck_platform_dict.sql` with the first `gl_*` status/type dictionaries and idempotent insert guards.
+- Added H5 i18n foundation:
+  - `h5/src/i18n/messages.ts`
+  - `h5/src/i18n/index.ts`
+- Updated `h5/src/App.vue` to use `t()` for global navigation, login/logout text, and mobile tabs.
+- Added a compact H5 language selector persisted as `gameluck:h5:locale`.
+- Added implementation notes in `docs/implementation/phase-0-dictionary-i18n.md`.
+- Verification run:
+  - `rg -n "gl_redemption_status|gl_wallet_biz_type|WHERE NOT EXISTS" backend/script/sql/gameluck_platform_dict.sql`
+  - `npm --prefix h5 run build`
+  - `rg -n "gameluck_platform_dict.sql|状态流转|gameluck:h5:locale" docs/implementation/phase-0-dictionary-i18n.md`
+  - `.\backend\script\bin\import-sql-utf8.ps1 -SqlPath backend\script\sql\gameluck_platform_dict.sql`
+  - `mysql --default-character-set=utf8mb4 -uroot -proot gameluck_vue -e "select count(*) as dict_type_count from sys_dict_type where dict_type like 'gl_%'; select dict_type, count(*) as item_count from sys_dict_data where dict_type like 'gl_%' group by dict_type order by dict_type;"`
+- Local database verification returned 17 `gl_*` dictionary types.
+
+## 2026-07-11 Phase 1 Client Register Wallet Bonus
+
+- Created implementation plan `docs/superpowers/plans/2026-07-11-client-register-wallet-bonus.md`.
+- Added H5 player registration as the next vertical slice: register -> member profile -> GC/SC registration bonus -> client token -> wallet page.
+- Backend changes:
+  - Added `gameluck-member` dependency on `gameluck-wallet` so registration bonus crediting goes through `IWalletCoreService.credit()`.
+  - Added member profile fields for `password_hash`, country/state, and compliance confirmations.
+  - Added `ClientRegisterBo` and `POST /api/client/auth/register`.
+  - Updated client login to validate stored BCrypt password hashes while preserving the legacy demo password fallback for demo members without `passwordHash`.
+  - Added backend i18n messages for registration validation and duplicate username cases.
+- SQL changes:
+  - Added `backend/script/sql/gameluck_client_register.sql`.
+  - The script adds the new member profile columns through guarded `information_schema` checks.
+  - The script seeds GC and SC wallet rules for `REGISTER_BONUS`.
+  - Imported the SQL locally with `backend/script/bin/import-sql-utf8.ps1`.
+- H5 changes:
+  - Added registration request typing and `clientApi.register()`.
+  - Added `session.register()` to persist the returned client token and member profile.
+  - Replaced the placeholder registration page with username, nickname, password, country/state, and compliance consent controls.
+  - Registration success routes to `/wallet`.
+- Verification passed:
+  - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-modules/gameluck-member -am -Plocal -DskipTests=false "-Dtest=ClientAuthServiceTest" "-Dsurefire.failIfNoSpecifiedTests=false" test`
+  - `npm --prefix h5 run build`
+  - `pnpm --dir admin-ui check:i18n`
+  - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal -DskipTests`
+  - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am package -Plocal -DskipTests`
+- Local database verification confirmed the new member columns and both `REGISTER_BONUS` wallet rules for GC and SC.
+- Runtime smoke:
+  - Restarted the local backend from the newly packaged `gameluck-admin.jar`.
+  - `POST /api/client/auth/register` returned `code=200` for `smoke_20260711150158`.
+  - Database verification confirmed the new member consent fields, GC `1000.000000`, SC `25.000000`, and two successful `REGISTER_BONUS` wallet transactions.

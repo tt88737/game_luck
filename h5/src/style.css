@@ -113,7 +113,8 @@ h2 {
 }
 
 .topnav a,
-.login-link {
+.login-link,
+.language-switcher {
   min-height: 38px;
   padding: 0 12px;
   border-radius: 7px;
@@ -127,6 +128,21 @@ h2 {
 .login-link:hover {
   background: #ece4d6;
   color: var(--text);
+}
+
+.language-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.language-switcher select {
+  min-height: 32px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
 }
 
 .session-chip {

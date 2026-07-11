@@ -49,6 +49,18 @@ export interface ClientLoginResponse {
   member: ClientMember
 }
 
+export interface ClientRegisterRequest {
+  username: string
+  password: string
+  nickname?: string
+  countryCode: string
+  stateCode?: string
+  ageConfirmed: boolean
+  termsAccepted: boolean
+  privacyAccepted: boolean
+  sweepstakesRulesAccepted: boolean
+}
+
 export interface WalletAccount {
   currencyCode: string
   currencyName: string

@@ -3,6 +3,7 @@ package com.gameluck.member.client.controller;
 import cn.dev33.satoken.annotation.SaIgnore;
 import com.gameluck.common.core.domain.R;
 import com.gameluck.member.client.domain.bo.ClientLoginBo;
+import com.gameluck.member.client.domain.bo.ClientRegisterBo;
 import com.gameluck.member.client.domain.vo.ClientLoginVo;
 import com.gameluck.member.client.domain.vo.ClientMemberVo;
 import com.gameluck.member.client.service.ClientAuthService;
@@ -28,6 +29,11 @@ public class ClientAuthController {
     @PostMapping("/auth/login")
     public R<ClientLoginVo> login(@Valid @RequestBody ClientLoginBo bo) {
         return R.ok(clientAuthService.login(bo));
+    }
+
+    @PostMapping("/auth/register")
+    public R<ClientLoginVo> register(@Valid @RequestBody ClientRegisterBo bo) {
+        return R.ok(clientAuthService.register(bo));
     }
 
     @GetMapping("/member/me")

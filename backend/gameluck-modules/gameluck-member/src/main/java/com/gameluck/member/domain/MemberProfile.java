@@ -33,11 +33,25 @@ public class MemberProfile extends BaseEntity {
 
     private String nickname;
 
+    private String passwordHash;
+
     private String status;
 
     private String riskLevel;
 
     private String registerChannel;
+
+    private String countryCode;
+
+    private String stateCode;
+
+    private Boolean ageConfirmed;
+
+    private Boolean termsAccepted;
+
+    private Boolean privacyAccepted;
+
+    private Boolean sweepstakesRulesAccepted;
 
     private Date lastLoginTime;
 
