@@ -120,6 +120,7 @@
 
 <script setup name="DepositOrder" lang="ts">
 import { tt } from '@/utils/i18nText';
+import { normalizeMemberIdQuery } from '@/utils/memberQuery';
 import { addDeposit, cancelDeposit, getDeposit, listDeposit, simulateDepositSuccess } from '@/api/payment/deposit';
 import { DepositOrderForm, DepositOrderQuery, DepositOrderVO } from '@/api/payment/deposit/types';
 
@@ -166,7 +167,7 @@ const { queryParams, form, rules } = toRefs(data);
 
 const getList = async () => {
   loading.value = true;
-  const res = await listDeposit(queryParams.value);
+  const res = await listDeposit(normalizeMemberIdQuery(queryParams.value));
   depositList.value = res.rows;
   total.value = res.total;
   loading.value = false;

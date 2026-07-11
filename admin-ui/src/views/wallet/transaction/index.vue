@@ -70,6 +70,7 @@
 
 <script setup name="WalletTransaction" lang="ts">
 import { tt } from '@/utils/i18nText';
+import { normalizeMemberIdQuery } from '@/utils/memberQuery';
 import { listTransaction } from '@/api/wallet/transaction';
 import { TransactionQuery, TransactionVO } from '@/api/wallet/transaction/types';
 
@@ -105,7 +106,7 @@ const transactionStatusType = (value?: string) => {
 
 const getList = async () => {
   loading.value = true;
-  const res = await listTransaction(queryParams.value);
+  const res = await listTransaction(normalizeMemberIdQuery(queryParams.value));
   transactionList.value = res.rows;
   total.value = res.total;
   loading.value = false;

@@ -38,6 +38,7 @@ export interface RedemptionOrderForm {
 export interface RedemptionOrderQuery extends PageQuery {
   redemptionOrderNo?: string;
   memberId?: string | number;
+  memberNo?: string;
   currencyCode?: string;
   status?: string;
   beginTime?: string;

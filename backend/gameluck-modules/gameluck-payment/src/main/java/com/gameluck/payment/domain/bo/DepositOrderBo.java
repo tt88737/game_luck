@@ -25,6 +25,8 @@ public class DepositOrderBo {
     @NotNull(message = "{member.id.required}")
     private Long memberId;
 
+    private String memberNo;
+
     private String currencyCode;
 
     @NotNull(message = "{payment.deposit.amount.required}")

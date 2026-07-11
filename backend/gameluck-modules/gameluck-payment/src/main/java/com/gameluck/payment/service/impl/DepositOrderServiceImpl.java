@@ -9,6 +9,7 @@ import com.gameluck.common.core.constant.SystemConstants;
 import com.gameluck.common.core.exception.ServiceException;
 import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.StringUtils;
+import com.gameluck.common.mybatis.helper.MemberNoQueryHelper;
 import com.gameluck.common.mybatis.core.page.PageQuery;
 import com.gameluck.common.mybatis.core.page.TableDataInfo;
 import com.gameluck.common.tenant.helper.TenantHelper;
@@ -132,6 +133,7 @@ public class DepositOrderServiceImpl implements IDepositOrderService {
         lqw.eq(StringUtils.isNotBlank(bo.getTenantId()), DepositOrder::getTenantId, bo.getTenantId());
         lqw.eq(StringUtils.isNotBlank(bo.getDepositOrderNo()), DepositOrder::getDepositOrderNo, bo.getDepositOrderNo());
         lqw.eq(bo.getMemberId() != null, DepositOrder::getMemberId, bo.getMemberId());
+        MemberNoQueryHelper.apply(lqw, bo.getMemberNo(), "gl_deposit_order");
         lqw.eq(StringUtils.isNotBlank(bo.getCurrencyCode()), DepositOrder::getCurrencyCode, bo.getCurrencyCode());
         lqw.eq(StringUtils.isNotBlank(bo.getStatus()), DepositOrder::getStatus, bo.getStatus());
         lqw.ge(bo.getBeginTime() != null, DepositOrder::getCreateTime, bo.getBeginTime());

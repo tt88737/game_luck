@@ -165,6 +165,7 @@
 
 <script setup name="GameBetOrder" lang="ts">
 import { tt } from '@/utils/i18nText';
+import { normalizeMemberIdQuery } from '@/utils/memberQuery';
 import { addGameBet, cancelGameBet, getGameBet, listGameBet, placeGameBet, settleGameBet } from '@/api/game/bet';
 import { GameBetOrderForm, GameBetOrderQuery, GameBetOrderVO } from '@/api/game/bet/types';
 
@@ -216,7 +217,7 @@ const { queryParams, form, rules } = toRefs(data);
 
 const getList = async () => {
   loading.value = true;
-  const res = await listGameBet(queryParams.value);
+  const res = await listGameBet(normalizeMemberIdQuery(queryParams.value));
   betList.value = res.rows;
   total.value = res.total;
   loading.value = false;

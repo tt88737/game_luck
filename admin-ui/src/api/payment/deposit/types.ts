@@ -30,6 +30,7 @@ export interface DepositOrderForm {
 export interface DepositOrderQuery extends PageQuery {
   depositOrderNo?: string;
   memberId?: string | number;
+  memberNo?: string;
   currencyCode?: string;
   status?: string;
   beginTime?: string;

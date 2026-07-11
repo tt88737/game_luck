@@ -71,6 +71,7 @@
 
 <script setup name="WalletRelease" lang="ts">
 import { tt } from '@/utils/i18nText';
+import { normalizeMemberIdQuery } from '@/utils/memberQuery';
 import { listRelease } from '@/api/wallet/release';
 import { ReleaseQuery, ReleaseVO } from '@/api/wallet/release/types';
 
@@ -105,7 +106,7 @@ const releaseStatusType = (value?: string) => {
 
 const getList = async () => {
   loading.value = true;
-  const res = await listRelease(queryParams.value);
+  const res = await listRelease(normalizeMemberIdQuery(queryParams.value));
   releaseList.value = res.rows;
   total.value = res.total;
   loading.value = false;

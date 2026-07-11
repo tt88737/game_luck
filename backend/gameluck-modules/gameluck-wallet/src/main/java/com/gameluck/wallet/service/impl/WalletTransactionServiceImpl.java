@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.gameluck.common.core.utils.StringUtils;
+import com.gameluck.common.mybatis.helper.MemberNoQueryHelper;
 import com.gameluck.common.mybatis.core.page.PageQuery;
 import com.gameluck.common.mybatis.core.page.TableDataInfo;
 import com.gameluck.wallet.domain.WalletTransaction;
@@ -48,6 +49,7 @@ public class WalletTransactionServiceImpl implements IWalletTransactionService {
         lqw.eq(StringUtils.isNotBlank(bo.getTenantId()), WalletTransaction::getTenantId, bo.getTenantId());
         lqw.eq(StringUtils.isNotBlank(bo.getTransactionNo()), WalletTransaction::getTransactionNo, bo.getTransactionNo());
         lqw.eq(bo.getMemberId() != null, WalletTransaction::getMemberId, bo.getMemberId());
+        MemberNoQueryHelper.apply(lqw, bo.getMemberNo(), "gl_wallet_transaction");
         lqw.eq(StringUtils.isNotBlank(bo.getCurrencyCode()), WalletTransaction::getCurrencyCode, bo.getCurrencyCode());
         lqw.eq(StringUtils.isNotBlank(bo.getOperation()), WalletTransaction::getOperation, bo.getOperation());
         lqw.eq(StringUtils.isNotBlank(bo.getSourceType()), WalletTransaction::getSourceType, bo.getSourceType());

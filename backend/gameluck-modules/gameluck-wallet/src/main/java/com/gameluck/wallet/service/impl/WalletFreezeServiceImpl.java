@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.gameluck.common.core.utils.StringUtils;
+import com.gameluck.common.mybatis.helper.MemberNoQueryHelper;
 import com.gameluck.common.mybatis.core.page.PageQuery;
 import com.gameluck.common.mybatis.core.page.TableDataInfo;
 import com.gameluck.wallet.domain.WalletFreeze;
@@ -48,6 +49,7 @@ public class WalletFreezeServiceImpl implements IWalletFreezeService {
         lqw.eq(StringUtils.isNotBlank(bo.getTenantId()), WalletFreeze::getTenantId, bo.getTenantId());
         lqw.eq(StringUtils.isNotBlank(bo.getFreezeNo()), WalletFreeze::getFreezeNo, bo.getFreezeNo());
         lqw.eq(bo.getMemberId() != null, WalletFreeze::getMemberId, bo.getMemberId());
+        MemberNoQueryHelper.apply(lqw, bo.getMemberNo(), "gl_wallet_freeze");
         lqw.eq(StringUtils.isNotBlank(bo.getCurrencyCode()), WalletFreeze::getCurrencyCode, bo.getCurrencyCode());
         lqw.eq(StringUtils.isNotBlank(bo.getSourceType()), WalletFreeze::getSourceType, bo.getSourceType());
         lqw.eq(StringUtils.isNotBlank(bo.getBusinessNo()), WalletFreeze::getBusinessNo, bo.getBusinessNo());

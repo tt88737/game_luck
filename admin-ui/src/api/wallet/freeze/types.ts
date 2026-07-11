@@ -15,6 +15,7 @@ export interface FreezeVO extends BaseEntity {
 export interface FreezeQuery extends PageQuery {
   freezeNo?: string;
   memberId?: string | number;
+  memberNo?: string;
   currencyCode?: string;
   sourceType?: string;
   businessNo?: string;

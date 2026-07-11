@@ -9,6 +9,7 @@ import com.gameluck.common.core.constant.SystemConstants;
 import com.gameluck.common.core.exception.ServiceException;
 import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.StringUtils;
+import com.gameluck.common.mybatis.helper.MemberNoQueryHelper;
 import com.gameluck.common.mybatis.core.page.PageQuery;
 import com.gameluck.common.mybatis.core.page.TableDataInfo;
 import com.gameluck.common.tenant.helper.TenantHelper;
@@ -146,6 +147,7 @@ public class RedemptionOrderServiceImpl implements IRedemptionOrderService {
         lqw.eq(StringUtils.isNotBlank(bo.getTenantId()), RedemptionOrder::getTenantId, bo.getTenantId());
         lqw.eq(StringUtils.isNotBlank(bo.getRedemptionOrderNo()), RedemptionOrder::getRedemptionOrderNo, bo.getRedemptionOrderNo());
         lqw.eq(bo.getMemberId() != null, RedemptionOrder::getMemberId, bo.getMemberId());
+        MemberNoQueryHelper.apply(lqw, bo.getMemberNo(), "gl_redemption_order");
         lqw.eq(StringUtils.isNotBlank(bo.getCurrencyCode()), RedemptionOrder::getCurrencyCode, bo.getCurrencyCode());
         lqw.eq(StringUtils.isNotBlank(bo.getStatus()), RedemptionOrder::getStatus, bo.getStatus());
         lqw.ge(bo.getBeginTime() != null, RedemptionOrder::getCreateTime, bo.getBeginTime());

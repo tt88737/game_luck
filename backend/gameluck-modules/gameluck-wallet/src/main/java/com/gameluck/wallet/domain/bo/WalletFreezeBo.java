@@ -21,6 +21,8 @@ public class WalletFreezeBo {
 
     private Long memberId;
 
+    private String memberNo;
+
     private String currencyCode;
 
     private String sourceType;

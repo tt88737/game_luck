@@ -9,6 +9,7 @@ import com.gameluck.common.core.constant.SystemConstants;
 import com.gameluck.common.core.exception.ServiceException;
 import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.StringUtils;
+import com.gameluck.common.mybatis.helper.MemberNoQueryHelper;
 import com.gameluck.common.mybatis.core.page.PageQuery;
 import com.gameluck.common.mybatis.core.page.TableDataInfo;
 import com.gameluck.common.tenant.helper.TenantHelper;
@@ -162,6 +163,7 @@ public class GameBetOrderServiceImpl implements IGameBetOrderService {
         lqw.eq(StringUtils.isNotBlank(bo.getTenantId()), GameBetOrder::getTenantId, bo.getTenantId());
         lqw.eq(StringUtils.isNotBlank(bo.getBetOrderNo()), GameBetOrder::getBetOrderNo, bo.getBetOrderNo());
         lqw.eq(bo.getMemberId() != null, GameBetOrder::getMemberId, bo.getMemberId());
+        MemberNoQueryHelper.apply(lqw, bo.getMemberNo(), "gl_game_bet_order");
         lqw.eq(StringUtils.isNotBlank(bo.getCurrencyCode()), GameBetOrder::getCurrencyCode, bo.getCurrencyCode());
         lqw.eq(StringUtils.isNotBlank(bo.getGameCode()), GameBetOrder::getGameCode, bo.getGameCode());
         lqw.eq(StringUtils.isNotBlank(bo.getRoundNo()), GameBetOrder::getRoundNo, bo.getRoundNo());

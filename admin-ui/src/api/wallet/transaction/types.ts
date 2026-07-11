@@ -26,6 +26,7 @@ export interface TransactionVO extends BaseEntity {
 export interface TransactionQuery extends PageQuery {
   transactionNo?: string;
   memberId?: string | number;
+  memberNo?: string;
   currencyCode?: string;
   operation?: string;
   sourceType?: string;

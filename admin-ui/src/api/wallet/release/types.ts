@@ -22,6 +22,7 @@ export interface ReleaseVO extends BaseEntity {
 export interface ReleaseQuery extends PageQuery {
   releaseNo?: string;
   memberId?: string | number;
+  memberNo?: string;
   currencyCode?: string;
   sourceType?: string;
   businessNo?: string;

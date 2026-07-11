@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.gameluck.common.core.utils.StringUtils;
+import com.gameluck.common.mybatis.helper.MemberNoQueryHelper;
 import com.gameluck.common.mybatis.core.page.PageQuery;
 import com.gameluck.common.mybatis.core.page.TableDataInfo;
 import com.gameluck.wallet.domain.WalletAccount;
@@ -47,8 +48,7 @@ public class WalletAccountServiceImpl implements IWalletAccountService {
         LambdaQueryWrapper<WalletAccount> lqw = Wrappers.lambdaQuery();
         lqw.eq(StringUtils.isNotBlank(bo.getTenantId()), WalletAccount::getTenantId, bo.getTenantId());
         lqw.eq(bo.getMemberId() != null, WalletAccount::getMemberId, bo.getMemberId());
-        lqw.apply(StringUtils.isNotBlank(bo.getMemberNo()),
-            "member_id in (select id from gl_member_profile where member_no = {0} and del_flag = '0')", bo.getMemberNo());
+        MemberNoQueryHelper.apply(lqw, bo.getMemberNo(), "gl_wallet_account");
         lqw.eq(StringUtils.isNotBlank(bo.getCurrencyCode()), WalletAccount::getCurrencyCode, bo.getCurrencyCode());
         lqw.eq(StringUtils.isNotBlank(bo.getStatus()), WalletAccount::getStatus, bo.getStatus());
         lqw.orderByDesc(WalletAccount::getCreateTime);

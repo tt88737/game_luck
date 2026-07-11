@@ -66,6 +66,7 @@
 
 <script setup name="WalletFreeze" lang="ts">
 import { tt } from '@/utils/i18nText';
+import { normalizeMemberIdQuery } from '@/utils/memberQuery';
 import { listFreeze } from '@/api/wallet/freeze';
 import { FreezeQuery, FreezeVO } from '@/api/wallet/freeze/types';
 
@@ -97,7 +98,7 @@ const freezeStatusType = (value?: string) => {
 
 const getList = async () => {
   loading.value = true;
-  const res = await listFreeze(queryParams.value);
+  const res = await listFreeze(normalizeMemberIdQuery(queryParams.value));
   freezeList.value = res.rows;
   total.value = res.total;
   loading.value = false;

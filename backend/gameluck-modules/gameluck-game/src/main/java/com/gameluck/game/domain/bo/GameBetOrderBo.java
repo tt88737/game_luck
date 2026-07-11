@@ -20,6 +20,8 @@ public class GameBetOrderBo {
     @NotNull(message = "{member.id.required}")
     private Long memberId;
 
+    private String memberNo;
+
     private String currencyCode;
     private String gameCode;
     private String roundNo;

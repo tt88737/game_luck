@@ -39,6 +39,7 @@ export interface GameBetOrderForm {
 export interface GameBetOrderQuery extends PageQuery {
   betOrderNo?: string;
   memberId?: string | number;
+  memberNo?: string;
   currencyCode?: string;
   gameCode?: string;
   roundNo?: string;

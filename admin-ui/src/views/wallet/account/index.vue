@@ -60,6 +60,7 @@
 
 <script setup name="WalletAccount" lang="ts">
 import { tt } from '@/utils/i18nText';
+import { normalizeMemberIdQuery } from '@/utils/memberQuery';
 import { listAccount } from '@/api/wallet/account';
 import { AccountQuery, AccountVO } from '@/api/wallet/account/types';
 
@@ -92,19 +93,9 @@ const statusType = (value?: string) => {
   return 'info';
 };
 
-const buildQuery = () => {
-  const query: AccountQuery = { ...queryParams.value };
-  const memberKeyword = query.memberId?.toString().trim();
-  if (memberKeyword && !/^\d+$/.test(memberKeyword)) {
-    query.memberNo = memberKeyword;
-    query.memberId = undefined;
-  }
-  return query;
-};
-
 const getList = async () => {
   loading.value = true;
-  const res = await listAccount(buildQuery());
+  const res = await listAccount(normalizeMemberIdQuery(queryParams.value));
   accountList.value = res.rows;
   total.value = res.total;
   loading.value = false;

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.gameluck.common.core.utils.StringUtils;
+import com.gameluck.common.mybatis.helper.MemberNoQueryHelper;
 import com.gameluck.common.mybatis.core.page.PageQuery;
 import com.gameluck.common.mybatis.core.page.TableDataInfo;
 import com.gameluck.wallet.domain.WalletRelease;
@@ -48,6 +49,7 @@ public class WalletReleaseServiceImpl implements IWalletReleaseService {
         lqw.eq(StringUtils.isNotBlank(bo.getTenantId()), WalletRelease::getTenantId, bo.getTenantId());
         lqw.eq(StringUtils.isNotBlank(bo.getReleaseNo()), WalletRelease::getReleaseNo, bo.getReleaseNo());
         lqw.eq(bo.getMemberId() != null, WalletRelease::getMemberId, bo.getMemberId());
+        MemberNoQueryHelper.apply(lqw, bo.getMemberNo(), "gl_wallet_release");
         lqw.eq(StringUtils.isNotBlank(bo.getCurrencyCode()), WalletRelease::getCurrencyCode, bo.getCurrencyCode());
         lqw.eq(StringUtils.isNotBlank(bo.getSourceType()), WalletRelease::getSourceType, bo.getSourceType());
         lqw.eq(StringUtils.isNotBlank(bo.getBusinessNo()), WalletRelease::getBusinessNo, bo.getBusinessNo());

@@ -154,6 +154,7 @@
 <script setup name="RedemptionOrder" lang="ts">
 import { addRedemptionOrder, approveRedemptionOrder, getRedemptionOrder, listRedemptionOrder, rejectRedemptionOrder } from '@/api/redemption/order';
 import { RedemptionOrderForm, RedemptionOrderQuery, RedemptionOrderVO } from '@/api/redemption/order/types';
+import { normalizeMemberIdQuery } from '@/utils/memberQuery';
 import { useI18n } from 'vue-i18n';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -230,7 +231,7 @@ const auditRules = computed(() => ({
 const getList = async () => {
   loading.value = true;
   try {
-    const res = await listRedemptionOrder(queryParams.value);
+    const res = await listRedemptionOrder(normalizeMemberIdQuery(queryParams.value));
     orderList.value = res.rows;
     total.value = res.total;
   } finally {
