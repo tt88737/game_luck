@@ -1,5 +1,6 @@
 export type BusinessLabelCategory =
   | 'sourceType'
+  | 'walletRuleSourceType'
   | 'method'
   | 'walletOperation'
   | 'walletTransactionStatus'
@@ -18,24 +19,30 @@ type LabelItem = {
   label: string;
 };
 
+const standardSourceTypeLabels: LabelItem[] = [
+  { value: 'REGISTER_BONUS', label: '\u6ce8\u518c\u8d60\u9001' },
+  { value: 'DAILY_REWARD', label: '\u6bcf\u65e5\u5956\u52b1' },
+  { value: 'TASK_REWARD', label: '\u4efb\u52a1\u5956\u52b1' },
+  { value: 'DEPOSIT', label: '\u5145\u503c' },
+  { value: 'GAME_BET', label: '\u6e38\u620f\u4e0b\u6ce8' },
+  { value: 'GAME_PROFIT', label: '\u6e38\u620f\u6d3e\u5956' },
+  { value: 'GAME_REFUND', label: '\u6e38\u620f\u9000\u6b3e' },
+  { value: 'GAME_SETTLE', label: '\u6e38\u620f\u7ed3\u7b97' },
+  { value: 'REDEMPTION', label: '\u5151\u6362' },
+  { value: 'PROMOTION', label: '\u6d3b\u52a8\u5956\u52b1' },
+  { value: 'MANUAL_ADJUST', label: '\u4eba\u5de5\u8c03\u8d26' },
+  { value: 'TURNOVER', label: '\u6d41\u6c34' }
+];
+
+const historicalSourceTypeLabels: LabelItem[] = [
+  { value: 'GAME_PAYOUT', label: '\u6e38\u620f\u6d3e\u5956\uff08\u5386\u53f2\u6765\u6e90\uff09' },
+  { value: 'ADJUST', label: '\u4eba\u5de5\u8c03\u8d26\uff08\u5386\u53f2\u6765\u6e90\uff09' },
+  { value: 'ADJUSTMENT', label: '\u4eba\u5de5\u8c03\u8d26\uff08\u5386\u53f2\u6765\u6e90\uff09' }
+];
+
 const labelGroups: Record<BusinessLabelCategory, LabelItem[]> = {
-  sourceType: [
-    { value: 'REGISTER_BONUS', label: '\u6ce8\u518c\u8d60\u9001' },
-    { value: 'DAILY_REWARD', label: '\u6bcf\u65e5\u5956\u52b1' },
-    { value: 'TASK_REWARD', label: '\u4efb\u52a1\u5956\u52b1' },
-    { value: 'DEPOSIT', label: '\u5145\u503c' },
-    { value: 'GAME_BET', label: '\u6e38\u620f\u4e0b\u6ce8' },
-    { value: 'GAME_PAYOUT', label: '\u6e38\u620f\u6d3e\u5f69' },
-    { value: 'GAME_PROFIT', label: '\u6e38\u620f\u6d3e\u5f69' },
-    { value: 'GAME_REFUND', label: '\u6e38\u620f\u9000\u6b3e' },
-    { value: 'GAME_SETTLE', label: '\u6e38\u620f\u7ed3\u7b97' },
-    { value: 'REDEMPTION', label: '\u5151\u6362' },
-    { value: 'PROMOTION', label: '\u6d3b\u52a8\u5956\u52b1' },
-    { value: 'ADJUST', label: '\u4eba\u5de5\u8c03\u6574' },
-    { value: 'ADJUSTMENT', label: '\u4eba\u5de5\u8c03\u8d26' },
-    { value: 'MANUAL_ADJUST', label: '\u4eba\u5de5\u8c03\u8d26' },
-    { value: 'TURNOVER', label: '\u6d41\u6c34' }
-  ],
+  sourceType: [...standardSourceTypeLabels, ...historicalSourceTypeLabels],
+  walletRuleSourceType: standardSourceTypeLabels,
   method: [{ value: 'SIMULATED', label: '\u5e73\u53f0\u6a21\u62df' }],
   walletOperation: [
     { value: 'CREDIT', label: '\u5165\u8d26' },
