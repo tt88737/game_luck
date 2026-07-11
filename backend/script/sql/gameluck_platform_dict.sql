@@ -120,10 +120,16 @@ FROM (
   SELECT 21027, '000000', 2, '每日奖励', 'DAILY_REWARD', 'gl_wallet_biz_type', '', 'success', 'N', 103, 1, SYSDATE(), NULL, NULL, '每日奖励账变' UNION ALL
   SELECT 21028, '000000', 3, '任务奖励', 'TASK_REWARD', 'gl_wallet_biz_type', '', 'success', 'N', 103, 1, SYSDATE(), NULL, NULL, '任务奖励账变' UNION ALL
   SELECT 21029, '000000', 4, '游戏投注', 'GAME_BET', 'gl_wallet_biz_type', '', 'warning', 'N', 103, 1, SYSDATE(), NULL, NULL, '游戏投注账变' UNION ALL
-  SELECT 21030, '000000', 5, '游戏派彩', 'GAME_PAYOUT', 'gl_wallet_biz_type', '', 'success', 'N', 103, 1, SYSDATE(), NULL, NULL, '游戏派彩账变' UNION ALL
+  SELECT 21030, '000000', 5, '游戏派彩', 'GAME_PAYOUT', 'gl_wallet_biz_type', '', 'success', 'N', 103, 1, SYSDATE(), NULL, NULL, 'Historical alias of GAME_PROFIT' UNION ALL
   SELECT 21031, '000000', 6, '充值入账', 'DEPOSIT', 'gl_wallet_biz_type', '', 'primary', 'N', 103, 1, SYSDATE(), NULL, NULL, '充值入账账变' UNION ALL
   SELECT 21032, '000000', 7, '兑换处理', 'REDEMPTION', 'gl_wallet_biz_type', '', 'warning', 'N', 103, 1, SYSDATE(), NULL, NULL, '兑换处理账变' UNION ALL
-  SELECT 21033, '000000', 8, '人工调账', 'ADJUSTMENT', 'gl_wallet_biz_type', '', 'danger', 'N', 103, 1, SYSDATE(), NULL, NULL, '人工调账账变' UNION ALL
+  SELECT 21033, '000000', 8, '人工调账', 'ADJUSTMENT', 'gl_wallet_biz_type', '', 'danger', 'N', 103, 1, SYSDATE(), NULL, NULL, 'Historical alias of MANUAL_ADJUST' UNION ALL
+  SELECT 21066, '000000', 9, '游戏收益', 'GAME_PROFIT', 'gl_wallet_biz_type', '', 'success', 'N', 103, 1, SYSDATE(), NULL, NULL, '游戏收益账变' UNION ALL
+  SELECT 21067, '000000', 10, '人工调账', 'MANUAL_ADJUST', 'gl_wallet_biz_type', '', 'danger', 'N', 103, 1, SYSDATE(), NULL, NULL, '人工调账账变' UNION ALL
+  SELECT 21068, '000000', 11, '游戏退款', 'GAME_REFUND', 'gl_wallet_biz_type', '', 'info', 'N', 103, 1, SYSDATE(), NULL, NULL, '游戏退款账变' UNION ALL
+  SELECT 21069, '000000', 12, '活动奖励', 'PROMOTION', 'gl_wallet_biz_type', '', 'success', 'N', 103, 1, SYSDATE(), NULL, NULL, '活动奖励账变' UNION ALL
+  SELECT 21070, '000000', 13, '流水释放', 'TURNOVER', 'gl_wallet_biz_type', '', 'primary', 'N', 103, 1, SYSDATE(), NULL, NULL, '流水释放账变' UNION ALL
+  SELECT 21071, '000000', 14, '人工调账', 'ADJUST', 'gl_wallet_biz_type', '', 'danger', 'N', 103, 1, SYSDATE(), NULL, NULL, 'Historical alias of MANUAL_ADJUST' UNION ALL
   SELECT 21034, '000000', 1, '已冻结', 'FROZEN', 'gl_wallet_freeze_status', '', 'warning', 'Y', 103, 1, SYSDATE(), NULL, NULL, '已冻结' UNION ALL
   SELECT 21035, '000000', 2, '已结算', 'SETTLED', 'gl_wallet_freeze_status', '', 'success', 'N', 103, 1, SYSDATE(), NULL, NULL, '已结算' UNION ALL
   SELECT 21036, '000000', 3, '已释放', 'RELEASED', 'gl_wallet_freeze_status', '', 'info', 'N', 103, 1, SYSDATE(), NULL, NULL, '已释放' UNION ALL

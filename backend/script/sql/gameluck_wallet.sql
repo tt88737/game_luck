@@ -423,14 +423,19 @@ ON DUPLICATE KEY UPDATE
 INSERT INTO gl_wallet_rule
 (id, tenant_id, currency_code, source_type, rule_name, credit_enabled, debit_enabled, withdraw_enabled, exchange_enabled, release_mode, turnover_required, default_required_turnover, status, sort_order, remark, create_time)
 VALUES
-(1900000000000000101, '000000', 'GC', 'GAME_PROFIT', 'GC game profit', '0', '0', '1', '1', 'NEVER', '1', 0, '0', 1, 'GC is a play currency and is not withdrawable or exchangeable.', NOW()),
-(1900000000000000102, '000000', 'SC', 'GAME_PROFIT', 'SC game profit', '0', '0', '1', '0', 'AFTER_TURNOVER', '0', 0, '0', 2, 'SC is exchangeable only for game profit source after configured conditions.', NOW()),
-(1900000000000000103, '000000', 'SC', 'PROMOTION', 'SC promotion', '0', '0', '1', '1', 'MANUAL_REVIEW', '0', 0, '0', 3, 'Promotional SC requires review by default.', NOW()),
-(1900000000000000104, '000000', 'RC', 'DEPOSIT', 'RC deposit', '0', '0', '0', '1', 'IMMEDIATE', '1', 0, '0', 4, 'RC deposit can be withdrawable immediately unless tenant changes the rule.', NOW()),
-(1900000000000000105, '000000', 'RC', 'MANUAL_ADJUST', 'RC manual adjustment', '0', '0', '0', '1', 'MANUAL_REVIEW', '1', 0, '0', 5, 'Manual RC adjustment requires review by default.', NOW()),
-(1900000000000000106, '000000', 'SC', 'GAME_REFUND', 'SC game refund', '0', '0', '1', '0', 'IMMEDIATE', '0', 0, '0', 6, 'SC refund returns original stake immediately.', NOW()),
-(1900000000000000611, '000000', 'GC', 'DAILY_REWARD', 'GC daily login reward', '0', '1', '1', '1', 'IMMEDIATE', '1', 0, '0', 11, 'Daily login GC reward.', NOW()),
-(1900000000000000612, '000000', 'SC', 'DAILY_REWARD', 'SC daily login reward', '0', '1', '0', '1', 'IMMEDIATE', '1', 0, '0', 12, 'Daily login SC reward.', NOW())
+(1900000000000000201, '000000', 'GC', 'REGISTER_BONUS', 'GC registration bonus', '0', '1', '1', '1', 'IMMEDIATE', '1', 0, '0', 21, 'Registration GC reward.', NOW()),
+(1900000000000000202, '000000', 'SC', 'REGISTER_BONUS', 'SC registration bonus', '0', '1', '1', '1', 'IMMEDIATE', '1', 0, '0', 22, 'Registration SC reward.', NOW()),
+(1900000000000000611, '000000', 'GC', 'DAILY_REWARD', 'GC daily login reward', '0', '1', '1', '1', 'IMMEDIATE', '1', 0, '0', 31, 'Daily login GC reward.', NOW()),
+(1900000000000000612, '000000', 'SC', 'DAILY_REWARD', 'SC daily login reward', '0', '1', '0', '1', 'IMMEDIATE', '1', 0, '0', 32, 'Daily login SC reward.', NOW()),
+(1900000000000000401, '000000', 'GC', 'PROMOTION', 'GC promotion', '0', '1', '1', '1', 'IMMEDIATE', '1', 0, '0', 41, 'Promotion GC reward.', NOW()),
+(1900000000000000103, '000000', 'SC', 'PROMOTION', 'SC promotion', '0', '1', '1', '1', 'AFTER_TURNOVER', '0', 0, '0', 42, 'Promotion SC reward after turnover.', NOW()),
+(1900000000000000104, '000000', 'RC', 'DEPOSIT', 'RC deposit', '0', '0', '0', '1', 'IMMEDIATE', '1', 0, '0', 51, 'RC deposit can be withdrawable immediately.', NOW()),
+(1900000000000000101, '000000', 'GC', 'GAME_PROFIT', 'GC game profit', '0', '0', '1', '1', 'NEVER', '1', 0, '0', 61, 'GC is not withdrawable or exchangeable.', NOW()),
+(1900000000000000102, '000000', 'SC', 'GAME_PROFIT', 'SC game profit', '0', '0', '1', '0', 'AFTER_TURNOVER', '0', 0, '0', 62, 'SC game profit can be exchanged after conditions.', NOW()),
+(1900000000000000106, '000000', 'SC', 'GAME_REFUND', 'SC game refund', '0', '0', '1', '0', 'IMMEDIATE', '0', 0, '0', 71, 'SC refund returns original stake immediately.', NOW()),
+(1900000000000000801, '000000', 'GC', 'MANUAL_ADJUST', 'GC manual adjustment', '0', '0', '1', '1', 'IMMEDIATE', '1', 0, '0', 81, 'Manual GC adjustment.', NOW()),
+(1900000000000000802, '000000', 'SC', 'MANUAL_ADJUST', 'SC manual adjustment', '0', '0', '1', '0', 'MANUAL_REVIEW', '1', 0, '0', 82, 'Manual SC adjustment uses operation strategy.', NOW()),
+(1900000000000000105, '000000', 'RC', 'MANUAL_ADJUST', 'RC manual adjustment', '0', '0', '0', '1', 'MANUAL_REVIEW', '1', 0, '0', 83, 'Manual RC adjustment uses operation strategy.', NOW())
 ON DUPLICATE KEY UPDATE
   rule_name = VALUES(rule_name),
   credit_enabled = VALUES(credit_enabled),
@@ -649,7 +654,10 @@ VALUES
 (1806, '钱包规则', 1800, 6, 'rule', 'wallet/rule/index', '', 1, 0, 'C', '0', '0', 'wallet:rule:list', 'slider', 103, 1, NOW(), NULL, NULL, '钱包来源规则菜单'),
 (1817, '规则查询', 1806, 1, '#', '', '', 1, 0, 'F', '0', '0', 'wallet:rule:query', '#', 103, 1, NOW(), NULL, NULL, ''),
 (1818, '规则新增', 1806, 2, '#', '', '', 1, 0, 'F', '0', '0', 'wallet:rule:add', '#', 103, 1, NOW(), NULL, NULL, ''),
-(1819, '规则编辑', 1806, 3, '#', '', '', 1, 0, 'F', '0', '0', 'wallet:rule:edit', '#', 103, 1, NOW(), NULL, NULL, '')
+(1819, '规则编辑', 1806, 3, '#', '', '', 1, 0, 'F', '0', '0', 'wallet:rule:edit', '#', 103, 1, NOW(), NULL, NULL, ''),
+(1820, '补齐默认规则', 1806, 4, '#', '', '', 1, 0, 'F', '0', '0', 'wallet:rule:seed', '#', 103, 1, NOW(), NULL, NULL, ''),
+(1807, '人工调账', 1800, 7, 'manual-adjust', 'wallet/manual-adjust/index', '', 1, 0, 'C', '0', '0', 'wallet:manualAdjust:add', 'edit', 103, 1, NOW(), NULL, NULL, '后台人工调账菜单'),
+(1821, '人工调账操作', 1807, 1, '#', '', '', 1, 0, 'F', '0', '0', 'wallet:manualAdjust:add', '#', 103, 1, NOW(), NULL, NULL, '')
 ON DUPLICATE KEY UPDATE
   menu_name = VALUES(menu_name),
   parent_id = VALUES(parent_id),
