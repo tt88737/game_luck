@@ -37,6 +37,11 @@
           <el-col :span="1.5">
             <el-button v-hasPermi="['wallet:rule:add']" type="primary" plain icon="Plus" @click="handleAdd">{{ tt('新增') }}</el-button>
           </el-col>
+          <el-col :span="1.5">
+            <el-button v-hasPermi="['wallet:rule:seed']" type="success" plain icon="Finished" @click="openDefaultRulePreview">
+              {{ tt('补齐默认规则') }}
+            </el-button>
+          </el-col>
           <right-toolbar v-model:show-search="showSearch" @query-table="getList"></right-toolbar>
         </el-row>
       </template>
@@ -87,8 +92,36 @@
       <pagination v-show="total > 0" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" :total="total" @pagination="getList" />
     </el-card>
 
+    <el-drawer v-model="previewDrawer.visible" :title="tt('默认规则预览')" size="70%" append-to-body>
+      <el-alert :title="tt('只会新增缺失规则，不会覆盖已有规则')" type="info" show-icon :closable="false" class="mb-[12px]" />
+      <el-table v-loading="previewLoading" border :data="ruleTemplateList">
+        <el-table-column :label="tt('币种')" align="center" prop="currencyCode" width="90" />
+        <el-table-column :label="tt('来源')" align="center" min-width="140">
+          <template #default="scope">{{ previewSourceText(scope.row) }}</template>
+        </el-table-column>
+        <el-table-column :label="tt('到账策略')" align="center" min-width="150">
+          <template #default="scope">{{ businessLabel('walletReleaseMode', scope.row.releaseMode, tt) }}</template>
+        </el-table-column>
+        <el-table-column :label="tt('默认流水')" align="right" prop="defaultRequiredTurnover" width="120" />
+        <el-table-column :label="tt('处理方式')" align="center" width="120">
+          <template #default="scope">
+            <el-tag :type="scope.row.willCreate ? 'success' : 'info'">{{ scope.row.willCreate ? tt('将创建') : tt('已存在') }}</el-tag>
+          </template>
+        </el-table-column>
+      </el-table>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button type="primary" :loading="seedLoading" :disabled="missingRuleCount === 0" @click="confirmSeedDefaultRules">
+            {{ tt('确认补齐') }}
+          </el-button>
+          <el-button @click="previewDrawer.visible = false">{{ tt('取消') }}</el-button>
+        </div>
+      </template>
+    </el-drawer>
+
     <el-dialog v-model="dialog.visible" :title="dialog.title" width="640px" append-to-body>
       <el-form ref="ruleFormRef" :model="form" :rules="rules" label-width="120px">
+        <div class="rule-form-section">{{ tt('基础信息') }}</div>
         <el-form-item :label="tt('币种')" prop="currencyCode">
           <el-select v-model="form.currencyCode" :placeholder="tt('请选择币种')">
             <el-option label="GC" value="GC" />
@@ -104,29 +137,39 @@
         <el-form-item :label="tt('规则名称')" prop="ruleName">
           <el-input v-model="form.ruleName" :placeholder="tt('请输入规则名称')" />
         </el-form-item>
-        <el-form-item :label="tt('允许入账')">
+
+        <div class="rule-form-section">{{ tt('资金方向') }}</div>
+        <el-form-item :label="tt('增加余额')">
           <el-switch v-model="form.creditEnabled" active-value="0" inactive-value="1" :active-text="tt('允许')" :inactive-text="tt('禁止')" />
         </el-form-item>
-        <el-form-item :label="tt('允许扣账')">
+        <el-form-item :label="tt('扣减余额')">
           <el-switch v-model="form.debitEnabled" active-value="0" inactive-value="1" :active-text="tt('允许')" :inactive-text="tt('禁止')" />
         </el-form-item>
-        <el-form-item :label="tt('提现能力')">
+
+        <div class="rule-form-section">{{ tt('资金用途') }}</div>
+        <el-form-item :label="tt('可提现')">
           <el-switch v-model="form.withdrawEnabled" active-value="0" inactive-value="1" :active-text="tt('具备')" :inactive-text="tt('不具备')" />
         </el-form-item>
-        <el-form-item :label="tt('兑换能力')">
+        <el-form-item :label="tt('可兑换')">
           <el-switch v-model="form.exchangeEnabled" active-value="0" inactive-value="1" :active-text="tt('具备')" :inactive-text="tt('不具备')" />
         </el-form-item>
+
+        <div class="rule-form-section">{{ tt('到账策略') }}</div>
         <el-form-item :label="tt('释放模式')" prop="releaseMode">
           <el-select v-model="form.releaseMode" :placeholder="tt('请选择释放模式')">
             <el-option v-for="item in releaseModeOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item :label="tt('需要业务流水')">
+
+        <div class="rule-form-section">{{ tt('流水要求') }}</div>
+        <el-form-item :label="tt('业务提供流水')">
           <el-switch v-model="form.turnoverRequired" active-value="0" inactive-value="1" :active-text="tt('需要')" :inactive-text="tt('不需要')" />
         </el-form-item>
         <el-form-item :label="tt('默认流水')">
           <el-input-number v-model="form.defaultRequiredTurnover" :min="0" :precision="6" :step="1" controls-position="right" />
         </el-form-item>
+
+        <div class="rule-form-section">{{ tt('其他设置') }}</div>
         <el-form-item :label="tt('状态')">
           <el-switch v-model="form.status" active-value="0" inactive-value="1" :active-text="tt('启用')" :inactive-text="tt('停用')" />
         </el-form-item>
@@ -150,13 +193,16 @@
 <script setup name="WalletRule" lang="ts">
 import { tt } from '@/utils/i18nText';
 import { businessLabel, businessOptions, walletRuleNameLabel } from '@/utils/businessLabels';
-import { addRule, getRule, listRule, updateRule } from '@/api/wallet/rule';
-import { RuleForm, RuleQuery, RuleVO } from '@/api/wallet/rule/types';
+import { addRule, getRule, listRule, previewDefaultRules, seedDefaultRules, updateRule } from '@/api/wallet/rule';
+import { RuleForm, RuleQuery, RuleTemplateVO, RuleVO } from '@/api/wallet/rule/types';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 const ruleList = ref<RuleVO[]>([]);
+const ruleTemplateList = ref<RuleTemplateVO[]>([]);
 const loading = ref(true);
+const previewLoading = ref(false);
+const seedLoading = ref(false);
 const showSearch = ref(true);
 const total = ref(0);
 const queryFormRef = ref<ElFormInstance>();
@@ -168,6 +214,12 @@ const dialog = reactive<DialogOption>({
   visible: false,
   title: ''
 });
+
+const previewDrawer = reactive({
+  visible: false
+});
+
+const missingRuleCount = computed(() => ruleTemplateList.value.filter((item) => item.willCreate).length);
 
 const initFormData: RuleForm = {
   id: undefined,
@@ -209,6 +261,7 @@ const statusText = (value?: string) => (value === '0' ? tt('启用') : tt('停�
 const yesNoText = (value?: string) => (value === '0' ? tt('需要') : tt('不需要'));
 const capabilityText = (value?: string) => (value === '0' ? tt('具备') : tt('不具备'));
 
+const previewSourceText = (row: RuleTemplateVO) => row.sourceLabel || businessLabel('walletRuleSourceType', row.sourceType, tt);
 
 const getList = async () => {
   loading.value = true;
@@ -236,6 +289,17 @@ const handleQuery = () => {
 const resetQuery = () => {
   queryFormRef.value?.resetFields();
   handleQuery();
+};
+
+const openDefaultRulePreview = async () => {
+  previewDrawer.visible = true;
+  previewLoading.value = true;
+  try {
+    const res = await previewDefaultRules();
+    ruleTemplateList.value = res.data || [];
+  } finally {
+    previewLoading.value = false;
+  }
 };
 
 const handleAdd = () => {
@@ -266,7 +330,35 @@ const submitForm = () => {
   });
 };
 
+const confirmSeedDefaultRules = async () => {
+  if (missingRuleCount.value === 0) return;
+  seedLoading.value = true;
+  try {
+    await seedDefaultRules();
+    proxy?.$modal.msgSuccess(tt('默认规则已补齐'));
+    previewDrawer.visible = false;
+    await getList();
+  } finally {
+    seedLoading.value = false;
+  }
+};
+
 onMounted(() => {
   getList();
 });
 </script>
+
+<style scoped>
+.rule-form-section {
+  margin: 14px 0 12px;
+  padding-left: 8px;
+  border-left: 3px solid var(--el-color-primary);
+  color: var(--el-text-color-primary);
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.rule-form-section:first-child {
+  margin-top: 0;
+}
+</style>

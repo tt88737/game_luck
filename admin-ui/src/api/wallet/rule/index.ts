@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
-import { RuleForm, RuleQuery, RuleVO } from './types';
+import { RuleForm, RuleQuery, RuleTemplateVO, RuleVO } from './types';
 
 export function listRule(query: RuleQuery): AxiosPromise<RuleVO[]> {
   return request({
@@ -30,5 +30,19 @@ export function updateRule(data: RuleForm) {
     url: '/wallet/rule',
     method: 'put',
     data
+  });
+}
+
+export function previewDefaultRules(): AxiosPromise<RuleTemplateVO[]> {
+  return request({
+    url: '/wallet/rule/default/preview',
+    method: 'get'
+  });
+}
+
+export function seedDefaultRules(): AxiosPromise<number> {
+  return request({
+    url: '/wallet/rule/default/seed',
+    method: 'post'
   });
 }

@@ -17,6 +17,25 @@ export interface RuleVO extends BaseEntity {
   version: number;
 }
 
+export interface RuleTemplateVO {
+  currencyCode: string;
+  sourceType: string;
+  sourceLabel: string;
+  ruleName: string;
+  creditEnabled: string;
+  debitEnabled: string;
+  withdrawEnabled: string;
+  exchangeEnabled: string;
+  releaseMode: string;
+  turnoverRequired: string;
+  defaultRequiredTurnover: number;
+  status: string;
+  sortOrder: number;
+  remark: string;
+  exists: boolean;
+  willCreate: boolean;
+}
+
 export interface RuleForm {
   id?: string | number;
   currencyCode?: string;
