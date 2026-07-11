@@ -32,6 +32,7 @@ import com.gameluck.wallet.domain.bo.WalletCreditBo;
 import com.gameluck.wallet.enums.WalletTransactionStatus;
 import com.gameluck.wallet.service.IWalletCoreService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -221,17 +222,23 @@ public class PromotionRewardServiceImpl implements IPromotionRewardService {
         claim.setDelFlag(SystemConstants.NORMAL);
         claim.setCreateTime(now);
         claim.setUpdateTime(now);
-        claimMapper.insert(claim);
+        try {
+            claimMapper.insert(claim);
+        } catch (DuplicateKeyException ex) {
+            PromotionClaim duplicate = claimMapper.selectDailyClaim(tenantId, reward.getId(), memberId, today);
+            if (duplicate != null) {
+                return BeanUtil.toBean(duplicate, PromotionClaimVo.class);
+            }
+            throw ex;
+        }
 
         List<String> transactionNos = new ArrayList<>();
         for (PromotionRewardItemBo item : items) {
             WalletTransaction transaction = walletCoreService.credit(buildDailyCreditBo(claim, item));
-            transactionNos.add(transaction.getTransactionNo());
-            if (!WalletTransactionStatus.SUCCESS.name().equals(transaction.getStatus())) {
-                claim.setStatus(PromotionClaimStatus.FAILED.name());
-                claim.setFailReason(StringUtils.substring(transaction.getFailReason(), 0, 500));
-                break;
+            if (transaction == null || !WalletTransactionStatus.SUCCESS.name().equals(transaction.getStatus())) {
+                throw new ServiceException(walletFailureMessage(transaction));
             }
+            transactionNos.add(transaction.getTransactionNo());
         }
         claim.setWalletTransactionNo(String.join(",", transactionNos));
         claim.setUpdateTime(new Date());
@@ -384,6 +391,9 @@ public class PromotionRewardServiceImpl implements IPromotionRewardService {
     private List<PromotionRewardItemBo> parseRewardItems(String rewardItems) {
         try {
             PromotionRewardItemBo[] parsed = OBJECT_MAPPER.readValue(rewardItems, PromotionRewardItemBo[].class);
+            if (parsed == null) {
+                throw new ServiceException(MessageUtils.message("promotion.reward.items.invalid"));
+            }
             return Arrays.asList(parsed);
         } catch (JsonProcessingException ex) {
             throw new ServiceException(MessageUtils.message("promotion.reward.items.invalid"));
@@ -394,8 +404,21 @@ public class PromotionRewardServiceImpl implements IPromotionRewardService {
         if (rewardItems == null || rewardItems.isEmpty()) {
             return null;
         }
-        rewardItems.forEach(item -> item.setRewardAmount(normalizePositive(item.getRewardAmount())));
+        rewardItems.forEach(item -> {
+            if (item == null || StringUtils.isBlank(item.getCurrencyCode())) {
+                throw new ServiceException(MessageUtils.message("promotion.reward.items.invalid"));
+            }
+            item.setRewardAmount(normalizePositive(item.getRewardAmount()));
+        });
         return toJsonString(rewardItems);
+    }
+
+    private String walletFailureMessage(WalletTransaction transaction) {
+        if (transaction == null) {
+            return MessageUtils.message("promotion.wallet.credit.fail");
+        }
+        String failReason = StringUtils.substring(transaction.getFailReason(), 0, 500);
+        return StringUtils.isNotBlank(failReason) ? failReason : MessageUtils.message("promotion.wallet.credit.fail");
     }
 
     private String toJsonString(Object value) {
