@@ -1,12 +1,15 @@
 package com.gameluck.wallet.service.impl;
 
 import com.gameluck.common.core.constant.SystemConstants;
+import com.gameluck.common.core.exception.ServiceException;
 import com.gameluck.wallet.domain.WalletRule;
 import com.gameluck.wallet.domain.vo.WalletRuleTemplateVo;
+import com.gameluck.wallet.domain.vo.WalletRuleVo;
 import com.gameluck.wallet.mapper.WalletRuleMapper;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.springframework.dao.DuplicateKeyException;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -14,6 +17,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -79,6 +83,47 @@ class WalletRuleServiceImplTest {
 
     @Test
     @Tag("local")
+    void resolveCreditRulePrefersCanonicalRuleWhenCanonicalAndAliasCoexist() {
+        WalletRuleMapper mapper = mock(WalletRuleMapper.class);
+        WalletRuleServiceImpl service = new WalletRuleServiceImpl(mapper);
+        when(mapper.selectList(any())).thenReturn(List.of(
+            creditRule("tenant-a", "GC", "GAME_PAYOUT", SystemConstants.NORMAL),
+            creditRule("tenant-a", "GC", "GAME_PROFIT", SystemConstants.DISABLE)
+        ));
+
+        assertThrows(ServiceException.class, () -> service.resolveCreditRule("tenant-a", "GC", "GAME_PROFIT"));
+    }
+
+    @Test
+    @Tag("local")
+    void resolveCreditRulePrefersCanonicalRuleForAliasRequest() {
+        WalletRuleMapper mapper = mock(WalletRuleMapper.class);
+        WalletRuleServiceImpl service = new WalletRuleServiceImpl(mapper);
+        when(mapper.selectList(any())).thenReturn(List.of(
+            creditRule("tenant-a", "GC", "GAME_PAYOUT", SystemConstants.DISABLE),
+            creditRule("tenant-a", "GC", "GAME_PROFIT", SystemConstants.NORMAL)
+        ));
+
+        WalletRuleVo rule = service.resolveCreditRule("tenant-a", "GC", "GAME_PAYOUT");
+
+        assertEquals("GAME_PROFIT", rule.getSourceType());
+    }
+
+    @Test
+    @Tag("local")
+    void seedMissingDefaultRulesSkipsDuplicateKeyException() {
+        WalletRuleMapper mapper = mock(WalletRuleMapper.class);
+        WalletRuleServiceImpl service = new WalletRuleServiceImpl(mapper);
+        when(mapper.selectList(any())).thenReturn(List.of());
+        when(mapper.insert(any(WalletRule.class))).thenThrow(new DuplicateKeyException("duplicate"));
+
+        int inserted = service.seedMissingDefaultRules("tenant-a");
+
+        assertEquals(0, inserted);
+    }
+
+    @Test
+    @Tag("local")
     void listDefaultTemplatesUsesExplicitSpecValues() {
         WalletRuleServiceImpl service = new WalletRuleServiceImpl(mock(WalletRuleMapper.class));
 
@@ -104,6 +149,13 @@ class WalletRuleServiceImplTest {
         rule.setTenantId(tenantId);
         rule.setCurrencyCode(currencyCode);
         rule.setSourceType(sourceType);
+        return rule;
+    }
+
+    private static WalletRule creditRule(String tenantId, String currencyCode, String sourceType, String status) {
+        WalletRule rule = existingRule(tenantId, currencyCode, sourceType);
+        rule.setStatus(status);
+        rule.setCreditEnabled(SystemConstants.NORMAL);
         return rule;
     }
 

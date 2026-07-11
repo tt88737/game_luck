@@ -19,7 +19,9 @@ import com.gameluck.wallet.domain.vo.WalletRuleVo;
 import com.gameluck.wallet.mapper.WalletRuleMapper;
 import com.gameluck.wallet.service.IWalletRuleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -111,10 +113,7 @@ public class WalletRuleServiceImpl implements IWalletRuleService {
             .eq(WalletRule::getTenantId, tenantId)
             .eq(WalletRule::getCurrencyCode, currencyCode)
             .in(WalletRule::getSourceType, sourceTypeVariants(sourceType)));
-        WalletRule rule = rules.stream()
-            .filter(item -> StringUtils.equals(canonicalSourceType(sourceType), canonicalSourceType(item.getSourceType())))
-            .findFirst()
-            .orElse(null);
+        WalletRule rule = preferredRule(filteredRules(rules, tenantId, currencyCode), sourceType);
         if (rule == null) {
             throw new ServiceException(MessageUtils.message("wallet.rule.not.exists"));
         }
@@ -122,7 +121,7 @@ public class WalletRuleServiceImpl implements IWalletRuleService {
             || !StringUtils.equals(SystemConstants.NORMAL, rule.getCreditEnabled())) {
             throw new ServiceException(MessageUtils.message("wallet.rule.credit.disabled"));
         }
-        return MapstructUtils.convert(rule, WalletRuleVo.class);
+        return toVo(rule);
     }
 
     @Override
@@ -158,14 +157,19 @@ public class WalletRuleServiceImpl implements IWalletRuleService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int seedMissingDefaultRules(String tenantId) {
         String ruleTenantId = defaultTenantId(tenantId);
         Date now = new Date();
         int inserted = 0;
         for (WalletRuleTemplateVo template : previewMissingDefaultRules(ruleTenantId)) {
-            if (Boolean.TRUE.equals(template.getWillCreate())) {
-                baseMapper.insert(buildRule(ruleTenantId, template, now));
-                inserted++;
+            if (Boolean.TRUE.equals(template.getWillCreate())
+                && !existsRule(ruleTenantId, template.getCurrencyCode(), template.getSourceType())) {
+                try {
+                    inserted += baseMapper.insert(buildRule(ruleTenantId, template, now)) > 0 ? 1 : 0;
+                } catch (DuplicateKeyException ignored) {
+                    // Concurrent seed won the race; keep the operation idempotent.
+                }
             }
         }
         return inserted;
@@ -228,6 +232,14 @@ public class WalletRuleServiceImpl implements IWalletRuleService {
         return keys;
     }
 
+    private boolean existsRule(String tenantId, String currencyCode, String sourceType) {
+        List<WalletRule> existingRules = baseMapper.selectList(Wrappers.lambdaQuery(WalletRule.class)
+            .eq(WalletRule::getTenantId, tenantId)
+            .eq(WalletRule::getCurrencyCode, currencyCode)
+            .in(WalletRule::getSourceType, sourceTypeVariants(sourceType)));
+        return preferredRule(filteredRules(existingRules, tenantId, currencyCode), sourceType) != null;
+    }
+
     private WalletRule buildRule(String tenantId, WalletRuleTemplateVo template, Date now) {
         WalletRule rule = new WalletRule();
         rule.setId(IdUtil.getSnowflakeNextId());
@@ -272,6 +284,53 @@ public class WalletRuleServiceImpl implements IWalletRuleService {
             variants.add("ADJUSTMENT");
         }
         return variants;
+    }
+
+    private WalletRule preferredRule(List<WalletRule> rules, String sourceType) {
+        String canonical = canonicalSourceType(sourceType);
+        WalletRule aliasRule = null;
+        for (WalletRule rule : rules) {
+            if (!StringUtils.equals(canonical, canonicalSourceType(rule.getSourceType()))) {
+                continue;
+            }
+            if (StringUtils.equals(canonical, rule.getSourceType())) {
+                return rule;
+            }
+            if (aliasRule == null) {
+                aliasRule = rule;
+            }
+        }
+        return aliasRule;
+    }
+
+    private List<WalletRule> filteredRules(List<WalletRule> rules, String tenantId, String currencyCode) {
+        return rules.stream()
+            .filter(rule -> StringUtils.equals(tenantId, rule.getTenantId())
+                && StringUtils.equals(currencyCode, rule.getCurrencyCode()))
+            .toList();
+    }
+
+    private WalletRuleVo toVo(WalletRule rule) {
+        WalletRuleVo vo = new WalletRuleVo();
+        vo.setId(rule.getId());
+        vo.setTenantId(rule.getTenantId());
+        vo.setCurrencyCode(rule.getCurrencyCode());
+        vo.setSourceType(rule.getSourceType());
+        vo.setRuleName(rule.getRuleName());
+        vo.setCreditEnabled(rule.getCreditEnabled());
+        vo.setDebitEnabled(rule.getDebitEnabled());
+        vo.setWithdrawEnabled(rule.getWithdrawEnabled());
+        vo.setExchangeEnabled(rule.getExchangeEnabled());
+        vo.setReleaseMode(rule.getReleaseMode());
+        vo.setTurnoverRequired(rule.getTurnoverRequired());
+        vo.setDefaultRequiredTurnover(rule.getDefaultRequiredTurnover());
+        vo.setStatus(rule.getStatus());
+        vo.setSortOrder(rule.getSortOrder());
+        vo.setRemark(rule.getRemark());
+        vo.setCreateTime(rule.getCreateTime());
+        vo.setUpdateTime(rule.getUpdateTime());
+        vo.setVersion(rule.getVersion());
+        return vo;
     }
 
     private String defaultFlag(String value, String defaultValue) {
