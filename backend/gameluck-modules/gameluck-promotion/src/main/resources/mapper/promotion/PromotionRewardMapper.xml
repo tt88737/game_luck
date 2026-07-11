@@ -12,6 +12,19 @@
         FOR UPDATE
     </select>
 
+    <select id="selectActiveDailyLoginReward" resultType="com.gameluck.promotion.domain.PromotionReward">
+        SELECT *
+        FROM gl_promotion_reward
+        WHERE tenant_id = #{tenantId}
+          AND promotion_type = 'DAILY_LOGIN'
+          AND status = 'ACTIVE'
+          AND del_flag = '0'
+          AND (start_time IS NULL OR start_time &lt;= NOW())
+          AND (end_time IS NULL OR end_time &gt;= NOW())
+        ORDER BY create_time DESC
+        LIMIT 1
+    </select>
+
     <select id="selectClientActiveRewards" resultType="com.gameluck.promotion.domain.PromotionReward">
         SELECT *
         FROM gl_promotion_reward
@@ -20,6 +33,7 @@
           AND del_flag = '0'
           AND (start_time IS NULL OR start_time &lt;= NOW())
           AND (end_time IS NULL OR end_time &gt;= NOW())
+          AND (promotion_type IS NULL OR promotion_type &lt;&gt; 'DAILY_LOGIN')
         ORDER BY create_time DESC
     </select>
 

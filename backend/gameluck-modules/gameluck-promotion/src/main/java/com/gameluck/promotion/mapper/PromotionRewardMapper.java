@@ -14,5 +14,7 @@ public interface PromotionRewardMapper extends BaseMapperPlus<PromotionReward, P
 
     PromotionReward selectByIdForUpdate(@Param("id") Long id);
 
+    PromotionReward selectActiveDailyLoginReward(@Param("tenantId") String tenantId);
+
     List<PromotionReward> selectClientActiveRewards(@Param("tenantId") String tenantId);
 }

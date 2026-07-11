@@ -30,4 +30,6 @@ public interface IPromotionRewardService {
     PromotionRewardVo updateStatus(Long id, String status);
 
     PromotionClaimVo claim(PromotionClaimBo bo);
+
+    PromotionClaimVo claimDailyLoginReward(Long memberId);
 }

@@ -7,6 +7,7 @@ import lombok.Data;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -31,11 +32,17 @@ public class PromotionClaimVo implements Serializable {
 
     private String promotionName;
 
+    private String promotionType;
+
     private Long memberId;
 
     private String currencyCode;
 
     private BigDecimal rewardAmount;
+
+    private LocalDate claimDate;
+
+    private String rewardSnapshot;
 
     private String status;
 

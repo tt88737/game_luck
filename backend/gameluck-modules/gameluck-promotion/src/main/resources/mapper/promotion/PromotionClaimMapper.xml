@@ -14,6 +14,17 @@
         LIMIT 1
     </select>
 
+    <select id="selectDailyClaim" resultType="com.gameluck.promotion.domain.PromotionClaim">
+        SELECT *
+        FROM gl_promotion_claim
+        WHERE tenant_id = #{tenantId}
+          AND promotion_id = #{promotionId}
+          AND member_id = #{memberId}
+          AND claim_date = #{claimDate}
+          AND del_flag = '0'
+        LIMIT 1
+    </select>
+
     <select id="selectClientClaimsByMember" resultType="com.gameluck.promotion.domain.PromotionClaim">
         SELECT *
         FROM gl_promotion_claim

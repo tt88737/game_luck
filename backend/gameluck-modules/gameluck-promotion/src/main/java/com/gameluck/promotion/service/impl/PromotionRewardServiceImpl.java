@@ -4,6 +4,8 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.gameluck.common.core.constant.SystemConstants;
 import com.gameluck.common.core.exception.ServiceException;
@@ -16,6 +18,7 @@ import com.gameluck.promotion.domain.PromotionClaim;
 import com.gameluck.promotion.domain.PromotionReward;
 import com.gameluck.promotion.domain.bo.PromotionClaimBo;
 import com.gameluck.promotion.domain.bo.PromotionRewardBo;
+import com.gameluck.promotion.domain.bo.PromotionRewardItemBo;
 import com.gameluck.promotion.domain.vo.PromotionClaimVo;
 import com.gameluck.promotion.domain.vo.PromotionRewardVo;
 import com.gameluck.promotion.enums.PromotionClaimStatus;
@@ -33,6 +36,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -47,7 +53,10 @@ public class PromotionRewardServiceImpl implements IPromotionRewardService {
     private static final String DEFAULT_TENANT_ID = "000000";
     private static final String DEFAULT_CURRENCY = "SC";
     private static final String SOURCE_TYPE = "PROMOTION";
+    private static final String DAILY_LOGIN_TYPE = "DAILY_LOGIN";
+    private static final String DAILY_REWARD_SOURCE = "DAILY_REWARD";
     private static final int MONEY_SCALE = 6;
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private final PromotionRewardMapper rewardMapper;
     private final PromotionClaimMapper claimMapper;
@@ -80,6 +89,7 @@ public class PromotionRewardServiceImpl implements IPromotionRewardService {
         add.setPromotionNo("PR" + IdUtil.getSnowflakeNextIdStr());
         add.setCurrencyCode(StringUtils.blankToDefault(bo.getCurrencyCode(), DEFAULT_CURRENCY));
         add.setRewardAmount(normalizePositive(bo.getRewardAmount()));
+        add.setRewardItems(rewardItemsJson(bo.getRewardItems()));
         add.setStatus(StringUtils.blankToDefault(bo.getStatus(), PromotionRewardStatus.INACTIVE.name()));
         validateRewardStatus(add.getStatus());
         add.setVersion(0);
@@ -100,6 +110,9 @@ public class PromotionRewardServiceImpl implements IPromotionRewardService {
         update.setCurrencyCode(StringUtils.blankToDefault(bo.getCurrencyCode(), reward.getCurrencyCode()));
         if (bo.getRewardAmount() != null) {
             update.setRewardAmount(normalizePositive(bo.getRewardAmount()));
+        }
+        if (bo.getRewardItems() != null) {
+            update.setRewardItems(rewardItemsJson(bo.getRewardItems()));
         }
         if (StringUtils.isNotBlank(bo.getStatus())) {
             validateRewardStatus(bo.getStatus());
@@ -170,11 +183,67 @@ public class PromotionRewardServiceImpl implements IPromotionRewardService {
         return BeanUtil.toBean(claim, PromotionClaimVo.class);
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public PromotionClaimVo claimDailyLoginReward(Long memberId) {
+        String tenantId = currentTenantId();
+        PromotionReward reward = rewardMapper.selectActiveDailyLoginReward(tenantId);
+        if (reward == null) {
+            throw new ServiceException(MessageUtils.message("promotion.daily.not.configured"));
+        }
+        validateClaimable(reward);
+
+        LocalDate today = LocalDate.now();
+        PromotionClaim existing = claimMapper.selectDailyClaim(tenantId, reward.getId(), memberId, today);
+        if (existing != null) {
+            return BeanUtil.toBean(existing, PromotionClaimVo.class);
+        }
+
+        List<PromotionRewardItemBo> items = rewardItems(reward);
+        Date now = new Date();
+        PromotionClaim claim = new PromotionClaim();
+        claim.setId(IdUtil.getSnowflakeNextId());
+        claim.setTenantId(tenantId);
+        claim.setClaimNo("PC" + IdUtil.getSnowflakeNextIdStr());
+        claim.setPromotionId(reward.getId());
+        claim.setPromotionNo(reward.getPromotionNo());
+        claim.setPromotionName(reward.getPromotionName());
+        claim.setPromotionType(DAILY_LOGIN_TYPE);
+        claim.setMemberId(memberId);
+        claim.setCurrencyCode(items.get(0).getCurrencyCode());
+        claim.setRewardAmount(items.get(0).getRewardAmount());
+        claim.setClaimDate(today);
+        claim.setRewardSnapshot(toJsonString(items));
+        claim.setStatus(PromotionClaimStatus.SUCCESS.name());
+        claim.setIdempotencyKey(dailyClaimIdempotencyKey(tenantId, reward.getPromotionNo(), memberId, today));
+        claim.setVersion(0);
+        claim.setDelFlag(SystemConstants.NORMAL);
+        claim.setCreateTime(now);
+        claim.setUpdateTime(now);
+        claimMapper.insert(claim);
+
+        List<String> transactionNos = new ArrayList<>();
+        for (PromotionRewardItemBo item : items) {
+            WalletTransaction transaction = walletCoreService.credit(buildDailyCreditBo(claim, item));
+            transactionNos.add(transaction.getTransactionNo());
+            if (!WalletTransactionStatus.SUCCESS.name().equals(transaction.getStatus())) {
+                claim.setStatus(PromotionClaimStatus.FAILED.name());
+                claim.setFailReason(StringUtils.substring(transaction.getFailReason(), 0, 500));
+                break;
+            }
+        }
+        claim.setWalletTransactionNo(String.join(",", transactionNos));
+        claim.setUpdateTime(new Date());
+        claimMapper.updateById(claim);
+        return BeanUtil.toBean(claim, PromotionClaimVo.class);
+    }
+
     private LambdaQueryWrapper<PromotionReward> buildRewardQueryWrapper(PromotionRewardBo bo) {
         LambdaQueryWrapper<PromotionReward> lqw = Wrappers.lambdaQuery();
         lqw.eq(StringUtils.isNotBlank(bo.getTenantId()), PromotionReward::getTenantId, bo.getTenantId());
         lqw.eq(StringUtils.isNotBlank(bo.getPromotionNo()), PromotionReward::getPromotionNo, bo.getPromotionNo());
         lqw.like(StringUtils.isNotBlank(bo.getPromotionName()), PromotionReward::getPromotionName, bo.getPromotionName());
+        lqw.eq(StringUtils.isNotBlank(bo.getPromotionType()), PromotionReward::getPromotionType, bo.getPromotionType());
         lqw.eq(StringUtils.isNotBlank(bo.getCurrencyCode()), PromotionReward::getCurrencyCode, bo.getCurrencyCode());
         lqw.eq(StringUtils.isNotBlank(bo.getStatus()), PromotionReward::getStatus, bo.getStatus());
         lqw.ge(bo.getBeginTime() != null, PromotionReward::getCreateTime, bo.getBeginTime());
@@ -224,6 +293,18 @@ public class PromotionRewardServiceImpl implements IPromotionRewardService {
         return bo;
     }
 
+    private WalletCreditBo buildDailyCreditBo(PromotionClaim claim, PromotionRewardItemBo item) {
+        WalletCreditBo bo = new WalletCreditBo();
+        bo.setIdempotencyKey(claim.getIdempotencyKey() + ":" + item.getCurrencyCode());
+        bo.setMemberId(claim.getMemberId());
+        bo.setCurrencyCode(item.getCurrencyCode());
+        bo.setSourceType(DAILY_REWARD_SOURCE);
+        bo.setBusinessNo(claim.getClaimNo());
+        bo.setAmount(item.getRewardAmount());
+        bo.setRemark(MessageUtils.message("promotion.wallet.remark.daily.login"));
+        return bo;
+    }
+
     private String currentTenantId() {
         String tenantId = TenantHelper.getTenantId();
         return StringUtils.isBlank(tenantId) ? DEFAULT_TENANT_ID : tenantId;
@@ -233,11 +314,59 @@ public class PromotionRewardServiceImpl implements IPromotionRewardService {
         return "promotion:claim:" + tenantId + ":" + promotionNo + ":" + memberId;
     }
 
+    private String dailyClaimIdempotencyKey(String tenantId, String promotionNo, Long memberId, LocalDate claimDate) {
+        return "promotion:daily-login:" + tenantId + ":" + promotionNo + ":" + memberId + ":" + claimDate;
+    }
+
     private BigDecimal normalizePositive(BigDecimal value) {
         BigDecimal normalized = value == null ? null : value.setScale(MONEY_SCALE, RoundingMode.HALF_UP);
         if (normalized == null || normalized.compareTo(BigDecimal.ZERO) <= 0) {
             throw new ServiceException(MessageUtils.message("promotion.reward.amount.positive"));
         }
         return normalized;
+    }
+
+    private List<PromotionRewardItemBo> rewardItems(PromotionReward reward) {
+        if (StringUtils.isNotBlank(reward.getRewardItems())) {
+            List<PromotionRewardItemBo> parsed = parseRewardItems(reward.getRewardItems());
+            List<PromotionRewardItemBo> valid = parsed.stream()
+                .filter(item -> item != null
+                    && StringUtils.isNotBlank(item.getCurrencyCode())
+                    && item.getRewardAmount() != null)
+                .peek(item -> item.setRewardAmount(normalizePositive(item.getRewardAmount())))
+                .toList();
+            if (!valid.isEmpty()) {
+                return valid;
+            }
+        }
+        PromotionRewardItemBo item = new PromotionRewardItemBo();
+        item.setCurrencyCode(StringUtils.blankToDefault(reward.getCurrencyCode(), DEFAULT_CURRENCY));
+        item.setRewardAmount(normalizePositive(reward.getRewardAmount()));
+        return List.of(item);
+    }
+
+    private List<PromotionRewardItemBo> parseRewardItems(String rewardItems) {
+        try {
+            PromotionRewardItemBo[] parsed = OBJECT_MAPPER.readValue(rewardItems, PromotionRewardItemBo[].class);
+            return Arrays.asList(parsed);
+        } catch (JsonProcessingException ex) {
+            throw new ServiceException(MessageUtils.message("promotion.reward.items.invalid"));
+        }
+    }
+
+    private String rewardItemsJson(List<PromotionRewardItemBo> rewardItems) {
+        if (rewardItems == null || rewardItems.isEmpty()) {
+            return null;
+        }
+        rewardItems.forEach(item -> item.setRewardAmount(normalizePositive(item.getRewardAmount())));
+        return toJsonString(rewardItems);
+    }
+
+    private String toJsonString(Object value) {
+        try {
+            return OBJECT_MAPPER.writeValueAsString(value);
+        } catch (JsonProcessingException ex) {
+            throw new ServiceException(MessageUtils.message("promotion.reward.items.invalid"));
+        }
     }
 }

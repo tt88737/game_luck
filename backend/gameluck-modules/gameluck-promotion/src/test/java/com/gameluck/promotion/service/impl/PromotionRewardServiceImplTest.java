@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -107,6 +108,75 @@ class PromotionRewardServiceImplTest {
         ServiceException exception = assertThrows(ServiceException.class, () -> service.claim(claimBo()));
 
         assertEquals("promotion.reward.not.active", exception.getMessage());
+        verifyNoInteractions(walletCoreService);
+    }
+
+    @Test
+    @Tag("local")
+    void dailyLoginRewardCreditsConfiguredGcAndScOncePerDay() {
+        PromotionRewardMapper rewardMapper = mock(PromotionRewardMapper.class);
+        PromotionClaimMapper claimMapper = mock(PromotionClaimMapper.class);
+        IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
+        PromotionRewardServiceImpl service = new PromotionRewardServiceImpl(rewardMapper, claimMapper, walletCoreService);
+
+        PromotionReward reward = activeReward();
+        reward.setPromotionType("DAILY_LOGIN");
+        reward.setClaimCycle("DAILY");
+        reward.setDailyClaimLimit(1);
+        reward.setRewardItems("[{\"currencyCode\":\"GC\",\"rewardAmount\":\"100.000000\"},{\"currencyCode\":\"SC\",\"rewardAmount\":\"1.000000\"}]");
+        when(rewardMapper.selectActiveDailyLoginReward("000000")).thenReturn(reward);
+        when(claimMapper.selectDailyClaim("000000", 10L, 1001L, LocalDate.now())).thenReturn(null);
+        when(claimMapper.insert(any(PromotionClaim.class))).thenReturn(1);
+        when(claimMapper.updateById(any(PromotionClaim.class))).thenReturn(1);
+
+        WalletTransaction gc = new WalletTransaction();
+        gc.setTransactionNo("WT_GC_DAILY");
+        gc.setStatus(WalletTransactionStatus.SUCCESS.name());
+        WalletTransaction sc = new WalletTransaction();
+        sc.setTransactionNo("WT_SC_DAILY");
+        sc.setStatus(WalletTransactionStatus.SUCCESS.name());
+        when(walletCoreService.credit(any())).thenReturn(gc, sc);
+
+        PromotionClaimVo claim = service.claimDailyLoginReward(1001L);
+
+        assertEquals("SUCCESS", claim.getStatus());
+        assertEquals("DAILY_LOGIN", claim.getPromotionType());
+        assertEquals("WT_GC_DAILY,WT_SC_DAILY", claim.getWalletTransactionNo());
+        ArgumentCaptor<WalletCreditBo> creditCaptor = ArgumentCaptor.forClass(WalletCreditBo.class);
+        verify(walletCoreService, org.mockito.Mockito.times(2)).credit(creditCaptor.capture());
+        assertEquals("GC", creditCaptor.getAllValues().get(0).getCurrencyCode());
+        assertEquals(new BigDecimal("100.000000"), creditCaptor.getAllValues().get(0).getAmount());
+        assertEquals("SC", creditCaptor.getAllValues().get(1).getCurrencyCode());
+        assertEquals(new BigDecimal("1.000000"), creditCaptor.getAllValues().get(1).getAmount());
+        assertEquals("DAILY_REWARD", creditCaptor.getAllValues().get(0).getSourceType());
+        assertEquals("DAILY_REWARD", creditCaptor.getAllValues().get(1).getSourceType());
+    }
+
+    @Test
+    @Tag("local")
+    void dailyLoginRewardDuplicateReturnsExistingClaimWithoutCredit() {
+        PromotionRewardMapper rewardMapper = mock(PromotionRewardMapper.class);
+        PromotionClaimMapper claimMapper = mock(PromotionClaimMapper.class);
+        IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
+        PromotionRewardServiceImpl service = new PromotionRewardServiceImpl(rewardMapper, claimMapper, walletCoreService);
+
+        PromotionReward reward = activeReward();
+        reward.setPromotionType("DAILY_LOGIN");
+        reward.setClaimCycle("DAILY");
+        when(rewardMapper.selectActiveDailyLoginReward("000000")).thenReturn(reward);
+        PromotionClaim existing = new PromotionClaim();
+        existing.setId(99L);
+        existing.setPromotionId(10L);
+        existing.setMemberId(1001L);
+        existing.setStatus("SUCCESS");
+        existing.setWalletTransactionNo("WT_EXISTING");
+        existing.setClaimDate(LocalDate.now());
+        when(claimMapper.selectDailyClaim("000000", 10L, 1001L, LocalDate.now())).thenReturn(existing);
+
+        PromotionClaimVo claim = service.claimDailyLoginReward(1001L);
+
+        assertEquals(99L, claim.getId());
+        assertEquals("WT_EXISTING", claim.getWalletTransactionNo());
         verifyNoInteractions(walletCoreService);
     }
 

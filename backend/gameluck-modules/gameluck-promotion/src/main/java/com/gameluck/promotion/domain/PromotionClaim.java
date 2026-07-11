@@ -35,11 +35,17 @@ public class PromotionClaim extends BaseEntity {
 
     private String promotionName;
 
+    private String promotionType;
+
     private Long memberId;
 
     private String currencyCode;
 
     private BigDecimal rewardAmount;
+
+    private java.time.LocalDate claimDate;
+
+    private String rewardSnapshot;
 
     private String status;
 
