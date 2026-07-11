@@ -13,6 +13,9 @@ import java.math.BigDecimal;
 @Data
 public class WalletManualAdjustBo {
 
+    @NotBlank(message = "{wallet.business.no.required}")
+    private String adjustmentNo;
+
     @NotNull(message = "{member.id.required}")
     private Long memberId;
 
@@ -29,8 +32,6 @@ public class WalletManualAdjustBo {
     @DecimalMin(value = "0", message = "{wallet.required.turnover.nonnegative}")
     private BigDecimal requiredTurnover;
 
-    private Long operatorId;
-
-    @NotBlank(message = "调账原因不能为空")
+    @NotBlank(message = "{wallet.business.no.required}")
     private String reason;
 }

@@ -29,8 +29,20 @@ class WalletManualAdjustServiceImplTest {
     @Tag("local")
     void afterTurnoverRequiresPositiveRequiredTurnover() {
         IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
-        WalletManualAdjustServiceImpl service = new WalletManualAdjustServiceImpl(walletCoreService);
+        WalletManualAdjustServiceImpl service = manualAdjustService(walletCoreService);
         WalletManualAdjustBo bo = manualAdjustBo("AFTER_TURNOVER", BigDecimal.ZERO);
+
+        assertThrows(ServiceException.class, () -> service.adjust(bo));
+
+        verify(walletCoreService, never()).credit(any());
+    }
+
+    @Test
+    @Tag("local")
+    void afterTurnoverRejectsTurnoverRoundedToZero() {
+        IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
+        WalletManualAdjustServiceImpl service = manualAdjustService(walletCoreService);
+        WalletManualAdjustBo bo = manualAdjustBo("AFTER_TURNOVER", new BigDecimal("0.0000004"));
 
         assertThrows(ServiceException.class, () -> service.adjust(bo));
 
@@ -43,7 +55,7 @@ class WalletManualAdjustServiceImplTest {
         IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
         WalletTransaction expected = new WalletTransaction();
         when(walletCoreService.credit(any())).thenReturn(expected);
-        WalletManualAdjustServiceImpl service = new WalletManualAdjustServiceImpl(walletCoreService);
+        WalletManualAdjustServiceImpl service = manualAdjustService(walletCoreService);
 
         WalletTransaction actual = service.adjust(manualAdjustBo("IMMEDIATE", new BigDecimal("99")));
 
@@ -60,7 +72,7 @@ class WalletManualAdjustServiceImplTest {
         IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
         WalletTransaction expected = new WalletTransaction();
         when(walletCoreService.credit(any())).thenReturn(expected);
-        WalletManualAdjustServiceImpl service = new WalletManualAdjustServiceImpl(walletCoreService);
+        WalletManualAdjustServiceImpl service = manualAdjustService(walletCoreService);
 
         WalletTransaction actual = service.adjust(manualAdjustBo("MANUAL_REVIEW", new BigDecimal("99")));
 
@@ -76,7 +88,7 @@ class WalletManualAdjustServiceImplTest {
     void afterTurnoverBuildsCreditBoWithProvidedTurnover() {
         IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
         when(walletCoreService.credit(any())).thenReturn(new WalletTransaction());
-        WalletManualAdjustServiceImpl service = new WalletManualAdjustServiceImpl(walletCoreService);
+        WalletManualAdjustServiceImpl service = manualAdjustService(walletCoreService);
 
         service.adjust(manualAdjustBo("AFTER_TURNOVER", new BigDecimal("25")));
 
@@ -86,16 +98,43 @@ class WalletManualAdjustServiceImplTest {
         assertEquals(0, new BigDecimal("25").compareTo(creditBo.getRequiredTurnover()));
     }
 
+    @Test
+    @Tag("local")
+    void repeatedAdjustmentNoBuildsStableBusinessNoAndIdempotencyKey() {
+        IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
+        when(walletCoreService.credit(any())).thenReturn(new WalletTransaction());
+        WalletManualAdjustServiceImpl service = manualAdjustService(walletCoreService);
+
+        service.adjust(manualAdjustBo("IMMEDIATE", BigDecimal.ZERO));
+        service.adjust(manualAdjustBo("IMMEDIATE", BigDecimal.ZERO));
+
+        ArgumentCaptor<WalletCreditBo> captor = ArgumentCaptor.forClass(WalletCreditBo.class);
+        verify(walletCoreService, org.mockito.Mockito.times(2)).credit(captor.capture());
+        for (WalletCreditBo creditBo : captor.getAllValues()) {
+            assertEquals("ADJ-20260712-0001", creditBo.getBusinessNo());
+            assertEquals("manual-adjust:ADJ-20260712-0001", creditBo.getIdempotencyKey());
+        }
+    }
+
     private static WalletManualAdjustBo manualAdjustBo(String strategy, BigDecimal requiredTurnover) {
         WalletManualAdjustBo bo = new WalletManualAdjustBo();
+        bo.setAdjustmentNo("ADJ-20260712-0001");
         bo.setMemberId(1001L);
         bo.setCurrencyCode("SC");
         bo.setAmount(new BigDecimal("10"));
         bo.setStrategy(strategy);
         bo.setRequiredTurnover(requiredTurnover);
-        bo.setOperatorId(9001L);
         bo.setReason("ops adjustment");
         return bo;
+    }
+
+    private static WalletManualAdjustServiceImpl manualAdjustService(IWalletCoreService walletCoreService) {
+        return new WalletManualAdjustServiceImpl(walletCoreService) {
+            @Override
+            protected Long currentOperatorId() {
+                return 9001L;
+            }
+        };
     }
 
     private static WalletCreditBo capturedCreditBo(IWalletCoreService walletCoreService) {
@@ -109,9 +148,9 @@ class WalletManualAdjustServiceImplTest {
         assertEquals("SC", creditBo.getCurrencyCode());
         assertEquals(0, new BigDecimal("10").compareTo(creditBo.getAmount()));
         assertEquals("MANUAL_ADJUST", creditBo.getSourceType());
-        assertNotNull(creditBo.getBusinessNo());
-        assertTrue(creditBo.getBusinessNo().startsWith("MA"));
-        assertEquals("manual-adjust:" + creditBo.getBusinessNo(), creditBo.getIdempotencyKey());
+        assertEquals("ADJ-20260712-0001", creditBo.getBusinessNo());
+        assertEquals("manual-adjust:ADJ-20260712-0001", creditBo.getIdempotencyKey());
+        assertEquals(Boolean.TRUE, creditBo.getManualAdjustOverride());
         assertEquals(9001L, creditBo.getOperatorId());
         assertEquals("ops adjustment", creditBo.getRemark());
     }

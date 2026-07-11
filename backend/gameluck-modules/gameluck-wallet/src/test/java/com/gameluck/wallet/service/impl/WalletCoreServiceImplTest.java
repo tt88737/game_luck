@@ -83,11 +83,36 @@ class WalletCoreServiceImplTest {
         when(transactionMapper.selectByIdempotencyKey(eq("000000"), eq("manual-adjust:MA1"))).thenReturn(null);
         when(accountMapper.selectByBizKeyForUpdate(eq("000000"), eq(1001L), eq("SC"))).thenReturn(account);
 
-        WalletTransaction transaction = service.credit(creditBo("MANUAL_ADJUST", WalletReleaseMode.IMMEDIATE.name()));
+        WalletCreditBo bo = creditBo("MANUAL_ADJUST", WalletReleaseMode.IMMEDIATE.name());
+        bo.setManualAdjustOverride(true);
+
+        WalletTransaction transaction = service.credit(bo);
 
         assertEquals(WalletReleaseMode.IMMEDIATE.name(), transaction.getReleaseMode());
         verify(transactionMapper).insert(any(WalletTransaction.class));
         verify(releaseMapper).insert(any(WalletRelease.class));
+    }
+
+    @Test
+    @Tag("local")
+    void creditRejectsManualAdjustReleaseModeOverrideWithoutInternalFlag() {
+        WalletAccountMapper accountMapper = mock(WalletAccountMapper.class);
+        WalletTransactionMapper transactionMapper = mock(WalletTransactionMapper.class);
+        WalletReleaseMapper releaseMapper = mock(WalletReleaseMapper.class);
+        WalletFreezeMapper freezeMapper = mock(WalletFreezeMapper.class);
+        IWalletRuleService ruleService = mock(IWalletRuleService.class);
+        WalletCoreServiceImpl service = new WalletCoreServiceImpl(
+            accountMapper, transactionMapper, releaseMapper, freezeMapper, ruleService);
+
+        WalletRuleVo rule = new WalletRuleVo();
+        rule.setReleaseMode(WalletReleaseMode.MANUAL_REVIEW.name());
+        rule.setDefaultRequiredTurnover(BigDecimal.ZERO);
+        when(ruleService.resolveCreditRule(eq("000000"), eq("SC"), eq("MANUAL_ADJUST"))).thenReturn(rule);
+
+        assertThrows(ServiceException.class,
+            () -> service.credit(creditBo("MANUAL_ADJUST", WalletReleaseMode.IMMEDIATE.name())));
+        verify(transactionMapper, never()).insert(any(WalletTransaction.class));
+        verify(releaseMapper, never()).insert(any(WalletRelease.class));
     }
 
     @Test
@@ -106,8 +131,10 @@ class WalletCoreServiceImplTest {
         rule.setDefaultRequiredTurnover(BigDecimal.ZERO);
         when(ruleService.resolveCreditRule(eq("000000"), eq("SC"), eq("PROMOTION"))).thenReturn(rule);
 
-        assertThrows(ServiceException.class,
-            () -> service.credit(creditBo("PROMOTION", WalletReleaseMode.IMMEDIATE.name())));
+        WalletCreditBo bo = creditBo("PROMOTION", WalletReleaseMode.IMMEDIATE.name());
+        bo.setManualAdjustOverride(true);
+
+        assertThrows(ServiceException.class, () -> service.credit(bo));
         verify(transactionMapper, never()).insert(any(WalletTransaction.class));
         verify(releaseMapper, never()).insert(any(WalletRelease.class));
     }

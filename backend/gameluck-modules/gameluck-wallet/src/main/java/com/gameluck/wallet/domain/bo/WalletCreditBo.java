@@ -37,6 +37,8 @@ public class WalletCreditBo {
     @DecimalMin(value = "0", message = "{wallet.required.turnover.nonnegative}")
     private BigDecimal requiredTurnover;
 
+    private Boolean manualAdjustOverride;
+
     private Long operatorId;
 
     private String remark;
