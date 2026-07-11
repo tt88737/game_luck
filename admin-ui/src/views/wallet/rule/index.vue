@@ -12,7 +12,9 @@
               </el-select>
             </el-form-item>
             <el-form-item :label="tt('来源类型')" prop="sourceType">
-              <el-input v-model="queryParams.sourceType" :placeholder="tt('请输入来源类型')" clearable @keyup.enter="handleQuery" />
+              <el-select v-model="queryParams.sourceType" :placeholder="tt('请选择来源')" clearable class="!w-140px">
+                <el-option v-for="item in sourceOptions" :key="item.value" :label="item.label" :value="item.value" />
+              </el-select>
             </el-form-item>
             <el-form-item :label="tt('状态')" prop="status">
               <el-select v-model="queryParams.status" :placeholder="tt('请选择状态')" clearable class="!w-120px">
@@ -41,10 +43,12 @@
 
       <el-table v-loading="loading" border :data="ruleList">
         <el-table-column :label="tt('币种')" align="center" prop="currencyCode" width="90" />
-        <el-table-column :label="tt('来源类型')" align="center" prop="sourceType" min-width="130" />
+        <el-table-column :label="tt('来源类型')" align="center" prop="sourceType" min-width="130">
+          <template #default="scope">{{ businessLabel('sourceType', scope.row.sourceType, tt) }}</template>
+        </el-table-column>
         <el-table-column :label="tt('规则名称')" align="center" prop="ruleName" min-width="150" />
         <el-table-column :label="tt('释放模式')" align="center" prop="releaseMode" min-width="130">
-          <template #default="scope">{{ releaseModeText(scope.row.releaseMode) }}</template>
+          <template #default="scope">{{ businessLabel('walletReleaseMode', scope.row.releaseMode, tt) }}</template>
         </el-table-column>
         <el-table-column :label="tt('需要流水')" align="center" width="100">
           <template #default="scope">
@@ -91,7 +95,9 @@
           </el-select>
         </el-form-item>
         <el-form-item :label="tt('来源类型')" prop="sourceType">
-          <el-input v-model="form.sourceType" :placeholder="tt('例如 GAME_PROFIT / DEPOSIT / PROMOTION')" />
+          <el-select v-model="form.sourceType" :placeholder="tt('请选择来源')" class="w-full">
+            <el-option v-for="item in sourceOptions" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
         </el-form-item>
         <el-form-item :label="tt('规则名称')" prop="ruleName">
           <el-input v-model="form.ruleName" :placeholder="tt('请输入规则名称')" />
@@ -110,10 +116,7 @@
         </el-form-item>
         <el-form-item :label="tt('释放模式')" prop="releaseMode">
           <el-select v-model="form.releaseMode" :placeholder="tt('请选择释放模式')">
-            <el-option :label="tt('立即释放')" value="IMMEDIATE" />
-            <el-option :label="tt('满足流水后释放')" value="AFTER_TURNOVER" />
-            <el-option :label="tt('永不释放')" value="NEVER" />
-            <el-option :label="tt('人工审核')" value="MANUAL_REVIEW" />
+            <el-option v-for="item in releaseModeOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item :label="tt('需要业务流水')">
@@ -144,6 +147,7 @@
 
 <script setup name="WalletRule" lang="ts">
 import { tt } from '@/utils/i18nText';
+import { businessLabel, businessOptions } from '@/utils/businessLabels';
 import { addRule, getRule, listRule, updateRule } from '@/api/wallet/rule';
 import { RuleForm, RuleQuery, RuleVO } from '@/api/wallet/rule/types';
 
@@ -155,6 +159,8 @@ const showSearch = ref(true);
 const total = ref(0);
 const queryFormRef = ref<ElFormInstance>();
 const ruleFormRef = ref<ElFormInstance>();
+const sourceOptions = businessOptions('sourceType', tt);
+const releaseModeOptions = businessOptions('walletReleaseMode', tt);
 
 const dialog = reactive<DialogOption>({
   visible: false,
@@ -189,7 +195,7 @@ const data = reactive<PageData<RuleForm, RuleQuery>>({
   },
   rules: {
     currencyCode: [{ required: true, message: tt('请选择币种'), trigger: 'change' }],
-    sourceType: [{ required: true, message: tt('请输入来源类型'), trigger: 'blur' }],
+    sourceType: [{ required: true, message: tt('请选择来源'), trigger: 'change' }],
     ruleName: [{ required: true, message: tt('请输入规则名称'), trigger: 'blur' }],
     releaseMode: [{ required: true, message: tt('请选择释放模式'), trigger: 'change' }]
   }
@@ -201,13 +207,6 @@ const statusText = (value?: string) => (value === '0' ? tt('启用') : tt('停�
 const yesNoText = (value?: string) => (value === '0' ? tt('需要') : tt('不需要'));
 const capabilityText = (value?: string) => (value === '0' ? tt('具备') : tt('不具备'));
 
-const releaseModeText = (value?: string) => {
-  if (value === 'IMMEDIATE') return tt('立即释放');
-  if (value === 'AFTER_TURNOVER') return tt('满足流水后释放');
-  if (value === 'NEVER') return tt('永不释放');
-  if (value === 'MANUAL_REVIEW') return tt('人工审核');
-  return value || '-';
-};
 
 const getList = async () => {
   loading.value = true;

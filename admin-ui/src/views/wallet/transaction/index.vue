@@ -15,12 +15,17 @@
             </el-form-item>
             <el-form-item :label="tt('操作')" prop="operation">
               <el-select v-model="queryParams.operation" :placeholder="tt('操作类型')" clearable>
-                <el-option v-for="item in operationOptions" :key="item" :label="item" :value="item" />
+                <el-option v-for="item in operationOptions" :key="item.value" :label="item.label" :value="item.value" />
+              </el-select>
+            </el-form-item>
+            <el-form-item :label="tt('来源')" prop="sourceType">
+              <el-select v-model="queryParams.sourceType" :placeholder="tt('请选择来源')" clearable class="!w-140px">
+                <el-option v-for="item in sourceOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
             <el-form-item :label="tt('状态')" prop="status">
               <el-select v-model="queryParams.status" :placeholder="tt('交易状态')" clearable>
-                <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
+                <el-option v-for="item in statusOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
             <el-form-item :label="tt('业务单号')" prop="businessNo">
@@ -47,15 +52,19 @@
           <template #default="scope">{{ scope.row.memberNo || scope.row.memberId }}</template>
         </el-table-column>
         <el-table-column :label="tt('币种')" align="center" prop="currencyCode" width="90" />
-        <el-table-column :label="tt('操作')" align="center" prop="operation" width="110" />
-        <el-table-column :label="tt('来源')" align="center" prop="sourceType" min-width="120" :show-overflow-tooltip="true" />
+        <el-table-column :label="tt('操作')" align="center" prop="operation" width="110">
+          <template #default="scope">{{ businessLabel('walletOperation', scope.row.operation, tt) }}</template>
+        </el-table-column>
+        <el-table-column :label="tt('来源')" align="center" prop="sourceType" min-width="120" :show-overflow-tooltip="true">
+          <template #default="scope">{{ businessLabel('sourceType', scope.row.sourceType, tt) }}</template>
+        </el-table-column>
         <el-table-column :label="tt('业务单号')" align="center" prop="businessNo" min-width="160" :show-overflow-tooltip="true" />
         <el-table-column :label="tt('金额')" align="right" prop="amount" min-width="130" />
         <el-table-column :label="tt('变更前')" align="right" prop="balanceBefore" min-width="130" />
         <el-table-column :label="tt('变更后')" align="right" prop="balanceAfter" min-width="130" />
         <el-table-column :label="tt('状态')" align="center" prop="status" width="100">
           <template #default="scope">
-            <el-tag :type="transactionStatusType(scope.row.status)">{{ scope.row.status }}</el-tag>
+            <el-tag :type="walletStatusType(scope.row.status)">{{ businessLabel('walletTransactionStatus', scope.row.status, tt) }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column :label="tt('失败原因')" align="left" prop="failReason" min-width="160" :show-overflow-tooltip="true" />
@@ -73,6 +82,7 @@
 <script setup name="WalletTransaction" lang="ts">
 import { tt } from '@/utils/i18nText';
 import { normalizeMemberIdQuery } from '@/utils/memberQuery';
+import { businessLabel, businessOptions, walletStatusType } from '@/utils/businessLabels';
 import { listTransaction } from '@/api/wallet/transaction';
 import { TransactionQuery, TransactionVO } from '@/api/wallet/transaction/types';
 
@@ -84,8 +94,9 @@ const loading = ref(true);
 const showSearch = ref(true);
 const total = ref(0);
 const queryFormRef = ref<ElFormInstance>();
-const operationOptions = ['CREDIT', 'DEBIT', 'FREEZE', 'UNFREEZE', 'SETTLE', 'ADJUST', 'REVERSE', 'TURNOVER'];
-const statusOptions = ['PENDING', 'SUCCESS', 'FAILED', 'REVERSED'];
+const operationOptions = businessOptions('walletOperation', tt);
+const sourceOptions = businessOptions('sourceType', tt);
+const statusOptions = businessOptions('walletTransactionStatus', tt);
 
 const queryParams = ref<TransactionQuery>({
   pageNum: 1,
@@ -98,13 +109,6 @@ const queryParams = ref<TransactionQuery>({
   businessNo: '',
   status: ''
 });
-
-const transactionStatusType = (value?: string) => {
-  if (value === 'SUCCESS') return 'success';
-  if (value === 'FAILED') return 'danger';
-  if (value === 'PENDING') return 'warning';
-  return 'info';
-};
 
 const getList = async () => {
   loading.value = true;

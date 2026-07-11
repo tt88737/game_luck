@@ -22,12 +22,7 @@
             </el-form-item>
             <el-form-item :label="tt('状态')" prop="status">
               <el-select v-model="queryParams.status" :placeholder="tt('请选择状态')" clearable class="!w-150px">
-                <el-option :label="tt('待下注')" value="PENDING" />
-                <el-option :label="tt('已扣款')" value="BET_SUCCESS" />
-                <el-option :label="tt('扣款失败')" value="BET_FAILED" />
-                <el-option :label="tt('已结算')" value="SETTLED" />
-                <el-option :label="tt('结算失败')" value="SETTLE_FAILED" />
-                <el-option :label="tt('已取消')" value="CANCELLED" />
+                <el-option v-for="item in statusOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
             <el-form-item>
@@ -62,7 +57,7 @@
         <el-table-column :label="tt('净额')" align="right" prop="netAmount" width="120" />
         <el-table-column :label="tt('状态')" align="center" prop="status" width="110">
           <template #default="scope">
-            <el-tag :type="statusType(scope.row.status)">{{ statusLabel(scope.row.status) }}</el-tag>
+            <el-tag :type="gameBetStatusType(scope.row.status)">{{ businessLabel('gameBetStatus', scope.row.status, tt) }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column :label="tt('下注交易号')" align="center" prop="betWalletTransactionNo" min-width="180" show-overflow-tooltip />
@@ -139,7 +134,7 @@
     <el-dialog v-model="detailOpen" :title="tt('模拟下注订单详情')" width="720px" append-to-body>
       <el-descriptions :column="2" border>
         <el-descriptions-item :label="tt('注单号')">{{ detail.betOrderNo }}</el-descriptions-item>
-        <el-descriptions-item :label="tt('状态')">{{ statusLabel(detail.status) }}</el-descriptions-item>
+        <el-descriptions-item :label="tt('状态')">{{ businessLabel('gameBetStatus', detail.status, tt) }}</el-descriptions-item>
         <el-descriptions-item :label="tt('会员ID')">{{ detail.memberNo || detail.memberId }}</el-descriptions-item>
         <el-descriptions-item :label="tt('币种')">{{ detail.currencyCode }}</el-descriptions-item>
         <el-descriptions-item :label="tt('游戏')">{{ detail.gameCode }}</el-descriptions-item>
@@ -168,6 +163,7 @@
 <script setup name="GameBetOrder" lang="ts">
 import { tt } from '@/utils/i18nText';
 import { normalizeMemberIdQuery } from '@/utils/memberQuery';
+import { businessLabel, businessOptions, gameBetStatusType } from '@/utils/businessLabels';
 import { addGameBet, cancelGameBet, getGameBet, listGameBet, placeGameBet, settleGameBet } from '@/api/game/bet';
 import { GameBetOrderForm, GameBetOrderQuery, GameBetOrderVO } from '@/api/game/bet/types';
 
@@ -182,6 +178,7 @@ const detailOpen = ref(false);
 const queryFormRef = ref<ElFormInstance>();
 const betFormRef = ref<ElFormInstance>();
 const detail = ref<Partial<GameBetOrderVO>>({});
+const statusOptions = businessOptions('gameBetStatus', tt);
 
 const dialog = reactive<DialogOption>({
   visible: false,
@@ -225,29 +222,6 @@ const getList = async () => {
   loading.value = false;
 };
 
-const statusLabel = (status?: string) => {
-  const map: Record<string, string> = {
-    PENDING: tt('待下注'),
-    BET_SUCCESS: tt('已扣款'),
-    BET_FAILED: tt('扣款失败'),
-    SETTLED: tt('已结算'),
-    SETTLE_FAILED: tt('结算失败'),
-    CANCELLED: tt('已取消')
-  };
-  return status ? map[status] || status : '';
-};
-
-const statusType = (status?: string) => {
-  const map: Record<string, string> = {
-    PENDING: 'warning',
-    BET_SUCCESS: 'primary',
-    BET_FAILED: 'danger',
-    SETTLED: 'success',
-    SETTLE_FAILED: 'danger',
-    CANCELLED: 'info'
-  };
-  return status ? map[status] || '' : '';
-};
 
 const reset = () => {
   form.value = { ...initFormData };

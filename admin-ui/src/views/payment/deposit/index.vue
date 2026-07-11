@@ -19,10 +19,7 @@
             </el-form-item>
             <el-form-item :label="tt('状态')" prop="status">
               <el-select v-model="queryParams.status" :placeholder="tt('请选择状态')" clearable class="!w-140px">
-                <el-option :label="tt('待支付')" value="PENDING" />
-                <el-option :label="tt('成功')" value="SUCCESS" />
-                <el-option :label="tt('已取消')" value="CANCELLED" />
-                <el-option :label="tt('失败')" value="FAILED" />
+                <el-option v-for="item in statusOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
             <el-form-item>
@@ -51,10 +48,12 @@
         </el-table-column>
         <el-table-column :label="tt('币种')" align="center" prop="currencyCode" width="90" />
         <el-table-column :label="tt('金额')" align="right" prop="amount" width="130" />
-        <el-table-column :label="tt('支付方式')" align="center" prop="payMethod" width="120" />
+        <el-table-column :label="tt('支付方式')" align="center" prop="payMethod" width="120">
+          <template #default="scope">{{ businessLabel('method', scope.row.payMethod, tt) }}</template>
+        </el-table-column>
         <el-table-column :label="tt('状态')" align="center" prop="status" width="110">
           <template #default="scope">
-            <el-tag :type="statusType(scope.row.status)">{{ statusLabel(scope.row.status) }}</el-tag>
+            <el-tag :type="depositStatusType(scope.row.status)">{{ businessLabel('depositStatus', scope.row.status, tt) }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column :label="tt('钱包交易号')" align="center" prop="walletTransactionNo" min-width="180" show-overflow-tooltip />
@@ -106,11 +105,11 @@
     <el-dialog v-model="detailOpen" :title="tt('充值订单详情')" width="640px" append-to-body>
       <el-descriptions :column="2" border>
         <el-descriptions-item :label="tt('订单号')">{{ detail.depositOrderNo }}</el-descriptions-item>
-        <el-descriptions-item :label="tt('状态')">{{ statusLabel(detail.status) }}</el-descriptions-item>
+        <el-descriptions-item :label="tt('状态')">{{ businessLabel('depositStatus', detail.status, tt) }}</el-descriptions-item>
         <el-descriptions-item :label="tt('会员ID')">{{ detail.memberNo || detail.memberId }}</el-descriptions-item>
         <el-descriptions-item :label="tt('币种')">{{ detail.currencyCode }}</el-descriptions-item>
         <el-descriptions-item :label="tt('金额')">{{ detail.amount }}</el-descriptions-item>
-        <el-descriptions-item :label="tt('支付方式')">{{ detail.payMethod }}</el-descriptions-item>
+        <el-descriptions-item :label="tt('支付方式')">{{ businessLabel('method', detail.payMethod, tt) }}</el-descriptions-item>
         <el-descriptions-item :label="tt('钱包交易号')">{{ detail.walletTransactionNo }}</el-descriptions-item>
         <el-descriptions-item :label="tt('支付幂等键')">{{ detail.walletIdempotencyKey }}</el-descriptions-item>
         <el-descriptions-item :label="tt('失败原因')" :span="2">{{ detail.failReason }}</el-descriptions-item>
@@ -123,6 +122,7 @@
 <script setup name="DepositOrder" lang="ts">
 import { tt } from '@/utils/i18nText';
 import { normalizeMemberIdQuery } from '@/utils/memberQuery';
+import { businessLabel, businessOptions, depositStatusType } from '@/utils/businessLabels';
 import { addDeposit, cancelDeposit, getDeposit, listDeposit, simulateDepositSuccess } from '@/api/payment/deposit';
 import { DepositOrderForm, DepositOrderQuery, DepositOrderVO } from '@/api/payment/deposit/types';
 
@@ -136,6 +136,7 @@ const detailOpen = ref(false);
 const queryFormRef = ref<ElFormInstance>();
 const depositFormRef = ref<ElFormInstance>();
 const detail = ref<Partial<DepositOrderVO>>({});
+const statusOptions = businessOptions('depositStatus', tt);
 
 const dialog = reactive<DialogOption>({
   visible: false,
@@ -175,25 +176,6 @@ const getList = async () => {
   loading.value = false;
 };
 
-const statusLabel = (status?: string) => {
-  const map: Record<string, string> = {
-    PENDING: tt('待支付'),
-    SUCCESS: tt('成功'),
-    CANCELLED: tt('已取消'),
-    FAILED: tt('失败')
-  };
-  return status ? map[status] || status : '';
-};
-
-const statusType = (status?: string) => {
-  const map: Record<string, string> = {
-    PENDING: 'warning',
-    SUCCESS: 'success',
-    CANCELLED: 'info',
-    FAILED: 'danger'
-  };
-  return status ? map[status] || '' : '';
-};
 
 const reset = () => {
   form.value = { ...initFormData };

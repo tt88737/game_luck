@@ -802,7 +802,31 @@ const enTextMap: Record<string, string> = {
   '确认取消该充值订单？': 'Confirm cancelling this deposit order?',
   '确认对该模拟下注订单执行钱包扣款？': 'Confirm debiting the wallet for this simulated bet order?',
   '确认对该模拟下注订单执行结算派彩？': 'Confirm settling payout for this simulated bet order?',
-  '确认取消该模拟下注订单并退回下注金额？': 'Confirm cancelling this simulated bet order and refunding the bet amount?'
+  '确认取消该模拟下注订单并退回下注金额？': 'Confirm cancelling this simulated bet order and refunding the bet amount?',
+  // GameLuck business enum labels
+  \u5145\u503c: 'Deposit',
+  \u6e38\u620f\u4e0b\u6ce8: 'Game Bet',
+  \u6e38\u620f\u7ed3\u7b97: 'Game Settlement',
+  \u6d3b\u52a8\u5956\u52b1: 'Promotion Reward',
+  \u4eba\u5de5\u8c03\u6574: 'Manual Adjustment',
+  \u5e73\u53f0\u6a21\u62df: 'Platform Simulation',
+  \u51fa\u8d26: 'Debit',
+  \u89e3\u51bb: 'Unfreeze',
+  \u8c03\u6574: 'Adjust',
+  \u51b2\u6b63: 'Reverse',
+  \u6d41\u6c34\u7d2f\u8ba1: 'Turnover Accrual',
+  \u5904\u7406\u4e2d: 'Processing',
+  \u5df2\u51b2\u6b63: 'Reversed',
+  \u9501\u5b9a\u4e2d: 'Locked',
+  \u5f85\u4eba\u5de5\u5ba1\u6838: 'Pending Manual Review',
+  \u5ba1\u6838\u62d2\u7edd: 'Review Rejected',
+  \u5df2\u6d88\u8017: 'Consumed',
+  \u51bb\u7ed3\u4e2d: 'Frozen',
+  \u5f85\u5ba1\u6838: 'Pending Review',
+  \u5df2\u901a\u8fc7: 'Approved',
+  \u5df2\u62d2\u7edd: 'Rejected',
+  \u8bf7\u9009\u62e9\u6765\u6e90: 'Select Source',
+
 };
 
 export const tt = (text?: string) => {

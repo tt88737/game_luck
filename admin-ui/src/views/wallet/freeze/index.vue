@@ -13,9 +13,14 @@
             <el-form-item :label="tt('币种')" prop="currencyCode">
               <el-input v-model="queryParams.currencyCode" :placeholder="tt('币种')" clearable @keyup.enter="handleQuery" />
             </el-form-item>
+            <el-form-item :label="tt('来源')" prop="sourceType">
+              <el-select v-model="queryParams.sourceType" :placeholder="tt('请选择来源')" clearable class="!w-140px">
+                <el-option v-for="item in sourceOptions" :key="item.value" :label="item.label" :value="item.value" />
+              </el-select>
+            </el-form-item>
             <el-form-item :label="tt('状态')" prop="status">
               <el-select v-model="queryParams.status" :placeholder="tt('冻结状态')" clearable>
-                <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
+                <el-option v-for="item in statusOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
             <el-form-item :label="tt('业务单号')" prop="businessNo">
@@ -43,11 +48,13 @@
         </el-table-column>
         <el-table-column :label="tt('币种')" align="center" prop="currencyCode" width="90" />
         <el-table-column :label="tt('冻结金额')" align="right" prop="amount" min-width="130" />
-        <el-table-column :label="tt('来源')" align="center" prop="sourceType" min-width="120" :show-overflow-tooltip="true" />
+        <el-table-column :label="tt('来源')" align="center" prop="sourceType" min-width="120" :show-overflow-tooltip="true">
+          <template #default="scope">{{ businessLabel('sourceType', scope.row.sourceType, tt) }}</template>
+        </el-table-column>
         <el-table-column :label="tt('业务单号')" align="center" prop="businessNo" min-width="160" :show-overflow-tooltip="true" />
         <el-table-column :label="tt('状态')" align="center" prop="status" width="110">
           <template #default="scope">
-            <el-tag :type="freezeStatusType(scope.row.status)">{{ scope.row.status }}</el-tag>
+            <el-tag :type="walletStatusType(scope.row.status)">{{ businessLabel('walletFreezeStatus', scope.row.status, tt) }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column :label="tt('创建时间')" align="center" prop="createTime" width="170">
@@ -69,6 +76,7 @@
 <script setup name="WalletFreeze" lang="ts">
 import { tt } from '@/utils/i18nText';
 import { normalizeMemberIdQuery } from '@/utils/memberQuery';
+import { businessLabel, businessOptions, walletStatusType } from '@/utils/businessLabels';
 import { listFreeze } from '@/api/wallet/freeze';
 import { FreezeQuery, FreezeVO } from '@/api/wallet/freeze/types';
 
@@ -79,7 +87,8 @@ const loading = ref(true);
 const showSearch = ref(true);
 const total = ref(0);
 const queryFormRef = ref<ElFormInstance>();
-const statusOptions = ['FROZEN', 'SETTLED', 'RELEASED'];
+const sourceOptions = businessOptions('sourceType', tt);
+const statusOptions = businessOptions('walletFreezeStatus', tt);
 
 const queryParams = ref<FreezeQuery>({
   pageNum: 1,
@@ -91,12 +100,6 @@ const queryParams = ref<FreezeQuery>({
   businessNo: '',
   status: ''
 });
-
-const freezeStatusType = (value?: string) => {
-  if (value === 'FROZEN') return 'warning';
-  if (value === 'SETTLED') return 'success';
-  return 'info';
-};
 
 const getList = async () => {
   loading.value = true;

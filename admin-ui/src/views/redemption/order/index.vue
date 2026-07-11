@@ -53,7 +53,9 @@
         </el-table-column>
         <el-table-column :label="t('common.currency')" align="center" prop="currencyCode" width="90" />
         <el-table-column :label="t('common.amount')" align="right" prop="amount" width="130" />
-        <el-table-column :label="t('redemptionOrder.fields.redemptionMethod')" align="center" prop="redemptionMethod" width="120" />
+        <el-table-column :label="t('redemptionOrder.fields.redemptionMethod')" align="center" prop="redemptionMethod" width="120">
+          <template #default="scope">{{ businessLabel('method', scope.row.redemptionMethod, tt) }}</template>
+        </el-table-column>
         <el-table-column :label="t('common.status')" align="center" prop="status" width="110">
           <template #default="scope">
             <el-tag :type="statusType(scope.row.status)">{{ statusLabel(scope.row.status) }}</el-tag>
@@ -97,7 +99,9 @@
           <el-input-number v-model="form.amount" :precision="6" :min="0.000001" class="w-full" />
         </el-form-item>
         <el-form-item :label="t('redemptionOrder.fields.redemptionMethod')" prop="redemptionMethod">
-          <el-input v-model="form.redemptionMethod" :placeholder="t('redemptionOrder.placeholders.redemptionMethod')" />
+          <el-select v-model="form.redemptionMethod" :placeholder="t('redemptionOrder.placeholders.redemptionMethod')" class="w-full">
+            <el-option v-for="item in methodOptions" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
         </el-form-item>
         <el-form-item :label="t('redemptionOrder.fields.accountRef')" prop="accountRef">
           <el-input v-model="form.accountRef" :placeholder="t('redemptionOrder.placeholders.accountRef')" />
@@ -138,7 +142,7 @@
         <el-descriptions-item :label="t('redemptionOrder.fields.memberId')">{{ detail.memberNo || detail.memberId }}</el-descriptions-item>
         <el-descriptions-item :label="t('common.currency')">{{ detail.currencyCode }}</el-descriptions-item>
         <el-descriptions-item :label="t('common.amount')">{{ detail.amount }}</el-descriptions-item>
-        <el-descriptions-item :label="t('redemptionOrder.fields.redemptionMethod')">{{ detail.redemptionMethod }}</el-descriptions-item>
+        <el-descriptions-item :label="t('redemptionOrder.fields.redemptionMethod')">{{ businessLabel('method', detail.redemptionMethod, tt) }}</el-descriptions-item>
         <el-descriptions-item :label="t('redemptionOrder.fields.freezeNo')">{{ detail.freezeNo }}</el-descriptions-item>
         <el-descriptions-item :label="t('redemptionOrder.fields.freezeWalletTransactionNo')">{{ detail.freezeWalletTransactionNo }}</el-descriptions-item>
         <el-descriptions-item :label="t('redemptionOrder.fields.settleWalletTransactionNo')">{{ detail.settleWalletTransactionNo }}</el-descriptions-item>
@@ -157,6 +161,8 @@
 import { addRedemptionOrder, approveRedemptionOrder, getRedemptionOrder, listRedemptionOrder, rejectRedemptionOrder } from '@/api/redemption/order';
 import { RedemptionOrderForm, RedemptionOrderQuery, RedemptionOrderVO } from '@/api/redemption/order/types';
 import { normalizeMemberIdQuery } from '@/utils/memberQuery';
+import { tt } from '@/utils/i18nText';
+import { businessLabel, businessOptions } from '@/utils/businessLabels';
 import { useI18n } from 'vue-i18n';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -172,6 +178,7 @@ const orderFormRef = ref<ElFormInstance>();
 const auditFormRef = ref<ElFormInstance>();
 const auditSubmitting = ref(false);
 const detail = ref<Partial<RedemptionOrderVO>>({});
+const methodOptions = businessOptions('method', tt);
 
 const dialog = reactive({
   visible: false
@@ -212,7 +219,8 @@ const statusFilterOptions = computed(() => [
 const rules = computed(() => ({
   memberId: [{ required: true, message: t('redemptionOrder.rules.memberId'), trigger: 'blur' }],
   currencyCode: [{ required: true, message: t('redemptionOrder.rules.currency'), trigger: 'change' }],
-  amount: [{ required: true, message: t('redemptionOrder.rules.amount'), trigger: 'blur' }]
+  amount: [{ required: true, message: t('redemptionOrder.rules.amount'), trigger: 'blur' }],
+  redemptionMethod: [{ required: true, message: t('redemptionOrder.placeholders.redemptionMethod'), trigger: 'change' }]
 }));
 
 const auditRules = computed(() => ({
