@@ -826,6 +826,12 @@ const enTextMap: Record<string, string> = {
   \u5df2\u901a\u8fc7: 'Approved',
   \u5df2\u62d2\u7edd: 'Rejected',
   \u8bf7\u9009\u62e9\u6765\u6e90: 'Select Source',
+  \u6ce8\u518c\u8d60\u9001: 'Registration Bonus',
+  \u6bcf\u65e5\u5956\u52b1: 'Daily Reward',
+  \u4efb\u52a1\u5956\u52b1: 'Task Reward',
+  \u6e38\u620f\u6d3e\u5f69: 'Game Payout',
+  \u6e38\u620f\u9000\u6b3e: 'Game Refund',
+  \u4eba\u5de5\u8c03\u8d26: 'Manual Adjustment',
 
 };
 

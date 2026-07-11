@@ -9,7 +9,14 @@ import {
 
 describe('businessLabels', () => {
   it('renders operator-readable labels for business enum values', () => {
+    expect(businessLabel('sourceType', 'REGISTER_BONUS')).toBe('\u6ce8\u518c\u8d60\u9001');
+    expect(businessLabel('sourceType', 'DAILY_REWARD')).toBe('\u6bcf\u65e5\u5956\u52b1');
+    expect(businessLabel('sourceType', 'TASK_REWARD')).toBe('\u4efb\u52a1\u5956\u52b1');
     expect(businessLabel('sourceType', 'GAME_BET')).toBe('游戏下注');
+    expect(businessLabel('sourceType', 'GAME_PAYOUT')).toBe('\u6e38\u620f\u6d3e\u5f69');
+    expect(businessLabel('sourceType', 'GAME_PROFIT')).toBe('\u6e38\u620f\u6d3e\u5f69');
+    expect(businessLabel('sourceType', 'GAME_REFUND')).toBe('\u6e38\u620f\u9000\u6b3e');
+    expect(businessLabel('sourceType', 'ADJUSTMENT')).toBe('\u4eba\u5de5\u8c03\u8d26');
     expect(businessLabel('method', 'SIMULATED')).toBe('平台模拟');
     expect(businessLabel('walletOperation', 'CREDIT')).toBe('入账');
     expect(businessLabel('walletReleaseMode', 'IMMEDIATE')).toBe('立即释放');
