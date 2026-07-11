@@ -3,6 +3,7 @@ package com.gameluck.wallet.service;
 import com.gameluck.common.mybatis.core.page.PageQuery;
 import com.gameluck.common.mybatis.core.page.TableDataInfo;
 import com.gameluck.wallet.domain.bo.WalletRuleBo;
+import com.gameluck.wallet.domain.vo.WalletRuleTemplateVo;
 import com.gameluck.wallet.domain.vo.WalletRuleVo;
 
 import java.util.List;
@@ -23,4 +24,12 @@ public interface IWalletRuleService {
     Boolean updateByBo(WalletRuleBo bo);
 
     WalletRuleVo resolveCreditRule(String tenantId, String currencyCode, String sourceType);
+
+    List<WalletRuleTemplateVo> listDefaultTemplates();
+
+    List<WalletRuleTemplateVo> previewMissingDefaultRules(String tenantId);
+
+    int seedMissingDefaultRules(String tenantId);
+
+    String canonicalSourceType(String sourceType);
 }
