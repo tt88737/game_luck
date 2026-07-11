@@ -46,7 +46,9 @@
         <el-table-column :label="tt('来源类型')" align="center" prop="sourceType" min-width="130">
           <template #default="scope">{{ businessLabel('sourceType', scope.row.sourceType, tt) }}</template>
         </el-table-column>
-        <el-table-column :label="tt('规则名称')" align="center" prop="ruleName" min-width="150" />
+        <el-table-column :label="tt('规则名称')" align="center" prop="ruleName" min-width="150">
+          <template #default="scope">{{ walletRuleNameLabel(scope.row.ruleName, scope.row.sourceType, scope.row.currencyCode, tt) }}</template>
+        </el-table-column>
         <el-table-column :label="tt('释放模式')" align="center" prop="releaseMode" min-width="130">
           <template #default="scope">{{ businessLabel('walletReleaseMode', scope.row.releaseMode, tt) }}</template>
         </el-table-column>
@@ -147,7 +149,7 @@
 
 <script setup name="WalletRule" lang="ts">
 import { tt } from '@/utils/i18nText';
-import { businessLabel, businessOptions } from '@/utils/businessLabels';
+import { businessLabel, businessOptions, walletRuleNameLabel } from '@/utils/businessLabels';
 import { addRule, getRule, listRule, updateRule } from '@/api/wallet/rule';
 import { RuleForm, RuleQuery, RuleVO } from '@/api/wallet/rule/types';
 

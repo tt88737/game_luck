@@ -4,6 +4,7 @@ import {
   businessOptions,
   depositStatusType,
   gameBetStatusType,
+  walletRuleNameLabel,
   walletStatusType
 } from './businessLabels';
 
@@ -17,6 +18,7 @@ describe('businessLabels', () => {
     expect(businessLabel('sourceType', 'GAME_PROFIT')).toBe('\u6e38\u620f\u6d3e\u5f69');
     expect(businessLabel('sourceType', 'GAME_REFUND')).toBe('\u6e38\u620f\u9000\u6b3e');
     expect(businessLabel('sourceType', 'ADJUSTMENT')).toBe('\u4eba\u5de5\u8c03\u8d26');
+    expect(businessLabel('sourceType', 'MANUAL_ADJUST')).toBe('\u4eba\u5de5\u8c03\u8d26');
     expect(businessLabel('method', 'SIMULATED')).toBe('平台模拟');
     expect(businessLabel('walletOperation', 'CREDIT')).toBe('入账');
     expect(businessLabel('walletReleaseMode', 'IMMEDIATE')).toBe('立即释放');
@@ -27,6 +29,12 @@ describe('businessLabels', () => {
   it('keeps unknown values visible instead of returning blank text', () => {
     expect(businessLabel('sourceType', 'NEW_SOURCE')).toBe('NEW_SOURCE');
     expect(businessLabel('sourceType', '')).toBe('');
+  });
+
+  it('renders seeded wallet rule names without changing custom names', () => {
+    expect(walletRuleNameLabel('RC manual adjustment', 'MANUAL_ADJUST', 'RC')).toBe('RC \u4eba\u5de5\u8c03\u8d26');
+    expect(walletRuleNameLabel('SC game refund', 'GAME_REFUND', 'SC')).toBe('SC \u6e38\u620f\u9000\u6b3e');
+    expect(walletRuleNameLabel('VIP custom rule', 'MANUAL_ADJUST', 'RC')).toBe('VIP custom rule');
   });
 
   it('builds select options with readable labels and raw enum values', () => {
