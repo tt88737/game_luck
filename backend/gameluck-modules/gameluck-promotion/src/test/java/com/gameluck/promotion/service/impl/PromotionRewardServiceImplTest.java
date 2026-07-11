@@ -1,5 +1,7 @@
 package com.gameluck.promotion.service.impl;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.gameluck.common.core.exception.ServiceException;
 import com.gameluck.promotion.client.domain.vo.ClientDailyLoginRewardVo;
 import com.gameluck.promotion.domain.PromotionClaim;
@@ -21,12 +23,14 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.dao.DuplicateKeyException;
 
 import java.math.BigDecimal;
+import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -38,6 +42,16 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class PromotionRewardServiceImplTest {
+
+    @Test
+    @Tag("local")
+    void rewardItemsAllowsClearingPersistedJson() throws NoSuchFieldException {
+        Field rewardItems = PromotionReward.class.getDeclaredField("rewardItems");
+        TableField tableField = rewardItems.getAnnotation(TableField.class);
+
+        assertNotNull(tableField);
+        assertEquals(FieldStrategy.ALWAYS, tableField.updateStrategy());
+    }
 
     @Test
     @Tag("local")

@@ -1,5 +1,7 @@
 package com.gameluck.promotion.domain;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -7,6 +9,7 @@ import com.baomidou.mybatisplus.annotation.Version;
 import com.gameluck.common.mybatis.core.domain.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.apache.ibatis.type.JdbcType;
 
 import java.io.Serial;
 import java.math.BigDecimal;
@@ -42,6 +45,7 @@ public class PromotionReward extends BaseEntity {
 
     private Integer dailyClaimLimit;
 
+    @TableField(updateStrategy = FieldStrategy.ALWAYS, jdbcType = JdbcType.VARCHAR)
     private String rewardItems;
 
     private String status;

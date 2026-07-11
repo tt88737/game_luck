@@ -654,6 +654,38 @@
   - Auto-expands naturally after 999999; examples: `GL000001`, `GL482913`, `GL1000000`.
 - Implementation plan created:
   - `docs/superpowers/plans/2026-07-11-member-id-system-id.md`
+
+## 2026-07-11 Daily Login Reward Configuration
+
+- Implemented configurable daily login reward on the existing promotion foundation.
+- Product/default behavior:
+  - Default reward seed: `GC 100 + SC 1`.
+  - H5 can query daily reward state and claim once per day.
+  - B-side can configure reward items and view claim records.
+  - Chinese and English i18n are covered for H5/Admin-facing text added in this phase.
+- Backend changes:
+  - Added daily reward claim flow with `DAILY_REWARD` wallet source type.
+  - Added same-day uniqueness by `tenant_id`, `promotion_id`, `member_id`, and `claim_date`.
+  - Kept ordinary promotion claims on sentinel `claim_date = 1000-01-01`.
+  - Hardened duplicate-claim handling and multi-currency wallet credit rollback.
+  - Added `rewardItems` update strategy so switching a reward from `DAILY_LOGIN` back to general can clear persisted JSON instead of reusing stale GC/SC config.
+- H5/Admin changes:
+  - H5 daily reward loading is isolated from normal promotions.
+  - Admin reward form supports multi-currency daily reward items and allows empty validation paths correctly.
+- Verification passed:
+  - `.\backend\script\bin\import-sql-utf8.ps1 -SqlPath backend\script\sql\gameluck_daily_login_reward.sql`
+  - `npm --prefix h5 run build`
+  - `pnpm --dir admin-ui check:i18n`
+  - `$env:NODE_OPTIONS='--max-old-space-size=4096'; pnpm --dir admin-ui build:dev`
+  - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal -DskipTests`
+  - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am package -Plocal -DskipTests`
+  - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-modules/gameluck-promotion -am -Plocal -DskipTests=false "-Dtest=PromotionRewardServiceImplTest,ClientPromotionServiceTest" "-Dsurefire.failIfNoSpecifiedTests=false" test`
+- Notes:
+  - Plain `pnpm --dir admin-ui build:dev` hit a Windows/Rollup wasm memory grow issue once; rerunning with `NODE_OPTIONS=--max-old-space-size=4096` passed.
+  - Local backend process was stopped during package verification because `gameluck-admin.jar` was locked by the running Java process.
+
+## 2026-07-11 Member ID Planned Landing Scope
+
 - Planned landing scope:
   - New registrations generate short `GL...` public member IDs through one generator.
   - Existing old-format `member_no` values are normalized by guarded SQL.
