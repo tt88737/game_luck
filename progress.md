@@ -593,3 +593,25 @@
   - Restarted the local backend from the newly packaged `gameluck-admin.jar`.
   - `POST /api/client/auth/register` returned `code=200` for `smoke_20260711150158`.
   - Database verification confirmed the new member consent fields, GC `1000.000000`, SC `25.000000`, and two successful `REGISTER_BONUS` wallet transactions.
+
+## 2026-07-11 Admin Member Registration Audit
+
+- Created implementation plan `docs/superpowers/plans/2026-07-11-admin-member-registration-audit.md`.
+- Extended the B-side member profile list/detail slice so operators can verify H5 registration quality.
+- Backend changes:
+  - Added `countryCode` and `stateCode` to `MemberProfileBo` for list filtering.
+  - Added `countryCode`, `stateCode`, `ageConfirmed`, `termsAccepted`, `privacyAccepted`, and `sweepstakesRulesAccepted` to `MemberProfileVo`.
+  - Added country/state filters to `MemberProfileServiceImpl`.
+  - Added a focused service test proving the query wrapper includes country and state filters.
+- Admin UI changes:
+  - Added country/state filters to `member/profile`.
+  - Added country/state and compact compliance consent tags to the member table.
+  - Added country/state and each consent field to the member detail dialog.
+  - Added Chinese and English labels/placeholders for the new fields.
+- Verification passed:
+  - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-modules/gameluck-member -am -Plocal -DskipTests=false "-Dtest=MemberProfileServiceImplTest,ClientAuthServiceTest" "-Dsurefire.failIfNoSpecifiedTests=false" test`
+  - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal -DskipTests`
+  - `pnpm --dir admin-ui check:i18n`
+  - `pnpm --dir admin-ui build:dev`
+  - `Invoke-WebRequest http://localhost:5173/` returned 200 and contained the app root.
+- Browser screenshot verification was not run because Playwright is not installed in `admin-ui` dependencies.

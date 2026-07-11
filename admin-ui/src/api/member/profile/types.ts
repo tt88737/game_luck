@@ -7,6 +7,12 @@ export interface MemberProfileVO extends BaseEntity {
   status: string;
   riskLevel: string;
   registerChannel: string;
+  countryCode: string;
+  stateCode: string;
+  ageConfirmed: boolean;
+  termsAccepted: boolean;
+  privacyAccepted: boolean;
+  sweepstakesRulesAccepted: boolean;
   lastLoginTime: string;
   remark: string;
   createTime: string;
@@ -20,6 +26,8 @@ export interface MemberProfileForm {
   status?: string;
   riskLevel?: string;
   registerChannel?: string;
+  countryCode?: string;
+  stateCode?: string;
   lastLoginTime?: string;
   remark?: string;
 }
@@ -31,6 +39,8 @@ export interface MemberProfileQuery extends PageQuery {
   status?: string;
   riskLevel?: string;
   registerChannel?: string;
+  countryCode?: string;
+  stateCode?: string;
   beginTime?: string;
   endTime?: string;
 }

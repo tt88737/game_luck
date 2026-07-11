@@ -135,6 +135,8 @@ public class MemberProfileServiceImpl implements IMemberProfileService {
         lqw.eq(StringUtils.isNotBlank(bo.getStatus()), MemberProfile::getStatus, bo.getStatus());
         lqw.eq(StringUtils.isNotBlank(bo.getRiskLevel()), MemberProfile::getRiskLevel, bo.getRiskLevel());
         lqw.eq(StringUtils.isNotBlank(bo.getRegisterChannel()), MemberProfile::getRegisterChannel, bo.getRegisterChannel());
+        lqw.eq(StringUtils.isNotBlank(bo.getCountryCode()), MemberProfile::getCountryCode, bo.getCountryCode());
+        lqw.eq(StringUtils.isNotBlank(bo.getStateCode()), MemberProfile::getStateCode, bo.getStateCode());
         lqw.ge(bo.getBeginTime() != null, MemberProfile::getCreateTime, bo.getBeginTime());
         lqw.le(bo.getEndTime() != null, MemberProfile::getCreateTime, bo.getEndTime());
         lqw.orderByDesc(MemberProfile::getCreateTime);

@@ -6,10 +6,16 @@ import com.gameluck.member.domain.bo.MemberProfileBo;
 import com.gameluck.member.enums.MemberRiskLevel;
 import com.gameluck.member.enums.MemberStatus;
 import com.gameluck.member.mapper.MemberProfileMapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.MybatisConfiguration;
+import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.apache.ibatis.builder.MapperBuilderAssistant;
+import org.mockito.ArgumentCaptor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -59,6 +65,25 @@ class MemberProfileServiceImplTest {
 
         assertEquals("member.status.invalid", exception.getMessage());
         verify(mapper, never()).selectById(any());
+    }
+
+    @Test
+    @Tag("local")
+    void queryListCanFilterByCountryAndState() {
+        TableInfoHelper.initTableInfo(new MapperBuilderAssistant(new MybatisConfiguration(), ""), MemberProfile.class);
+        MemberProfileMapper mapper = mock(MemberProfileMapper.class);
+        MemberProfileServiceImpl service = new MemberProfileServiceImpl(mapper);
+        MemberProfileBo bo = new MemberProfileBo();
+        bo.setCountryCode("US");
+        bo.setStateCode("CA");
+
+        service.queryList(bo);
+
+        ArgumentCaptor<LambdaQueryWrapper<MemberProfile>> captor = ArgumentCaptor.forClass(LambdaQueryWrapper.class);
+        verify(mapper).selectVoList(captor.capture());
+        String sqlSegment = captor.getValue().getSqlSegment();
+        assertTrue(sqlSegment.contains("country_code"));
+        assertTrue(sqlSegment.contains("state_code"));
     }
 
     private MemberProfileBo createBo(String username) {

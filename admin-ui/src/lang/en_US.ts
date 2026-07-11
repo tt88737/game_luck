@@ -231,6 +231,10 @@ export default {
       nickname: 'Nickname',
       riskLevel: 'Risk Level',
       registerChannel: 'Register Channel',
+      countryCode: 'Country',
+      stateCode: 'State',
+      countryState: 'Country/State',
+      complianceConsent: 'Compliance Consent',
       lastLoginTime: 'Last Login'
     },
     placeholders: {
@@ -239,6 +243,8 @@ export default {
       nickname: 'Enter nickname',
       status: 'Select status',
       riskLevel: 'Select risk level',
+      countryCode: 'Country code',
+      stateCode: 'State code',
       remark: 'Enter remark'
     },
     status: {
@@ -250,6 +256,14 @@ export default {
       NORMAL: 'Normal',
       WATCH: 'Watch',
       HIGH: 'High Risk'
+    },
+    consent: {
+      age: 'Age',
+      terms: 'Terms',
+      privacy: 'Privacy',
+      rules: 'Rules',
+      accepted: 'Accepted',
+      notAccepted: 'Not accepted'
     },
     actions: {
       view: 'View detail',

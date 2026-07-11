@@ -34,6 +34,18 @@ public class MemberProfileVo implements Serializable {
 
     private String registerChannel;
 
+    private String countryCode;
+
+    private String stateCode;
+
+    private Boolean ageConfirmed;
+
+    private Boolean termsAccepted;
+
+    private Boolean privacyAccepted;
+
+    private Boolean sweepstakesRulesAccepted;
+
     private Date lastLoginTime;
 
     private String remark;

@@ -31,6 +31,10 @@ public class MemberProfileBo {
 
     private String registerChannel;
 
+    private String countryCode;
+
+    private String stateCode;
+
     private Date lastLoginTime;
 
     private String remark;

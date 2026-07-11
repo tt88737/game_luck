@@ -27,6 +27,12 @@
                 <el-option :label="t('memberProfile.risk.HIGH')" value="HIGH" />
               </el-select>
             </el-form-item>
+            <el-form-item :label="t('memberProfile.fields.countryCode')" prop="countryCode">
+              <el-input v-model="queryParams.countryCode" :placeholder="t('memberProfile.placeholders.countryCode')" clearable class="!w-110px" @keyup.enter="handleQuery" />
+            </el-form-item>
+            <el-form-item :label="t('memberProfile.fields.stateCode')" prop="stateCode">
+              <el-input v-model="queryParams.stateCode" :placeholder="t('memberProfile.placeholders.stateCode')" clearable class="!w-110px" @keyup.enter="handleQuery" />
+            </el-form-item>
             <el-form-item>
               <el-button type="primary" icon="Search" @click="handleQuery">{{ t('common.search') }}</el-button>
               <el-button icon="Refresh" @click="resetQuery">{{ t('common.reset') }}</el-button>
@@ -56,6 +62,11 @@
         <el-table-column :label="t('memberProfile.fields.memberNo')" align="center" prop="memberNo" min-width="160" show-overflow-tooltip />
         <el-table-column :label="t('memberProfile.fields.username')" align="center" prop="username" min-width="140" show-overflow-tooltip />
         <el-table-column :label="t('memberProfile.fields.nickname')" align="center" prop="nickname" min-width="140" show-overflow-tooltip />
+        <el-table-column :label="t('memberProfile.fields.countryState')" align="center" min-width="110">
+          <template #default="scope">
+            {{ formatRegion(scope.row) }}
+          </template>
+        </el-table-column>
         <el-table-column :label="t('common.status')" align="center" prop="status" width="100">
           <template #default="scope">
             <el-tag :type="statusType(scope.row.status)">{{ statusLabel(scope.row.status) }}</el-tag>
@@ -67,6 +78,16 @@
           </template>
         </el-table-column>
         <el-table-column :label="t('memberProfile.fields.registerChannel')" align="center" prop="registerChannel" width="120" show-overflow-tooltip />
+        <el-table-column :label="t('memberProfile.fields.complianceConsent')" align="center" min-width="190">
+          <template #default="scope">
+            <el-space wrap :size="4">
+              <el-tag size="small" :type="consentTagType(scope.row.ageConfirmed)">{{ t('memberProfile.consent.age') }}</el-tag>
+              <el-tag size="small" :type="consentTagType(scope.row.termsAccepted)">{{ t('memberProfile.consent.terms') }}</el-tag>
+              <el-tag size="small" :type="consentTagType(scope.row.privacyAccepted)">{{ t('memberProfile.consent.privacy') }}</el-tag>
+              <el-tag size="small" :type="consentTagType(scope.row.sweepstakesRulesAccepted)">{{ t('memberProfile.consent.rules') }}</el-tag>
+            </el-space>
+          </template>
+        </el-table-column>
         <el-table-column :label="t('memberProfile.fields.lastLoginTime')" align="center" prop="lastLoginTime" width="170" />
         <el-table-column :label="t('common.createTime')" align="center" prop="createTime" width="170" />
         <el-table-column :label="t('common.operation')" align="center" width="240" fixed="right">
@@ -159,9 +180,15 @@
         <el-descriptions-item :label="t('memberProfile.fields.memberNo')">{{ detail.memberNo }}</el-descriptions-item>
         <el-descriptions-item :label="t('memberProfile.fields.username')">{{ detail.username }}</el-descriptions-item>
         <el-descriptions-item :label="t('memberProfile.fields.nickname')">{{ detail.nickname }}</el-descriptions-item>
+        <el-descriptions-item :label="t('memberProfile.fields.countryCode')">{{ detail.countryCode }}</el-descriptions-item>
+        <el-descriptions-item :label="t('memberProfile.fields.stateCode')">{{ detail.stateCode }}</el-descriptions-item>
         <el-descriptions-item :label="t('common.status')">{{ statusLabel(detail.status) }}</el-descriptions-item>
         <el-descriptions-item :label="t('memberProfile.fields.riskLevel')">{{ riskLabel(detail.riskLevel) }}</el-descriptions-item>
         <el-descriptions-item :label="t('memberProfile.fields.registerChannel')">{{ detail.registerChannel }}</el-descriptions-item>
+        <el-descriptions-item :label="t('memberProfile.consent.age')">{{ consentLabel(detail.ageConfirmed) }}</el-descriptions-item>
+        <el-descriptions-item :label="t('memberProfile.consent.terms')">{{ consentLabel(detail.termsAccepted) }}</el-descriptions-item>
+        <el-descriptions-item :label="t('memberProfile.consent.privacy')">{{ consentLabel(detail.privacyAccepted) }}</el-descriptions-item>
+        <el-descriptions-item :label="t('memberProfile.consent.rules')">{{ consentLabel(detail.sweepstakesRulesAccepted) }}</el-descriptions-item>
         <el-descriptions-item :label="t('memberProfile.fields.lastLoginTime')">{{ detail.lastLoginTime }}</el-descriptions-item>
         <el-descriptions-item :label="t('common.createTime')">{{ detail.createTime }}</el-descriptions-item>
         <el-descriptions-item :label="t('common.updateTime')">{{ detail.updateTime }}</el-descriptions-item>
@@ -210,7 +237,9 @@ const queryParams = ref<MemberProfileQuery>({
   nickname: '',
   status: '',
   riskLevel: '',
-  registerChannel: ''
+  registerChannel: '',
+  countryCode: '',
+  stateCode: ''
 });
 
 const dialogTitle = computed(() => t(dialog.mode === 'add' ? 'memberProfile.dialog.add' : 'memberProfile.dialog.edit'));
@@ -256,6 +285,20 @@ const riskType = (riskLevel?: string) => {
     HIGH: 'danger'
   };
   return riskLevel ? map[riskLevel] || '' : '';
+};
+
+const formatRegion = (row: MemberProfileVO) => {
+  const country = row.countryCode || '-';
+  const state = row.stateCode || '-';
+  return `${country}/${state}`;
+};
+
+const consentTagType = (accepted?: boolean) => {
+  return accepted ? 'success' : 'info';
+};
+
+const consentLabel = (accepted?: boolean) => {
+  return accepted ? t('memberProfile.consent.accepted') : t('memberProfile.consent.notAccepted');
 };
 
 const reset = () => {

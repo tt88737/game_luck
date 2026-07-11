@@ -227,6 +227,10 @@ export default {
       nickname: '昵称',
       riskLevel: '风险等级',
       registerChannel: '注册渠道',
+      countryCode: '国家',
+      stateCode: '州/省',
+      countryState: '国家/州',
+      complianceConsent: '合规确认',
       lastLoginTime: '最后登录'
     },
     placeholders: {
@@ -235,6 +239,8 @@ export default {
       nickname: '请输入昵称',
       status: '请选择状态',
       riskLevel: '请选择风险',
+      countryCode: '国家码',
+      stateCode: '州/省码',
       remark: '请输入备注'
     },
     status: {
@@ -246,6 +252,14 @@ export default {
       NORMAL: '正常',
       WATCH: '观察',
       HIGH: '高风险'
+    },
+    consent: {
+      age: '年龄',
+      terms: '条款',
+      privacy: '隐私',
+      rules: '规则',
+      accepted: '已确认',
+      notAccepted: '未确认'
     },
     actions: {
       view: '查看详情',
