@@ -641,3 +641,21 @@
   - Restarted local backend from the newly packaged `gameluck-admin.jar` with captcha disabled only for smoke login.
   - Encrypted admin login returned `code=200`.
   - `GET /wallet/account/list?memberNo=MB2075851894760460289&pageNum=1&pageSize=10` returned `code=200`, `total=2`, with GC `1000.000000` and SC `25.000000`.
+
+## 2026-07-11 Member ID / System ID Decision
+
+- Final product vocabulary:
+  - `会员ID` is the public, C-side and B-side visible identifier stored in `gl_member_profile.member_no`.
+  - `系统ID` is the internal database identifier stored in `gl_member_profile.id` and referenced by business-table `member_id` columns.
+- Decision: do not rename the physical `member_no` column to `member_id`, because existing wallet, order, ledger, promotion, redemption, and report tables already use `member_id` as the System ID foreign key.
+- Public member ID format target:
+  - `GL` prefix.
+  - Minimum 6 numeric digits.
+  - Auto-expands naturally after 999999; examples: `GL000001`, `GL482913`, `GL1000000`.
+- Implementation plan created:
+  - `docs/superpowers/plans/2026-07-11-member-id-system-id.md`
+- Planned landing scope:
+  - New registrations generate short `GL...` public member IDs through one generator.
+  - Existing old-format `member_no` values are normalized by guarded SQL.
+  - Admin copy changes from `会员编号` or `会员ID/编号` to `会员ID`.
+  - Internal IDs, when shown, use `系统ID`.
