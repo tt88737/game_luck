@@ -524,7 +524,10 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
         }
         WalletReleaseMode requestMode = parseReleaseMode(bo.getReleaseMode());
         if (requestMode != ruleMode) {
-            throw new ServiceException(MessageUtils.message("wallet.release.mode.not.match.rule"));
+            if (StringUtils.equals("MANUAL_ADJUST", bo.getSourceType())) {
+                return requestMode;
+            }
+            throw new ServiceException(MessageUtils.message("wallet.manual.adjust.release.override.only"));
         }
         return ruleMode;
     }
