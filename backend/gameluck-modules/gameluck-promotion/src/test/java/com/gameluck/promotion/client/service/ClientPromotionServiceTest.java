@@ -2,10 +2,12 @@ package com.gameluck.promotion.client.service;
 
 import com.gameluck.common.core.client.ClientTokenService;
 import com.gameluck.promotion.client.domain.bo.ClientPromotionClaimBo;
+import com.gameluck.promotion.client.domain.vo.ClientDailyLoginRewardVo;
 import com.gameluck.promotion.client.domain.vo.ClientPromotionVo;
 import com.gameluck.promotion.domain.PromotionClaim;
 import com.gameluck.promotion.domain.PromotionReward;
 import com.gameluck.promotion.domain.bo.PromotionClaimBo;
+import com.gameluck.promotion.domain.bo.PromotionRewardItemBo;
 import com.gameluck.promotion.domain.vo.PromotionClaimVo;
 import com.gameluck.promotion.mapper.PromotionClaimMapper;
 import com.gameluck.promotion.mapper.PromotionRewardMapper;
@@ -14,6 +16,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -77,6 +80,49 @@ class ClientPromotionServiceTest {
         verify(rewardService).claim(any(PromotionClaimBo.class));
     }
 
+    @Test
+    @Tag("local")
+    void dailyLoginRewardUsesCurrentMemberAndReturnsRewardItems() {
+        PromotionRewardMapper rewardMapper = mock(PromotionRewardMapper.class);
+        PromotionClaimMapper claimMapper = mock(PromotionClaimMapper.class);
+        IPromotionRewardService rewardService = mock(IPromotionRewardService.class);
+        ClientTokenService tokenService = new ClientTokenService();
+        ClientPromotionService service = new ClientPromotionService(rewardMapper, claimMapper, rewardService, tokenService);
+        ClientDailyLoginRewardVo state = dailyState(true, "UNCLAIMED");
+        when(rewardService.dailyLoginReward(1001L)).thenReturn(state);
+
+        ClientDailyLoginRewardVo result = service.dailyLoginReward("Bearer " + tokenService.issue(1001L));
+
+        assertEquals("DAILY_LOGIN", result.getPromotionType());
+        assertEquals(LocalDate.now(), result.getClaimDate());
+        assertEquals(2, result.getRewardItems().size());
+        assertEquals("GC", result.getRewardItems().get(0).getCurrencyCode());
+        assertEquals(new BigDecimal("100.000000"), result.getRewardItems().get(0).getRewardAmount());
+        verify(rewardService).dailyLoginReward(1001L);
+    }
+
+    @Test
+    @Tag("local")
+    void claimDailyLoginRewardClaimsAndReturnsUpdatedState() {
+        PromotionRewardMapper rewardMapper = mock(PromotionRewardMapper.class);
+        PromotionClaimMapper claimMapper = mock(PromotionClaimMapper.class);
+        IPromotionRewardService rewardService = mock(IPromotionRewardService.class);
+        ClientTokenService tokenService = new ClientTokenService();
+        ClientPromotionService service = new ClientPromotionService(rewardMapper, claimMapper, rewardService, tokenService);
+        ClientDailyLoginRewardVo claimed = dailyState(false, "SUCCESS");
+        claimed.setClaimNo("PC_DAILY");
+        claimed.setWalletTransactionNo("WT_GC,WT_SC");
+        when(rewardService.dailyLoginReward(1001L)).thenReturn(claimed);
+
+        ClientDailyLoginRewardVo result = service.claimDailyLoginReward("Bearer " + tokenService.issue(1001L));
+
+        assertEquals("SUCCESS", result.getClaimStatus());
+        assertFalse(result.getCanClaim());
+        assertEquals("WT_GC,WT_SC", result.getWalletTransactionNo());
+        verify(rewardService).claimDailyLoginReward(1001L);
+        verify(rewardService).dailyLoginReward(1001L);
+    }
+
     private PromotionReward reward() {
         PromotionReward reward = new PromotionReward();
         reward.setId(10L);
@@ -95,5 +141,23 @@ class ClientPromotionServiceTest {
         claim.setStatus("SUCCESS");
         claim.setWalletTransactionNo("WT_PROMO_1");
         return claim;
+    }
+
+    private ClientDailyLoginRewardVo dailyState(boolean canClaim, String claimStatus) {
+        ClientDailyLoginRewardVo state = new ClientDailyLoginRewardVo();
+        state.setPromotionId(99L);
+        state.setPromotionName("Daily Login Reward");
+        state.setPromotionType("DAILY_LOGIN");
+        state.setClaimDate(LocalDate.now());
+        state.setCanClaim(canClaim);
+        state.setClaimStatus(claimStatus);
+        PromotionRewardItemBo gc = new PromotionRewardItemBo();
+        gc.setCurrencyCode("GC");
+        gc.setRewardAmount(new BigDecimal("100.000000"));
+        PromotionRewardItemBo sc = new PromotionRewardItemBo();
+        sc.setCurrencyCode("SC");
+        sc.setRewardAmount(new BigDecimal("1.000000"));
+        state.setRewardItems(List.of(gc, sc));
+        return state;
     }
 }

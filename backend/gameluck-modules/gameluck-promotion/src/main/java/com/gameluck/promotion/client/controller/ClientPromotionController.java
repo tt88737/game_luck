@@ -3,6 +3,7 @@ package com.gameluck.promotion.client.controller;
 import cn.dev33.satoken.annotation.SaIgnore;
 import com.gameluck.common.core.domain.R;
 import com.gameluck.promotion.client.domain.bo.ClientPromotionClaimBo;
+import com.gameluck.promotion.client.domain.vo.ClientDailyLoginRewardVo;
 import com.gameluck.promotion.client.domain.vo.ClientPromotionVo;
 import com.gameluck.promotion.client.service.ClientPromotionService;
 import jakarta.validation.Valid;
@@ -29,6 +30,16 @@ public class ClientPromotionController {
     @GetMapping
     public R<List<ClientPromotionVo>> promotions(@RequestHeader(value = "Authorization", required = false) String authorization) {
         return R.ok(clientPromotionService.promotions(authorization));
+    }
+
+    @GetMapping("/daily-login")
+    public R<ClientDailyLoginRewardVo> dailyLoginReward(@RequestHeader(value = "Authorization", required = false) String authorization) {
+        return R.ok(clientPromotionService.dailyLoginReward(authorization));
+    }
+
+    @PostMapping("/daily-login/claim")
+    public R<ClientDailyLoginRewardVo> claimDailyLoginReward(@RequestHeader(value = "Authorization", required = false) String authorization) {
+        return R.ok(clientPromotionService.claimDailyLoginReward(authorization));
     }
 
     @PostMapping("/claim")

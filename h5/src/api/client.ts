@@ -3,6 +3,7 @@ import type {
   ClientBootstrap,
   ClientGame,
   ClientGameLaunch,
+  ClientDailyLoginReward,
   ClientLoginResponse,
   ClientMember,
   ClientPage,
@@ -75,6 +76,11 @@ export const clientApi = {
       body: JSON.stringify({ providerCode, gameCode, currencyCode }),
     }),
   promotions: () => request<ClientPromotion[]>('/api/client/promotions'),
+  dailyLoginReward: () => request<ClientDailyLoginReward>('/api/client/promotions/daily-login'),
+  claimDailyLoginReward: () =>
+    request<ClientDailyLoginReward>('/api/client/promotions/daily-login/claim', {
+      method: 'POST',
+    }),
   claimPromotion: (promotionId: number) =>
     request<ClientPromotion>('/api/client/promotions/claim', {
       method: 'POST',

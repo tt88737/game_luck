@@ -243,6 +243,7 @@ h2 {
 .metric-card,
 .feature-tile,
 .list-card,
+.daily-reward-panel,
 .table-panel,
 .panel-form,
 .redeem-panel {
@@ -388,6 +389,37 @@ h2 {
   gap: 12px;
 }
 
+.daily-reward-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+  padding: 18px;
+}
+
+.daily-reward-panel h2 {
+  margin-top: 6px;
+  font-size: 22px;
+}
+
+.reward-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.reward-pills span {
+  min-height: 32px;
+  padding: 6px 10px;
+  border: 1px solid rgba(183, 131, 36, 0.36);
+  border-radius: 7px;
+  background: #fff7e6;
+  color: #6c4810;
+  font-weight: 800;
+}
+
 .list-card,
 .redeem-panel {
   display: flex;
@@ -491,6 +523,7 @@ h2 {
   }
 
   .list-card,
+  .daily-reward-panel,
   .redeem-panel {
     align-items: stretch;
     flex-direction: column;

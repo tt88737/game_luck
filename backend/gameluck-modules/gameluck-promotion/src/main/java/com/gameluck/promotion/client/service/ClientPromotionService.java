@@ -2,6 +2,7 @@ package com.gameluck.promotion.client.service;
 
 import com.gameluck.common.core.client.ClientTokenService;
 import com.gameluck.promotion.client.domain.bo.ClientPromotionClaimBo;
+import com.gameluck.promotion.client.domain.vo.ClientDailyLoginRewardVo;
 import com.gameluck.promotion.client.domain.vo.ClientPromotionVo;
 import com.gameluck.promotion.domain.PromotionClaim;
 import com.gameluck.promotion.domain.PromotionReward;
@@ -47,6 +48,17 @@ public class ClientPromotionService {
         claimBo.setRemark("H5 client claim");
         PromotionClaimVo claim = promotionRewardService.claim(claimBo);
         return toClientPromotion(claim);
+    }
+
+    public ClientDailyLoginRewardVo dailyLoginReward(String authorization) {
+        Long memberId = clientTokenService.requireMemberId(authorization);
+        return promotionRewardService.dailyLoginReward(memberId);
+    }
+
+    public ClientDailyLoginRewardVo claimDailyLoginReward(String authorization) {
+        Long memberId = clientTokenService.requireMemberId(authorization);
+        promotionRewardService.claimDailyLoginReward(memberId);
+        return promotionRewardService.dailyLoginReward(memberId);
     }
 
     private ClientPromotionVo toClientPromotion(PromotionReward reward, PromotionClaim claim) {

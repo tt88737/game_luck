@@ -116,6 +116,24 @@ export interface ClientPromotion {
   canClaim: boolean
 }
 
+export interface ClientRewardItem {
+  currencyCode: string
+  rewardAmount: string
+}
+
+export interface ClientDailyLoginReward {
+  promotionId?: number
+  promotionNo?: string
+  promotionName?: string
+  promotionType?: string
+  claimDate: string
+  canClaim: boolean
+  claimStatus: string
+  rewardItems: ClientRewardItem[]
+  claimNo?: string
+  walletTransactionNo?: string
+}
+
 export interface ClientRedemption {
   orderId: number
   orderNo: string
