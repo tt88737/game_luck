@@ -254,8 +254,12 @@ CREATE TABLE IF NOT EXISTS gl_promotion_reward (
   tenant_id VARCHAR(20) NOT NULL DEFAULT '000000' COMMENT 'Tenant id',
   promotion_no VARCHAR(64) NOT NULL COMMENT 'Promotion number',
   promotion_name VARCHAR(128) NOT NULL COMMENT 'Promotion name',
+  promotion_type VARCHAR(64) NOT NULL DEFAULT 'GENERAL' COMMENT 'Promotion type',
   currency_code VARCHAR(32) NOT NULL COMMENT 'Currency code',
   reward_amount DECIMAL(20,6) NOT NULL COMMENT 'Reward amount',
+  claim_cycle VARCHAR(32) NOT NULL DEFAULT 'ONCE' COMMENT 'Claim cycle',
+  daily_claim_limit INT NOT NULL DEFAULT 1 COMMENT 'Daily claim limit',
+  reward_items JSON DEFAULT NULL COMMENT 'Reward item snapshot',
   status VARCHAR(32) NOT NULL DEFAULT 'INACTIVE' COMMENT 'Reward status',
   start_time DATETIME DEFAULT NULL COMMENT 'Start time',
   end_time DATETIME DEFAULT NULL COMMENT 'End time',
@@ -280,11 +284,14 @@ CREATE TABLE IF NOT EXISTS gl_promotion_claim (
   promotion_id BIGINT NOT NULL COMMENT 'Promotion id',
   promotion_no VARCHAR(64) NOT NULL COMMENT 'Promotion number',
   promotion_name VARCHAR(128) NOT NULL COMMENT 'Promotion name',
+  promotion_type VARCHAR(64) DEFAULT NULL COMMENT 'Promotion type',
   member_id BIGINT NOT NULL COMMENT 'Member id',
   currency_code VARCHAR(32) NOT NULL COMMENT 'Currency code',
   reward_amount DECIMAL(20,6) NOT NULL COMMENT 'Reward amount',
+  claim_date DATE DEFAULT NULL COMMENT 'Claim date',
+  reward_snapshot JSON DEFAULT NULL COMMENT 'Reward snapshot',
   status VARCHAR(32) NOT NULL COMMENT 'Claim status',
-  wallet_transaction_no VARCHAR(64) DEFAULT NULL COMMENT 'Wallet transaction number',
+  wallet_transaction_no VARCHAR(512) DEFAULT NULL COMMENT 'Wallet transaction number',
   idempotency_key VARCHAR(160) NOT NULL COMMENT 'Claim idempotency key',
   fail_reason VARCHAR(500) DEFAULT NULL COMMENT 'Failure reason',
   remark VARCHAR(500) DEFAULT NULL COMMENT 'Remark',
@@ -298,7 +305,7 @@ CREATE TABLE IF NOT EXISTS gl_promotion_claim (
   PRIMARY KEY (id),
   UNIQUE KEY uk_gl_promotion_claim_01 (tenant_id, claim_no),
   UNIQUE KEY uk_gl_promotion_claim_02 (tenant_id, idempotency_key),
-  UNIQUE KEY uk_gl_promotion_claim_03 (tenant_id, promotion_id, member_id),
+  UNIQUE KEY uk_gl_promotion_claim_03 (tenant_id, promotion_id, member_id, claim_date),
   KEY idx_gl_promotion_claim_01 (tenant_id, member_id, currency_code),
   KEY idx_gl_promotion_claim_02 (tenant_id, promotion_id, status, create_time)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Promotion claim';
@@ -311,6 +318,24 @@ ON DUPLICATE KEY UPDATE
   promotion_name = VALUES(promotion_name),
   currency_code = VALUES(currency_code),
   reward_amount = VALUES(reward_amount),
+  status = VALUES(status),
+  remark = VALUES(remark),
+  update_time = NOW();
+
+INSERT INTO gl_promotion_reward
+(id, tenant_id, promotion_no, promotion_name, promotion_type, currency_code, reward_amount, claim_cycle, daily_claim_limit, reward_items, status, start_time, end_time, remark, create_time)
+VALUES
+(1900000000000000901, '000000', 'PR-DAILY-LOGIN-DEFAULT', 'Daily Login Reward', 'DAILY_LOGIN', 'GC', 100.000000, 'DAILY', 1,
+ JSON_ARRAY(JSON_OBJECT('currencyCode', 'GC', 'rewardAmount', '100.000000'), JSON_OBJECT('currencyCode', 'SC', 'rewardAmount', '1.000000')),
+ 'ACTIVE', NULL, NULL, 'Default configurable daily login reward.', NOW())
+ON DUPLICATE KEY UPDATE
+  promotion_name = VALUES(promotion_name),
+  promotion_type = VALUES(promotion_type),
+  currency_code = VALUES(currency_code),
+  reward_amount = VALUES(reward_amount),
+  claim_cycle = VALUES(claim_cycle),
+  daily_claim_limit = VALUES(daily_claim_limit),
+  reward_items = VALUES(reward_items),
   status = VALUES(status),
   remark = VALUES(remark),
   update_time = NOW();
@@ -403,7 +428,9 @@ VALUES
 (1900000000000000103, '000000', 'SC', 'PROMOTION', 'SC promotion', '0', '0', '1', '1', 'MANUAL_REVIEW', '0', 0, '0', 3, 'Promotional SC requires review by default.', NOW()),
 (1900000000000000104, '000000', 'RC', 'DEPOSIT', 'RC deposit', '0', '0', '0', '1', 'IMMEDIATE', '1', 0, '0', 4, 'RC deposit can be withdrawable immediately unless tenant changes the rule.', NOW()),
 (1900000000000000105, '000000', 'RC', 'MANUAL_ADJUST', 'RC manual adjustment', '0', '0', '0', '1', 'MANUAL_REVIEW', '1', 0, '0', 5, 'Manual RC adjustment requires review by default.', NOW()),
-(1900000000000000106, '000000', 'SC', 'GAME_REFUND', 'SC game refund', '0', '0', '1', '0', 'IMMEDIATE', '0', 0, '0', 6, 'SC refund returns original stake immediately.', NOW())
+(1900000000000000106, '000000', 'SC', 'GAME_REFUND', 'SC game refund', '0', '0', '1', '0', 'IMMEDIATE', '0', 0, '0', 6, 'SC refund returns original stake immediately.', NOW()),
+(1900000000000000611, '000000', 'GC', 'DAILY_REWARD', 'GC daily login reward', '0', '1', '1', '1', 'IMMEDIATE', '1', 0, '0', 11, 'Daily login GC reward.', NOW()),
+(1900000000000000612, '000000', 'SC', 'DAILY_REWARD', 'SC daily login reward', '0', '1', '0', '1', 'IMMEDIATE', '1', 0, '0', 12, 'Daily login SC reward.', NOW())
 ON DUPLICATE KEY UPDATE
   rule_name = VALUES(rule_name),
   credit_enabled = VALUES(credit_enabled),
