@@ -13,4 +13,6 @@ public interface MemberProfileMapper extends BaseMapperPlus<MemberProfile, Membe
     MemberProfile selectByUsername(@Param("tenantId") String tenantId, @Param("username") String username);
 
     MemberProfile selectClientMember(@Param("tenantId") String tenantId, @Param("memberId") Long memberId);
+
+    MemberProfile selectByMemberNo(@Param("tenantId") String tenantId, @Param("memberNo") String memberNo);
 }

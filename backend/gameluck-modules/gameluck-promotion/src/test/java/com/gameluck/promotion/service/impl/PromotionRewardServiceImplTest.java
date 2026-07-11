@@ -3,6 +3,8 @@ package com.gameluck.promotion.service.impl;
 import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.gameluck.common.core.exception.ServiceException;
+import com.gameluck.member.domain.MemberProfile;
+import com.gameluck.member.mapper.MemberProfileMapper;
 import com.gameluck.promotion.client.domain.vo.ClientDailyLoginRewardVo;
 import com.gameluck.promotion.domain.PromotionClaim;
 import com.gameluck.promotion.domain.PromotionReward;
@@ -59,9 +61,12 @@ class PromotionRewardServiceImplTest {
         PromotionRewardMapper rewardMapper = mock(PromotionRewardMapper.class);
         PromotionClaimMapper claimMapper = mock(PromotionClaimMapper.class);
         IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
-        PromotionRewardServiceImpl service = new PromotionRewardServiceImpl(rewardMapper, claimMapper, walletCoreService);
+        MemberProfileMapper memberProfileMapper = mock(MemberProfileMapper.class);
+        PromotionRewardServiceImpl service = service(rewardMapper, claimMapper, walletCoreService, memberProfileMapper);
 
         PromotionReward reward = activeReward();
+        when(memberProfileMapper.selectByMemberNo("000000", "GL001001")).thenReturn(member(1001L, "GL001001"));
+        when(memberProfileMapper.selectClientMember("000000", 1001L)).thenReturn(member(1001L, "GL001001"));
         when(rewardMapper.selectByIdForUpdate(10L)).thenReturn(reward);
         when(claimMapper.selectByPromotionAndMember("000000", 10L, 1001L)).thenReturn(null);
         when(claimMapper.insert(any(PromotionClaim.class))).thenReturn(1);
@@ -75,6 +80,7 @@ class PromotionRewardServiceImplTest {
 
         assertEquals(10L, claim.getPromotionId());
         assertEquals(1001L, claim.getMemberId());
+        assertEquals("GL001001", claim.getMemberNo());
         assertEquals("SUCCESS", claim.getStatus());
         assertEquals("WT_PROMOTION_1", claim.getWalletTransactionNo());
         ArgumentCaptor<PromotionClaim> claimCaptor = ArgumentCaptor.forClass(PromotionClaim.class);
@@ -93,9 +99,12 @@ class PromotionRewardServiceImplTest {
         PromotionRewardMapper rewardMapper = mock(PromotionRewardMapper.class);
         PromotionClaimMapper claimMapper = mock(PromotionClaimMapper.class);
         IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
-        PromotionRewardServiceImpl service = new PromotionRewardServiceImpl(rewardMapper, claimMapper, walletCoreService);
+        MemberProfileMapper memberProfileMapper = mock(MemberProfileMapper.class);
+        PromotionRewardServiceImpl service = service(rewardMapper, claimMapper, walletCoreService, memberProfileMapper);
 
         PromotionReward reward = activeReward();
+        when(memberProfileMapper.selectByMemberNo("000000", "GL001001")).thenReturn(member(1001L, "GL001001"));
+        when(memberProfileMapper.selectClientMember("000000", 1001L)).thenReturn(member(1001L, "GL001001"));
         PromotionClaim existing = new PromotionClaim();
         existing.setId(99L);
         existing.setTenantId("000000");
@@ -112,6 +121,7 @@ class PromotionRewardServiceImplTest {
         PromotionClaimVo claim = service.claim(claimBo());
 
         assertEquals(99L, claim.getId());
+        assertEquals("GL001001", claim.getMemberNo());
         assertEquals("WT_EXISTING", claim.getWalletTransactionNo());
         verifyNoInteractions(walletCoreService);
         verify(claimMapper, never()).insert(any(PromotionClaim.class));
@@ -123,7 +133,7 @@ class PromotionRewardServiceImplTest {
         PromotionRewardMapper rewardMapper = mock(PromotionRewardMapper.class);
         PromotionClaimMapper claimMapper = mock(PromotionClaimMapper.class);
         IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
-        PromotionRewardServiceImpl service = new PromotionRewardServiceImpl(rewardMapper, claimMapper, walletCoreService);
+        PromotionRewardServiceImpl service = service(rewardMapper, claimMapper, walletCoreService);
 
         PromotionReward reward = activeReward();
         reward.setStatus(PromotionRewardStatus.INACTIVE.name());
@@ -141,7 +151,7 @@ class PromotionRewardServiceImplTest {
         PromotionRewardMapper rewardMapper = mock(PromotionRewardMapper.class);
         PromotionClaimMapper claimMapper = mock(PromotionClaimMapper.class);
         IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
-        PromotionRewardServiceImpl service = new PromotionRewardServiceImpl(rewardMapper, claimMapper, walletCoreService);
+        PromotionRewardServiceImpl service = service(rewardMapper, claimMapper, walletCoreService);
 
         PromotionReward reward = activeReward();
         reward.setPromotionType("DAILY_LOGIN");
@@ -182,7 +192,7 @@ class PromotionRewardServiceImplTest {
         PromotionRewardMapper rewardMapper = mock(PromotionRewardMapper.class);
         PromotionClaimMapper claimMapper = mock(PromotionClaimMapper.class);
         IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
-        PromotionRewardServiceImpl service = new PromotionRewardServiceImpl(rewardMapper, claimMapper, walletCoreService);
+        PromotionRewardServiceImpl service = service(rewardMapper, claimMapper, walletCoreService);
 
         PromotionReward reward = activeReward();
         reward.setPromotionType("DAILY_LOGIN");
@@ -210,7 +220,7 @@ class PromotionRewardServiceImplTest {
         PromotionRewardMapper rewardMapper = mock(PromotionRewardMapper.class);
         PromotionClaimMapper claimMapper = mock(PromotionClaimMapper.class);
         IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
-        PromotionRewardServiceImpl service = new PromotionRewardServiceImpl(rewardMapper, claimMapper, walletCoreService);
+        PromotionRewardServiceImpl service = service(rewardMapper, claimMapper, walletCoreService);
 
         PromotionReward reward = activeReward();
         reward.setPromotionType("DAILY_LOGIN");
@@ -240,7 +250,7 @@ class PromotionRewardServiceImplTest {
         PromotionRewardMapper rewardMapper = mock(PromotionRewardMapper.class);
         PromotionClaimMapper claimMapper = mock(PromotionClaimMapper.class);
         IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
-        PromotionRewardServiceImpl service = new PromotionRewardServiceImpl(rewardMapper, claimMapper, walletCoreService);
+        PromotionRewardServiceImpl service = service(rewardMapper, claimMapper, walletCoreService);
 
         PromotionReward reward = activeReward();
         reward.setPromotionType("DAILY_LOGIN");
@@ -270,7 +280,7 @@ class PromotionRewardServiceImplTest {
         PromotionRewardMapper rewardMapper = mock(PromotionRewardMapper.class);
         PromotionClaimMapper claimMapper = mock(PromotionClaimMapper.class);
         IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
-        PromotionRewardServiceImpl service = new PromotionRewardServiceImpl(rewardMapper, claimMapper, walletCoreService);
+        PromotionRewardServiceImpl service = service(rewardMapper, claimMapper, walletCoreService);
 
         PromotionReward reward = activeReward();
         reward.setPromotionType("DAILY_LOGIN");
@@ -290,7 +300,7 @@ class PromotionRewardServiceImplTest {
         PromotionRewardMapper rewardMapper = mock(PromotionRewardMapper.class);
         PromotionClaimMapper claimMapper = mock(PromotionClaimMapper.class);
         IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
-        PromotionRewardServiceImpl service = new PromotionRewardServiceImpl(rewardMapper, claimMapper, walletCoreService);
+        PromotionRewardServiceImpl service = service(rewardMapper, claimMapper, walletCoreService);
         PromotionRewardBo bo = new PromotionRewardBo();
         bo.setPromotionName("Daily simulated reward");
         bo.setRewardAmount(new BigDecimal("1.000000"));
@@ -309,7 +319,7 @@ class PromotionRewardServiceImplTest {
         PromotionRewardMapper rewardMapper = mock(PromotionRewardMapper.class);
         PromotionClaimMapper claimMapper = mock(PromotionClaimMapper.class);
         IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
-        PromotionRewardServiceImpl service = new PromotionRewardServiceImpl(rewardMapper, claimMapper, walletCoreService);
+        PromotionRewardServiceImpl service = service(rewardMapper, claimMapper, walletCoreService);
 
         when(rewardMapper.selectActiveDailyLoginReward("000000")).thenReturn(null);
 
@@ -329,7 +339,7 @@ class PromotionRewardServiceImplTest {
         PromotionRewardMapper rewardMapper = mock(PromotionRewardMapper.class);
         PromotionClaimMapper claimMapper = mock(PromotionClaimMapper.class);
         IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
-        PromotionRewardServiceImpl service = new PromotionRewardServiceImpl(rewardMapper, claimMapper, walletCoreService);
+        PromotionRewardServiceImpl service = service(rewardMapper, claimMapper, walletCoreService);
 
         PromotionReward reward = activeReward();
         reward.setPromotionType("DAILY_LOGIN");
@@ -359,7 +369,7 @@ class PromotionRewardServiceImplTest {
         PromotionRewardMapper rewardMapper = mock(PromotionRewardMapper.class);
         PromotionClaimMapper claimMapper = mock(PromotionClaimMapper.class);
         IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
-        PromotionRewardServiceImpl service = new PromotionRewardServiceImpl(rewardMapper, claimMapper, walletCoreService);
+        PromotionRewardServiceImpl service = service(rewardMapper, claimMapper, walletCoreService);
 
         PromotionReward reward = activeReward();
         reward.setPromotionType("DAILY_LOGIN");
@@ -403,8 +413,25 @@ class PromotionRewardServiceImplTest {
     private PromotionClaimBo claimBo() {
         PromotionClaimBo bo = new PromotionClaimBo();
         bo.setPromotionId(10L);
-        bo.setMemberId(1001L);
+        bo.setMemberNo("GL001001");
         bo.setRemark("manual claim");
         return bo;
+    }
+
+    private MemberProfile member(Long id, String memberNo) {
+        MemberProfile member = new MemberProfile();
+        member.setId(id);
+        member.setMemberNo(memberNo);
+        return member;
+    }
+
+    private PromotionRewardServiceImpl service(PromotionRewardMapper rewardMapper, PromotionClaimMapper claimMapper,
+                                               IWalletCoreService walletCoreService) {
+        return service(rewardMapper, claimMapper, walletCoreService, mock(MemberProfileMapper.class));
+    }
+
+    private PromotionRewardServiceImpl service(PromotionRewardMapper rewardMapper, PromotionClaimMapper claimMapper,
+                                               IWalletCoreService walletCoreService, MemberProfileMapper memberProfileMapper) {
+        return new PromotionRewardServiceImpl(rewardMapper, claimMapper, walletCoreService, memberProfileMapper);
     }
 }

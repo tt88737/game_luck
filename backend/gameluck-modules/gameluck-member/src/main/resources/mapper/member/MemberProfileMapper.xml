@@ -22,4 +22,13 @@
         LIMIT 1
     </select>
 
+    <select id="selectByMemberNo" resultType="com.gameluck.member.domain.MemberProfile">
+        SELECT *
+        FROM gl_member_profile
+        WHERE tenant_id = #{tenantId}
+          AND member_no = #{memberNo}
+          AND del_flag = '0'
+        LIMIT 1
+    </select>
+
 </mapper>

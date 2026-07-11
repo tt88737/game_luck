@@ -31,6 +31,7 @@ export interface PromotionClaimVO extends BaseEntity {
   promotionName: string;
   promotionType?: string;
   memberId: string | number;
+  memberNo?: string;
   currencyCode: string;
   rewardAmount: number;
   claimDate?: string;
@@ -62,6 +63,7 @@ export interface PromotionRewardForm {
 export interface PromotionClaimForm {
   promotionId?: string | number;
   memberId?: string | number;
+  memberNo?: string;
   remark?: string;
 }
 
@@ -81,6 +83,7 @@ export interface PromotionClaimQuery extends PageQuery {
   promotionNo?: string;
   promotionType?: string;
   memberId?: string | number;
+  memberNo?: string;
   currencyCode?: string;
   status?: string;
   beginTime?: string;

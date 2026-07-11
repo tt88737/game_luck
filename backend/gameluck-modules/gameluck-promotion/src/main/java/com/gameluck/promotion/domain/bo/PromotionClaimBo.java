@@ -2,7 +2,6 @@ package com.gameluck.promotion.domain.bo;
 
 import com.gameluck.promotion.domain.PromotionClaim;
 import io.github.linpeilie.annotations.AutoMapper;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.util.Date;
@@ -24,8 +23,9 @@ public class PromotionClaimBo {
 
     private String promotionNo;
 
-    @NotNull(message = "{promotion.claim.member.id.required}")
     private Long memberId;
+
+    private String memberNo;
 
     private String currencyCode;
 

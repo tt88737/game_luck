@@ -14,6 +14,8 @@ import com.gameluck.common.core.utils.StringUtils;
 import com.gameluck.common.mybatis.core.page.PageQuery;
 import com.gameluck.common.mybatis.core.page.TableDataInfo;
 import com.gameluck.common.tenant.helper.TenantHelper;
+import com.gameluck.member.domain.MemberProfile;
+import com.gameluck.member.mapper.MemberProfileMapper;
 import com.gameluck.promotion.client.domain.vo.ClientDailyLoginRewardVo;
 import com.gameluck.promotion.domain.PromotionClaim;
 import com.gameluck.promotion.domain.PromotionReward;
@@ -64,6 +66,7 @@ public class PromotionRewardServiceImpl implements IPromotionRewardService {
     private final PromotionRewardMapper rewardMapper;
     private final PromotionClaimMapper claimMapper;
     private final IWalletCoreService walletCoreService;
+    private final MemberProfileMapper memberProfileMapper;
 
     @Override
     public TableDataInfo<PromotionRewardVo> queryPageList(PromotionRewardBo bo, PageQuery pageQuery) {
@@ -147,10 +150,13 @@ public class PromotionRewardServiceImpl implements IPromotionRewardService {
         String tenantId = currentTenantId();
         PromotionReward reward = lockReward(bo.getPromotionId());
         validateClaimable(reward);
+        Long memberId = resolveClaimMemberId(tenantId, bo);
 
-        PromotionClaim existing = claimMapper.selectByPromotionAndMember(tenantId, reward.getId(), bo.getMemberId());
+        PromotionClaim existing = claimMapper.selectByPromotionAndMember(tenantId, reward.getId(), memberId);
         if (existing != null) {
-            return BeanUtil.toBean(existing, PromotionClaimVo.class);
+            PromotionClaimVo vo = BeanUtil.toBean(existing, PromotionClaimVo.class);
+            fillMemberNo(tenantId, vo);
+            return vo;
         }
 
         Date now = new Date();
@@ -161,12 +167,12 @@ public class PromotionRewardServiceImpl implements IPromotionRewardService {
         claim.setPromotionId(reward.getId());
         claim.setPromotionNo(reward.getPromotionNo());
         claim.setPromotionName(reward.getPromotionName());
-        claim.setMemberId(bo.getMemberId());
+        claim.setMemberId(memberId);
         claim.setCurrencyCode(reward.getCurrencyCode());
         claim.setRewardAmount(reward.getRewardAmount());
         claim.setClaimDate(ONCE_CLAIM_DATE);
         claim.setStatus(PromotionClaimStatus.SUCCESS.name());
-        claim.setIdempotencyKey(claimIdempotencyKey(tenantId, reward.getPromotionNo(), bo.getMemberId()));
+        claim.setIdempotencyKey(claimIdempotencyKey(tenantId, reward.getPromotionNo(), memberId));
         claim.setRemark(bo.getRemark());
         claim.setVersion(0);
         claim.setDelFlag(SystemConstants.NORMAL);
@@ -184,7 +190,9 @@ public class PromotionRewardServiceImpl implements IPromotionRewardService {
             claim.setFailReason(StringUtils.substring(transaction.getFailReason(), 0, 500));
         }
         claimMapper.updateById(claim);
-        return BeanUtil.toBean(claim, PromotionClaimVo.class);
+        PromotionClaimVo vo = BeanUtil.toBean(claim, PromotionClaimVo.class);
+        fillMemberNo(tenantId, vo);
+        return vo;
     }
 
     @Override
@@ -323,6 +331,34 @@ public class PromotionRewardServiceImpl implements IPromotionRewardService {
             PromotionRewardStatus.valueOf(status);
         } catch (Exception ex) {
             throw new ServiceException(MessageUtils.message("promotion.reward.status.invalid"));
+        }
+    }
+
+    private Long resolveClaimMemberId(String tenantId, PromotionClaimBo bo) {
+        if (StringUtils.isNotBlank(bo.getMemberNo())) {
+            MemberProfile member = memberProfileMapper.selectByMemberNo(tenantId, bo.getMemberNo().trim());
+            if (member == null) {
+                throw new ServiceException(MessageUtils.message("member.profile.not.exists"));
+            }
+            return member.getId();
+        }
+        if (bo.getMemberId() == null) {
+            throw new ServiceException(MessageUtils.message("promotion.claim.member.id.required"));
+        }
+        MemberProfile member = memberProfileMapper.selectClientMember(tenantId, bo.getMemberId());
+        if (member == null) {
+            throw new ServiceException(MessageUtils.message("member.profile.not.exists"));
+        }
+        return member.getId();
+    }
+
+    private void fillMemberNo(String tenantId, PromotionClaimVo vo) {
+        if (vo == null || vo.getMemberId() == null) {
+            return;
+        }
+        MemberProfile member = memberProfileMapper.selectClientMember(tenantId, vo.getMemberId());
+        if (member != null) {
+            vo.setMemberNo(member.getMemberNo());
         }
     }
 

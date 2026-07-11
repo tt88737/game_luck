@@ -168,8 +168,8 @@
         <el-form-item :label="t('promotionReward.fields.promotionName')">
           <span>{{ claimDialog.promotionName }}</span>
         </el-form-item>
-        <el-form-item :label="t('promotionReward.fields.memberId')" prop="memberId">
-          <el-input v-model="claimForm.memberId" :placeholder="t('promotionReward.placeholders.memberId')" />
+        <el-form-item :label="t('promotionReward.fields.memberId')" prop="memberNo">
+          <el-input v-model.trim="claimForm.memberNo" :placeholder="t('promotionReward.placeholders.memberId')" />
         </el-form-item>
         <el-form-item :label="t('common.remark')" prop="remark">
           <el-input v-model="claimForm.remark" type="textarea" :rows="3" :placeholder="t('promotionReward.placeholders.remark')" />
@@ -191,7 +191,9 @@
             <el-tag :type="scope.row.promotionType === 'DAILY_LOGIN' ? 'warning' : 'info'">{{ promotionTypeLabel(scope.row.promotionType) }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column :label="t('promotionReward.fields.memberId')" align="center" prop="memberId" width="120" />
+        <el-table-column :label="t('promotionReward.fields.memberId')" align="center" prop="memberNo" width="120">
+          <template #default="scope">{{ scope.row.memberNo || scope.row.memberId }}</template>
+        </el-table-column>
         <el-table-column :label="t('common.currency')" align="center" prop="currencyCode" width="90" />
         <el-table-column :label="t('promotionReward.fields.rewardAmount')" align="right" prop="rewardAmount" width="130" />
         <el-table-column :label="t('promotionReward.fields.claimDate')" align="center" prop="claimDate" width="120" />
@@ -308,7 +310,7 @@ const rules = computed(() => ({
 }));
 
 const claimRules = computed(() => ({
-  memberId: [{ required: true, message: t('promotionReward.rules.memberId'), trigger: 'blur' }]
+  memberNo: [{ required: true, message: t('promotionReward.rules.memberId'), trigger: 'blur' }]
 }));
 
 const getList = async () => {
