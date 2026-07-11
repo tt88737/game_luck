@@ -859,6 +859,7 @@ const enTextMap: Record<string, string> = {
   '无流水，立即到账': 'No Turnover, Credit Immediately',
   请输入调账单号: 'Enter adjustment no.',
   请输入调账金额: 'Enter adjustment amount',
+  会员ID必须为正整数: 'Member ID must be a positive integer',
   请选择资金策略: 'Select fund strategy',
   请输入调账原因: 'Enter adjustment reason',
   流水金额必须大于0: 'Turnover amount must be greater than 0',

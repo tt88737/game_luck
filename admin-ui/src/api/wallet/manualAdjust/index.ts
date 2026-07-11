@@ -1,8 +1,7 @@
 import request from '@/utils/request';
-import { AxiosPromise } from 'axios';
-import { ManualAdjustForm } from './types';
+import { ApiDataResponse, ManualAdjustForm, ManualAdjustResult } from './types';
 
-export function manualAdjust(data: ManualAdjustForm): AxiosPromise<void> {
+export function manualAdjust(data: ManualAdjustForm): Promise<ApiDataResponse<ManualAdjustResult>> {
   return request({
     url: '/wallet/manual-adjust',
     method: 'post',

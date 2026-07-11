@@ -36,7 +36,7 @@
           </el-col>
           <el-col :xs="24" :md="12">
             <el-form-item :label="tt('调账金额')" prop="amount">
-              <el-input-number v-model="form.amount" :min="0" :precision="6" :step="1" controls-position="right" class="w-full" />
+              <el-input-number v-model="form.amount" :min="0.000001" :precision="6" :step="1" controls-position="right" class="w-full" />
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -98,9 +98,41 @@ const createForm = (): ManualAdjustForm => ({
 });
 
 const form = ref<ManualAdjustForm>(createForm());
+const minimumAmount = 0.000001;
+
+const toFiniteNumber = (value: unknown) => {
+  const numberValue = Number(value);
+  return Number.isFinite(numberValue) ? numberValue : undefined;
+};
+
+const isValidMemberId = (value: string | number) => {
+  if (typeof value === 'number') {
+    return Number.isSafeInteger(value) && value > 0;
+  }
+  return /^[1-9]\d*$/.test(value.trim());
+};
+
+const normalizePayload = (): ManualAdjustForm | undefined => {
+  const amount = toFiniteNumber(form.value.amount);
+  const requiredTurnover = toFiniteNumber(form.value.requiredTurnover);
+  if (amount === undefined || amount < minimumAmount) return undefined;
+  if (!isValidMemberId(form.value.memberId)) return undefined;
+  if (form.value.strategy === 'AFTER_TURNOVER' && (requiredTurnover === undefined || requiredTurnover <= 0)) return undefined;
+
+  return {
+    adjustmentNo: form.value.adjustmentNo.trim(),
+    memberId: typeof form.value.memberId === 'string' ? form.value.memberId.trim() : form.value.memberId,
+    currencyCode: form.value.currencyCode,
+    amount,
+    strategy: form.value.strategy,
+    requiredTurnover: form.value.strategy === 'AFTER_TURNOVER' ? requiredTurnover : 0,
+    reason: form.value.reason.trim()
+  };
+};
 
 const validatePositiveAmount = (_rule: unknown, value: number | undefined, callback: (error?: Error) => void) => {
-  if (value === undefined || value === null || Number(value) <= 0) {
+  const amount = toFiniteNumber(value);
+  if (amount === undefined || amount < minimumAmount) {
     callback(new Error(tt('请输入调账金额')));
     return;
   }
@@ -108,8 +140,17 @@ const validatePositiveAmount = (_rule: unknown, value: number | undefined, callb
 };
 
 const validateRequiredTurnover = (_rule: unknown, value: number | undefined, callback: (error?: Error) => void) => {
-  if (form.value.strategy === 'AFTER_TURNOVER' && (value === undefined || value === null || Number(value) <= 0)) {
+  const requiredTurnover = toFiniteNumber(value);
+  if (form.value.strategy === 'AFTER_TURNOVER' && (requiredTurnover === undefined || requiredTurnover <= 0)) {
     callback(new Error(tt('流水金额必须大于0')));
+    return;
+  }
+  callback();
+};
+
+const validateMemberId = (_rule: unknown, value: string | number, callback: (error?: Error) => void) => {
+  if (!isValidMemberId(value)) {
+    callback(new Error(tt('会员ID必须为正整数')));
     return;
   }
   callback();
@@ -117,7 +158,7 @@ const validateRequiredTurnover = (_rule: unknown, value: number | undefined, cal
 
 const rules: FormRules<ManualAdjustForm> = {
   adjustmentNo: [{ required: true, message: tt('请输入调账单号'), trigger: 'blur' }],
-  memberId: [{ required: true, message: tt('请输入会员ID'), trigger: 'blur' }],
+  memberId: [{ required: true, validator: validateMemberId, trigger: 'blur' }],
   currencyCode: [{ required: true, message: tt('请选择币种'), trigger: 'change' }],
   amount: [{ required: true, validator: validatePositiveAmount, trigger: 'blur' }],
   strategy: [{ required: true, message: tt('请选择资金策略'), trigger: 'change' }],
@@ -151,12 +192,11 @@ const submitForm = () => {
   if (submitLoading.value) return;
   manualAdjustFormRef.value?.validate(async (valid: boolean) => {
     if (!valid) return;
+    const payload = normalizePayload();
+    if (!payload) return;
     submitLoading.value = true;
     try {
-      await manualAdjust({
-        ...form.value,
-        requiredTurnover: form.value.strategy === 'AFTER_TURNOVER' ? form.value.requiredTurnover : 0
-      });
+      await manualAdjust(payload);
       proxy?.$modal.msgSuccess(tt('调账成功'));
       resetForm();
     } finally {

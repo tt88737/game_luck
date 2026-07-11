@@ -9,3 +9,15 @@ export interface ManualAdjustForm {
   requiredTurnover?: number;
   reason: string;
 }
+
+export interface ManualAdjustResult {
+  transactionNo?: string;
+  status?: string;
+  id?: string | number;
+}
+
+export interface ApiDataResponse<T> {
+  code?: number;
+  msg?: string;
+  data: T;
+}
