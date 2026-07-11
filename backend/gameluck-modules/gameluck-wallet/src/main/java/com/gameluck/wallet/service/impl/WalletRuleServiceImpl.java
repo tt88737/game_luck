@@ -127,19 +127,19 @@ public class WalletRuleServiceImpl implements IWalletRuleService {
     @Override
     public List<WalletRuleTemplateVo> listDefaultTemplates() {
         List<WalletRuleTemplateVo> templates = new ArrayList<>();
-        templates.add(template("GC", "REGISTER_BONUS", "Registration bonus", "GC registration bonus", ENABLED, DISABLED, DISABLED, DISABLED, "IMMEDIATE", DISABLED, 10));
-        templates.add(template("SC", "REGISTER_BONUS", "Registration bonus", "SC registration bonus", ENABLED, DISABLED, DISABLED, DISABLED, "IMMEDIATE", DISABLED, 20));
-        templates.add(template("GC", "DAILY_REWARD", "Daily login reward", "GC daily login reward", ENABLED, DISABLED, DISABLED, DISABLED, "IMMEDIATE", DISABLED, 30));
-        templates.add(template("SC", "DAILY_REWARD", "Daily login reward", "SC daily login reward", ENABLED, DISABLED, ENABLED, DISABLED, "IMMEDIATE", DISABLED, 40));
-        templates.add(template("GC", "PROMOTION", "Promotion", "GC promotion", ENABLED, DISABLED, DISABLED, DISABLED, "IMMEDIATE", DISABLED, 50));
-        templates.add(template("SC", "PROMOTION", "Promotion", "SC promotion", ENABLED, DISABLED, DISABLED, DISABLED, "AFTER_TURNOVER", ENABLED, 60));
-        templates.add(template("RC", "DEPOSIT", "Deposit", "RC deposit", ENABLED, ENABLED, ENABLED, DISABLED, "IMMEDIATE", DISABLED, 70));
-        templates.add(template("GC", "GAME_PROFIT", "Game profit", "GC game profit", ENABLED, ENABLED, DISABLED, DISABLED, "NEVER", DISABLED, 80));
-        templates.add(template("SC", "GAME_PROFIT", "Game profit", "SC game profit", ENABLED, ENABLED, DISABLED, ENABLED, "AFTER_TURNOVER", ENABLED, 90));
-        templates.add(template("SC", "GAME_REFUND", "Game refund", "SC game refund", ENABLED, ENABLED, DISABLED, ENABLED, "IMMEDIATE", ENABLED, 100));
-        templates.add(template("GC", "MANUAL_ADJUST", "Manual adjustment", "GC manual adjustment", ENABLED, ENABLED, DISABLED, DISABLED, "IMMEDIATE", DISABLED, 110));
-        templates.add(template("SC", "MANUAL_ADJUST", "Manual adjustment", "SC manual adjustment", ENABLED, ENABLED, DISABLED, ENABLED, "MANUAL_REVIEW", DISABLED, 120));
-        templates.add(template("RC", "MANUAL_ADJUST", "Manual adjustment", "RC manual adjustment", ENABLED, ENABLED, ENABLED, DISABLED, "MANUAL_REVIEW", DISABLED, 130));
+        templates.add(template("GC", "REGISTER_BONUS", "Registration bonus", "GC registration bonus", ENABLED, DISABLED, DISABLED, DISABLED, "IMMEDIATE", DISABLED, 21, "Registration GC reward."));
+        templates.add(template("SC", "REGISTER_BONUS", "Registration bonus", "SC registration bonus", ENABLED, DISABLED, DISABLED, DISABLED, "IMMEDIATE", DISABLED, 22, "Registration SC reward."));
+        templates.add(template("GC", "DAILY_REWARD", "Daily login reward", "GC daily login reward", ENABLED, DISABLED, DISABLED, DISABLED, "IMMEDIATE", DISABLED, 31, "Daily login GC reward."));
+        templates.add(template("SC", "DAILY_REWARD", "Daily login reward", "SC daily login reward", ENABLED, DISABLED, ENABLED, DISABLED, "IMMEDIATE", DISABLED, 32, "Daily login SC reward."));
+        templates.add(template("GC", "PROMOTION", "Promotion", "GC promotion", ENABLED, DISABLED, DISABLED, DISABLED, "IMMEDIATE", DISABLED, 41, "Promotion GC reward."));
+        templates.add(template("SC", "PROMOTION", "Promotion", "SC promotion", ENABLED, DISABLED, DISABLED, DISABLED, "AFTER_TURNOVER", ENABLED, 42, "Promotion SC reward after turnover."));
+        templates.add(template("RC", "DEPOSIT", "Deposit", "RC deposit", ENABLED, ENABLED, ENABLED, DISABLED, "IMMEDIATE", DISABLED, 51, "RC deposit can be withdrawable immediately."));
+        templates.add(template("GC", "GAME_PROFIT", "Game profit", "GC game profit", ENABLED, ENABLED, DISABLED, DISABLED, "NEVER", DISABLED, 61, "GC is not withdrawable or exchangeable."));
+        templates.add(template("SC", "GAME_PROFIT", "Game profit", "SC game profit", ENABLED, ENABLED, DISABLED, ENABLED, "AFTER_TURNOVER", ENABLED, 62, "SC game profit can be exchanged after conditions."));
+        templates.add(template("SC", "GAME_REFUND", "Game refund", "SC game refund", ENABLED, ENABLED, DISABLED, ENABLED, "IMMEDIATE", ENABLED, 71, "SC refund returns original stake immediately."));
+        templates.add(template("GC", "MANUAL_ADJUST", "Manual adjustment", "GC manual adjustment", ENABLED, ENABLED, DISABLED, DISABLED, "IMMEDIATE", DISABLED, 81, "Manual GC adjustment."));
+        templates.add(template("SC", "MANUAL_ADJUST", "Manual adjustment", "SC manual adjustment", ENABLED, ENABLED, DISABLED, ENABLED, "MANUAL_REVIEW", DISABLED, 82, "Manual SC adjustment uses operation strategy."));
+        templates.add(template("RC", "MANUAL_ADJUST", "Manual adjustment", "RC manual adjustment", ENABLED, ENABLED, ENABLED, DISABLED, "MANUAL_REVIEW", DISABLED, 83, "Manual RC adjustment uses operation strategy."));
         return templates;
     }
 
@@ -201,7 +201,7 @@ public class WalletRuleServiceImpl implements IWalletRuleService {
     private WalletRuleTemplateVo template(String currencyCode, String sourceType, String sourceLabel, String ruleName,
                                           String creditEnabled, String debitEnabled, String withdrawEnabled,
                                           String exchangeEnabled, String releaseMode, String turnoverRequired,
-                                          int sortOrder) {
+                                          int sortOrder, String remark) {
         WalletRuleTemplateVo template = new WalletRuleTemplateVo();
         template.setCurrencyCode(currencyCode);
         template.setSourceType(sourceType);
@@ -216,7 +216,7 @@ public class WalletRuleServiceImpl implements IWalletRuleService {
         template.setDefaultRequiredTurnover(BigDecimal.ZERO);
         template.setStatus(ENABLED);
         template.setSortOrder(sortOrder);
-        template.setRemark("Default wallet rule template");
+        template.setRemark(remark);
         template.setExists(false);
         template.setWillCreate(false);
         return template;

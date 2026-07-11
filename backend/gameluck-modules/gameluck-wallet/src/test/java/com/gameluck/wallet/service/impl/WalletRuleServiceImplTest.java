@@ -129,19 +129,20 @@ class WalletRuleServiceImplTest {
 
         List<WalletRuleTemplateVo> templates = service.listDefaultTemplates();
 
-        assertTemplate(templates, "GC", "REGISTER_BONUS", "GC registration bonus", "0", "1", "1", "1", "IMMEDIATE", "1", "0");
-        assertTemplate(templates, "SC", "REGISTER_BONUS", "SC registration bonus", "0", "1", "1", "1", "IMMEDIATE", "1", "0");
-        assertTemplate(templates, "GC", "DAILY_REWARD", "GC daily login reward", "0", "1", "1", "1", "IMMEDIATE", "1", "0");
-        assertTemplate(templates, "SC", "DAILY_REWARD", "SC daily login reward", "0", "1", "0", "1", "IMMEDIATE", "1", "0");
-        assertTemplate(templates, "GC", "PROMOTION", "GC promotion", "0", "1", "1", "1", "IMMEDIATE", "1", "0");
-        assertTemplate(templates, "SC", "PROMOTION", "SC promotion", "0", "1", "1", "1", "AFTER_TURNOVER", "0", "0");
-        assertTemplate(templates, "RC", "DEPOSIT", "RC deposit", "0", "0", "0", "1", "IMMEDIATE", "1", "0");
-        assertTemplate(templates, "GC", "GAME_PROFIT", "GC game profit", "0", "0", "1", "1", "NEVER", "1", "0");
-        assertTemplate(templates, "SC", "GAME_PROFIT", "SC game profit", "0", "0", "1", "0", "AFTER_TURNOVER", "0", "0");
-        assertTemplate(templates, "SC", "GAME_REFUND", "SC game refund", "0", "0", "1", "0", "IMMEDIATE", "0", "0");
-        assertTemplate(templates, "GC", "MANUAL_ADJUST", "GC manual adjustment", "0", "0", "1", "1", "IMMEDIATE", "1", "0");
-        assertTemplate(templates, "SC", "MANUAL_ADJUST", "SC manual adjustment", "0", "0", "1", "0", "MANUAL_REVIEW", "1", "0");
-        assertTemplate(templates, "RC", "MANUAL_ADJUST", "RC manual adjustment", "0", "0", "0", "1", "MANUAL_REVIEW", "1", "0");
+        assertEquals(13, templates.size());
+        assertTemplate(templates, "GC", "REGISTER_BONUS", "Registration bonus", "GC registration bonus", "0", "1", "1", "1", "IMMEDIATE", "1", "0", 21, "Registration GC reward.");
+        assertTemplate(templates, "SC", "REGISTER_BONUS", "Registration bonus", "SC registration bonus", "0", "1", "1", "1", "IMMEDIATE", "1", "0", 22, "Registration SC reward.");
+        assertTemplate(templates, "GC", "DAILY_REWARD", "Daily login reward", "GC daily login reward", "0", "1", "1", "1", "IMMEDIATE", "1", "0", 31, "Daily login GC reward.");
+        assertTemplate(templates, "SC", "DAILY_REWARD", "Daily login reward", "SC daily login reward", "0", "1", "0", "1", "IMMEDIATE", "1", "0", 32, "Daily login SC reward.");
+        assertTemplate(templates, "GC", "PROMOTION", "Promotion", "GC promotion", "0", "1", "1", "1", "IMMEDIATE", "1", "0", 41, "Promotion GC reward.");
+        assertTemplate(templates, "SC", "PROMOTION", "Promotion", "SC promotion", "0", "1", "1", "1", "AFTER_TURNOVER", "0", "0", 42, "Promotion SC reward after turnover.");
+        assertTemplate(templates, "RC", "DEPOSIT", "Deposit", "RC deposit", "0", "0", "0", "1", "IMMEDIATE", "1", "0", 51, "RC deposit can be withdrawable immediately.");
+        assertTemplate(templates, "GC", "GAME_PROFIT", "Game profit", "GC game profit", "0", "0", "1", "1", "NEVER", "1", "0", 61, "GC is not withdrawable or exchangeable.");
+        assertTemplate(templates, "SC", "GAME_PROFIT", "Game profit", "SC game profit", "0", "0", "1", "0", "AFTER_TURNOVER", "0", "0", 62, "SC game profit can be exchanged after conditions.");
+        assertTemplate(templates, "SC", "GAME_REFUND", "Game refund", "SC game refund", "0", "0", "1", "0", "IMMEDIATE", "0", "0", 71, "SC refund returns original stake immediately.");
+        assertTemplate(templates, "GC", "MANUAL_ADJUST", "Manual adjustment", "GC manual adjustment", "0", "0", "1", "1", "IMMEDIATE", "1", "0", 81, "Manual GC adjustment.");
+        assertTemplate(templates, "SC", "MANUAL_ADJUST", "Manual adjustment", "SC manual adjustment", "0", "0", "1", "0", "MANUAL_REVIEW", "1", "0", 82, "Manual SC adjustment uses operation strategy.");
+        assertTemplate(templates, "RC", "MANUAL_ADJUST", "Manual adjustment", "RC manual adjustment", "0", "0", "0", "1", "MANUAL_REVIEW", "1", "0", 83, "Manual RC adjustment uses operation strategy.");
     }
 
     private static WalletRule existingRule(String tenantId, String currencyCode, String sourceType) {
@@ -168,10 +169,12 @@ class WalletRuleServiceImplTest {
     }
 
     private static void assertTemplate(List<WalletRuleTemplateVo> templates, String currencyCode, String sourceType,
-                                       String ruleName, String creditEnabled, String debitEnabled,
+                                       String sourceLabel, String ruleName, String creditEnabled, String debitEnabled,
                                        String withdrawEnabled, String exchangeEnabled, String releaseMode,
-                                       String turnoverRequired, String defaultRequiredTurnover) {
+                                       String turnoverRequired, String defaultRequiredTurnover, Integer sortOrder,
+                                       String remark) {
         WalletRuleTemplateVo template = findTemplate(templates, currencyCode, sourceType);
+        assertEquals(sourceLabel, template.getSourceLabel());
         assertEquals(ruleName, template.getRuleName());
         assertEquals(creditEnabled, template.getCreditEnabled());
         assertEquals(debitEnabled, template.getDebitEnabled());
@@ -180,5 +183,8 @@ class WalletRuleServiceImplTest {
         assertEquals(releaseMode, template.getReleaseMode());
         assertEquals(turnoverRequired, template.getTurnoverRequired());
         assertEquals(0, new BigDecimal(defaultRequiredTurnover).compareTo(template.getDefaultRequiredTurnover()));
+        assertEquals(SystemConstants.NORMAL, template.getStatus());
+        assertEquals(sortOrder, template.getSortOrder());
+        assertEquals(remark, template.getRemark());
     }
 }
