@@ -222,7 +222,7 @@ export default {
   },
   memberProfile: {
     fields: {
-      memberNo: '会员编号',
+      memberNo: '会员ID',
       username: '用户名',
       nickname: '昵称',
       riskLevel: '风险等级',
@@ -234,7 +234,7 @@ export default {
       lastLoginTime: '最后登录'
     },
     placeholders: {
-      memberNo: '请输入会员编号',
+      memberNo: '请输入会员ID',
       username: '请输入用户名',
       nickname: '请输入昵称',
       status: '请选择状态',

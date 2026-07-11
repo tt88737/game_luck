@@ -138,7 +138,7 @@ public class DepositOrderServiceImpl implements IDepositOrderService {
         lqw.eq(StringUtils.isNotBlank(bo.getTenantId()), DepositOrder::getTenantId, bo.getTenantId());
         lqw.eq(StringUtils.isNotBlank(bo.getDepositOrderNo()), DepositOrder::getDepositOrderNo, bo.getDepositOrderNo());
         lqw.eq(bo.getMemberId() != null, DepositOrder::getMemberId, bo.getMemberId());
-        MemberNoQueryHelper.apply(lqw, bo.getMemberNo(), "gl_deposit_order");
+        MemberNoQueryHelper.apply(lqw, bo.getMemberNo(), "gl_payment_deposit_order");
         lqw.eq(StringUtils.isNotBlank(bo.getCurrencyCode()), DepositOrder::getCurrencyCode, bo.getCurrencyCode());
         lqw.eq(StringUtils.isNotBlank(bo.getStatus()), DepositOrder::getStatus, bo.getStatus());
         lqw.ge(bo.getBeginTime() != null, DepositOrder::getCreateTime, bo.getBeginTime());

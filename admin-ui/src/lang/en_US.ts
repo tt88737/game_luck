@@ -226,7 +226,7 @@ export default {
   },
   memberProfile: {
     fields: {
-      memberNo: 'Member No.',
+      memberNo: 'Member ID',
       username: 'Username',
       nickname: 'Nickname',
       riskLevel: 'Risk Level',
@@ -238,7 +238,7 @@ export default {
       lastLoginTime: 'Last Login'
     },
     placeholders: {
-      memberNo: 'Enter member no.',
+      memberNo: 'Enter member ID',
       username: 'Enter username',
       nickname: 'Enter nickname',
       status: 'Select status',

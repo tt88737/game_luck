@@ -4,8 +4,8 @@
       <div v-show="showSearch" class="mb-[10px]">
         <el-card shadow="hover">
           <el-form ref="queryFormRef" :model="queryParams" :inline="true">
-            <el-form-item :label="tt('会员ID/编号')" prop="memberId">
-              <el-input v-model="queryParams.memberId" :placeholder="tt('请输入会员ID或会员编号')" clearable @keyup.enter="handleQuery" />
+            <el-form-item :label="tt('会员ID')" prop="memberId">
+              <el-input v-model="queryParams.memberId" :placeholder="tt('请输入会员ID')" clearable @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item :label="tt('币种')" prop="currencyCode">
               <el-input v-model="queryParams.currencyCode" :placeholder="tt('请输入币种编码')" clearable @keyup.enter="handleQuery" />
