@@ -32,8 +32,8 @@ export interface RuleTemplateVO {
   status: string;
   sortOrder: number;
   remark: string;
-  exists: boolean;
-  willCreate: boolean;
+  exists?: boolean;
+  willCreate?: boolean;
 }
 
 export interface RuleForm {

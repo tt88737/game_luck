@@ -105,7 +105,7 @@
         <el-table-column :label="tt('默认流水')" align="right" prop="defaultRequiredTurnover" width="120" />
         <el-table-column :label="tt('处理方式')" align="center" width="120">
           <template #default="scope">
-            <el-tag :type="scope.row.willCreate ? 'success' : 'info'">{{ scope.row.willCreate ? tt('将创建') : tt('已存在') }}</el-tag>
+            <el-tag :type="scope.row.willCreate === true ? 'success' : 'info'">{{ scope.row.willCreate === true ? tt('将创建') : tt('已存在') }}</el-tag>
           </template>
         </el-table-column>
       </el-table>
@@ -182,7 +182,7 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" @click="submitForm">{{ tt('确定') }}</el-button>
+          <el-button type="primary" :loading="submitLoading" :disabled="submitLoading" @click="submitForm">{{ tt('确定') }}</el-button>
           <el-button @click="cancel">{{ tt('取消') }}</el-button>
         </div>
       </template>
@@ -203,6 +203,7 @@ const ruleTemplateList = ref<RuleTemplateVO[]>([]);
 const loading = ref(true);
 const previewLoading = ref(false);
 const seedLoading = ref(false);
+const submitLoading = ref(false);
 const showSearch = ref(true);
 const total = ref(0);
 const queryFormRef = ref<ElFormInstance>();
@@ -219,7 +220,7 @@ const previewDrawer = reactive({
   visible: false
 });
 
-const missingRuleCount = computed(() => ruleTemplateList.value.filter((item) => item.willCreate).length);
+const missingRuleCount = computed(() => ruleTemplateList.value.filter((item) => item.willCreate === true).length);
 
 const initFormData: RuleForm = {
   id: undefined,
@@ -265,10 +266,13 @@ const previewSourceText = (row: RuleTemplateVO) => row.sourceLabel || businessLa
 
 const getList = async () => {
   loading.value = true;
-  const res = await listRule(queryParams.value);
-  ruleList.value = res.rows;
-  total.value = res.total;
-  loading.value = false;
+  try {
+    const res = await listRule(queryParams.value);
+    ruleList.value = res.rows;
+    total.value = res.total;
+  } finally {
+    loading.value = false;
+  }
 };
 
 const reset = () => {
@@ -293,10 +297,14 @@ const resetQuery = () => {
 
 const openDefaultRulePreview = async () => {
   previewDrawer.visible = true;
+  ruleTemplateList.value = [];
   previewLoading.value = true;
   try {
     const res = await previewDefaultRules();
     ruleTemplateList.value = res.data || [];
+  } catch (error) {
+    ruleTemplateList.value = [];
+    throw error;
   } finally {
     previewLoading.value = false;
   }
@@ -317,16 +325,22 @@ const handleUpdate = async (row: RuleVO) => {
 };
 
 const submitForm = () => {
+  if (submitLoading.value) return;
   ruleFormRef.value?.validate(async (valid: boolean) => {
     if (!valid) return;
-    if (form.value.id) {
-      await updateRule(form.value);
-    } else {
-      await addRule(form.value);
+    submitLoading.value = true;
+    try {
+      if (form.value.id) {
+        await updateRule(form.value);
+      } else {
+        await addRule(form.value);
+      }
+      proxy?.$modal.msgSuccess(tt('操作成功'));
+      dialog.visible = false;
+      await getList();
+    } finally {
+      submitLoading.value = false;
     }
-    proxy?.$modal.msgSuccess(tt('操作成功'));
-    dialog.visible = false;
-    await getList();
   });
 };
 

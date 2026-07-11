@@ -2,6 +2,12 @@ import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
 import { RuleForm, RuleQuery, RuleTemplateVO, RuleVO } from './types';
 
+interface ApiDataResponse<T> {
+  code?: number;
+  msg?: string;
+  data: T;
+}
+
 export function listRule(query: RuleQuery): AxiosPromise<RuleVO[]> {
   return request({
     url: '/wallet/rule/list',
@@ -33,14 +39,14 @@ export function updateRule(data: RuleForm) {
   });
 }
 
-export function previewDefaultRules(): AxiosPromise<RuleTemplateVO[]> {
+export function previewDefaultRules(): Promise<ApiDataResponse<RuleTemplateVO[]>> {
   return request({
     url: '/wallet/rule/default/preview',
     method: 'get'
   });
 }
 
-export function seedDefaultRules(): AxiosPromise<number> {
+export function seedDefaultRules(): Promise<ApiDataResponse<number>> {
   return request({
     url: '/wallet/rule/default/seed',
     method: 'post'
