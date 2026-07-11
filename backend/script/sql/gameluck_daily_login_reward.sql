@@ -59,7 +59,21 @@ SET @col_exists := (
   WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_promotion_claim' AND COLUMN_NAME = 'claim_date'
 );
 SET @sql := IF(@col_exists = 0,
-  'ALTER TABLE gl_promotion_claim ADD COLUMN claim_date DATE DEFAULT NULL COMMENT ''Claim date'' AFTER reward_amount',
+  'ALTER TABLE gl_promotion_claim ADD COLUMN claim_date DATE NOT NULL DEFAULT ''1000-01-01'' COMMENT ''Claim date'' AFTER reward_amount',
+  'SELECT 1'
+);
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+UPDATE gl_promotion_claim
+SET claim_date = '1000-01-01'
+WHERE claim_date IS NULL;
+
+SET @claim_date_nullable := (
+  SELECT IS_NULLABLE FROM information_schema.COLUMNS
+  WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_promotion_claim' AND COLUMN_NAME = 'claim_date'
+);
+SET @sql := IF(@claim_date_nullable = 'YES',
+  'ALTER TABLE gl_promotion_claim MODIFY COLUMN claim_date DATE NOT NULL DEFAULT ''1000-01-01'' COMMENT ''Claim date''',
   'SELECT 1'
 );
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
@@ -89,6 +103,22 @@ SET @claim_idx_columns := (
   FROM information_schema.STATISTICS
   WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_promotion_claim' AND INDEX_NAME = 'uk_gl_promotion_claim_03'
 );
+
+SET @duplicate_claim_count := (
+  SELECT COUNT(*)
+  FROM (
+    SELECT tenant_id, promotion_id, member_id, claim_date
+    FROM gl_promotion_claim
+    GROUP BY tenant_id, promotion_id, member_id, claim_date
+    HAVING COUNT(*) > 1
+  ) duplicate_claims
+);
+SET @sql := IF(@duplicate_claim_count > 0,
+  'SIGNAL SQLSTATE ''45000'' SET MESSAGE_TEXT = ''Duplicate promotion claims block daily login reward index migration''',
+  'SELECT 1'
+);
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
 SET @sql := IF(@claim_idx_columns IS NOT NULL AND @claim_idx_columns <> 'tenant_id,promotion_id,member_id,claim_date',
   'ALTER TABLE gl_promotion_claim DROP INDEX uk_gl_promotion_claim_03',
   'SELECT 1'

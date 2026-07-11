@@ -57,6 +57,7 @@ public class PromotionRewardServiceImpl implements IPromotionRewardService {
     private static final String SOURCE_TYPE = "PROMOTION";
     private static final String DAILY_LOGIN_TYPE = "DAILY_LOGIN";
     private static final String DAILY_REWARD_SOURCE = "DAILY_REWARD";
+    private static final LocalDate ONCE_CLAIM_DATE = LocalDate.of(1000, 1, 1);
     private static final int MONEY_SCALE = 6;
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -163,6 +164,7 @@ public class PromotionRewardServiceImpl implements IPromotionRewardService {
         claim.setMemberId(bo.getMemberId());
         claim.setCurrencyCode(reward.getCurrencyCode());
         claim.setRewardAmount(reward.getRewardAmount());
+        claim.setClaimDate(ONCE_CLAIM_DATE);
         claim.setStatus(PromotionClaimStatus.SUCCESS.name());
         claim.setIdempotencyKey(claimIdempotencyKey(tenantId, reward.getPromotionNo(), bo.getMemberId()));
         claim.setRemark(bo.getRemark());

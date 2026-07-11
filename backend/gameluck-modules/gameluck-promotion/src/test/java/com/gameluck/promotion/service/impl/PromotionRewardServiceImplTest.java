@@ -63,6 +63,9 @@ class PromotionRewardServiceImplTest {
         assertEquals(1001L, claim.getMemberId());
         assertEquals("SUCCESS", claim.getStatus());
         assertEquals("WT_PROMOTION_1", claim.getWalletTransactionNo());
+        ArgumentCaptor<PromotionClaim> claimCaptor = ArgumentCaptor.forClass(PromotionClaim.class);
+        verify(claimMapper).insert(claimCaptor.capture());
+        assertEquals(LocalDate.of(1000, 1, 1), claimCaptor.getValue().getClaimDate());
         ArgumentCaptor<WalletCreditBo> creditCaptor = ArgumentCaptor.forClass(WalletCreditBo.class);
         verify(walletCoreService).credit(creditCaptor.capture());
         assertEquals("SC", creditCaptor.getValue().getCurrencyCode());

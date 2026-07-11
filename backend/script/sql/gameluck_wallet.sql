@@ -288,7 +288,7 @@ CREATE TABLE IF NOT EXISTS gl_promotion_claim (
   member_id BIGINT NOT NULL COMMENT 'Member id',
   currency_code VARCHAR(32) NOT NULL COMMENT 'Currency code',
   reward_amount DECIMAL(20,6) NOT NULL COMMENT 'Reward amount',
-  claim_date DATE DEFAULT NULL COMMENT 'Claim date',
+  claim_date DATE NOT NULL DEFAULT '1000-01-01' COMMENT 'Claim date',
   reward_snapshot JSON DEFAULT NULL COMMENT 'Reward snapshot',
   status VARCHAR(32) NOT NULL COMMENT 'Claim status',
   wallet_transaction_no VARCHAR(512) DEFAULT NULL COMMENT 'Wallet transaction number',
