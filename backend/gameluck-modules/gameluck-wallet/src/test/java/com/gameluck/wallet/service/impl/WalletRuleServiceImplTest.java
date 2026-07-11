@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -76,6 +77,28 @@ class WalletRuleServiceImplTest {
         assertEquals("PROMOTION", service.canonicalSourceType("PROMOTION"));
     }
 
+    @Test
+    @Tag("local")
+    void listDefaultTemplatesUsesExplicitSpecValues() {
+        WalletRuleServiceImpl service = new WalletRuleServiceImpl(mock(WalletRuleMapper.class));
+
+        List<WalletRuleTemplateVo> templates = service.listDefaultTemplates();
+
+        assertTemplate(templates, "GC", "REGISTER_BONUS", "GC registration bonus", "0", "1", "1", "1", "IMMEDIATE", "1", "0");
+        assertTemplate(templates, "SC", "REGISTER_BONUS", "SC registration bonus", "0", "1", "1", "1", "IMMEDIATE", "1", "0");
+        assertTemplate(templates, "GC", "DAILY_REWARD", "GC daily login reward", "0", "1", "1", "1", "IMMEDIATE", "1", "0");
+        assertTemplate(templates, "SC", "DAILY_REWARD", "SC daily login reward", "0", "1", "0", "1", "IMMEDIATE", "1", "0");
+        assertTemplate(templates, "GC", "PROMOTION", "GC promotion", "0", "1", "1", "1", "IMMEDIATE", "1", "0");
+        assertTemplate(templates, "SC", "PROMOTION", "SC promotion", "0", "1", "1", "1", "AFTER_TURNOVER", "0", "0");
+        assertTemplate(templates, "RC", "DEPOSIT", "RC deposit", "0", "0", "0", "1", "IMMEDIATE", "1", "0");
+        assertTemplate(templates, "GC", "GAME_PROFIT", "GC game profit", "0", "0", "1", "1", "NEVER", "1", "0");
+        assertTemplate(templates, "SC", "GAME_PROFIT", "SC game profit", "0", "0", "1", "0", "AFTER_TURNOVER", "0", "0");
+        assertTemplate(templates, "SC", "GAME_REFUND", "SC game refund", "0", "0", "1", "0", "IMMEDIATE", "0", "0");
+        assertTemplate(templates, "GC", "MANUAL_ADJUST", "GC manual adjustment", "0", "0", "1", "1", "IMMEDIATE", "1", "0");
+        assertTemplate(templates, "SC", "MANUAL_ADJUST", "SC manual adjustment", "0", "0", "1", "0", "MANUAL_REVIEW", "1", "0");
+        assertTemplate(templates, "RC", "MANUAL_ADJUST", "RC manual adjustment", "0", "0", "0", "1", "MANUAL_REVIEW", "1", "0");
+    }
+
     private static WalletRule existingRule(String tenantId, String currencyCode, String sourceType) {
         WalletRule rule = new WalletRule();
         rule.setTenantId(tenantId);
@@ -90,5 +113,20 @@ class WalletRuleServiceImplTest {
                 && sourceType.equals(template.getSourceType()))
             .findFirst()
             .orElseThrow();
+    }
+
+    private static void assertTemplate(List<WalletRuleTemplateVo> templates, String currencyCode, String sourceType,
+                                       String ruleName, String creditEnabled, String debitEnabled,
+                                       String withdrawEnabled, String exchangeEnabled, String releaseMode,
+                                       String turnoverRequired, String defaultRequiredTurnover) {
+        WalletRuleTemplateVo template = findTemplate(templates, currencyCode, sourceType);
+        assertEquals(ruleName, template.getRuleName());
+        assertEquals(creditEnabled, template.getCreditEnabled());
+        assertEquals(debitEnabled, template.getDebitEnabled());
+        assertEquals(withdrawEnabled, template.getWithdrawEnabled());
+        assertEquals(exchangeEnabled, template.getExchangeEnabled());
+        assertEquals(releaseMode, template.getReleaseMode());
+        assertEquals(turnoverRequired, template.getTurnoverRequired());
+        assertEquals(0, new BigDecimal(defaultRequiredTurnover).compareTo(template.getDefaultRequiredTurnover()));
     }
 }

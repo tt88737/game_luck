@@ -16,7 +16,6 @@ import com.gameluck.wallet.domain.WalletRule;
 import com.gameluck.wallet.domain.bo.WalletRuleBo;
 import com.gameluck.wallet.domain.vo.WalletRuleTemplateVo;
 import com.gameluck.wallet.domain.vo.WalletRuleVo;
-import com.gameluck.wallet.enums.WalletReleaseMode;
 import com.gameluck.wallet.mapper.WalletRuleMapper;
 import com.gameluck.wallet.service.IWalletRuleService;
 import lombok.RequiredArgsConstructor;
@@ -129,19 +128,19 @@ public class WalletRuleServiceImpl implements IWalletRuleService {
     @Override
     public List<WalletRuleTemplateVo> listDefaultTemplates() {
         List<WalletRuleTemplateVo> templates = new ArrayList<>();
-        templates.add(template("GC", "REGISTER_BONUS", "Register Bonus", WalletReleaseMode.IMMEDIATE, 10));
-        templates.add(template("SC", "REGISTER_BONUS", "Register Bonus", WalletReleaseMode.IMMEDIATE, 20));
-        templates.add(template("GC", "DAILY_REWARD", "Daily Reward", WalletReleaseMode.IMMEDIATE, 30));
-        templates.add(template("SC", "DAILY_REWARD", "Daily Reward", WalletReleaseMode.IMMEDIATE, 40));
-        templates.add(template("GC", "PROMOTION", "Promotion", WalletReleaseMode.IMMEDIATE, 50));
-        templates.add(template("SC", "PROMOTION", "Promotion", WalletReleaseMode.AFTER_TURNOVER, 60));
-        templates.add(template("RC", "DEPOSIT", "Deposit", WalletReleaseMode.IMMEDIATE, 70));
-        templates.add(template("GC", "GAME_PROFIT", "Game Profit", WalletReleaseMode.NEVER, 80));
-        templates.add(template("SC", "GAME_PROFIT", "Game Profit", WalletReleaseMode.AFTER_TURNOVER, 90));
-        templates.add(template("SC", "GAME_REFUND", "Game Refund", WalletReleaseMode.IMMEDIATE, 100));
-        templates.add(template("GC", "MANUAL_ADJUST", "Manual Adjust", WalletReleaseMode.IMMEDIATE, 110));
-        templates.add(template("SC", "MANUAL_ADJUST", "Manual Adjust", WalletReleaseMode.MANUAL_REVIEW, 120));
-        templates.add(template("RC", "MANUAL_ADJUST", "Manual Adjust", WalletReleaseMode.MANUAL_REVIEW, 130));
+        templates.add(template("GC", "REGISTER_BONUS", "Registration bonus", "GC registration bonus", ENABLED, DISABLED, DISABLED, DISABLED, "IMMEDIATE", DISABLED, 10));
+        templates.add(template("SC", "REGISTER_BONUS", "Registration bonus", "SC registration bonus", ENABLED, DISABLED, DISABLED, DISABLED, "IMMEDIATE", DISABLED, 20));
+        templates.add(template("GC", "DAILY_REWARD", "Daily login reward", "GC daily login reward", ENABLED, DISABLED, DISABLED, DISABLED, "IMMEDIATE", DISABLED, 30));
+        templates.add(template("SC", "DAILY_REWARD", "Daily login reward", "SC daily login reward", ENABLED, DISABLED, ENABLED, DISABLED, "IMMEDIATE", DISABLED, 40));
+        templates.add(template("GC", "PROMOTION", "Promotion", "GC promotion", ENABLED, DISABLED, DISABLED, DISABLED, "IMMEDIATE", DISABLED, 50));
+        templates.add(template("SC", "PROMOTION", "Promotion", "SC promotion", ENABLED, DISABLED, DISABLED, DISABLED, "AFTER_TURNOVER", ENABLED, 60));
+        templates.add(template("RC", "DEPOSIT", "Deposit", "RC deposit", ENABLED, ENABLED, ENABLED, DISABLED, "IMMEDIATE", DISABLED, 70));
+        templates.add(template("GC", "GAME_PROFIT", "Game profit", "GC game profit", ENABLED, ENABLED, DISABLED, DISABLED, "NEVER", DISABLED, 80));
+        templates.add(template("SC", "GAME_PROFIT", "Game profit", "SC game profit", ENABLED, ENABLED, DISABLED, ENABLED, "AFTER_TURNOVER", ENABLED, 90));
+        templates.add(template("SC", "GAME_REFUND", "Game refund", "SC game refund", ENABLED, ENABLED, DISABLED, ENABLED, "IMMEDIATE", ENABLED, 100));
+        templates.add(template("GC", "MANUAL_ADJUST", "Manual adjustment", "GC manual adjustment", ENABLED, ENABLED, DISABLED, DISABLED, "IMMEDIATE", DISABLED, 110));
+        templates.add(template("SC", "MANUAL_ADJUST", "Manual adjustment", "SC manual adjustment", ENABLED, ENABLED, DISABLED, ENABLED, "MANUAL_REVIEW", DISABLED, 120));
+        templates.add(template("RC", "MANUAL_ADJUST", "Manual adjustment", "RC manual adjustment", ENABLED, ENABLED, ENABLED, DISABLED, "MANUAL_REVIEW", DISABLED, 130));
         return templates;
     }
 
@@ -195,20 +194,22 @@ public class WalletRuleServiceImpl implements IWalletRuleService {
         return lqw;
     }
 
-    private WalletRuleTemplateVo template(String currencyCode, String sourceType, String sourceLabel,
-                                          WalletReleaseMode releaseMode, int sortOrder) {
+    private WalletRuleTemplateVo template(String currencyCode, String sourceType, String sourceLabel, String ruleName,
+                                          String creditEnabled, String debitEnabled, String withdrawEnabled,
+                                          String exchangeEnabled, String releaseMode, String turnoverRequired,
+                                          int sortOrder) {
         WalletRuleTemplateVo template = new WalletRuleTemplateVo();
         template.setCurrencyCode(currencyCode);
         template.setSourceType(sourceType);
         template.setSourceLabel(sourceLabel);
-        template.setRuleName(currencyCode + " " + sourceLabel);
-        template.setCreditEnabled(ENABLED);
-        template.setDebitEnabled(StringUtils.equals("MANUAL_ADJUST", sourceType) ? ENABLED : DISABLED);
-        template.setWithdrawEnabled(ENABLED);
-        template.setExchangeEnabled(ENABLED);
-        template.setReleaseMode(releaseMode.name());
-        template.setTurnoverRequired(WalletReleaseMode.AFTER_TURNOVER == releaseMode ? ENABLED : DISABLED);
-        template.setDefaultRequiredTurnover(WalletReleaseMode.AFTER_TURNOVER == releaseMode ? BigDecimal.ONE : BigDecimal.ZERO);
+        template.setRuleName(ruleName);
+        template.setCreditEnabled(creditEnabled);
+        template.setDebitEnabled(debitEnabled);
+        template.setWithdrawEnabled(withdrawEnabled);
+        template.setExchangeEnabled(exchangeEnabled);
+        template.setReleaseMode(releaseMode);
+        template.setTurnoverRequired(turnoverRequired);
+        template.setDefaultRequiredTurnover(BigDecimal.ZERO);
         template.setStatus(ENABLED);
         template.setSortOrder(sortOrder);
         template.setRemark("Default wallet rule template");
