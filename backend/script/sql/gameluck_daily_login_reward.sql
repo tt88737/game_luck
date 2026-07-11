@@ -64,6 +64,21 @@ SET @sql := IF(@col_exists = 0,
 );
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
+SET @duplicate_claim_count := (
+  SELECT COUNT(*)
+  FROM (
+    SELECT tenant_id, promotion_id, member_id, COALESCE(claim_date, '1000-01-01') AS claim_date_key
+    FROM gl_promotion_claim
+    GROUP BY tenant_id, promotion_id, member_id, COALESCE(claim_date, '1000-01-01')
+    HAVING COUNT(*) > 1
+  ) duplicate_claims
+);
+SET @sql := IF(@duplicate_claim_count > 0,
+  'SIGNAL SQLSTATE ''45000'' SET MESSAGE_TEXT = ''Duplicate promotion claims block daily login reward index migration''',
+  'SELECT 1'
+);
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
 UPDATE gl_promotion_claim
 SET claim_date = '1000-01-01'
 WHERE claim_date IS NULL;
@@ -103,21 +118,6 @@ SET @claim_idx_columns := (
   FROM information_schema.STATISTICS
   WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_promotion_claim' AND INDEX_NAME = 'uk_gl_promotion_claim_03'
 );
-
-SET @duplicate_claim_count := (
-  SELECT COUNT(*)
-  FROM (
-    SELECT tenant_id, promotion_id, member_id, claim_date
-    FROM gl_promotion_claim
-    GROUP BY tenant_id, promotion_id, member_id, claim_date
-    HAVING COUNT(*) > 1
-  ) duplicate_claims
-);
-SET @sql := IF(@duplicate_claim_count > 0,
-  'SIGNAL SQLSTATE ''45000'' SET MESSAGE_TEXT = ''Duplicate promotion claims block daily login reward index migration''',
-  'SELECT 1'
-);
-PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
 SET @daily_idx_exists := (
   SELECT COUNT(*) FROM information_schema.STATISTICS
