@@ -22,12 +22,12 @@ async function loadPromotions() {
   loading.value = true
   error.value = ''
   try {
-    const [daily, rows] = await Promise.all([
-      clientApi.dailyLoginReward(),
-      clientApi.promotions(),
-    ])
-    dailyReward.value = daily
-    promotions.value = rows
+    try {
+      dailyReward.value = await clientApi.dailyLoginReward()
+    } catch {
+      dailyReward.value = null
+    }
+    promotions.value = await clientApi.promotions()
   } catch (err) {
     error.value = err instanceof Error ? err.message : '奖励加载失败'
   } finally {
@@ -94,7 +94,7 @@ watch(() => sessionState.member?.memberId, () => loadPromotions())
         </p>
         <div v-if="dailyReward.rewardItems.length" class="reward-pills">
           <span v-for="item in dailyReward.rewardItems" :key="item.currencyCode">
-            {{ item.rewardAmount }} {{ item.currencyCode }}
+            {{ String(item.rewardAmount) }} {{ item.currencyCode }}
           </span>
         </div>
       </div>
@@ -124,7 +124,7 @@ watch(() => sessionState.member?.memberId, () => loadPromotions())
       </article>
     </section>
 
-    <section v-else-if="!loading" class="empty-state">
+    <section v-else-if="!loading && !dailyReward" class="empty-state">
       <strong>暂无可领取奖励</strong>
     </section>
   </template>

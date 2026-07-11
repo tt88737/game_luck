@@ -118,7 +118,7 @@ export interface ClientPromotion {
 
 export interface ClientRewardItem {
   currencyCode: string
-  rewardAmount: string
+  rewardAmount: string | number
 }
 
 export interface ClientDailyLoginReward {
