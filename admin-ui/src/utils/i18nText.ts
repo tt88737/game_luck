@@ -851,6 +851,18 @@ const enTextMap: Record<string, string> = {
   \u6e38\u620f\u6d3e\u5f69: 'Game Payout',
   \u6e38\u620f\u9000\u6b3e: 'Game Refund',
   \u4eba\u5de5\u8c03\u8d26: 'Manual Adjustment',
+  调账单号: 'Adjustment No.',
+  调账金额: 'Adjustment Amount',
+  流水金额: 'Turnover Amount',
+  调账原因: 'Adjustment Reason',
+  资金策略: 'Fund Strategy',
+  '无流水，立即到账': 'No Turnover, Credit Immediately',
+  请输入调账单号: 'Enter adjustment no.',
+  请输入调账金额: 'Enter adjustment amount',
+  请选择资金策略: 'Select fund strategy',
+  请输入调账原因: 'Enter adjustment reason',
+  流水金额必须大于0: 'Turnover amount must be greater than 0',
+  调账成功: 'Manual adjustment successful',
 
 };
 
