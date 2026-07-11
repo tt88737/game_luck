@@ -1,6 +1,7 @@
 package com.gameluck.wallet.service.impl;
 
 import com.gameluck.common.core.exception.ServiceException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gameluck.wallet.domain.WalletTransaction;
 import com.gameluck.wallet.domain.bo.WalletCreditBo;
 import com.gameluck.wallet.domain.bo.WalletManualAdjustBo;
@@ -13,10 +14,10 @@ import org.mockito.ArgumentCaptor;
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -24,6 +25,27 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class WalletManualAdjustServiceImplTest {
+
+    @Test
+    @Tag("local")
+    void creditBoIgnoresManualAdjustOverrideFromJson() throws Exception {
+        String json = """
+            {
+              "idempotencyKey": "manual-adjust:ADJ-20260712-0001",
+              "memberId": 1001,
+              "currencyCode": "SC",
+              "sourceType": "MANUAL_ADJUST",
+              "businessNo": "ADJ-20260712-0001",
+              "amount": 10,
+              "releaseMode": "IMMEDIATE",
+              "manualAdjustOverride": true
+            }
+            """;
+
+        WalletCreditBo creditBo = new ObjectMapper().readValue(json, WalletCreditBo.class);
+
+        assertFalse(Boolean.TRUE.equals(creditBo.getManualAdjustOverride()));
+    }
 
     @Test
     @Tag("local")
@@ -64,6 +86,21 @@ class WalletManualAdjustServiceImplTest {
         assertCommonCreditBo(creditBo);
         assertEquals(WalletReleaseMode.IMMEDIATE.name(), creditBo.getReleaseMode());
         assertEquals(0, BigDecimal.ZERO.compareTo(creditBo.getRequiredTurnover()));
+    }
+
+    @Test
+    @Tag("local")
+    void blankStrategyBuildsCreditBoWithoutReleaseModeOrTurnover() {
+        IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
+        when(walletCoreService.credit(any())).thenReturn(new WalletTransaction());
+        WalletManualAdjustServiceImpl service = manualAdjustService(walletCoreService);
+
+        service.adjust(manualAdjustBo(" ", new BigDecimal("25")));
+
+        WalletCreditBo creditBo = capturedCreditBo(walletCoreService);
+        assertCommonCreditBo(creditBo);
+        assertNull(creditBo.getReleaseMode());
+        assertNull(creditBo.getRequiredTurnover());
     }
 
     @Test

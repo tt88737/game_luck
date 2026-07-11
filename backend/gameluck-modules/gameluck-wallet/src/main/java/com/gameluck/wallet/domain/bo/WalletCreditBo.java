@@ -1,5 +1,6 @@
 package com.gameluck.wallet.domain.bo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -37,6 +38,7 @@ public class WalletCreditBo {
     @DecimalMin(value = "0", message = "{wallet.required.turnover.nonnegative}")
     private BigDecimal requiredTurnover;
 
+    @JsonIgnore
     private Boolean manualAdjustOverride;
 
     private Long operatorId;

@@ -26,12 +26,11 @@ public class WalletManualAdjustBo {
     @DecimalMin(value = "0.000001", message = "{wallet.manual.adjust.amount.positive}")
     private BigDecimal amount;
 
-    @NotBlank(message = "{wallet.manual.adjust.strategy.invalid}")
     private String strategy;
 
     @DecimalMin(value = "0", message = "{wallet.required.turnover.nonnegative}")
     private BigDecimal requiredTurnover;
 
-    @NotBlank(message = "{wallet.business.no.required}")
+    @NotBlank(message = "{wallet.manual.adjust.reason.required}")
     private String reason;
 }

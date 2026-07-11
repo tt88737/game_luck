@@ -33,7 +33,7 @@ public class WalletManualAdjustServiceImpl implements IWalletManualAdjustService
 
     @Override
     public WalletTransaction adjust(WalletManualAdjustBo bo) {
-        WalletReleaseMode releaseMode = resolveReleaseMode(bo);
+        WalletReleaseMode releaseMode = resolveReleaseMode(bo.getStrategy());
         BigDecimal requiredTurnover = resolveRequiredTurnover(bo, releaseMode);
         String adjustmentNo = bo.getAdjustmentNo();
 
@@ -44,7 +44,7 @@ public class WalletManualAdjustServiceImpl implements IWalletManualAdjustService
         creditBo.setSourceType(SOURCE_TYPE);
         creditBo.setBusinessNo(adjustmentNo);
         creditBo.setAmount(bo.getAmount());
-        creditBo.setReleaseMode(releaseMode.name());
+        creditBo.setReleaseMode(releaseMode == null ? null : releaseMode.name());
         creditBo.setRequiredTurnover(requiredTurnover);
         creditBo.setManualAdjustOverride(true);
         creditBo.setOperatorId(currentOperatorId());
@@ -52,10 +52,9 @@ public class WalletManualAdjustServiceImpl implements IWalletManualAdjustService
         return walletCoreService.credit(creditBo);
     }
 
-    private WalletReleaseMode resolveReleaseMode(WalletManualAdjustBo bo) {
-        String strategy = bo.getStrategy();
+    private WalletReleaseMode resolveReleaseMode(String strategy) {
         if (StringUtils.isBlank(strategy)) {
-            throw new ServiceException(MessageUtils.message("wallet.manual.adjust.strategy.invalid"));
+            return null;
         }
         try {
             return switch (strategy.trim().toUpperCase(Locale.ROOT)) {
@@ -70,6 +69,9 @@ public class WalletManualAdjustServiceImpl implements IWalletManualAdjustService
     }
 
     private BigDecimal resolveRequiredTurnover(WalletManualAdjustBo bo, WalletReleaseMode releaseMode) {
+        if (releaseMode == null) {
+            return null;
+        }
         if (WalletReleaseMode.AFTER_TURNOVER != releaseMode) {
             return ZERO;
         }
