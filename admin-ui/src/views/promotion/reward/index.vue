@@ -133,7 +133,7 @@
               </el-select>
               <el-input-number v-model="item.rewardAmount" :precision="6" :min="0.000001" class="reward-item-amount" />
               <el-tooltip :content="t('promotionReward.actions.removeRewardItem')" placement="top">
-                <el-button icon="Delete" circle :disabled="dailyRewardItems.length <= 1" @click="removeRewardItem(index)" />
+                <el-button icon="Delete" circle @click="removeRewardItem(index)" />
               </el-tooltip>
             </div>
             <el-button icon="Plus" @click="addRewardItem">{{ t('promotionReward.actions.addRewardItem') }}</el-button>
