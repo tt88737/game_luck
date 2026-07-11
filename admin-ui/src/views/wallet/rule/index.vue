@@ -161,7 +161,7 @@ const showSearch = ref(true);
 const total = ref(0);
 const queryFormRef = ref<ElFormInstance>();
 const ruleFormRef = ref<ElFormInstance>();
-const sourceOptions = businessOptions('sourceType', tt);
+const sourceOptions = businessOptions('walletRuleSourceType', tt);
 const releaseModeOptions = businessOptions('walletReleaseMode', tt);
 
 const dialog = reactive<DialogOption>({
