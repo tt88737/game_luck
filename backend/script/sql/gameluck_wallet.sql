@@ -213,11 +213,11 @@ ON DUPLICATE KEY UPDATE
 INSERT INTO sys_menu
 (menu_id, menu_name, parent_id, order_num, path, component, query_param, is_frame, is_cache, menu_type, visible, status, perms, icon, create_dept, create_by, create_time, update_by, update_time, remark)
 VALUES
-(2000, 'Report Center', 0, 12, 'report', NULL, '', 1, 0, 'M', '0', '0', '', 'chart', 103, 1, NOW(), NULL, NULL, 'Report center directory'),
-(2001, 'Overview', 2000, 1, 'overview', 'report/overview/index', '', 1, 0, 'C', '0', '0', 'report:overview:list', 'chart', 103, 1, NOW(), NULL, NULL, 'Report overview menu'),
-(2002, 'Trends', 2000, 2, 'trends', 'report/trends/index', '', 1, 0, 'C', '0', '0', 'report:trends:list', 'chart', 103, 1, NOW(), NULL, NULL, 'Report trends menu'),
-(2011, 'Report Overview Query', 2001, 1, '#', '', '', 1, 0, 'F', '0', '0', 'report:overview:query', '#', 103, 1, NOW(), NULL, NULL, ''),
-(2021, 'Report Trends Query', 2002, 1, '#', '', '', 1, 0, 'F', '0', '0', 'report:trends:query', '#', 103, 1, NOW(), NULL, NULL, '')
+(2000, '报表中心', 0, 12, 'report', NULL, '', 1, 0, 'M', '0', '0', '', 'chart', 103, 1, NOW(), NULL, NULL, 'Report center directory'),
+(2001, '数据总览', 2000, 1, 'overview', 'report/overview/index', '', 1, 0, 'C', '0', '0', 'report:overview:list', 'chart', 103, 1, NOW(), NULL, NULL, 'Report overview menu'),
+(2002, '趋势看板', 2000, 2, 'trends', 'report/trends/index', '', 1, 0, 'C', '0', '0', 'report:trends:list', 'chart', 103, 1, NOW(), NULL, NULL, 'Report trends menu'),
+(2011, '报表总览查询', 2001, 1, '#', '', '', 1, 0, 'F', '0', '0', 'report:overview:query', '#', 103, 1, NOW(), NULL, NULL, ''),
+(2021, '趋势看板查询', 2002, 1, '#', '', '', 1, 0, 'F', '0', '0', 'report:trends:query', '#', 103, 1, NOW(), NULL, NULL, '')
 ON DUPLICATE KEY UPDATE
   menu_name = VALUES(menu_name),
   parent_id = VALUES(parent_id),
@@ -232,12 +232,12 @@ ON DUPLICATE KEY UPDATE
 INSERT INTO sys_menu
 (menu_id, menu_name, parent_id, order_num, path, component, query_param, is_frame, is_cache, menu_type, visible, status, perms, icon, create_dept, create_by, create_time, update_by, update_time, remark)
 VALUES
-(1980, 'Member Center', 0, 11, 'member', NULL, '', 1, 0, 'M', '0', '0', '', 'user', 103, 1, NOW(), NULL, NULL, 'Member center directory'),
-(1981, 'Member Profiles', 1980, 1, 'profile', 'member/profile/index', '', 1, 0, 'C', '0', '0', 'member:profile:list', 'user', 103, 1, NOW(), NULL, NULL, 'Member profile menu'),
-(1991, 'Member Query', 1981, 1, '#', '', '', 1, 0, 'F', '0', '0', 'member:profile:query', '#', 103, 1, NOW(), NULL, NULL, ''),
-(1992, 'Member Add', 1981, 2, '#', '', '', 1, 0, 'F', '0', '0', 'member:profile:add', '#', 103, 1, NOW(), NULL, NULL, ''),
-(1993, 'Member Edit', 1981, 3, '#', '', '', 1, 0, 'F', '0', '0', 'member:profile:edit', '#', 103, 1, NOW(), NULL, NULL, ''),
-(1994, 'Member Remove', 1981, 4, '#', '', '', 1, 0, 'F', '0', '0', 'member:profile:remove', '#', 103, 1, NOW(), NULL, NULL, '')
+(1980, '会员中心', 0, 11, 'member', NULL, '', 1, 0, 'M', '0', '0', '', 'user', 103, 1, NOW(), NULL, NULL, 'Member center directory'),
+(1981, '会员资料', 1980, 1, 'profile', 'member/profile/index', '', 1, 0, 'C', '0', '0', 'member:profile:list', 'user', 103, 1, NOW(), NULL, NULL, 'Member profile menu'),
+(1991, '会员查询', 1981, 1, '#', '', '', 1, 0, 'F', '0', '0', 'member:profile:query', '#', 103, 1, NOW(), NULL, NULL, ''),
+(1992, '会员新增', 1981, 2, '#', '', '', 1, 0, 'F', '0', '0', 'member:profile:add', '#', 103, 1, NOW(), NULL, NULL, ''),
+(1993, '会员编辑', 1981, 3, '#', '', '', 1, 0, 'F', '0', '0', 'member:profile:edit', '#', 103, 1, NOW(), NULL, NULL, ''),
+(1994, '会员删除', 1981, 4, '#', '', '', 1, 0, 'F', '0', '0', 'member:profile:remove', '#', 103, 1, NOW(), NULL, NULL, '')
 ON DUPLICATE KEY UPDATE
   menu_name = VALUES(menu_name),
   parent_id = VALUES(parent_id),
@@ -318,13 +318,13 @@ ON DUPLICATE KEY UPDATE
 INSERT INTO sys_menu
 (menu_id, menu_name, parent_id, order_num, path, component, query_param, is_frame, is_cache, menu_type, visible, status, perms, icon, create_dept, create_by, create_time, update_by, update_time, remark)
 VALUES
-(1960, 'Promotion Center', 0, 10, 'promotion', NULL, '', 1, 0, 'M', '0', '0', '', 'skill', 103, 1, NOW(), NULL, NULL, 'Promotion center directory'),
-(1961, 'Promotion Rewards', 1960, 1, 'reward', 'promotion/reward/index', '', 1, 0, 'C', '0', '0', 'promotion:reward:list', 'skill', 103, 1, NOW(), NULL, NULL, 'Promotion reward menu'),
-(1971, 'Promotion Query', 1961, 1, '#', '', '', 1, 0, 'F', '0', '0', 'promotion:reward:query', '#', 103, 1, NOW(), NULL, NULL, ''),
-(1972, 'Promotion Add', 1961, 2, '#', '', '', 1, 0, 'F', '0', '0', 'promotion:reward:add', '#', 103, 1, NOW(), NULL, NULL, ''),
-(1973, 'Promotion Edit', 1961, 3, '#', '', '', 1, 0, 'F', '0', '0', 'promotion:reward:edit', '#', 103, 1, NOW(), NULL, NULL, ''),
-(1974, 'Promotion Remove', 1961, 4, '#', '', '', 1, 0, 'F', '0', '0', 'promotion:reward:remove', '#', 103, 1, NOW(), NULL, NULL, ''),
-(1975, 'Promotion Claim', 1961, 5, '#', '', '', 1, 0, 'F', '0', '0', 'promotion:reward:claim', '#', 103, 1, NOW(), NULL, NULL, '')
+(1960, '促销中心', 0, 10, 'promotion', NULL, '', 1, 0, 'M', '0', '0', '', 'skill', 103, 1, NOW(), NULL, NULL, 'Promotion center directory'),
+(1961, '促销奖励', 1960, 1, 'reward', 'promotion/reward/index', '', 1, 0, 'C', '0', '0', 'promotion:reward:list', 'skill', 103, 1, NOW(), NULL, NULL, 'Promotion reward menu'),
+(1971, '促销查询', 1961, 1, '#', '', '', 1, 0, 'F', '0', '0', 'promotion:reward:query', '#', 103, 1, NOW(), NULL, NULL, ''),
+(1972, '促销新增', 1961, 2, '#', '', '', 1, 0, 'F', '0', '0', 'promotion:reward:add', '#', 103, 1, NOW(), NULL, NULL, ''),
+(1973, '促销编辑', 1961, 3, '#', '', '', 1, 0, 'F', '0', '0', 'promotion:reward:edit', '#', 103, 1, NOW(), NULL, NULL, ''),
+(1974, '促销删除', 1961, 4, '#', '', '', 1, 0, 'F', '0', '0', 'promotion:reward:remove', '#', 103, 1, NOW(), NULL, NULL, ''),
+(1975, '促销领取', 1961, 5, '#', '', '', 1, 0, 'F', '0', '0', 'promotion:reward:claim', '#', 103, 1, NOW(), NULL, NULL, '')
 ON DUPLICATE KEY UPDATE
   menu_name = VALUES(menu_name),
   parent_id = VALUES(parent_id),
@@ -378,12 +378,12 @@ CREATE TABLE IF NOT EXISTS gl_redemption_order (
 INSERT INTO sys_menu
 (menu_id, menu_name, parent_id, order_num, path, component, query_param, is_frame, is_cache, menu_type, visible, status, perms, icon, create_dept, create_by, create_time, update_by, update_time, remark)
 VALUES
-(1940, 'Redemption Center', 0, 9, 'redemption', NULL, '', 1, 0, 'M', '0', '0', '', 'money', 103, 1, NOW(), NULL, NULL, 'Redemption center directory'),
-(1941, 'Redemption Orders', 1940, 1, 'order', 'redemption/order/index', '', 1, 0, 'C', '0', '0', 'redemption:order:list', 'money', 103, 1, NOW(), NULL, NULL, 'Redemption order menu'),
-(1951, 'Redemption Query', 1941, 1, '#', '', '', 1, 0, 'F', '0', '0', 'redemption:order:query', '#', 103, 1, NOW(), NULL, NULL, ''),
-(1952, 'Redemption Add', 1941, 2, '#', '', '', 1, 0, 'F', '0', '0', 'redemption:order:add', '#', 103, 1, NOW(), NULL, NULL, ''),
-(1953, 'Redemption Approve', 1941, 3, '#', '', '', 1, 0, 'F', '0', '0', 'redemption:order:approve', '#', 103, 1, NOW(), NULL, NULL, ''),
-(1954, 'Redemption Reject', 1941, 4, '#', '', '', 1, 0, 'F', '0', '0', 'redemption:order:reject', '#', 103, 1, NOW(), NULL, NULL, '')
+(1940, '兑换中心', 0, 9, 'redemption', NULL, '', 1, 0, 'M', '0', '0', '', 'money', 103, 1, NOW(), NULL, NULL, 'Redemption center directory'),
+(1941, '兑换订单', 1940, 1, 'order', 'redemption/order/index', '', 1, 0, 'C', '0', '0', 'redemption:order:list', 'money', 103, 1, NOW(), NULL, NULL, 'Redemption order menu'),
+(1951, '兑换查询', 1941, 1, '#', '', '', 1, 0, 'F', '0', '0', 'redemption:order:query', '#', 103, 1, NOW(), NULL, NULL, ''),
+(1952, '兑换新增', 1941, 2, '#', '', '', 1, 0, 'F', '0', '0', 'redemption:order:add', '#', 103, 1, NOW(), NULL, NULL, ''),
+(1953, '兑换通过', 1941, 3, '#', '', '', 1, 0, 'F', '0', '0', 'redemption:order:approve', '#', 103, 1, NOW(), NULL, NULL, ''),
+(1954, '兑换拒绝', 1941, 4, '#', '', '', 1, 0, 'F', '0', '0', 'redemption:order:reject', '#', 103, 1, NOW(), NULL, NULL, '')
 ON DUPLICATE KEY UPDATE
   menu_name = VALUES(menu_name),
   parent_id = VALUES(parent_id),

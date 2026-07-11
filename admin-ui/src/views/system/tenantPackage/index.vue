@@ -113,6 +113,7 @@ import { TenantPkgForm, TenantPkgQuery, TenantPkgVO } from '@/api/system/tenantP
 import { MenuTreeOption } from '@/api/system/menu/types';
 import to from 'await-to-js';
 import { tt } from '@/utils/i18nText';
+import { localizeMenuTreeLabels } from '@/utils/menuTreeLabels';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
@@ -174,7 +175,7 @@ const getMenuAllCheckedKeys = (): any => {
 /** 根据租户套餐ID查询菜单树结构 */
 const getPackageMenuTreeselect = async (packageId: string | number) => {
   const res = await tenantPackageMenuTreeselect(packageId);
-  menuOptions.value = res.data.menus;
+  menuOptions.value = localizeMenuTreeLabels(res.data.menus);
   return Promise.resolve(res);
 };
 
