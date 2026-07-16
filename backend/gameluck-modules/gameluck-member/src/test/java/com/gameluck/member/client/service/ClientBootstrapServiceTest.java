@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ClientBootstrapServiceTest {
@@ -23,7 +22,7 @@ class ClientBootstrapServiceTest {
         assertEquals("GameLuck", result.getBrandName());
         assertTrue(result.getFeatures().getWalletEnabled());
         assertTrue(result.getFeatures().getGameEnabled());
-        assertFalse(result.getFeatures().getPaymentEnabled());
+        assertTrue(result.getFeatures().getPaymentEnabled());
         assertEquals(2, result.getCurrencies().size());
         assertEquals("GC", result.getCurrencies().get(0).getCurrencyCode());
         assertEquals("SC", result.getCurrencies().get(1).getCurrencyCode());

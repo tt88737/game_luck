@@ -37,7 +37,7 @@ public class ClientBootstrapService {
         features.setGameEnabled(true);
         features.setPromotionEnabled(true);
         features.setRedemptionEnabled(false);
-        features.setPaymentEnabled(false);
+        features.setPaymentEnabled(true);
         features.setKycEnabled(false);
         return features;
     }
