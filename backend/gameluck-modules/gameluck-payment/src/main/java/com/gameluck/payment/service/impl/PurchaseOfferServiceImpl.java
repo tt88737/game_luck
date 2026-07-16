@@ -13,16 +13,22 @@ import com.gameluck.common.mybatis.core.page.TableDataInfo;
 import com.gameluck.common.tenant.helper.TenantHelper;
 import com.gameluck.payment.domain.PurchaseOffer;
 import com.gameluck.payment.domain.PurchaseOfferGrantItem;
+import com.gameluck.payment.domain.PurchaseOrder;
+import com.gameluck.payment.domain.PurchaseOrderGrantSnapshot;
 import com.gameluck.payment.domain.bo.PurchaseOfferBo;
 import com.gameluck.payment.domain.bo.PurchaseOfferGrantItemBo;
 import com.gameluck.payment.domain.vo.PurchaseOfferVo;
 import com.gameluck.payment.mapper.PurchaseOfferGrantItemMapper;
 import com.gameluck.payment.mapper.PurchaseOfferMapper;
+import com.gameluck.payment.mapper.PurchaseOrderGrantSnapshotMapper;
 import com.gameluck.payment.service.IPurchaseOfferService;
+import com.gameluck.wallet.domain.bo.WalletCreditBo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
@@ -47,10 +53,13 @@ public class PurchaseOfferServiceImpl implements IPurchaseOfferService {
     private static final String WAGERING_NONE = "NONE";
     private static final String WAGERING_FIXED = "FIXED";
     private static final String WAGERING_MULTIPLIER = "MULTIPLIER";
+    private static final String WAGERING_COMBINED_MULTIPLIER = "COMBINED_MULTIPLIER";
+    private static final String SOURCE_TYPE_PURCHASE = "PURCHASE";
     private static final int MONEY_SCALE = 6;
 
     private final PurchaseOfferMapper baseMapper;
     private final PurchaseOfferGrantItemMapper grantItemMapper;
+    private final PurchaseOrderGrantSnapshotMapper snapshotMapper;
 
     @Override
     public TableDataInfo<PurchaseOfferVo> queryPageList(PurchaseOfferBo bo, PageQuery pageQuery) {
@@ -115,6 +124,63 @@ public class PurchaseOfferServiceImpl implements IPurchaseOfferService {
         grantItemMapper.delete(Wrappers.<PurchaseOfferGrantItem>lambdaQuery().eq(PurchaseOfferGrantItem::getOfferId, bo.getId()));
         insertGrantItems(currentTenantId(), bo.getId(), bo.getGrantItems());
         return rows > 0;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public List<WalletCreditBo> snapshotPaidOrderGrants(PurchaseOrder order, List<PurchaseOfferGrantItem> items) {
+        List<WalletCreditBo> credits = buildWalletCreditsForPaidOrder(order, items);
+        for (int i = 0; i < items.size(); i++) {
+            PurchaseOfferGrantItem item = items.get(i);
+            WalletCreditBo credit = credits.get(i);
+            PurchaseOrderGrantSnapshot snapshot = new PurchaseOrderGrantSnapshot();
+            snapshot.setId(IdUtil.getSnowflakeNextId());
+            snapshot.setTenantId(order.getTenantId());
+            snapshot.setPurchaseOrderId(order.getId());
+            snapshot.setPurchaseOrderNo(order.getPurchaseOrderNo());
+            snapshot.setMemberId(order.getMemberId());
+            snapshot.setGrantType(item.getGrantType());
+            snapshot.setCurrencyCode(item.getCurrencyCode());
+            snapshot.setGrantAmount(item.getGrantAmount());
+            snapshot.setFundPropertyCode(item.getFundPropertyCode());
+            snapshot.setWageringMode(item.getWageringMode());
+            snapshot.setRequiredTurnover(credit.getTurnoverRequiredAmount());
+            snapshot.setGameScopeType(StringUtils.blankToDefault(item.getGameScopeType(), DEFAULT_SCOPE_ALL));
+            snapshot.setGameScopeValue(item.getGameScopeValue());
+            snapshot.setRuleSnapshot(credit.getRuleSnapshot());
+            snapshotMapper.insert(snapshot);
+        }
+        return credits;
+    }
+
+    public List<WalletCreditBo> buildWalletCreditsForPaidOrder(PurchaseOrder order, List<PurchaseOfferGrantItem> items) {
+        if (order == null || StringUtils.isBlank(order.getPurchaseOrderNo()) || order.getMemberId() == null) {
+            throw new ServiceException("购买订单信息不完整");
+        }
+        if (items == null || items.isEmpty()) {
+            throw new ServiceException("购买订单缺少发放项");
+        }
+        List<WalletCreditBo> credits = new ArrayList<>();
+        for (PurchaseOfferGrantItem item : items) {
+            BigDecimal requiredTurnover = calculateRequiredTurnover(item);
+            WalletCreditBo credit = new WalletCreditBo();
+            credit.setIdempotencyKey("purchase:credit:" + order.getPurchaseOrderNo() + ":" + item.getCurrencyCode() + ":" + item.getGrantType());
+            credit.setMemberId(order.getMemberId());
+            credit.setCurrencyCode(item.getCurrencyCode());
+            credit.setAmount(item.getGrantAmount());
+            credit.setSourceType(SOURCE_TYPE_PURCHASE);
+            credit.setBusinessNo(order.getPurchaseOrderNo());
+            credit.setFundPropertyCode(item.getFundPropertyCode());
+            credit.setTurnoverRequiredAmount(requiredTurnover);
+            credit.setRequiredTurnover(requiredTurnover);
+            credit.setTurnoverMultiplier(item.getWageringMultiplier() == null ? BigDecimal.ZERO : item.getWageringMultiplier());
+            credit.setGameScopeType(StringUtils.blankToDefault(item.getGameScopeType(), DEFAULT_SCOPE_ALL));
+            credit.setGameScopeValue(item.getGameScopeValue());
+            credit.setSourceId(order.getId() == null ? null : order.getId().toString());
+            credit.setRuleSnapshot(buildRuleSnapshot(item, requiredTurnover));
+            credit.setTurnoverExpireTime(resolveTurnoverExpireTime(item.getWageringExpireDays()));
+            credits.add(credit);
+        }
+        return credits;
     }
 
     private LambdaQueryWrapper<PurchaseOffer> buildQueryWrapper(PurchaseOfferBo bo) {
@@ -193,6 +259,41 @@ public class PurchaseOfferServiceImpl implements IPurchaseOfferService {
         throw new ServiceException("暂不支持该流水模式");
     }
 
+    private BigDecimal calculateRequiredTurnover(PurchaseOfferGrantItem item) {
+        String mode = StringUtils.blankToDefault(item.getWageringMode(), WAGERING_NONE);
+        if (WAGERING_NONE.equals(mode)) {
+            return BigDecimal.ZERO.setScale(MONEY_SCALE, RoundingMode.HALF_UP);
+        }
+        if (WAGERING_FIXED.equals(mode)) {
+            return normalizeNonNegativeAmount(item.getWageringRequiredAmount());
+        }
+        if (WAGERING_MULTIPLIER.equals(mode)) {
+            BigDecimal multiplier = item.getWageringMultiplier() == null ? BigDecimal.ZERO : item.getWageringMultiplier();
+            return item.getGrantAmount().multiply(multiplier).setScale(MONEY_SCALE, RoundingMode.HALF_UP);
+        }
+        if (WAGERING_COMBINED_MULTIPLIER.equals(mode)) {
+            throw new ServiceException("组合倍数流水首期暂不支持");
+        }
+        throw new ServiceException("未知流水模式");
+    }
+
+    private Date resolveTurnoverExpireTime(Integer expireDays) {
+        if (expireDays == null || expireDays <= 0) {
+            return null;
+        }
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, expireDays);
+        return calendar.getTime();
+    }
+
+    private String buildRuleSnapshot(PurchaseOfferGrantItem item, BigDecimal requiredTurnover) {
+        return "{\"wageringMode\":\"" + StringUtils.blankToDefault(item.getWageringMode(), WAGERING_NONE)
+            + "\",\"requiredTurnover\":\"" + requiredTurnover
+            + "\",\"wageringMultiplier\":\"" + (item.getWageringMultiplier() == null ? BigDecimal.ZERO : item.getWageringMultiplier())
+            + "\",\"gameScopeType\":\"" + StringUtils.blankToDefault(item.getGameScopeType(), DEFAULT_SCOPE_ALL)
+            + "\"}";
+    }
+
     private String resolveFundPropertyCode(PurchaseOfferGrantItemBo item) {
         String grantType = item.getGrantType();
         String currencyCode = item.getCurrencyCode();
@@ -213,6 +314,13 @@ public class PurchaseOfferServiceImpl implements IPurchaseOfferService {
     private BigDecimal normalizeAmount(BigDecimal value) {
         if (value == null || value.compareTo(BigDecimal.ZERO) <= 0) {
             throw new ServiceException("金额必须大于0");
+        }
+        return value.setScale(MONEY_SCALE, RoundingMode.HALF_UP);
+    }
+
+    private BigDecimal normalizeNonNegativeAmount(BigDecimal value) {
+        if (value == null || value.compareTo(BigDecimal.ZERO) < 0) {
+            throw new ServiceException("金额不能小于0");
         }
         return value.setScale(MONEY_SCALE, RoundingMode.HALF_UP);
     }
