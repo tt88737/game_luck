@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.gameluck.common.core.constant.SystemConstants;
 import com.gameluck.common.core.exception.ServiceException;
+import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.StringUtils;
 import com.gameluck.common.mybatis.core.page.PageQuery;
 import com.gameluck.common.mybatis.core.page.TableDataInfo;
@@ -114,7 +115,7 @@ public class PurchaseOfferServiceImpl implements IPurchaseOfferService {
     @Transactional(rollbackFor = Exception.class)
     public Boolean updateByBo(PurchaseOfferBo bo) {
         if (bo.getId() == null) {
-            throw new ServiceException("购买产品ID不能为空");
+            throw new ServiceException(MessageUtils.message("payment.purchase.offer.id.required"));
         }
         validateOffer(bo);
         PurchaseOffer update = BeanUtil.toBean(bo, PurchaseOffer.class);
@@ -154,10 +155,10 @@ public class PurchaseOfferServiceImpl implements IPurchaseOfferService {
 
     public List<WalletCreditBo> buildWalletCreditsForPaidOrder(PurchaseOrder order, List<PurchaseOfferGrantItem> items) {
         if (order == null || StringUtils.isBlank(order.getPurchaseOrderNo()) || order.getMemberId() == null) {
-            throw new ServiceException("购买订单信息不完整");
+            throw new ServiceException(MessageUtils.message("payment.purchase.order.incomplete"));
         }
         if (items == null || items.isEmpty()) {
-            throw new ServiceException("购买订单缺少发放项");
+            throw new ServiceException(MessageUtils.message("payment.purchase.order.grant.required"));
         }
         List<WalletCreditBo> credits = new ArrayList<>();
         for (PurchaseOfferGrantItem item : items) {
@@ -199,10 +200,10 @@ public class PurchaseOfferServiceImpl implements IPurchaseOfferService {
 
     private void validateOffer(PurchaseOfferBo bo) {
         if (StringUtils.isBlank(bo.getOfferName())) {
-            throw new ServiceException("购买产品名称不能为空");
+            throw new ServiceException(MessageUtils.message("payment.purchase.offer.name.required"));
         }
         if (bo.getGrantItems() == null || bo.getGrantItems().isEmpty()) {
-            throw new ServiceException("至少配置一个发放项");
+            throw new ServiceException(MessageUtils.message("payment.purchase.offer.grant.required"));
         }
     }
 
@@ -256,7 +257,7 @@ public class PurchaseOfferServiceImpl implements IPurchaseOfferService {
             item.setWageringMultiplier(item.getWageringMultiplier() == null ? BigDecimal.ZERO : item.getWageringMultiplier());
             return;
         }
-        throw new ServiceException("暂不支持该流水模式");
+        throw new ServiceException(MessageUtils.message("payment.purchase.wagering.mode.unsupported"));
     }
 
     private BigDecimal calculateRequiredTurnover(PurchaseOfferGrantItem item) {
@@ -272,9 +273,9 @@ public class PurchaseOfferServiceImpl implements IPurchaseOfferService {
             return item.getGrantAmount().multiply(multiplier).setScale(MONEY_SCALE, RoundingMode.HALF_UP);
         }
         if (WAGERING_COMBINED_MULTIPLIER.equals(mode)) {
-            throw new ServiceException("组合倍数流水首期暂不支持");
+            throw new ServiceException(MessageUtils.message("payment.purchase.wagering.combined.unsupported"));
         }
-        throw new ServiceException("未知流水模式");
+        throw new ServiceException(MessageUtils.message("payment.purchase.wagering.mode.unknown"));
     }
 
     private Date resolveTurnoverExpireTime(Integer expireDays) {
@@ -313,14 +314,14 @@ public class PurchaseOfferServiceImpl implements IPurchaseOfferService {
 
     private BigDecimal normalizeAmount(BigDecimal value) {
         if (value == null || value.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new ServiceException("金额必须大于0");
+            throw new ServiceException(MessageUtils.message("payment.purchase.amount.positive"));
         }
         return value.setScale(MONEY_SCALE, RoundingMode.HALF_UP);
     }
 
     private BigDecimal normalizeNonNegativeAmount(BigDecimal value) {
         if (value == null || value.compareTo(BigDecimal.ZERO) < 0) {
-            throw new ServiceException("金额不能小于0");
+            throw new ServiceException(MessageUtils.message("payment.purchase.amount.nonnegative"));
         }
         return value.setScale(MONEY_SCALE, RoundingMode.HALF_UP);
     }
