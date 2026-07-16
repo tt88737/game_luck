@@ -102,7 +102,7 @@
       <pagination v-show="total > 0" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" :total="total" @pagination="getList" />
     </el-card>
 
-    <el-dialog v-model="dialog.visible" :title="dialogTitle" width="620px" append-to-body>
+    <el-dialog v-model="dialog.visible" :title="dialogTitle" width="min(980px, calc(100vw - 32px))" append-to-body class="reward-dialog">
       <el-form ref="rewardFormRef" :model="form" :rules="rules" label-width="100px">
         <el-form-item :label="t('promotionReward.fields.promotionName')" prop="promotionName">
           <el-input v-model="form.promotionName" :placeholder="t('promotionReward.placeholders.promotionName')" />
@@ -113,30 +113,63 @@
             <el-option :label="promotionTypeLabel('DAILY_LOGIN')" value="DAILY_LOGIN" />
           </el-select>
         </el-form-item>
-        <el-form-item v-if="form.promotionType !== 'DAILY_LOGIN'" :label="t('common.currency')" prop="currencyCode">
-          <el-select v-model="form.currencyCode" class="w-full">
-            <el-option label="SC" value="SC" />
-            <el-option label="RC" value="RC" />
-            <el-option label="GC" value="GC" />
-          </el-select>
-        </el-form-item>
-        <el-form-item v-if="form.promotionType !== 'DAILY_LOGIN'" :label="t('promotionReward.fields.rewardAmount')" prop="rewardAmount">
-          <el-input-number v-model="form.rewardAmount" :precision="6" :min="0.000001" class="w-full" />
-        </el-form-item>
-        <el-form-item v-else :label="t('promotionReward.fields.rewardItems')" prop="rewardItems">
+        <el-form-item :label="t('promotionReward.fields.rewardItems')" prop="rewardItems">
           <div class="reward-items-editor">
-            <div v-for="(item, index) in dailyRewardItems" :key="index" class="reward-item-row">
-              <el-select v-model="item.currencyCode" :placeholder="t('promotionReward.placeholders.currency')" class="!w-110px">
-                <el-option label="GC" value="GC" />
-                <el-option label="SC" value="SC" />
-                <el-option label="RC" value="RC" />
-              </el-select>
-              <el-input-number v-model="item.rewardAmount" :precision="6" :min="0.000001" class="reward-item-amount" />
-              <el-tooltip :content="t('promotionReward.actions.removeRewardItem')" placement="top">
-                <el-button icon="Delete" circle @click="removeRewardItem(index)" />
-              </el-tooltip>
+            <el-alert
+              :title="tt('配置奖励金额和流水要求。充值、首充、折扣、召回等购买类活动，请在支付/购买中心配置。')"
+              type="warning"
+              :closable="false"
+              class="mb-2"
+            />
+            <div v-for="(item, index) in rewardItems" :key="index" class="reward-item-row">
+              <div class="reward-item-head">
+                <span class="reward-item-title">{{ tt('奖励项') }} {{ index + 1 }}</span>
+                <el-tooltip v-if="canRemoveRewardItem" :content="t('promotionReward.actions.removeRewardItem')" placement="top">
+                  <el-button icon="Delete" circle @click="removeRewardItem(index)" />
+                </el-tooltip>
+              </div>
+              <div class="reward-item-grid">
+                <div class="reward-field reward-field-sm">
+                  <span class="reward-field-label">{{ tt('币种') }}</span>
+                  <el-select v-model="item.currencyCode" :placeholder="t('promotionReward.placeholders.currency')" class="w-full">
+                    <el-option label="GC" value="GC" />
+                    <el-option label="SC" value="SC" />
+                    <el-option label="RC" value="RC" />
+                  </el-select>
+                </div>
+                <div class="reward-field">
+                  <span class="reward-field-label">{{ tt('奖励金额') }}</span>
+                  <el-input-number v-model="item.rewardAmount" :precision="6" :min="0.000001" controls-position="right" class="w-full" />
+                </div>
+                <div class="reward-field reward-field-mode">
+                  <span class="reward-field-label">{{ tt('流水要求') }}</span>
+                  <el-segmented v-model="item.turnoverMode" :options="turnoverModeOptions" class="w-full" />
+                </div>
+                <div v-if="item.turnoverMode === 'FIXED'" class="reward-field">
+                  <span class="reward-field-label">{{ tt('固定流水金额') }}</span>
+                  <el-input-number v-model="item.turnoverRequiredAmount" :min="0" :precision="6" :step="1" controls-position="right" class="w-full" />
+                </div>
+                <div v-if="item.turnoverMode === 'MULTIPLIER'" class="reward-field">
+                  <span class="reward-field-label">{{ tt('流水倍数') }}</span>
+                  <el-input-number v-model="item.turnoverMultiplier" :min="0" :precision="4" :step="1" controls-position="right" class="w-full" />
+                </div>
+                <div class="reward-field">
+                  <span class="reward-field-label">{{ tt('有效天数') }}</span>
+                  <el-input-number v-model="item.turnoverExpireDays" :min="0" :precision="0" :step="1" controls-position="right" class="w-full" />
+                </div>
+                <div class="reward-field">
+                  <span class="reward-field-label">{{ tt('游戏范围') }}</span>
+                  <el-select v-model="item.gameScopeType" class="w-full">
+                    <el-option v-for="option in gameScopeOptions" :key="option.value" :label="option.label" :value="option.value" />
+                  </el-select>
+                </div>
+                <div v-if="item.gameScopeType !== 'ALL'" class="reward-field reward-field-lg">
+                  <span class="reward-field-label">{{ tt('范围值') }}</span>
+                  <el-input v-model="item.gameScopeValue" :placeholder="tt('多个值用英文逗号分隔')" />
+                </div>
+              </div>
             </div>
-            <el-button icon="Plus" @click="addRewardItem">{{ t('promotionReward.actions.addRewardItem') }}</el-button>
+            <el-button v-if="form.promotionType === 'DAILY_LOGIN'" icon="Plus" @click="addRewardItem">{{ t('promotionReward.actions.addRewardItem') }}</el-button>
           </div>
         </el-form-item>
         <el-form-item :label="t('common.status')" prop="status">
@@ -236,6 +269,7 @@ import {
   PromotionRewardQuery,
   PromotionRewardVO
 } from '@/api/promotion/reward/types';
+import { tt } from '@/utils/i18nText';
 import { useI18n } from 'vue-i18n';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -299,13 +333,41 @@ const claimQuery = ref<PromotionClaimQuery>({
 
 const dialogTitle = computed(() => t(dialog.mode === 'add' ? 'promotionReward.dialog.add' : 'promotionReward.dialog.edit'));
 const claimDrawerTitle = computed(() => t('promotionReward.dialog.claimRecords', { name: claimDrawer.promotionName }));
-const dailyRewardItems = computed<PromotionRewardItem[]>(() => (Array.isArray(form.value.rewardItems) ? form.value.rewardItems : []));
+const rewardItems = computed<PromotionRewardItem[]>(() => (Array.isArray(form.value.rewardItems) ? form.value.rewardItems : []));
+const canRemoveRewardItem = computed(() => form.value.promotionType === 'DAILY_LOGIN' && rewardItems.value.length > 1);
+const turnoverModeOptions = [
+  { label: tt('不需要流水'), value: 'NONE' },
+  { label: tt('固定流水金额'), value: 'FIXED' },
+  { label: tt('流水倍数'), value: 'MULTIPLIER' }
+];
+const gameScopeOptions = [
+  { label: tt('全部游戏'), value: 'ALL' },
+  { label: tt('指定分类'), value: 'CATEGORY' },
+  { label: tt('指定厂商'), value: 'PROVIDER' },
+  { label: tt('指定游戏'), value: 'GAME' }
+];
+const validateRewardItems = (_rule: unknown, value: PromotionRewardItem[] | string | undefined, callback: (error?: Error) => void) => {
+  const items = parseRewardItems(value, form.value.promotionType);
+  if (!items.length) {
+    callback(new Error(t('promotionReward.messages.rewardItemsRequired')));
+    return;
+  }
+  const invalid = items.some((item) => {
+    if (!item.currencyCode || Number(item.rewardAmount) <= 0) return true;
+    if (item.turnoverMode === 'FIXED' && Number(item.turnoverRequiredAmount || 0) <= 0) return true;
+    if (item.turnoverMode === 'MULTIPLIER' && Number(item.turnoverMultiplier || 0) <= 0) return true;
+    if (item.gameScopeType && item.gameScopeType !== 'ALL' && !String(item.gameScopeValue || '').trim()) return true;
+    return false;
+  });
+  callback(invalid ? new Error(tt('请检查奖励配置、流水要求和游戏范围')) : undefined);
+};
 
 const rules = computed(() => ({
   promotionName: [{ required: true, message: t('promotionReward.rules.promotionName'), trigger: 'blur' }],
   promotionType: [{ required: true, message: t('promotionReward.rules.promotionType'), trigger: 'change' }],
   currencyCode: [{ required: true, message: t('promotionReward.rules.currency'), trigger: 'change' }],
   rewardAmount: [{ required: true, message: t('promotionReward.rules.rewardAmount'), trigger: 'blur' }],
+  rewardItems: [{ validator: validateRewardItems, trigger: 'change' }],
   status: [{ required: true, message: t('promotionReward.rules.status'), trigger: 'change' }]
 }));
 
@@ -348,19 +410,53 @@ const promotionTypeLabel = (type?: string) => {
   return t(`promotionReward.types.${promotionType}`) || promotionType;
 };
 
-const defaultDailyRewardItems = (): PromotionRewardItem[] => [
-  { currencyCode: 'GC', rewardAmount: 100 },
-  { currencyCode: 'SC', rewardAmount: 1 }
+const defaultFundPropertyCode = (promotionType?: string) => (promotionType === 'DAILY_LOGIN' ? 'DAILY_REWARD' : 'ACTIVITY_REWARD');
+
+const deriveTurnoverMode = (item: PromotionRewardItem): PromotionRewardItem['turnoverMode'] => {
+  if (Number(item.turnoverRequiredAmount || 0) > 0) return 'FIXED';
+  if (Number(item.turnoverMultiplier || 0) > 0) return 'MULTIPLIER';
+  return item.turnoverMode || 'NONE';
+};
+
+const normalizeRewardItem = (item: PromotionRewardItem, promotionType?: string): PromotionRewardItem => {
+  const turnoverMode = deriveTurnoverMode(item);
+  const normalized: PromotionRewardItem = {
+    currencyCode: item.currencyCode,
+    rewardAmount: Number(item.rewardAmount),
+    fundPropertyCode: item.fundPropertyCode || defaultFundPropertyCode(promotionType),
+    turnoverMode,
+    gameScopeType: item.gameScopeType || 'ALL'
+  };
+  if (turnoverMode === 'FIXED') {
+    normalized.turnoverRequiredAmount = Number(item.turnoverRequiredAmount || 0);
+  }
+  if (turnoverMode === 'MULTIPLIER') {
+    normalized.turnoverMultiplier = Number(item.turnoverMultiplier || 0);
+  }
+  if (normalized.gameScopeType !== 'ALL') {
+    normalized.gameScopeValue = String(item.gameScopeValue || '').trim();
+  }
+  if (Number(item.turnoverExpireDays || 0) > 0) {
+    normalized.turnoverExpireDays = Number(item.turnoverExpireDays);
+  }
+  return normalized;
+};
+
+const defaultRewardItems = (promotionType?: string): PromotionRewardItem[] => [
+  normalizeRewardItem({ currencyCode: promotionType === 'DAILY_LOGIN' ? 'GC' : 'SC', rewardAmount: promotionType === 'DAILY_LOGIN' ? 100 : 1 }, promotionType),
+  ...(promotionType === 'DAILY_LOGIN' ? [normalizeRewardItem({ currencyCode: 'SC', rewardAmount: 1 }, promotionType)] : [])
 ];
 
-const parseRewardItems = (rewardItems?: PromotionRewardItem[] | string): PromotionRewardItem[] => {
+const parseRewardItems = (rewardItems?: PromotionRewardItem[] | string, promotionType = form.value.promotionType || 'GENERAL'): PromotionRewardItem[] => {
   if (Array.isArray(rewardItems)) {
-    return rewardItems.filter((item) => item.currencyCode && Number(item.rewardAmount) > 0).map((item) => ({ currencyCode: item.currencyCode, rewardAmount: Number(item.rewardAmount) }));
+    return rewardItems
+      .filter((item) => item.currencyCode && Number(item.rewardAmount) > 0)
+      .map((item) => normalizeRewardItem(item, promotionType));
   }
   if (typeof rewardItems === 'string' && rewardItems.trim()) {
     try {
       const parsed = JSON.parse(rewardItems) as PromotionRewardItem[];
-      return Array.isArray(parsed) ? parseRewardItems(parsed) : [];
+      return Array.isArray(parsed) ? parseRewardItems(parsed, promotionType) : [];
     } catch {
       return [];
     }
@@ -369,37 +465,38 @@ const parseRewardItems = (rewardItems?: PromotionRewardItem[] | string): Promoti
 };
 
 const rewardItemsFromReward = (reward: PromotionRewardVO | PromotionRewardForm): PromotionRewardItem[] => {
-  const parsed = parseRewardItems(reward.rewardItems);
+  const parsed = parseRewardItems(reward.rewardItems, reward.promotionType);
   if (parsed.length) {
     return parsed;
   }
   if (reward.currencyCode && Number(reward.rewardAmount) > 0) {
-    return [{ currencyCode: reward.currencyCode, rewardAmount: Number(reward.rewardAmount) }];
+    return [normalizeRewardItem({ currencyCode: reward.currencyCode, rewardAmount: Number(reward.rewardAmount) }, reward.promotionType)];
   }
   return [];
 };
 
-const ensureDailyRewardItems = () => {
+const ensureRewardItems = () => {
   const items = parseRewardItems(form.value.rewardItems);
-  form.value.rewardItems = items.length ? items : defaultDailyRewardItems();
+  form.value.rewardItems = items.length ? items : defaultRewardItems(form.value.promotionType);
 };
 
 const addRewardItem = () => {
   const items = parseRewardItems(form.value.rewardItems);
-  form.value.rewardItems = [...items, { currencyCode: 'GC', rewardAmount: 1 }];
+  form.value.rewardItems = [...items, normalizeRewardItem({ currencyCode: 'GC', rewardAmount: 1 }, form.value.promotionType)];
 };
 
 const removeRewardItem = (index: number) => {
   const items = parseRewardItems(form.value.rewardItems);
   items.splice(index, 1);
-  form.value.rewardItems = items;
+  form.value.rewardItems = items.length ? items : defaultRewardItems(form.value.promotionType);
 };
 
 const normalizePayload = (): PromotionRewardForm => {
   const promotionType = form.value.promotionType || 'GENERAL';
+  const parsedItems = parseRewardItems(form.value.rewardItems);
+  const rewardItems = promotionType === 'DAILY_LOGIN' ? parsedItems : parsedItems.slice(0, 1);
+  const firstItem = rewardItems[0];
   if (promotionType === 'DAILY_LOGIN') {
-    const rewardItems = parseRewardItems(form.value.rewardItems);
-    const firstItem = rewardItems[0];
     return {
       ...form.value,
       promotionType,
@@ -413,9 +510,11 @@ const normalizePayload = (): PromotionRewardForm => {
   return {
     ...form.value,
     promotionType,
+    currencyCode: firstItem?.currencyCode || form.value.currencyCode || 'SC',
+    rewardAmount: firstItem?.rewardAmount || form.value.rewardAmount || 1,
     claimCycle: 'ONCE',
     dailyClaimLimit: 1,
-    rewardItems: []
+    rewardItems
   };
 };
 
@@ -452,6 +551,7 @@ const handleSelectionChange = (selection: PromotionRewardVO[]) => {
 
 const handleAdd = () => {
   reset();
+  ensureRewardItems();
   dialog.mode = 'add';
   dialog.visible = true;
 };
@@ -472,11 +572,9 @@ const handleUpdate = async (row: PromotionRewardVO) => {
 const submitForm = () => {
   rewardFormRef.value?.validate(async (valid: boolean) => {
     if (valid) {
-      if (form.value.promotionType === 'DAILY_LOGIN') {
-        if (!parseRewardItems(form.value.rewardItems).length) {
-          proxy?.$modal.msgError(t('promotionReward.messages.rewardItemsRequired'));
-          return;
-        }
+      if (!parseRewardItems(form.value.rewardItems).length) {
+        proxy?.$modal.msgError(t('promotionReward.messages.rewardItemsRequired'));
+        return;
       }
       const payload = normalizePayload();
       if (form.value.id) {
@@ -503,10 +601,12 @@ watch(
     if (promotionType === 'DAILY_LOGIN') {
       form.value.claimCycle = 'DAILY';
       form.value.dailyClaimLimit = 1;
-      ensureDailyRewardItems();
+      ensureRewardItems();
     } else {
       form.value.claimCycle = 'ONCE';
       form.value.dailyClaimLimit = undefined;
+      const items = parseRewardItems(form.value.rewardItems, promotionType);
+      form.value.rewardItems = items.length ? items.slice(0, 1) : defaultRewardItems(promotionType);
     }
   }
 );
@@ -568,17 +668,89 @@ onMounted(() => {
   display: flex;
   width: 100%;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 }
 
 .reward-item-row {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 6px;
+  background: var(--el-fill-color-blank);
 }
 
-.reward-item-amount {
-  flex: 1;
-  min-width: 180px;
+.reward-item-head {
+  display: flex;
+  min-height: 32px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.reward-item-title {
+  color: var(--el-text-color-primary);
+  font-weight: 600;
+}
+
+.reward-item-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.reward-field {
+  display: flex;
+  min-width: 0;
+  grid-column: span 3;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.reward-field-sm {
+  grid-column: span 2;
+}
+
+.reward-field-lg {
+  grid-column: span 4;
+}
+
+.reward-field-mode {
+  grid-column: span 5;
+}
+
+.reward-field-label {
+  color: var(--el-text-color-regular);
+  font-size: 13px;
+  line-height: 18px;
+  white-space: nowrap;
+}
+
+.reward-field :deep(.el-segmented) {
+  --el-segmented-item-selected-color: var(--el-color-white);
+}
+
+.reward-field :deep(.el-segmented__item-label) {
+  padding: 0 8px;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .reward-field,
+  .reward-field-sm,
+  .reward-field-lg,
+  .reward-field-mode {
+    grid-column: span 6;
+  }
+}
+
+@media (max-width: 640px) {
+  .reward-field,
+  .reward-field-sm,
+  .reward-field-lg,
+  .reward-field-mode {
+    grid-column: span 12;
+  }
 }
 </style>
