@@ -2,8 +2,11 @@ package com.gameluck.payment.service;
 
 import com.gameluck.common.mybatis.core.page.PageQuery;
 import com.gameluck.common.mybatis.core.page.TableDataInfo;
+import com.gameluck.payment.domain.PurchaseOfferGrantItem;
+import com.gameluck.payment.domain.PurchaseOrder;
 import com.gameluck.payment.domain.bo.PurchaseOfferBo;
 import com.gameluck.payment.domain.vo.PurchaseOfferVo;
+import com.gameluck.wallet.domain.bo.WalletCreditBo;
 
 import java.util.List;
 
@@ -21,4 +24,6 @@ public interface IPurchaseOfferService {
     int insertByBo(PurchaseOfferBo bo);
 
     Boolean updateByBo(PurchaseOfferBo bo);
+
+    List<WalletCreditBo> snapshotPaidOrderGrants(PurchaseOrder order, List<PurchaseOfferGrantItem> items);
 }

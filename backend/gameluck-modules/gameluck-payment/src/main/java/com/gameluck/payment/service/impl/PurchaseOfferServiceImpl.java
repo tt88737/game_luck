@@ -127,6 +127,7 @@ public class PurchaseOfferServiceImpl implements IPurchaseOfferService {
         return rows > 0;
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public List<WalletCreditBo> snapshotPaidOrderGrants(PurchaseOrder order, List<PurchaseOfferGrantItem> items) {
         List<WalletCreditBo> credits = buildWalletCreditsForPaidOrder(order, items);
