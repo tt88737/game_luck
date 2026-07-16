@@ -120,16 +120,13 @@ FROM (
   SELECT 21027, '000000', 2, '每日奖励', 'DAILY_REWARD', 'gl_wallet_biz_type', '', 'success', 'N', 103, 1, SYSDATE(), NULL, NULL, '每日奖励账变' UNION ALL
   SELECT 21028, '000000', 3, '任务奖励', 'TASK_REWARD', 'gl_wallet_biz_type', '', 'success', 'N', 103, 1, SYSDATE(), NULL, NULL, '任务奖励账变' UNION ALL
   SELECT 21029, '000000', 4, '游戏投注', 'GAME_BET', 'gl_wallet_biz_type', '', 'warning', 'N', 103, 1, SYSDATE(), NULL, NULL, '游戏投注账变' UNION ALL
-  SELECT 21030, '000000', 5, '游戏派彩', 'GAME_PAYOUT', 'gl_wallet_biz_type', '', 'success', 'N', 103, 1, SYSDATE(), NULL, NULL, 'Historical alias of GAME_PROFIT' UNION ALL
-  SELECT 21031, '000000', 6, '充值入账', 'DEPOSIT', 'gl_wallet_biz_type', '', 'primary', 'N', 103, 1, SYSDATE(), NULL, NULL, '充值入账账变' UNION ALL
-  SELECT 21032, '000000', 7, '兑换处理', 'REDEMPTION', 'gl_wallet_biz_type', '', 'warning', 'N', 103, 1, SYSDATE(), NULL, NULL, '兑换处理账变' UNION ALL
-  SELECT 21033, '000000', 8, '人工调账', 'ADJUSTMENT', 'gl_wallet_biz_type', '', 'danger', 'N', 103, 1, SYSDATE(), NULL, NULL, 'Historical alias of MANUAL_ADJUST' UNION ALL
-  SELECT 21066, '000000', 9, '游戏收益', 'GAME_PROFIT', 'gl_wallet_biz_type', '', 'success', 'N', 103, 1, SYSDATE(), NULL, NULL, '游戏收益账变' UNION ALL
-  SELECT 21067, '000000', 10, '人工调账', 'MANUAL_ADJUST', 'gl_wallet_biz_type', '', 'danger', 'N', 103, 1, SYSDATE(), NULL, NULL, '人工调账账变' UNION ALL
-  SELECT 21068, '000000', 11, '游戏退款', 'GAME_REFUND', 'gl_wallet_biz_type', '', 'info', 'N', 103, 1, SYSDATE(), NULL, NULL, '游戏退款账变' UNION ALL
-  SELECT 21069, '000000', 12, '活动奖励', 'PROMOTION', 'gl_wallet_biz_type', '', 'success', 'N', 103, 1, SYSDATE(), NULL, NULL, '活动奖励账变' UNION ALL
-  SELECT 21070, '000000', 13, '流水释放', 'TURNOVER', 'gl_wallet_biz_type', '', 'primary', 'N', 103, 1, SYSDATE(), NULL, NULL, '流水释放账变' UNION ALL
-  SELECT 21071, '000000', 14, '人工调账', 'ADJUST', 'gl_wallet_biz_type', '', 'danger', 'N', 103, 1, SYSDATE(), NULL, NULL, 'Historical alias of MANUAL_ADJUST' UNION ALL
+  SELECT 21031, '000000', 5, '充值入账', 'DEPOSIT', 'gl_wallet_biz_type', '', 'primary', 'N', 103, 1, SYSDATE(), NULL, NULL, '充值入账账变' UNION ALL
+  SELECT 21032, '000000', 6, '兑换处理', 'REDEMPTION', 'gl_wallet_biz_type', '', 'warning', 'N', 103, 1, SYSDATE(), NULL, NULL, '兑换处理账变' UNION ALL
+  SELECT 21066, '000000', 7, '游戏收益', 'GAME_PROFIT', 'gl_wallet_biz_type', '', 'success', 'N', 103, 1, SYSDATE(), NULL, NULL, '游戏收益账变' UNION ALL
+  SELECT 21067, '000000', 8, '人工调账', 'MANUAL_ADJUST', 'gl_wallet_biz_type', '', 'danger', 'N', 103, 1, SYSDATE(), NULL, NULL, '人工调账账变' UNION ALL
+  SELECT 21068, '000000', 9, '游戏退款', 'GAME_REFUND', 'gl_wallet_biz_type', '', 'info', 'N', 103, 1, SYSDATE(), NULL, NULL, '游戏退款账变' UNION ALL
+  SELECT 21069, '000000', 10, '活动奖励', 'PROMOTION', 'gl_wallet_biz_type', '', 'success', 'N', 103, 1, SYSDATE(), NULL, NULL, '活动奖励账变' UNION ALL
+  SELECT 21070, '000000', 11, '流水释放', 'TURNOVER', 'gl_wallet_biz_type', '', 'primary', 'N', 103, 1, SYSDATE(), NULL, NULL, '流水释放账变' UNION ALL
   SELECT 21034, '000000', 1, '已冻结', 'FROZEN', 'gl_wallet_freeze_status', '', 'warning', 'Y', 103, 1, SYSDATE(), NULL, NULL, '已冻结' UNION ALL
   SELECT 21035, '000000', 2, '已结算', 'SETTLED', 'gl_wallet_freeze_status', '', 'success', 'N', 103, 1, SYSDATE(), NULL, NULL, '已结算' UNION ALL
   SELECT 21036, '000000', 3, '已释放', 'RELEASED', 'gl_wallet_freeze_status', '', 'info', 'N', 103, 1, SYSDATE(), NULL, NULL, '已释放' UNION ALL
@@ -162,6 +159,91 @@ FROM (
   SELECT 21063, '000000', 3, '已拒绝', 'REJECTED', 'gl_redemption_status', '', 'danger', 'N', 103, 1, SYSDATE(), NULL, NULL, '兑换已拒绝' UNION ALL
   SELECT 21064, '000000', 4, '已打款', 'PAID', 'gl_redemption_status', '', 'success', 'N', 103, 1, SYSDATE(), NULL, NULL, '兑换已打款' UNION ALL
   SELECT 21065, '000000', 5, '失败', 'FAILED', 'gl_redemption_status', '', 'danger', 'N', 103, 1, SYSDATE(), NULL, NULL, '兑换失败'
+) seed
+WHERE NOT EXISTS (
+  SELECT 1 FROM sys_dict_data existing
+  WHERE existing.tenant_id = seed.tenant_id
+    AND existing.dict_type = seed.dict_type
+    AND existing.dict_value = seed.dict_value
+);
+
+INSERT INTO sys_dict_type
+(dict_id, tenant_id, dict_name, dict_type, create_dept, create_by, create_time, update_by, update_time, remark)
+SELECT dict_id, tenant_id, dict_name, dict_type, create_dept, create_by, create_time, update_by, update_time, remark
+FROM (
+  SELECT 20018 dict_id, '000000' tenant_id, '钱包资金属性' dict_name, 'gl_wallet_fund_property' dict_type, 103 create_dept, 1 create_by, SYSDATE() create_time, NULL update_by, NULL update_time, '钱包入账资金属性' remark UNION ALL
+  SELECT 20019, '000000', '钱包游戏范围', 'gl_wallet_game_scope_type', 103, 1, SYSDATE(), NULL, NULL, '流水可核销游戏范围' UNION ALL
+  SELECT 20020, '000000', '钱包流水任务状态', 'gl_wallet_turnover_task_status', 103, 1, SYSDATE(), NULL, NULL, '流水任务生命周期状态' UNION ALL
+  SELECT 20021, '000000', '钱包兑换汇率类型', 'gl_wallet_exchange_rate_type', 103, 1, SYSDATE(), NULL, NULL, '币种兑换汇率类型' UNION ALL
+  SELECT 20022, '000000', '钱包兑换手续费类型', 'gl_wallet_exchange_fee_type', 103, 1, SYSDATE(), NULL, NULL, '币种兑换手续费类型' UNION ALL
+  SELECT 20023, '000000', '钱包兑换订单状态', 'gl_wallet_exchange_order_status', 103, 1, SYSDATE(), NULL, NULL, '币种兑换订单生命周期状态' UNION ALL
+  SELECT 20024, '000000', '钱包币种可见渠道', 'gl_wallet_policy_channel', 103, 1, SYSDATE(), NULL, NULL, '币种可见策略渠道条件' UNION ALL
+  SELECT 20025, '000000', '购买产品类型', 'gl_purchase_offer_type', 103, 1, SYSDATE(), NULL, NULL, '购买产品和购买活动类型' UNION ALL
+  SELECT 20026, '000000', '购买产品状态', 'gl_purchase_offer_status', 103, 1, SYSDATE(), NULL, NULL, '购买产品启停状态' UNION ALL
+  SELECT 20027, '000000', '购买发放类型', 'gl_purchase_grant_type', 103, 1, SYSDATE(), NULL, NULL, '购买成功后发放项类型' UNION ALL
+  SELECT 20028, '000000', '购买流水模式', 'gl_purchase_wagering_mode', 103, 1, SYSDATE(), NULL, NULL, '购买发放项流水要求模式' UNION ALL
+  SELECT 20029, '000000', '购买限购类型', 'gl_purchase_limit_type', 103, 1, SYSDATE(), NULL, NULL, '购买产品限购规则'
+) seed
+WHERE NOT EXISTS (
+  SELECT 1 FROM sys_dict_type existing
+  WHERE existing.tenant_id = seed.tenant_id
+    AND existing.dict_type = seed.dict_type
+);
+
+INSERT INTO sys_dict_data
+(dict_code, tenant_id, dict_sort, dict_label, dict_value, dict_type, css_class, list_class, is_default, create_dept, create_by, create_time, update_by, update_time, remark)
+SELECT dict_code, tenant_id, dict_sort, dict_label, dict_value, dict_type, css_class, list_class, is_default, create_dept, create_by, create_time, update_by, update_time, remark
+FROM (
+  SELECT 21100 dict_code, '000000' tenant_id, 1 dict_sort, '充值本金' dict_label, 'DEPOSIT_PRINCIPAL' dict_value, 'gl_wallet_fund_property' dict_type, '' css_class, 'primary' list_class, 'Y' is_default, 103 create_dept, 1 create_by, SYSDATE() create_time, NULL update_by, NULL update_time, '用户充值到账的本金' remark UNION ALL
+  SELECT 21101, '000000', 2, '充值赠送', 'DEPOSIT_BONUS', 'gl_wallet_fund_property', '', 'success', 'N', 103, 1, SYSDATE(), NULL, NULL, '充值活动赠送金额' UNION ALL
+  SELECT 21102, '000000', 3, '活动奖励', 'ACTIVITY_REWARD', 'gl_wallet_fund_property', '', 'success', 'N', 103, 1, SYSDATE(), NULL, NULL, '通用活动奖励' UNION ALL
+  SELECT 21103, '000000', 4, '每日奖励', 'DAILY_REWARD', 'gl_wallet_fund_property', '', 'success', 'N', 103, 1, SYSDATE(), NULL, NULL, '每日登录等奖励' UNION ALL
+  SELECT 21104, '000000', 5, '返佣奖励', 'COMMISSION', 'gl_wallet_fund_property', '', 'warning', 'N', 103, 1, SYSDATE(), NULL, NULL, '代理或邀请返佣奖励' UNION ALL
+  SELECT 21105, '000000', 6, '游戏盈利', 'GAME_PROFIT', 'gl_wallet_fund_property', '', 'success', 'N', 103, 1, SYSDATE(), NULL, NULL, '游戏结算产生的收益' UNION ALL
+  SELECT 21106, '000000', 7, '游戏退款', 'GAME_REFUND', 'gl_wallet_fund_property', '', 'info', 'N', 103, 1, SYSDATE(), NULL, NULL, '游戏取消、失败或回滚退款' UNION ALL
+  SELECT 21107, '000000', 8, '人工调账', 'MANUAL_ADJUST', 'gl_wallet_fund_property', '', 'danger', 'N', 103, 1, SYSDATE(), NULL, NULL, '人工调账金额' UNION ALL
+  SELECT 21108, '000000', 9, '兑换入账', 'EXCHANGE_IN', 'gl_wallet_fund_property', '', 'primary', 'N', 103, 1, SYSDATE(), NULL, NULL, '币种兑换目标币种入账' UNION ALL
+  SELECT 21120, '000000', 1, '全部游戏', 'ALL', 'gl_wallet_game_scope_type', '', 'success', 'Y', 103, 1, SYSDATE(), NULL, NULL, '全部可核销游戏' UNION ALL
+  SELECT 21121, '000000', 2, '指定分类', 'CATEGORY', 'gl_wallet_game_scope_type', '', 'primary', 'N', 103, 1, SYSDATE(), NULL, NULL, '指定游戏分类' UNION ALL
+  SELECT 21122, '000000', 3, '指定厂商', 'PROVIDER', 'gl_wallet_game_scope_type', '', 'primary', 'N', 103, 1, SYSDATE(), NULL, NULL, '指定游戏厂商' UNION ALL
+  SELECT 21123, '000000', 4, '指定游戏', 'GAME', 'gl_wallet_game_scope_type', '', 'warning', 'N', 103, 1, SYSDATE(), NULL, NULL, '指定游戏ID' UNION ALL
+  SELECT 21130, '000000', 1, '待完成', 'PENDING', 'gl_wallet_turnover_task_status', '', 'warning', 'Y', 103, 1, SYSDATE(), NULL, NULL, '流水任务待完成' UNION ALL
+  SELECT 21131, '000000', 2, '已完成', 'COMPLETED', 'gl_wallet_turnover_task_status', '', 'success', 'N', 103, 1, SYSDATE(), NULL, NULL, '流水任务已完成' UNION ALL
+  SELECT 21132, '000000', 3, '已过期', 'EXPIRED', 'gl_wallet_turnover_task_status', '', 'info', 'N', 103, 1, SYSDATE(), NULL, NULL, '流水任务已过期' UNION ALL
+  SELECT 21133, '000000', 4, '已取消', 'CANCELLED', 'gl_wallet_turnover_task_status', '', 'danger', 'N', 103, 1, SYSDATE(), NULL, NULL, '流水任务已取消' UNION ALL
+  SELECT 21140, '000000', 1, '固定汇率', 'FIXED', 'gl_wallet_exchange_rate_type', '', 'primary', 'Y', 103, 1, SYSDATE(), NULL, NULL, '固定兑换汇率' UNION ALL
+  SELECT 21141, '000000', 2, '阶梯汇率', 'TIERED', 'gl_wallet_exchange_rate_type', '', 'warning', 'N', 103, 1, SYSDATE(), NULL, NULL, '按金额阶梯配置汇率' UNION ALL
+  SELECT 21142, '000000', 3, '活动汇率', 'ACTIVITY', 'gl_wallet_exchange_rate_type', '', 'success', 'N', 103, 1, SYSDATE(), NULL, NULL, '活动专属兑换汇率' UNION ALL
+  SELECT 21150, '000000', 1, '无手续费', 'NONE', 'gl_wallet_exchange_fee_type', '', 'success', 'Y', 103, 1, SYSDATE(), NULL, NULL, '不收取兑换手续费' UNION ALL
+  SELECT 21151, '000000', 2, '固定手续费', 'FIXED', 'gl_wallet_exchange_fee_type', '', 'warning', 'N', 103, 1, SYSDATE(), NULL, NULL, '固定兑换手续费' UNION ALL
+  SELECT 21152, '000000', 3, '按比例手续费', 'PERCENT', 'gl_wallet_exchange_fee_type', '', 'warning', 'N', 103, 1, SYSDATE(), NULL, NULL, '按兑换金额比例收取手续费' UNION ALL
+  SELECT 21160, '000000', 1, '待处理', 'PENDING', 'gl_wallet_exchange_order_status', '', 'warning', 'Y', 103, 1, SYSDATE(), NULL, NULL, '兑换订单待处理' UNION ALL
+  SELECT 21161, '000000', 2, '成功', 'SUCCESS', 'gl_wallet_exchange_order_status', '', 'success', 'N', 103, 1, SYSDATE(), NULL, NULL, '兑换订单成功' UNION ALL
+  SELECT 21162, '000000', 3, '失败', 'FAILED', 'gl_wallet_exchange_order_status', '', 'danger', 'N', 103, 1, SYSDATE(), NULL, NULL, '兑换订单失败' UNION ALL
+  SELECT 21163, '000000', 4, '已取消', 'CANCELLED', 'gl_wallet_exchange_order_status', '', 'info', 'N', 103, 1, SYSDATE(), NULL, NULL, '兑换订单已取消' UNION ALL
+  SELECT 21170, '000000', 1, 'H5', 'H5', 'gl_wallet_policy_channel', '', 'primary', 'Y', 103, 1, SYSDATE(), NULL, NULL, 'H5 client' UNION ALL
+  SELECT 21171, '000000', 2, 'APP', 'APP', 'gl_wallet_policy_channel', '', 'success', 'N', 103, 1, SYSDATE(), NULL, NULL, 'Native app client' UNION ALL
+  SELECT 21172, '000000', 3, '后台', 'ADMIN', 'gl_wallet_policy_channel', '', 'info', 'N', 103, 1, SYSDATE(), NULL, NULL, '后台运营渠道' UNION ALL
+  SELECT 21180, '000000', 1, '普通购买', 'STANDARD', 'gl_purchase_offer_type', '', 'primary', 'Y', 103, 1, SYSDATE(), NULL, NULL, '常规购买产品' UNION ALL
+  SELECT 21181, '000000', 2, '首充购买', 'FIRST_PURCHASE', 'gl_purchase_offer_type', '', 'success', 'N', 103, 1, SYSDATE(), NULL, NULL, '用户首次购买产品' UNION ALL
+  SELECT 21182, '000000', 3, '充值活动', 'CAMPAIGN', 'gl_purchase_offer_type', '', 'warning', 'N', 103, 1, SYSDATE(), NULL, NULL, '运营配置的购买活动' UNION ALL
+  SELECT 21183, '000000', 4, '折扣购买', 'DISCOUNT', 'gl_purchase_offer_type', '', 'warning', 'N', 103, 1, SYSDATE(), NULL, NULL, '折扣购买产品' UNION ALL
+  SELECT 21184, '000000', 5, '召回购买', 'RECALL', 'gl_purchase_offer_type', '', 'info', 'N', 103, 1, SYSDATE(), NULL, NULL, '召回用户购买产品' UNION ALL
+  SELECT 21190, '000000', 1, '启用', '0', 'gl_purchase_offer_status', '', 'success', 'Y', 103, 1, SYSDATE(), NULL, NULL, '产品可见可购买' UNION ALL
+  SELECT 21191, '000000', 2, '停用', '1', 'gl_purchase_offer_status', '', 'info', 'N', 103, 1, SYSDATE(), NULL, NULL, '产品不可购买' UNION ALL
+  SELECT 21200, '000000', 1, '购买获得', 'PURCHASE_GRANT', 'gl_purchase_grant_type', '', 'primary', 'Y', 103, 1, SYSDATE(), NULL, NULL, '购买后获得的基础额度' UNION ALL
+  SELECT 21201, '000000', 2, '购买赠送', 'PURCHASE_BONUS', 'gl_purchase_grant_type', '', 'success', 'N', 103, 1, SYSDATE(), NULL, NULL, '购买活动赠送额度' UNION ALL
+  SELECT 21202, '000000', 3, '入金本金', 'DEPOSIT_PRINCIPAL', 'gl_purchase_grant_type', '', 'primary', 'N', 103, 1, SYSDATE(), NULL, NULL, '未来真金模式入金本金' UNION ALL
+  SELECT 21203, '000000', 4, '入金赠送', 'DEPOSIT_BONUS', 'gl_purchase_grant_type', '', 'success', 'N', 103, 1, SYSDATE(), NULL, NULL, '未来真金模式入金赠送' UNION ALL
+  SELECT 21210, '000000', 1, '不需要流水', 'NONE', 'gl_purchase_wagering_mode', '', 'info', 'Y', 103, 1, SYSDATE(), NULL, NULL, '发放后不生成流水义务' UNION ALL
+  SELECT 21211, '000000', 2, '固定流水金额', 'FIXED', 'gl_purchase_wagering_mode', '', 'warning', 'N', 103, 1, SYSDATE(), NULL, NULL, '按固定金额要求流水' UNION ALL
+  SELECT 21212, '000000', 3, '流水倍数', 'MULTIPLIER', 'gl_purchase_wagering_mode', '', 'success', 'N', 103, 1, SYSDATE(), NULL, NULL, '按发放金额乘以倍数要求流水' UNION ALL
+  SELECT 21213, '000000', 4, '组合倍数', 'COMBINED_MULTIPLIER', 'gl_purchase_wagering_mode', '', 'danger', 'N', 103, 1, SYSDATE(), NULL, NULL, '按订单发放组合金额计算流水，首期暂不启用' UNION ALL
+  SELECT 21220, '000000', 1, '不限购', 'NONE', 'gl_purchase_limit_type', '', 'info', 'Y', 103, 1, SYSDATE(), NULL, NULL, '不限制购买次数' UNION ALL
+  SELECT 21221, '000000', 2, '仅首购', 'FIRST_ONLY', 'gl_purchase_limit_type', '', 'success', 'N', 103, 1, SYSDATE(), NULL, NULL, '每个用户仅首次可购买' UNION ALL
+  SELECT 21222, '000000', 3, '每日一次', 'DAILY_ONCE', 'gl_purchase_limit_type', '', 'warning', 'N', 103, 1, SYSDATE(), NULL, NULL, '每个用户每日最多购买一次' UNION ALL
+  SELECT 21223, '000000', 4, '总计一次', 'TOTAL_ONCE', 'gl_purchase_limit_type', '', 'warning', 'N', 103, 1, SYSDATE(), NULL, NULL, '每个用户总计最多购买一次' UNION ALL
+  SELECT 21224, '000000', 5, '周期限购', 'PERIOD_LIMIT', 'gl_purchase_limit_type', '', 'primary', 'N', 103, 1, SYSDATE(), NULL, NULL, '按周期配置购买次数'
 ) seed
 WHERE NOT EXISTS (
   SELECT 1 FROM sys_dict_data existing
