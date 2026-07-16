@@ -691,3 +691,23 @@
   - Existing old-format `member_no` values are normalized by guarded SQL.
   - Admin copy changes from `会员编号` or `会员ID/编号` to `会员ID`.
   - Internal IDs, when shown, use `系统ID`.
+## 2026-07-16 Purchase Grant Wagering Foundation
+
+- Completed and committed the purchase/grant/wagering foundation sequence:
+  - `0edb070 fix: keep purchase logic out of promotion rewards`
+  - `2c95ddb feat: add purchase grant wagering schema`
+  - `0353926 feat: add purchase offer backend`
+  - `1f8a00e feat: snapshot purchase grants for wallet credit`
+  - `fb15ce3 feat: add purchase offer admin page`
+- Product boundary now enforced:
+  - Promotion rewards no longer carry purchase/recharge product logic.
+  - Purchase domain owns offers, grant items, order grant snapshots, and wallet credit request construction.
+  - Wallet remains the ledger and wagering executor.
+  - B-side purchase offer form does not expose `fundPropertyCode` to operators.
+- Local verification passed:
+  - `PurchaseOfferServiceImplTest`: 2 tests, 0 failures.
+  - Cross-module targeted tests: wallet 10 tests, payment 4 tests, promotion 15 tests, all 0 failures; Maven `BUILD SUCCESS`.
+  - `pnpm --dir admin-ui build:dev`: menu icon check passed, i18n check passed, Vite build passed with only existing large chunk warnings.
+  - MySQL verification confirmed `gl_purchase_offer`, `gl_purchase_offer_grant_item`, `gl_purchase_order`, `gl_purchase_order_grant_snapshot`, `PURCHASE_GRANT_GC`, `PURCHASE_BONUS_SC`, purchase offer menu permissions, and `gl_purchase_*` dictionaries.
+- Remaining direction:
+  - Next logical product slice is C-side purchase offer exposure and order fulfillment entry point, then runtime wallet credit smoke.
