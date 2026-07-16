@@ -8,6 +8,8 @@ import type {
   ClientMember,
   ClientPage,
   ClientPromotion,
+  ClientPurchaseOffer,
+  ClientPurchaseOrder,
   ClientRegisterRequest,
   ClientRedemption,
   WalletAccount,
@@ -91,5 +93,11 @@ export const clientApi = {
     request<ClientRedemption>('/api/client/redemptions/request', {
       method: 'POST',
       body: JSON.stringify({ currencyCode, amount }),
+    }),
+  purchaseOffers: () => request<ClientPurchaseOffer[]>('/api/client/purchase/offers'),
+  payPurchaseOffer: (offerId: number, idempotencyKey: string) =>
+    request<ClientPurchaseOrder>('/api/client/purchase/orders/pay', {
+      method: 'POST',
+      body: JSON.stringify({ offerId, idempotencyKey }),
     }),
 }

@@ -35,6 +35,11 @@ import { sessionState } from '../stores/session'
       <strong>钱包</strong>
       <small>{{ sessionState.bootstrap?.features.walletEnabled ? '余额可查看' : '钱包未开启' }}</small>
     </RouterLink>
+    <RouterLink class="feature-tile" to="/purchase">
+      <span class="tile-icon">购</span>
+      <strong>购买</strong>
+      <small>{{ sessionState.bootstrap?.features.paymentEnabled ? 'GC 套餐可购买' : '购买暂未开放' }}</small>
+    </RouterLink>
     <RouterLink class="feature-tile" to="/games">
       <span class="tile-icon">游</span>
       <strong>游戏</strong>

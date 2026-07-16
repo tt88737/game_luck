@@ -24,6 +24,7 @@ onMounted(async () => {
 
       <nav class="topnav" :aria-label="t('navMain')">
         <RouterLink to="/wallet">{{ t('navWallet') }}</RouterLink>
+        <RouterLink to="/purchase">{{ t('navPurchase') }}</RouterLink>
         <RouterLink to="/games">{{ t('navGames') }}</RouterLink>
         <RouterLink to="/promotions">{{ t('navPromotions') }}</RouterLink>
         <RouterLink to="/redemptions">{{ t('navRedemptions') }}</RouterLink>
@@ -51,6 +52,7 @@ onMounted(async () => {
     <footer class="tabbar" :aria-label="t('navMobile')">
       <RouterLink to="/">{{ t('navHome') }}</RouterLink>
       <RouterLink to="/wallet">{{ t('navWallet') }}</RouterLink>
+      <RouterLink to="/purchase">{{ t('navPurchase') }}</RouterLink>
       <RouterLink to="/games">{{ t('navGames') }}</RouterLink>
       <RouterLink to="/help">{{ t('navHelp') }}</RouterLink>
     </footer>

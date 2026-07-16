@@ -144,3 +144,39 @@ export interface ClientRedemption {
   reviewRemark: string
   createdAt: string
 }
+
+export interface ClientPurchaseGrantItem {
+  grantType: string
+  currencyCode: string
+  grantAmount: string
+  wageringMode: string
+  requiredTurnover: string
+  wageringMultiplier: string
+  gameScopeType: string
+  gameScopeValue?: string
+}
+
+export interface ClientPurchaseOffer {
+  offerId: number
+  offerNo: string
+  offerName: string
+  offerType: string
+  payCurrencyCode: string
+  payAmount: string
+  grantItems: ClientPurchaseGrantItem[]
+  limitText: string
+  wageringText: string
+}
+
+export interface ClientPurchaseOrder {
+  orderId: number
+  orderNo: string
+  offerId: number
+  offerNo: string
+  offerName: string
+  payCurrencyCode: string
+  payAmount: string
+  status: string
+  grantItems: ClientPurchaseGrantItem[]
+  creditedAt?: string
+}
