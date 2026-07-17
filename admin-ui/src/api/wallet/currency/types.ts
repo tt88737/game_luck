@@ -8,8 +8,12 @@ export interface CurrencyVO extends BaseEntity {
   creditEnabled: string;
   debitEnabled: string;
   freezeEnabled: string;
+  depositEnabled: string;
   withdrawEnabled: string;
   exchangeEnabled: string;
+  exchangeInEnabled: string;
+  exchangeOutEnabled: string;
+  playEnabled: string;
   negativeAllowed: string;
   sortOrder: number;
   remark: string;
@@ -25,8 +29,12 @@ export interface CurrencyForm {
   creditEnabled?: string;
   debitEnabled?: string;
   freezeEnabled?: string;
+  depositEnabled?: string;
   withdrawEnabled?: string;
   exchangeEnabled?: string;
+  exchangeInEnabled?: string;
+  exchangeOutEnabled?: string;
+  playEnabled?: string;
   negativeAllowed?: string;
   sortOrder?: number;
   remark?: string;

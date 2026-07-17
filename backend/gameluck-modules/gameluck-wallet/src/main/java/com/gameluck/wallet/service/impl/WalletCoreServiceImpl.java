@@ -16,7 +16,6 @@ import com.gameluck.wallet.domain.bo.WalletDebitBo;
 import com.gameluck.wallet.domain.bo.WalletFreezeOperationBo;
 import com.gameluck.wallet.domain.bo.WalletTurnoverBo;
 import com.gameluck.wallet.enums.WalletFreezeStatus;
-import com.gameluck.wallet.domain.vo.WalletRuleVo;
 import com.gameluck.wallet.enums.WalletOperation;
 import com.gameluck.wallet.enums.WalletReleaseMode;
 import com.gameluck.wallet.enums.WalletReleaseStatus;
@@ -26,9 +25,10 @@ import com.gameluck.wallet.mapper.WalletFreezeMapper;
 import com.gameluck.wallet.mapper.WalletReleaseMapper;
 import com.gameluck.wallet.mapper.WalletTransactionMapper;
 import com.gameluck.wallet.service.IWalletCoreService;
-import com.gameluck.wallet.service.IWalletRuleService;
+import com.gameluck.wallet.service.IWalletTurnoverTaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,21 +51,23 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
     private static final int MONEY_SCALE = 6;
     private static final String RELEASED_COUNT_PREFIX = "releasedCount=";
     private static final Pattern RELEASED_COUNT_PATTERN = Pattern.compile("(^|[;\\s])releasedCount=(\\d+)([;\\s]|$)");
+    private static final String MEMBER_EXISTS_SQL = "SELECT COUNT(1) FROM gl_member_profile WHERE tenant_id = ? AND id = ? AND del_flag = '0'";
 
     private final WalletAccountMapper walletAccountMapper;
     private final WalletTransactionMapper walletTransactionMapper;
     private final WalletReleaseMapper walletReleaseMapper;
     private final WalletFreezeMapper walletFreezeMapper;
-    private final IWalletRuleService walletRuleService;
+    private final IWalletTurnoverTaskService walletTurnoverTaskService;
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public WalletTransaction credit(WalletCreditBo bo) {
         String tenantId = currentTenantId();
-        WalletRuleVo rule = walletRuleService.resolveCreditRule(tenantId, bo.getCurrencyCode(), bo.getSourceType());
-        WalletReleaseMode releaseMode = resolveReleaseMode(bo, rule);
+        requireExistingMember(tenantId, bo.getMemberId());
         BigDecimal amount = requirePositive(bo.getAmount(), "wallet.credit.amount.positive");
-        BigDecimal requiredTurnover = resolveRequiredTurnover(bo, rule);
+        BigDecimal requiredTurnover = resolveRequiredTurnover(bo, amount);
+        WalletReleaseMode releaseMode = resolveReleaseMode(bo, requiredTurnover);
         Date now = new Date();
         WalletTransaction transaction = buildCreditTransaction(tenantId, bo, releaseMode, amount, requiredTurnover,
             ZERO, ZERO, ZERO, now);
@@ -97,6 +99,7 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
         walletTransactionMapper.updateById(transaction);
 
         walletReleaseMapper.insert(buildRelease(tenantId, bo, releaseMode, amount, requiredTurnover, now));
+        walletTurnoverTaskService.createFromCredit(tenantId, bo, transaction, amount, requiredTurnover, now);
         return transaction;
     }
 
@@ -104,6 +107,7 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
     @Transactional(rollbackFor = Exception.class)
     public WalletTransaction debit(WalletDebitBo bo) {
         String tenantId = currentTenantId();
+        requireExistingMember(tenantId, bo.getMemberId());
         BigDecimal amount = requirePositive(bo.getAmount(), "wallet.debit.amount.positive");
         Date now = new Date();
         WalletTransaction transaction = buildDebitTransaction(tenantId, bo, amount, ZERO, ZERO, ZERO, now);
@@ -156,6 +160,7 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
     @Transactional(rollbackFor = Exception.class)
     public WalletTransaction freeze(WalletFreezeOperationBo bo) {
         String tenantId = currentTenantId();
+        requireExistingMember(tenantId, bo.getMemberId());
         BigDecimal amount = requirePositive(bo.getAmount(), "wallet.freeze.amount.positive");
         Date now = new Date();
         String freezeNo = StringUtils.blankToDefault(bo.getFreezeNo(), "WF" + IdUtil.getSnowflakeNextIdStr());
@@ -218,6 +223,7 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
     @Transactional(rollbackFor = Exception.class)
     public int addValidTurnover(WalletTurnoverBo bo) {
         String tenantId = currentTenantId();
+        requireExistingMember(tenantId, bo.getMemberId());
         BigDecimal validTurnoverAmount = requirePositive(bo.getValidTurnoverAmount(), "wallet.turnover.amount.positive");
         Date now = new Date();
         WalletTransaction transaction = buildTurnoverTransaction(tenantId, bo, validTurnoverAmount, now);
@@ -393,6 +399,9 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
         if (freeze == null) {
             throw new ServiceException(MessageUtils.message("wallet.freeze.record.not.exists"));
         }
+        requireExistingMember(tenantId, freeze.getMemberId());
+        bo.setMemberId(freeze.getMemberId());
+        bo.setCurrencyCode(freeze.getCurrencyCode());
         BigDecimal amount = normalizeAmount(freeze.getAmount());
         WalletTransaction transaction = buildFreezeTransaction(tenantId, bo, operation, amount, now);
         WalletTransaction exists = walletTransactionMapper.selectByIdempotencyKey(tenantId, bo.getIdempotencyKey());
@@ -517,29 +526,25 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
         }
     }
 
-    private WalletReleaseMode resolveReleaseMode(WalletCreditBo bo, WalletRuleVo rule) {
-        WalletReleaseMode ruleMode = parseReleaseMode(rule.getReleaseMode());
+    private WalletReleaseMode resolveReleaseMode(WalletCreditBo bo, BigDecimal requiredTurnover) {
         if (StringUtils.isBlank(bo.getReleaseMode())) {
-            return ruleMode;
+            return normalizeAmount(requiredTurnover).compareTo(ZERO) > 0
+                ? WalletReleaseMode.AFTER_TURNOVER : WalletReleaseMode.IMMEDIATE;
         }
-        WalletReleaseMode requestMode = parseReleaseMode(bo.getReleaseMode());
-        if (requestMode != ruleMode) {
-            if (StringUtils.equals("MANUAL_ADJUST", bo.getSourceType())
-                && Boolean.TRUE.equals(bo.getManualAdjustOverride())) {
-                return requestMode;
-            }
-            throw new ServiceException(MessageUtils.message("wallet.manual.adjust.release.override.only"));
-        }
-        return ruleMode;
+        return parseReleaseMode(bo.getReleaseMode());
     }
 
-    private BigDecimal resolveRequiredTurnover(WalletCreditBo bo, WalletRuleVo rule) {
-        BigDecimal requestTurnover = bo.getRequiredTurnover();
-        BigDecimal defaultTurnover = defaultZero(rule.getDefaultRequiredTurnover());
-        if (SystemConstants.NORMAL.equals(rule.getTurnoverRequired())) {
-            return normalizeAmount(requestTurnover == null ? defaultTurnover : requestTurnover);
+    private BigDecimal resolveRequiredTurnover(WalletCreditBo bo, BigDecimal amount) {
+        BigDecimal turnoverRequiredAmount = bo.getTurnoverRequiredAmount();
+        if (turnoverRequiredAmount != null && turnoverRequiredAmount.compareTo(ZERO) > 0) {
+            return normalizeAmount(turnoverRequiredAmount);
         }
-        return normalizeAmount(requestTurnover == null ? defaultTurnover : requestTurnover);
+        BigDecimal turnoverMultiplier = bo.getTurnoverMultiplier();
+        if (turnoverMultiplier != null && turnoverMultiplier.compareTo(ZERO) > 0) {
+            return normalizeAmount(amount.multiply(turnoverMultiplier));
+        }
+        BigDecimal requestTurnover = bo.getRequiredTurnover();
+        return normalizeAmount(requestTurnover == null ? ZERO : requestTurnover);
     }
 
     private WalletReleaseStatus releaseStatus(WalletReleaseMode releaseMode, BigDecimal requiredTurnover) {
@@ -566,6 +571,13 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
             throw new ServiceException(MessageUtils.message(message));
         }
         return normalized;
+    }
+
+    private void requireExistingMember(String tenantId, Long memberId) {
+        Integer count = jdbcTemplate.queryForObject(MEMBER_EXISTS_SQL, Integer.class, tenantId, memberId);
+        if (count == null || count <= 0) {
+            throw new ServiceException(MessageUtils.message("member.profile.not.exists"));
+        }
     }
 
     private BigDecimal defaultZero(BigDecimal value) {

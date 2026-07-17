@@ -54,8 +54,12 @@ public class WalletCurrencyServiceImpl implements IWalletCurrencyService {
             .set(WalletCurrency::getCreditEnabled, bo.getCreditEnabled())
             .set(WalletCurrency::getDebitEnabled, bo.getDebitEnabled())
             .set(WalletCurrency::getFreezeEnabled, bo.getFreezeEnabled())
+            .set(WalletCurrency::getDepositEnabled, bo.getDepositEnabled())
             .set(WalletCurrency::getWithdrawEnabled, bo.getWithdrawEnabled())
             .set(WalletCurrency::getExchangeEnabled, bo.getExchangeEnabled())
+            .set(WalletCurrency::getExchangeInEnabled, bo.getExchangeInEnabled())
+            .set(WalletCurrency::getExchangeOutEnabled, bo.getExchangeOutEnabled())
+            .set(WalletCurrency::getPlayEnabled, bo.getPlayEnabled())
             .set(WalletCurrency::getNegativeAllowed, bo.getNegativeAllowed())
             .set(WalletCurrency::getSortOrder, bo.getSortOrder())
             .set(WalletCurrency::getRemark, bo.getRemark());
@@ -71,8 +75,12 @@ public class WalletCurrencyServiceImpl implements IWalletCurrencyService {
         lqw.eq(StringUtils.isNotBlank(bo.getCreditEnabled()), WalletCurrency::getCreditEnabled, bo.getCreditEnabled());
         lqw.eq(StringUtils.isNotBlank(bo.getDebitEnabled()), WalletCurrency::getDebitEnabled, bo.getDebitEnabled());
         lqw.eq(StringUtils.isNotBlank(bo.getFreezeEnabled()), WalletCurrency::getFreezeEnabled, bo.getFreezeEnabled());
+        lqw.eq(StringUtils.isNotBlank(bo.getDepositEnabled()), WalletCurrency::getDepositEnabled, bo.getDepositEnabled());
         lqw.eq(StringUtils.isNotBlank(bo.getWithdrawEnabled()), WalletCurrency::getWithdrawEnabled, bo.getWithdrawEnabled());
         lqw.eq(StringUtils.isNotBlank(bo.getExchangeEnabled()), WalletCurrency::getExchangeEnabled, bo.getExchangeEnabled());
+        lqw.eq(StringUtils.isNotBlank(bo.getExchangeInEnabled()), WalletCurrency::getExchangeInEnabled, bo.getExchangeInEnabled());
+        lqw.eq(StringUtils.isNotBlank(bo.getExchangeOutEnabled()), WalletCurrency::getExchangeOutEnabled, bo.getExchangeOutEnabled());
+        lqw.eq(StringUtils.isNotBlank(bo.getPlayEnabled()), WalletCurrency::getPlayEnabled, bo.getPlayEnabled());
         lqw.orderByAsc(WalletCurrency::getSortOrder);
         return lqw;
     }

@@ -1,20 +1,19 @@
 package com.gameluck.wallet.domain.vo;
 
-import com.gameluck.wallet.domain.WalletRule;
+import com.gameluck.wallet.domain.WalletCurrencyPolicy;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * Wallet source rule view object.
+ * Wallet currency policy view object.
  */
 @Data
-@AutoMapper(target = WalletRule.class)
-public class WalletRuleVo implements Serializable {
+@AutoMapper(target = WalletCurrencyPolicy.class)
+public class WalletCurrencyPolicyVo implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -23,29 +22,37 @@ public class WalletRuleVo implements Serializable {
 
     private String tenantId;
 
+    private String policyName;
+
     private String currencyCode;
 
-    private String sourceType;
+    private String memberTag;
 
-    private String ruleName;
+    private String vipLevel;
 
-    private String creditEnabled;
+    private String countryCode;
 
-    private String debitEnabled;
+    private String stateCode;
+
+    private String channel;
+
+    private String visibleEnabled;
+
+    private String depositEnabled;
 
     private String withdrawEnabled;
 
     private String exchangeEnabled;
 
-    private String releaseMode;
+    private String playEnabled;
 
-    private String turnoverRequired;
-
-    private BigDecimal defaultRequiredTurnover;
+    private Integer priority;
 
     private String status;
 
-    private Integer sortOrder;
+    private Date startTime;
+
+    private Date endTime;
 
     private String remark;
 

@@ -184,6 +184,81 @@ class PromotionRewardServiceImplTest {
         assertEquals(new BigDecimal("1.000000"), creditCaptor.getAllValues().get(1).getAmount());
         assertEquals("DAILY_REWARD", creditCaptor.getAllValues().get(0).getSourceType());
         assertEquals("DAILY_REWARD", creditCaptor.getAllValues().get(1).getSourceType());
+        assertEquals("DAILY_REWARD", creditCaptor.getAllValues().get(0).getFundPropertyCode());
+        assertEquals("DAILY_REWARD", creditCaptor.getAllValues().get(1).getFundPropertyCode());
+        assertNull(creditCaptor.getAllValues().get(0).getTurnoverMultiplier());
+        assertNull(creditCaptor.getAllValues().get(1).getTurnoverMultiplier());
+        assertEquals("ALL", creditCaptor.getAllValues().get(0).getGameScopeType());
+        assertEquals("ALL", creditCaptor.getAllValues().get(1).getGameScopeType());
+    }
+
+    @Test
+    @Tag("local")
+    void dailyLoginRewardPassesConfiguredTurnoverAndGameScopeFieldsToWallet() {
+        PromotionRewardMapper rewardMapper = mock(PromotionRewardMapper.class);
+        PromotionClaimMapper claimMapper = mock(PromotionClaimMapper.class);
+        IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
+        PromotionRewardServiceImpl service = service(rewardMapper, claimMapper, walletCoreService);
+
+        PromotionReward reward = activeReward();
+        reward.setPromotionType("DAILY_LOGIN");
+        reward.setClaimCycle("DAILY");
+        reward.setRewardItems("""
+            [{"currencyCode":"SC","rewardAmount":"20.000000","fundPropertyCode":"ACTIVITY_REWARD","turnoverMultiplier":"10","gameScopeType":"GAME","gameScopeValue":"slot-001,slot-002","turnoverExpireDays":7}]
+            """);
+        when(rewardMapper.selectActiveDailyLoginReward("000000")).thenReturn(reward);
+        when(claimMapper.selectDailyClaim("000000", 10L, 1001L, LocalDate.now())).thenReturn(null);
+        when(claimMapper.insert(any(PromotionClaim.class))).thenReturn(1);
+        when(claimMapper.updateById(any(PromotionClaim.class))).thenReturn(1);
+        WalletTransaction sc = new WalletTransaction();
+        sc.setTransactionNo("WT_SC_DAILY");
+        sc.setStatus(WalletTransactionStatus.SUCCESS.name());
+        when(walletCoreService.credit(any())).thenReturn(sc);
+
+        service.claimDailyLoginReward(1001L);
+
+        ArgumentCaptor<WalletCreditBo> creditCaptor = ArgumentCaptor.forClass(WalletCreditBo.class);
+        verify(walletCoreService).credit(creditCaptor.capture());
+        WalletCreditBo creditBo = creditCaptor.getValue();
+        assertEquals("ACTIVITY_REWARD", creditBo.getFundPropertyCode());
+        assertEquals(new BigDecimal("10"), creditBo.getTurnoverMultiplier());
+        assertEquals("GAME", creditBo.getGameScopeType());
+        assertEquals("slot-001,slot-002", creditBo.getGameScopeValue());
+        assertNotNull(creditBo.getTurnoverExpireTime());
+    }
+
+    @Test
+    @Tag("local")
+    void dailyLoginRewardPassesFixedTurnoverAmountToWallet() {
+        PromotionRewardMapper rewardMapper = mock(PromotionRewardMapper.class);
+        PromotionClaimMapper claimMapper = mock(PromotionClaimMapper.class);
+        IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
+        PromotionRewardServiceImpl service = service(rewardMapper, claimMapper, walletCoreService);
+
+        PromotionReward reward = activeReward();
+        reward.setPromotionType("DAILY_LOGIN");
+        reward.setClaimCycle("DAILY");
+        reward.setRewardItems("""
+            [{"currencyCode":"SC","rewardAmount":"20.000000","fundPropertyCode":"ACTIVITY_REWARD","turnoverRequiredAmount":"200.000000","gameScopeType":"PROVIDER","gameScopeValue":"provider-a"}]
+            """);
+        when(rewardMapper.selectActiveDailyLoginReward("000000")).thenReturn(reward);
+        when(claimMapper.selectDailyClaim("000000", 10L, 1001L, LocalDate.now())).thenReturn(null);
+        when(claimMapper.insert(any(PromotionClaim.class))).thenReturn(1);
+        when(claimMapper.updateById(any(PromotionClaim.class))).thenReturn(1);
+        WalletTransaction sc = new WalletTransaction();
+        sc.setTransactionNo("WT_SC_DAILY");
+        sc.setStatus(WalletTransactionStatus.SUCCESS.name());
+        when(walletCoreService.credit(any())).thenReturn(sc);
+
+        service.claimDailyLoginReward(1001L);
+
+        ArgumentCaptor<WalletCreditBo> creditCaptor = ArgumentCaptor.forClass(WalletCreditBo.class);
+        verify(walletCoreService).credit(creditCaptor.capture());
+        WalletCreditBo creditBo = creditCaptor.getValue();
+        assertEquals(new BigDecimal("200.000000"), creditBo.getTurnoverRequiredAmount());
+        assertNull(creditBo.getTurnoverMultiplier());
+        assertEquals("PROVIDER", creditBo.getGameScopeType());
+        assertEquals("provider-a", creditBo.getGameScopeValue());
     }
 
     @Test
@@ -360,6 +435,32 @@ class PromotionRewardServiceImplTest {
         assertEquals(new BigDecimal("100.000000"), state.getRewardItems().get(0).getRewardAmount());
         assertNull(state.getClaimNo());
         assertNull(state.getWalletTransactionNo());
+        verifyNoInteractions(walletCoreService);
+    }
+
+    @Test
+    @Tag("local")
+    void dailyLoginRewardStateIgnoresLegacyTurnoverModeInSeededRewardItems() {
+        PromotionRewardMapper rewardMapper = mock(PromotionRewardMapper.class);
+        PromotionClaimMapper claimMapper = mock(PromotionClaimMapper.class);
+        IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
+        PromotionRewardServiceImpl service = service(rewardMapper, claimMapper, walletCoreService);
+
+        PromotionReward reward = activeReward();
+        reward.setPromotionType("DAILY_LOGIN");
+        reward.setRewardItems("""
+            [{"currencyCode":"GC","rewardAmount":"100.000000","fundPropertyCode":"DAILY_REWARD","turnoverMode":"NONE","gameScopeType":"ALL"},
+             {"currencyCode":"SC","rewardAmount":"1.000000","fundPropertyCode":"DAILY_REWARD","turnoverMode":"NONE","gameScopeType":"ALL"}]
+            """);
+        when(rewardMapper.selectActiveDailyLoginReward("000000")).thenReturn(reward);
+        when(claimMapper.selectDailyClaim("000000", 10L, 1001L, LocalDate.now())).thenReturn(null);
+
+        ClientDailyLoginRewardVo state = service.dailyLoginReward(1001L);
+
+        assertEquals("UNCLAIMED", state.getClaimStatus());
+        assertEquals(2, state.getRewardItems().size());
+        assertEquals("GC", state.getRewardItems().get(0).getCurrencyCode());
+        assertEquals("SC", state.getRewardItems().get(1).getCurrencyCode());
         verifyNoInteractions(walletCoreService);
     }
 

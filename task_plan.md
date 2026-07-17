@@ -61,3 +61,8 @@
 | 时间 | 错误 | 处理 |
 | --- | --- | --- |
 | 2026-06-25 | 当前目录不是 git 仓库，无法提交设计文档 | 继续创建文件，不擅自初始化 git |
+## Current Recovery Pointer
+
+| Phase | Status | Goal | Artifact |
+| --- | --- | --- | --- |
+| 17. Wallet policy / turnover / exchange foundation | in_progress | Consolidate wallet credit policy snapshots, fund property templates, currency visibility policies, turnover tasks, exchange rule skeleton, and deprecate misleading wallet-rule operator surface | docs/superpowers/plans/2026-07-13-wallet-policy-turnover-exchange-foundation.md |

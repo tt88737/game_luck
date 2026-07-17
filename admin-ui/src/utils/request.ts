@@ -5,6 +5,7 @@ import { tansParams, blobValidate } from '@/utils/gameluck';
 import cache from '@/plugins/cache';
 import { HttpStatus } from '@/enums/RespEnum';
 import { errorCode } from '@/utils/errorCode';
+import { resolveResponseMessage } from '@/utils/responseMessage';
 import { LoadingInstance } from 'element-plus/es/components/loading/src/loading';
 import FileSaver from 'file-saver';
 import { getLanguage } from '@/lang';
@@ -129,7 +130,7 @@ service.interceptors.response.use(
     const code = res.data.code || HttpStatus.SUCCESS;
     const silentError = res.config.headers?.silentError === true || res.config.headers?.silentError === 'true';
     // 获取错误信息
-    const msg = tt(errorCode[code] || res.data.msg || errorCode['default']);
+    const msg = tt(resolveResponseMessage(code, res.data.msg, errorCode[code] || errorCode['default']));
     // 二进制数据则直接返回
     if (res.request.responseType === 'blob' || res.request.responseType === 'arraybuffer') {
       return res.data;

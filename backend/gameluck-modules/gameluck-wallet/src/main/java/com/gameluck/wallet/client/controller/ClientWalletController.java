@@ -2,8 +2,10 @@ package com.gameluck.wallet.client.controller;
 
 import cn.dev33.satoken.annotation.SaIgnore;
 import com.gameluck.common.core.domain.R;
+import com.gameluck.wallet.client.domain.vo.ClientExchangeOptionVo;
 import com.gameluck.wallet.client.domain.vo.ClientPageVo;
 import com.gameluck.wallet.client.domain.vo.ClientWalletAccountVo;
+import com.gameluck.wallet.client.domain.vo.ClientWalletCurrencyVo;
 import com.gameluck.wallet.client.domain.vo.ClientWalletLedgerVo;
 import com.gameluck.wallet.client.service.ClientWalletService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,18 @@ public class ClientWalletController {
     @GetMapping("/accounts")
     public R<List<ClientWalletAccountVo>> accounts(@RequestHeader(value = "Authorization", required = false) String authorization) {
         return R.ok(clientWalletService.accounts(authorization));
+    }
+
+    @GetMapping("/currencies")
+    public R<List<ClientWalletCurrencyVo>> currencies(@RequestHeader(value = "Authorization", required = false) String authorization,
+                                                      @RequestHeader(value = "X-Client-Channel", required = false, defaultValue = "H5") String channel) {
+        return R.ok(clientWalletService.currencies(authorization, channel));
+    }
+
+    @GetMapping("/exchange/options")
+    public R<List<ClientExchangeOptionVo>> exchangeOptions(@RequestHeader(value = "Authorization", required = false) String authorization,
+                                                           @RequestHeader(value = "X-Client-Channel", required = false, defaultValue = "H5") String channel) {
+        return R.ok(clientWalletService.exchangeOptions(authorization, channel));
     }
 
     @GetMapping("/ledgers")

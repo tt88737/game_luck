@@ -35,9 +35,11 @@ INSERT INTO gl_wallet_transaction (
    0.000000, 'demo-seed-sc', 'SUCCESS', 'Demo SC seed', NOW(), NOW());
 
 INSERT INTO gl_promotion_reward (
-  id, tenant_id, promotion_no, promotion_name, currency_code, reward_amount, status,
+  id, tenant_id, promotion_no, promotion_name, promotion_type, currency_code, reward_amount, claim_cycle, daily_claim_limit, reward_items, status,
   start_time, end_time, remark, version, del_flag, create_time, update_time
 ) VALUES (
-  13001, '000000', 'PR-DEMO-DAILY-SC', '每日 SC 奖励', 'SC', 8.000000, 'ACTIVE',
+  13001, '000000', 'PR-DEMO-DAILY-SC', '每日 SC 奖励', 'GENERAL', 'SC', 8.000000, 'ONCE', 1,
+  JSON_ARRAY(JSON_OBJECT('currencyCode', 'SC', 'rewardAmount', '8.000000', 'fundPropertyCode', 'ACTIVITY_REWARD', 'turnoverMode', 'NONE', 'gameScopeType', 'ALL')),
+  'ACTIVE',
   NULL, NULL, 'H5 demo promotion reward', 0, '0', NOW(), NOW()
 );

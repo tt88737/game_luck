@@ -1,4 +1,5 @@
 export type ManualAdjustStrategy = 'IMMEDIATE' | 'AFTER_TURNOVER' | 'MANUAL_REVIEW';
+export type ManualAdjustTurnoverMode = 'FIXED' | 'MULTIPLIER';
 
 export interface ManualAdjustForm {
   adjustmentNo: string;
@@ -6,7 +7,10 @@ export interface ManualAdjustForm {
   currencyCode: string;
   amount: number | undefined;
   strategy: ManualAdjustStrategy;
+  turnoverRequired?: boolean;
+  turnoverMode?: ManualAdjustTurnoverMode;
   requiredTurnover?: number;
+  turnoverMultiplier?: number;
   reason: string;
 }
 

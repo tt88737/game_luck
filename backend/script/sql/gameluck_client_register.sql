@@ -64,21 +64,3 @@ SET @sql = IF(
 PREPARE stmt FROM @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
-
-INSERT INTO gl_wallet_rule
-(id, tenant_id, currency_code, source_type, rule_name, credit_enabled, debit_enabled, withdraw_enabled, exchange_enabled,
- release_mode, turnover_required, default_required_turnover, status, sort_order, remark, create_time, update_time, version, del_flag)
-VALUES
-(1900000000000000601, '000000', 'GC', 'REGISTER_BONUS', 'GC registration bonus', '0', '1', '1', '1',
- 'IMMEDIATE', '1', 0.000000, '0', 10, 'H5 registration GC bonus rule', NOW(), NOW(), 0, '0'),
-(1900000000000000602, '000000', 'SC', 'REGISTER_BONUS', 'SC registration bonus', '0', '1', '0', '1',
- 'IMMEDIATE', '1', 0.000000, '0', 20, 'H5 registration SC bonus rule', NOW(), NOW(), 0, '0')
-ON DUPLICATE KEY UPDATE
-  rule_name = VALUES(rule_name),
-  credit_enabled = VALUES(credit_enabled),
-  release_mode = VALUES(release_mode),
-  turnover_required = VALUES(turnover_required),
-  default_required_turnover = VALUES(default_required_turnover),
-  status = VALUES(status),
-  remark = VALUES(remark),
-  update_time = NOW();

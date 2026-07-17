@@ -17,6 +17,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         from gl_wallet_transaction
         where tenant_id = #{tenantId}
           and member_id = #{memberId}
+          and currency_code in
+          <foreach collection="visibleCurrencyCodes" item="visibleCurrencyCode" open="(" separator="," close=")">
+            #{visibleCurrencyCode}
+          </foreach>
           <if test="currencyCode != null and currencyCode != ''">
             and currency_code = #{currencyCode}
           </if>
@@ -29,6 +33,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         from gl_wallet_transaction
         where tenant_id = #{tenantId}
           and member_id = #{memberId}
+          and currency_code in
+          <foreach collection="visibleCurrencyCodes" item="visibleCurrencyCode" open="(" separator="," close=")">
+            #{visibleCurrencyCode}
+          </foreach>
           <if test="currencyCode != null and currencyCode != ''">
             and currency_code = #{currencyCode}
           </if>

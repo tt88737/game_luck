@@ -40,7 +40,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -59,6 +61,9 @@ public class PromotionRewardServiceImpl implements IPromotionRewardService {
     private static final String SOURCE_TYPE = "PROMOTION";
     private static final String DAILY_LOGIN_TYPE = "DAILY_LOGIN";
     private static final String DAILY_REWARD_SOURCE = "DAILY_REWARD";
+    private static final String FUND_PROPERTY_ACTIVITY_REWARD = "ACTIVITY_REWARD";
+    private static final String FUND_PROPERTY_DAILY_REWARD = "DAILY_REWARD";
+    private static final String GAME_SCOPE_ALL = "ALL";
     private static final LocalDate ONCE_CLAIM_DATE = LocalDate.of(1000, 1, 1);
     private static final int MONEY_SCALE = 6;
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -180,7 +185,7 @@ public class PromotionRewardServiceImpl implements IPromotionRewardService {
         claim.setUpdateTime(now);
         claimMapper.insert(claim);
 
-        WalletTransaction transaction = walletCoreService.credit(buildCreditBo(claim));
+        WalletTransaction transaction = walletCoreService.credit(buildCreditBo(claim, reward));
         claim.setWalletTransactionNo(transaction.getTransactionNo());
         claim.setUpdateTime(now);
         if (WalletTransactionStatus.SUCCESS.name().equals(transaction.getStatus())) {
@@ -362,7 +367,7 @@ public class PromotionRewardServiceImpl implements IPromotionRewardService {
         }
     }
 
-    private WalletCreditBo buildCreditBo(PromotionClaim claim) {
+    private WalletCreditBo buildCreditBo(PromotionClaim claim, PromotionReward reward) {
         WalletCreditBo bo = new WalletCreditBo();
         bo.setIdempotencyKey(claim.getIdempotencyKey());
         bo.setMemberId(claim.getMemberId());
@@ -370,6 +375,9 @@ public class PromotionRewardServiceImpl implements IPromotionRewardService {
         bo.setSourceType(SOURCE_TYPE);
         bo.setBusinessNo(claim.getClaimNo());
         bo.setAmount(claim.getRewardAmount());
+        bo.setSourceId(claim.getPromotionId() == null ? null : claim.getPromotionId().toString());
+        PromotionRewardItemBo item = firstRewardItem(reward);
+        applyRewardItemPolicy(bo, item, FUND_PROPERTY_ACTIVITY_REWARD);
         bo.setRemark(MessageUtils.message("promotion.wallet.remark.simulated.reward"));
         return bo;
     }
@@ -382,8 +390,25 @@ public class PromotionRewardServiceImpl implements IPromotionRewardService {
         bo.setSourceType(DAILY_REWARD_SOURCE);
         bo.setBusinessNo(claim.getClaimNo());
         bo.setAmount(item.getRewardAmount());
+        bo.setSourceId(claim.getPromotionId() == null ? null : claim.getPromotionId().toString());
+        applyRewardItemPolicy(bo, item, FUND_PROPERTY_DAILY_REWARD);
         bo.setRemark(MessageUtils.message("promotion.wallet.remark.daily.login"));
         return bo;
+    }
+
+    private void applyRewardItemPolicy(WalletCreditBo bo, PromotionRewardItemBo item, String defaultFundPropertyCode) {
+        bo.setFundPropertyCode(item == null
+            ? defaultFundPropertyCode
+            : StringUtils.blankToDefault(item.getFundPropertyCode(), defaultFundPropertyCode));
+        bo.setTurnoverMultiplier(item == null ? null : item.getTurnoverMultiplier());
+        bo.setTurnoverRequiredAmount(item == null ? null : item.getTurnoverRequiredAmount());
+        bo.setGameScopeType(item == null ? GAME_SCOPE_ALL : StringUtils.blankToDefault(item.getGameScopeType(), GAME_SCOPE_ALL));
+        if (item != null) {
+            bo.setGameScopeValue(item.getGameScopeValue());
+            if (item.getTurnoverExpireDays() != null && item.getTurnoverExpireDays() > 0) {
+                bo.setTurnoverExpireTime(Date.from(Instant.now().plus(item.getTurnoverExpireDays(), ChronoUnit.DAYS)));
+            }
+        }
     }
 
     private String currentTenantId() {
@@ -424,6 +449,14 @@ public class PromotionRewardServiceImpl implements IPromotionRewardService {
         item.setCurrencyCode(StringUtils.blankToDefault(reward.getCurrencyCode(), DEFAULT_CURRENCY));
         item.setRewardAmount(normalizePositive(reward.getRewardAmount()));
         return List.of(item);
+    }
+
+    private PromotionRewardItemBo firstRewardItem(PromotionReward reward) {
+        if (reward == null || StringUtils.isBlank(reward.getRewardItems())) {
+            return null;
+        }
+        List<PromotionRewardItemBo> items = rewardItems(reward);
+        return items.isEmpty() ? null : items.get(0);
     }
 
     private List<PromotionRewardItemBo> parseRewardItems(String rewardItems) {

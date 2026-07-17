@@ -1,6 +1,5 @@
 export type BusinessLabelCategory =
   | 'sourceType'
-  | 'walletRuleSourceType'
   | 'method'
   | 'walletOperation'
   | 'walletTransactionStatus'
@@ -34,15 +33,8 @@ const standardSourceTypeLabels: LabelItem[] = [
   { value: 'TURNOVER', label: '\u6d41\u6c34' }
 ];
 
-const historicalSourceTypeLabels: LabelItem[] = [
-  { value: 'GAME_PAYOUT', label: '\u6e38\u620f\u6d3e\u5956\uff08\u5386\u53f2\u6765\u6e90\uff09' },
-  { value: 'ADJUST', label: '\u4eba\u5de5\u8c03\u8d26\uff08\u5386\u53f2\u6765\u6e90\uff09' },
-  { value: 'ADJUSTMENT', label: '\u4eba\u5de5\u8c03\u8d26\uff08\u5386\u53f2\u6765\u6e90\uff09' }
-];
-
 const labelGroups: Record<BusinessLabelCategory, LabelItem[]> = {
-  sourceType: [...standardSourceTypeLabels, ...historicalSourceTypeLabels],
-  walletRuleSourceType: standardSourceTypeLabels,
+  sourceType: standardSourceTypeLabels,
   method: [{ value: 'SIMULATED', label: '\u5e73\u53f0\u6a21\u62df' }],
   walletOperation: [
     { value: 'CREDIT', label: '\u5165\u8d26' },
@@ -130,33 +122,6 @@ export const businessLabel = (category: BusinessLabelCategory, value?: string | 
   const item = labelGroups[category]?.find((option) => option.value === rawValue);
   const label = item?.label || rawValue;
   return translate ? translate(label) : label;
-};
-
-const seededWalletRuleNames = new Set([
-  'GC game profit',
-  'SC game profit',
-  'SC promotion',
-  'RC deposit',
-  'RC manual adjustment',
-  'SC game refund',
-  'GC registration bonus',
-  'SC registration bonus'
-]);
-
-export const walletRuleNameLabel = (
-  ruleName?: string,
-  sourceType?: string,
-  currencyCode?: string,
-  translate?: BusinessLabelTranslator
-) => {
-  if (!ruleName) {
-    return '';
-  }
-  if (!seededWalletRuleNames.has(ruleName)) {
-    return ruleName;
-  }
-  const sourceLabel = businessLabel('sourceType', sourceType, translate);
-  return [currencyCode, sourceLabel].filter(Boolean).join(' ');
 };
 
 export const walletStatusType = (status?: string) => {

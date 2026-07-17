@@ -1,6 +1,13 @@
 export interface PromotionRewardItem {
   currencyCode: string;
   rewardAmount: number;
+  fundPropertyCode?: string;
+  turnoverMode?: 'NONE' | 'FIXED' | 'MULTIPLIER';
+  turnoverRequiredAmount?: number;
+  turnoverMultiplier?: number;
+  gameScopeType?: 'ALL' | 'CATEGORY' | 'PROVIDER' | 'GAME';
+  gameScopeValue?: string;
+  turnoverExpireDays?: number;
 }
 
 export interface PromotionRewardVO extends BaseEntity {

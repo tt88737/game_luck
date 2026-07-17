@@ -40,17 +40,37 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item :label="tt('资金策略')" prop="strategy">
+            <el-form-item :label="tt('到账方式')" prop="strategy">
               <el-radio-group v-model="form.strategy" class="strategy-radio-group">
-                <el-radio-button label="IMMEDIATE">{{ tt('无流水，立即到账') }}</el-radio-button>
-                <el-radio-button label="AFTER_TURNOVER">{{ tt('需要流水') }}</el-radio-button>
+                <el-radio-button label="IMMEDIATE">{{ tt('立即到账') }}</el-radio-button>
                 <el-radio-button label="MANUAL_REVIEW">{{ tt('人工审核') }}</el-radio-button>
               </el-radio-group>
             </el-form-item>
           </el-col>
-          <el-col v-if="form.strategy === 'AFTER_TURNOVER'" :xs="24" :md="12">
-            <el-form-item :label="tt('流水金额')" prop="requiredTurnover">
+          <el-col :span="24">
+            <el-form-item :label="tt('流水要求')" prop="turnoverRequired">
+              <el-radio-group v-model="form.turnoverRequired" class="strategy-radio-group">
+                <el-radio-button :label="false">{{ tt('不需要流水') }}</el-radio-button>
+                <el-radio-button :label="true">{{ tt('需要流水') }}</el-radio-button>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col v-if="form.turnoverRequired" :xs="24" :md="12">
+            <el-form-item :label="tt('流水计算')" prop="turnoverMode">
+              <el-radio-group v-model="form.turnoverMode">
+                <el-radio-button label="FIXED">{{ tt('固定流水金额') }}</el-radio-button>
+                <el-radio-button label="MULTIPLIER">{{ tt('调账金额倍数') }}</el-radio-button>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col v-if="form.turnoverRequired && form.turnoverMode === 'FIXED'" :xs="24" :md="12">
+            <el-form-item :label="tt('固定流水金额')" prop="requiredTurnover">
               <el-input-number v-model="form.requiredTurnover" :min="0" :precision="6" :step="1" controls-position="right" class="w-full" />
+            </el-form-item>
+          </el-col>
+          <el-col v-if="form.turnoverRequired && form.turnoverMode === 'MULTIPLIER'" :xs="24" :md="12">
+            <el-form-item :label="tt('流水倍数')" prop="turnoverMultiplier">
+              <el-input-number v-model="form.turnoverMultiplier" :min="0" :precision="4" :step="1" controls-position="right" class="w-full" />
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -93,7 +113,10 @@ const createForm = (): ManualAdjustForm => ({
   currencyCode: 'GC',
   amount: undefined,
   strategy: 'IMMEDIATE',
+  turnoverRequired: false,
+  turnoverMode: 'MULTIPLIER',
   requiredTurnover: 0,
+  turnoverMultiplier: 1,
   reason: ''
 });
 
@@ -115,17 +138,23 @@ const isValidMemberId = (value: string | number) => {
 const normalizePayload = (): ManualAdjustForm | undefined => {
   const amount = toFiniteNumber(form.value.amount);
   const requiredTurnover = toFiniteNumber(form.value.requiredTurnover);
+  const turnoverMultiplier = toFiniteNumber(form.value.turnoverMultiplier);
   if (amount === undefined || amount < minimumAmount) return undefined;
   if (!isValidMemberId(form.value.memberId)) return undefined;
-  if (form.value.strategy === 'AFTER_TURNOVER' && (requiredTurnover === undefined || requiredTurnover <= 0)) return undefined;
+  if (form.value.turnoverRequired && form.value.turnoverMode === 'FIXED' && (requiredTurnover === undefined || requiredTurnover <= 0)) return undefined;
+  if (form.value.turnoverRequired && form.value.turnoverMode === 'MULTIPLIER' && (turnoverMultiplier === undefined || turnoverMultiplier <= 0)) return undefined;
+  const strategy = form.value.strategy === 'IMMEDIATE' && form.value.turnoverRequired ? 'AFTER_TURNOVER' : form.value.strategy;
 
   return {
     adjustmentNo: form.value.adjustmentNo.trim(),
     memberId: typeof form.value.memberId === 'string' ? form.value.memberId.trim() : form.value.memberId,
     currencyCode: form.value.currencyCode,
     amount,
-    strategy: form.value.strategy,
-    requiredTurnover: form.value.strategy === 'AFTER_TURNOVER' ? requiredTurnover : 0,
+    strategy,
+    turnoverRequired: form.value.turnoverRequired,
+    turnoverMode: form.value.turnoverRequired ? form.value.turnoverMode : undefined,
+    requiredTurnover: form.value.turnoverRequired && form.value.turnoverMode === 'FIXED' ? requiredTurnover : 0,
+    turnoverMultiplier: form.value.turnoverRequired && form.value.turnoverMode === 'MULTIPLIER' ? turnoverMultiplier : 0,
     reason: form.value.reason.trim()
   };
 };
@@ -141,8 +170,17 @@ const validatePositiveAmount = (_rule: unknown, value: number | undefined, callb
 
 const validateRequiredTurnover = (_rule: unknown, value: number | undefined, callback: (error?: Error) => void) => {
   const requiredTurnover = toFiniteNumber(value);
-  if (form.value.strategy === 'AFTER_TURNOVER' && (requiredTurnover === undefined || requiredTurnover <= 0)) {
+  if (form.value.turnoverRequired && form.value.turnoverMode === 'FIXED' && (requiredTurnover === undefined || requiredTurnover <= 0)) {
     callback(new Error(tt('流水金额必须大于0')));
+    return;
+  }
+  callback();
+};
+
+const validateTurnoverMultiplier = (_rule: unknown, value: number | undefined, callback: (error?: Error) => void) => {
+  const turnoverMultiplier = toFiniteNumber(value);
+  if (form.value.turnoverRequired && form.value.turnoverMode === 'MULTIPLIER' && (turnoverMultiplier === undefined || turnoverMultiplier <= 0)) {
+    callback(new Error(tt('流水倍数必须大于0')));
     return;
   }
   callback();
@@ -161,10 +199,20 @@ const rules: FormRules<ManualAdjustForm> = {
   memberId: [{ required: true, validator: validateMemberId, trigger: 'blur' }],
   currencyCode: [{ required: true, message: tt('请选择币种'), trigger: 'change' }],
   amount: [{ required: true, validator: validatePositiveAmount, trigger: 'blur' }],
-  strategy: [{ required: true, message: tt('请选择资金策略'), trigger: 'change' }],
+  strategy: [{ required: true, message: tt('请选择到账方式'), trigger: 'change' }],
+  turnoverRequired: [{ required: true, message: tt('请选择流水要求'), trigger: 'change' }],
+  turnoverMode: [{ required: true, message: tt('请选择流水计算方式'), trigger: 'change' }],
   requiredTurnover: [{ validator: validateRequiredTurnover, trigger: 'blur' }],
+  turnoverMultiplier: [{ validator: validateTurnoverMultiplier, trigger: 'blur' }],
   reason: [{ required: true, message: tt('请输入调账原因'), trigger: 'blur' }]
 };
+
+watch(
+  () => [form.value.strategy, form.value.turnoverRequired, form.value.turnoverMode],
+  () => {
+    nextTick(() => manualAdjustFormRef.value?.clearValidate(['turnoverRequired', 'turnoverMode', 'requiredTurnover', 'turnoverMultiplier']));
+  }
+);
 
 const copyAdjustmentNo = async () => {
   if (navigator.clipboard?.writeText) {

@@ -18,10 +18,12 @@ public interface WalletTransactionMapper extends BaseMapperPlus<WalletTransactio
     List<WalletTransaction> selectClientLedgers(@Param("tenantId") String tenantId,
                                                 @Param("memberId") Long memberId,
                                                 @Param("currencyCode") String currencyCode,
+                                                @Param("visibleCurrencyCodes") List<String> visibleCurrencyCodes,
                                                 @Param("offset") int offset,
                                                 @Param("pageSize") int pageSize);
 
     Long countClientLedgers(@Param("tenantId") String tenantId,
                             @Param("memberId") Long memberId,
-                            @Param("currencyCode") String currencyCode);
+                            @Param("currencyCode") String currencyCode,
+                            @Param("visibleCurrencyCodes") List<String> visibleCurrencyCodes);
 }

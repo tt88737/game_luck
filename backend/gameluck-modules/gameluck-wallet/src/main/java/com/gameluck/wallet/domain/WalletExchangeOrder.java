@@ -12,12 +12,12 @@ import java.io.Serial;
 import java.math.BigDecimal;
 
 /**
- * Wallet source rule config gl_wallet_rule.
+ * Wallet currency exchange order.
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableName("gl_wallet_rule")
-public class WalletRule extends BaseEntity {
+@TableName("gl_wallet_exchange_order")
+public class WalletExchangeOrder extends BaseEntity {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -27,31 +27,33 @@ public class WalletRule extends BaseEntity {
 
     private String tenantId;
 
-    private String currencyCode;
+    private String exchangeOrderNo;
 
-    private String sourceType;
+    private Long memberId;
 
-    private String ruleName;
+    private Long exchangeRuleId;
 
-    private String creditEnabled;
+    private String fromCurrencyCode;
 
-    private String debitEnabled;
+    private BigDecimal fromAmount;
 
-    private String withdrawEnabled;
+    private String toCurrencyCode;
 
-    private String exchangeEnabled;
+    private BigDecimal toAmount;
 
-    private String releaseMode;
+    private BigDecimal feeAmount;
 
-    private String turnoverRequired;
+    private String debitTransactionNo;
 
-    private BigDecimal defaultRequiredTurnover;
+    private String creditTransactionNo;
+
+    private String turnoverTaskNo;
+
+    private String ruleSnapshot;
 
     private String status;
 
-    private Integer sortOrder;
-
-    private String remark;
+    private String failReason;
 
     @Version
     private Integer version;

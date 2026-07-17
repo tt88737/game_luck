@@ -26,8 +26,10 @@ public class WalletManualAdjustServiceImpl implements IWalletManualAdjustService
 
     private static final String SOURCE_TYPE = "MANUAL_ADJUST";
     private static final String IDEMPOTENCY_PREFIX = "manual-adjust:";
+    private static final String TURNOVER_MODE_MULTIPLIER = "MULTIPLIER";
     private static final BigDecimal ZERO = BigDecimal.ZERO;
     private static final int MONEY_SCALE = 6;
+    private static final int MULTIPLIER_SCALE = 4;
 
     private final IWalletCoreService walletCoreService;
 
@@ -35,6 +37,7 @@ public class WalletManualAdjustServiceImpl implements IWalletManualAdjustService
     public WalletTransaction adjust(WalletManualAdjustBo bo) {
         WalletReleaseMode releaseMode = resolveReleaseMode(bo.getStrategy());
         BigDecimal requiredTurnover = resolveRequiredTurnover(bo, releaseMode);
+        BigDecimal turnoverMultiplier = resolveTurnoverMultiplier(bo, releaseMode);
         String adjustmentNo = bo.getAdjustmentNo();
 
         WalletCreditBo creditBo = new WalletCreditBo();
@@ -46,6 +49,7 @@ public class WalletManualAdjustServiceImpl implements IWalletManualAdjustService
         creditBo.setAmount(bo.getAmount());
         creditBo.setReleaseMode(releaseMode == null ? null : releaseMode.name());
         creditBo.setRequiredTurnover(requiredTurnover);
+        creditBo.setTurnoverMultiplier(turnoverMultiplier);
         creditBo.setManualAdjustOverride(true);
         creditBo.setOperatorId(currentOperatorId());
         creditBo.setRemark(bo.getReason());
@@ -72,8 +76,11 @@ public class WalletManualAdjustServiceImpl implements IWalletManualAdjustService
         if (releaseMode == null) {
             return null;
         }
-        if (WalletReleaseMode.AFTER_TURNOVER != releaseMode) {
+        if (!isTurnoverRequired(bo, releaseMode)) {
             return ZERO;
+        }
+        if (isMultiplierMode(bo)) {
+            return null;
         }
         BigDecimal requiredTurnover = normalizeAmount(bo.getRequiredTurnover());
         if (requiredTurnover == null || requiredTurnover.compareTo(ZERO) <= 0) {
@@ -82,11 +89,34 @@ public class WalletManualAdjustServiceImpl implements IWalletManualAdjustService
         return requiredTurnover;
     }
 
+    private BigDecimal resolveTurnoverMultiplier(WalletManualAdjustBo bo, WalletReleaseMode releaseMode) {
+        if (releaseMode == null || !isTurnoverRequired(bo, releaseMode) || !isMultiplierMode(bo)) {
+            return null;
+        }
+        BigDecimal turnoverMultiplier = normalizeMultiplier(bo.getTurnoverMultiplier());
+        if (turnoverMultiplier == null || turnoverMultiplier.compareTo(ZERO) <= 0) {
+            throw new ServiceException(MessageUtils.message("wallet.manual.adjust.turnover.positive"));
+        }
+        return turnoverMultiplier;
+    }
+
     protected Long currentOperatorId() {
         return LoginHelper.getUserId();
     }
 
     private BigDecimal normalizeAmount(BigDecimal value) {
         return value == null ? null : value.setScale(MONEY_SCALE, RoundingMode.HALF_UP);
+    }
+
+    private BigDecimal normalizeMultiplier(BigDecimal value) {
+        return value == null ? null : value.setScale(MULTIPLIER_SCALE, RoundingMode.HALF_UP);
+    }
+
+    private boolean isMultiplierMode(WalletManualAdjustBo bo) {
+        return TURNOVER_MODE_MULTIPLIER.equalsIgnoreCase(StringUtils.trimToEmpty(bo.getTurnoverMode()));
+    }
+
+    private boolean isTurnoverRequired(WalletManualAdjustBo bo, WalletReleaseMode releaseMode) {
+        return Boolean.TRUE.equals(bo.getTurnoverRequired()) || WalletReleaseMode.AFTER_TURNOVER == releaseMode;
     }
 }

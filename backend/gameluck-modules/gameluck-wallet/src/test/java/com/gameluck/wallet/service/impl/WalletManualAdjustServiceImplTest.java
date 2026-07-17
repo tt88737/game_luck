@@ -73,6 +73,20 @@ class WalletManualAdjustServiceImplTest {
 
     @Test
     @Tag("local")
+    void afterTurnoverMultiplierRequiresPositiveMultiplier() {
+        IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
+        WalletManualAdjustServiceImpl service = manualAdjustService(walletCoreService);
+        WalletManualAdjustBo bo = manualAdjustBo("AFTER_TURNOVER", BigDecimal.ZERO);
+        bo.setTurnoverMode("MULTIPLIER");
+        bo.setTurnoverMultiplier(BigDecimal.ZERO);
+
+        assertThrows(ServiceException.class, () -> service.adjust(bo));
+
+        verify(walletCoreService, never()).credit(any());
+    }
+
+    @Test
+    @Tag("local")
     void immediateBuildsCreditBoWithImmediateReleaseAndZeroTurnover() {
         IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
         WalletTransaction expected = new WalletTransaction();
@@ -122,6 +136,43 @@ class WalletManualAdjustServiceImplTest {
 
     @Test
     @Tag("local")
+    void manualReviewCanRequireFixedTurnover() {
+        IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
+        when(walletCoreService.credit(any())).thenReturn(new WalletTransaction());
+        WalletManualAdjustServiceImpl service = manualAdjustService(walletCoreService);
+        WalletManualAdjustBo bo = manualAdjustBo("MANUAL_REVIEW", new BigDecimal("30"));
+        bo.setTurnoverRequired(Boolean.TRUE);
+
+        service.adjust(bo);
+
+        WalletCreditBo creditBo = capturedCreditBo(walletCoreService);
+        assertCommonCreditBo(creditBo);
+        assertEquals(WalletReleaseMode.MANUAL_REVIEW.name(), creditBo.getReleaseMode());
+        assertEquals(0, new BigDecimal("30").compareTo(creditBo.getRequiredTurnover()));
+    }
+
+    @Test
+    @Tag("local")
+    void manualReviewCanRequireTurnoverMultiplier() {
+        IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
+        when(walletCoreService.credit(any())).thenReturn(new WalletTransaction());
+        WalletManualAdjustServiceImpl service = manualAdjustService(walletCoreService);
+        WalletManualAdjustBo bo = manualAdjustBo("MANUAL_REVIEW", BigDecimal.ZERO);
+        bo.setTurnoverRequired(Boolean.TRUE);
+        bo.setTurnoverMode("MULTIPLIER");
+        bo.setTurnoverMultiplier(new BigDecimal("2.5"));
+
+        service.adjust(bo);
+
+        WalletCreditBo creditBo = capturedCreditBo(walletCoreService);
+        assertCommonCreditBo(creditBo);
+        assertEquals(WalletReleaseMode.MANUAL_REVIEW.name(), creditBo.getReleaseMode());
+        assertNull(creditBo.getRequiredTurnover());
+        assertEquals(0, new BigDecimal("2.5000").compareTo(creditBo.getTurnoverMultiplier()));
+    }
+
+    @Test
+    @Tag("local")
     void afterTurnoverBuildsCreditBoWithProvidedTurnover() {
         IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
         when(walletCoreService.credit(any())).thenReturn(new WalletTransaction());
@@ -133,6 +184,25 @@ class WalletManualAdjustServiceImplTest {
         assertCommonCreditBo(creditBo);
         assertEquals(WalletReleaseMode.AFTER_TURNOVER.name(), creditBo.getReleaseMode());
         assertEquals(0, new BigDecimal("25").compareTo(creditBo.getRequiredTurnover()));
+    }
+
+    @Test
+    @Tag("local")
+    void afterTurnoverBuildsCreditBoWithMultiplier() {
+        IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
+        when(walletCoreService.credit(any())).thenReturn(new WalletTransaction());
+        WalletManualAdjustServiceImpl service = manualAdjustService(walletCoreService);
+        WalletManualAdjustBo bo = manualAdjustBo("AFTER_TURNOVER", BigDecimal.ZERO);
+        bo.setTurnoverMode("MULTIPLIER");
+        bo.setTurnoverMultiplier(new BigDecimal("3"));
+
+        service.adjust(bo);
+
+        WalletCreditBo creditBo = capturedCreditBo(walletCoreService);
+        assertCommonCreditBo(creditBo);
+        assertEquals(WalletReleaseMode.AFTER_TURNOVER.name(), creditBo.getReleaseMode());
+        assertNull(creditBo.getRequiredTurnover());
+        assertEquals(0, new BigDecimal("3.0000").compareTo(creditBo.getTurnoverMultiplier()));
     }
 
     @Test

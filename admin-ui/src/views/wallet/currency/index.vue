@@ -11,7 +11,7 @@
               <el-input v-model="queryParams.currencyName" :placeholder="tt('请输入币种名称')" clearable @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item :label="tt('状态')" prop="enabled">
-              <el-select v-model="queryParams.enabled" :placeholder="tt('启用状态')" clearable>
+              <el-select v-model="queryParams.enabled" :placeholder="tt('请选择状态')" clearable class="!w-120px">
                 <el-option :label="tt('启用')" value="0" />
                 <el-option :label="tt('停用')" value="1" />
               </el-select>
@@ -41,12 +41,42 @@
             <el-tag :type="scope.row.enabled === '0' ? 'success' : 'info'">{{ formatEnable(scope.row.enabled) }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column :label="tt('入账')" align="center" width="80">
+        <el-table-column :label="tt('充值')" align="center" width="80">
+          <template #default="scope">
+            <el-tag :type="scope.row.depositEnabled === '0' ? 'success' : 'info'">{{ formatCapability(scope.row.depositEnabled) }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column :label="tt('提现')" align="center" width="80">
+          <template #default="scope">
+            <el-tag :type="scope.row.withdrawEnabled === '0' ? 'warning' : 'info'">{{ formatCapability(scope.row.withdrawEnabled) }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column :label="tt('兑付')" align="center" width="80">
+          <template #default="scope">
+            <el-tag :type="scope.row.exchangeEnabled === '0' ? 'success' : 'info'">{{ formatCapability(scope.row.exchangeEnabled) }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column :label="tt('币种兑入')" align="center" width="90">
+          <template #default="scope">
+            <el-tag :type="scope.row.exchangeInEnabled === '0' ? 'success' : 'info'">{{ formatCapability(scope.row.exchangeInEnabled) }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column :label="tt('币种兑出')" align="center" width="90">
+          <template #default="scope">
+            <el-tag :type="scope.row.exchangeOutEnabled === '0' ? 'warning' : 'info'">{{ formatCapability(scope.row.exchangeOutEnabled) }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column :label="tt('游戏使用')" align="center" width="100">
+          <template #default="scope">
+            <el-tag :type="scope.row.playEnabled === '0' ? 'success' : 'info'">{{ formatCapability(scope.row.playEnabled) }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column :label="tt('系统入账')" align="center" width="90">
           <template #default="scope">
             <el-tag :type="scope.row.creditEnabled === '0' ? 'success' : 'info'">{{ formatAllow(scope.row.creditEnabled) }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column :label="tt('扣账')" align="center" width="80">
+        <el-table-column :label="tt('系统扣账')" align="center" width="90">
           <template #default="scope">
             <el-tag :type="scope.row.debitEnabled === '0' ? 'success' : 'info'">{{ formatAllow(scope.row.debitEnabled) }}</el-tag>
           </template>
@@ -56,21 +86,11 @@
             <el-tag :type="scope.row.freezeEnabled === '0' ? 'success' : 'info'">{{ formatAllow(scope.row.freezeEnabled) }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column :label="tt('提现能力')" align="center" width="100">
-          <template #default="scope">
-            <el-tag :type="scope.row.withdrawEnabled === '0' ? 'warning' : 'info'">{{ formatCapability(scope.row.withdrawEnabled) }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column :label="tt('兑换能力')" align="center" width="100">
-          <template #default="scope">
-            <el-tag :type="scope.row.exchangeEnabled === '0' ? 'warning' : 'info'">{{ formatCapability(scope.row.exchangeEnabled) }}</el-tag>
-          </template>
-        </el-table-column>
         <el-table-column :label="tt('排序')" align="center" prop="sortOrder" width="80" />
         <el-table-column :label="tt('备注')" align="left" prop="remark" min-width="180" :show-overflow-tooltip="true" />
         <el-table-column :label="tt('操作')" align="center" width="90" fixed="right">
           <template #default="scope">
-            <el-tooltip :content="tt('编辑能力')" placement="top">
+            <el-tooltip :content="tt('编辑币种能力')" placement="top">
               <el-button v-hasPermi="['wallet:currency:edit']" link type="primary" icon="Edit" @click="handleUpdate(scope.row)"></el-button>
             </el-tooltip>
           </template>
@@ -80,8 +100,8 @@
       <pagination v-show="total > 0" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" :total="total" @pagination="getList" />
     </el-card>
 
-    <el-dialog v-model="dialog.visible" :title="dialog.title" width="560px" append-to-body>
-      <el-form ref="currencyFormRef" :model="form" label-width="100px">
+    <el-dialog v-model="dialog.visible" :title="dialog.title" width="720px" append-to-body>
+      <el-form ref="currencyFormRef" :model="form" label-width="120px">
         <el-form-item :label="tt('币种编码')">
           <el-input v-model="form.currencyCode" disabled />
         </el-form-item>
@@ -91,21 +111,59 @@
         <el-form-item :label="tt('启用状态')">
           <el-switch v-model="form.enabled" active-value="0" inactive-value="1" :active-text="tt('启用')" :inactive-text="tt('停用')" />
         </el-form-item>
-        <el-form-item :label="tt('允许入账')">
-          <el-switch v-model="form.creditEnabled" active-value="0" inactive-value="1" :active-text="tt('允许')" :inactive-text="tt('禁止')" />
-        </el-form-item>
-        <el-form-item :label="tt('允许扣账')">
-          <el-switch v-model="form.debitEnabled" active-value="0" inactive-value="1" :active-text="tt('允许')" :inactive-text="tt('禁止')" />
-        </el-form-item>
-        <el-form-item :label="tt('允许冻结')">
-          <el-switch v-model="form.freezeEnabled" active-value="0" inactive-value="1" :active-text="tt('允许')" :inactive-text="tt('禁止')" />
-        </el-form-item>
-        <el-form-item :label="tt('提现能力')">
-          <el-switch v-model="form.withdrawEnabled" active-value="0" inactive-value="1" :active-text="tt('具备')" :inactive-text="tt('不具备')" />
-        </el-form-item>
-        <el-form-item :label="tt('兑换能力')">
-          <el-switch v-model="form.exchangeEnabled" active-value="0" inactive-value="1" :active-text="tt('具备')" :inactive-text="tt('不具备')" />
-        </el-form-item>
+
+        <el-divider content-position="left">{{ tt('C端业务能力') }}</el-divider>
+        <el-row :gutter="12">
+          <el-col :span="12">
+            <el-form-item :label="tt('允许充值')">
+              <el-switch v-model="form.depositEnabled" active-value="0" inactive-value="1" :active-text="tt('允许')" :inactive-text="tt('禁止')" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item :label="tt('允许提现')">
+              <el-switch v-model="form.withdrawEnabled" active-value="0" inactive-value="1" :active-text="tt('允许')" :inactive-text="tt('禁止')" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item :label="tt('允许币种兑入')">
+              <el-switch v-model="form.exchangeInEnabled" active-value="0" inactive-value="1" :active-text="tt('允许')" :inactive-text="tt('禁止')" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item :label="tt('允许币种兑出')">
+              <el-switch v-model="form.exchangeOutEnabled" active-value="0" inactive-value="1" :active-text="tt('允许')" :inactive-text="tt('禁止')" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item :label="tt('允许游戏使用')">
+              <el-switch v-model="form.playEnabled" active-value="0" inactive-value="1" :active-text="tt('允许')" :inactive-text="tt('禁止')" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-divider content-position="left">{{ tt('系统账务能力') }}</el-divider>
+        <el-row :gutter="12">
+          <el-col :span="12">
+            <el-form-item :label="tt('允许系统入账')">
+              <el-switch v-model="form.creditEnabled" active-value="0" inactive-value="1" :active-text="tt('允许')" :inactive-text="tt('禁止')" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item :label="tt('允许系统扣账')">
+              <el-switch v-model="form.debitEnabled" active-value="0" inactive-value="1" :active-text="tt('允许')" :inactive-text="tt('禁止')" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item :label="tt('允许冻结')">
+              <el-switch v-model="form.freezeEnabled" active-value="0" inactive-value="1" :active-text="tt('允许')" :inactive-text="tt('禁止')" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item :label="tt('允许兑付')">
+              <el-switch v-model="form.exchangeEnabled" active-value="0" inactive-value="1" :active-text="tt('允许')" :inactive-text="tt('禁止')" />
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
@@ -145,8 +203,12 @@ const initFormData: CurrencyForm = {
   creditEnabled: '0',
   debitEnabled: '0',
   freezeEnabled: '0',
+  depositEnabled: '1',
   withdrawEnabled: '1',
   exchangeEnabled: '1',
+  exchangeInEnabled: '1',
+  exchangeOutEnabled: '1',
+  playEnabled: '1',
   negativeAllowed: '1',
   sortOrder: 0,
   remark: ''
@@ -168,7 +230,7 @@ const { queryParams, form } = toRefs(data);
 
 const formatEnable = (value?: string) => (value === '0' ? tt('启用') : tt('停用'));
 const formatAllow = (value?: string) => (value === '0' ? tt('允许') : tt('禁止'));
-const formatCapability = (value?: string) => (value === '0' ? tt('具备') : tt('不具备'));
+const formatCapability = (value?: string) => (value === '0' ? tt('支持') : tt('不支持'));
 
 const getList = async () => {
   loading.value = true;

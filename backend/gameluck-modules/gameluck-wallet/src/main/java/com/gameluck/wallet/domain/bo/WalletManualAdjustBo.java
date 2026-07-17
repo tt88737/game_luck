@@ -28,8 +28,15 @@ public class WalletManualAdjustBo {
 
     private String strategy;
 
+    private Boolean turnoverRequired;
+
+    private String turnoverMode;
+
     @DecimalMin(value = "0", message = "{wallet.required.turnover.nonnegative}")
     private BigDecimal requiredTurnover;
+
+    @DecimalMin(value = "0", message = "{wallet.required.turnover.nonnegative}")
+    private BigDecimal turnoverMultiplier;
 
     @NotBlank(message = "{wallet.manual.adjust.reason.required}")
     private String reason;

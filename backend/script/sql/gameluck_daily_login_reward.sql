@@ -168,30 +168,14 @@ SET @sql := IF(@idx_exists = 0,
 );
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
-INSERT INTO gl_wallet_rule
-(id, tenant_id, currency_code, source_type, rule_name, credit_enabled, debit_enabled, withdraw_enabled, exchange_enabled, release_mode, turnover_required, default_required_turnover, status, sort_order, remark, create_time)
-VALUES
-(1900000000000000611, '000000', 'GC', 'DAILY_REWARD', 'GC daily login reward', '0', '1', '1', '1', 'IMMEDIATE', '1', 0, '0', 11, 'Daily login GC reward.', NOW()),
-(1900000000000000612, '000000', 'SC', 'DAILY_REWARD', 'SC daily login reward', '0', '1', '0', '1', 'IMMEDIATE', '1', 0, '0', 12, 'Daily login SC reward.', NOW())
-ON DUPLICATE KEY UPDATE
-  rule_name = VALUES(rule_name),
-  credit_enabled = VALUES(credit_enabled),
-  debit_enabled = VALUES(debit_enabled),
-  withdraw_enabled = VALUES(withdraw_enabled),
-  exchange_enabled = VALUES(exchange_enabled),
-  release_mode = VALUES(release_mode),
-  turnover_required = VALUES(turnover_required),
-  default_required_turnover = VALUES(default_required_turnover),
-  status = VALUES(status),
-  sort_order = VALUES(sort_order),
-  remark = VALUES(remark),
-  update_time = NOW();
-
 INSERT INTO gl_promotion_reward
 (id, tenant_id, promotion_no, promotion_name, promotion_type, currency_code, reward_amount, claim_cycle, daily_claim_limit, reward_items, status, start_time, end_time, remark, create_time)
 VALUES
 (1900000000000000901, '000000', 'PR-DAILY-LOGIN-DEFAULT', 'Daily Login Reward', 'DAILY_LOGIN', 'GC', 100.000000, 'DAILY', 1,
- JSON_ARRAY(JSON_OBJECT('currencyCode', 'GC', 'rewardAmount', '100.000000'), JSON_OBJECT('currencyCode', 'SC', 'rewardAmount', '1.000000')),
+ JSON_ARRAY(
+   JSON_OBJECT('currencyCode', 'GC', 'rewardAmount', '100.000000', 'fundPropertyCode', 'DAILY_REWARD', 'turnoverMode', 'NONE', 'gameScopeType', 'ALL'),
+   JSON_OBJECT('currencyCode', 'SC', 'rewardAmount', '1.000000', 'fundPropertyCode', 'DAILY_REWARD', 'turnoverMode', 'NONE', 'gameScopeType', 'ALL')
+ ),
  'ACTIVE', NULL, NULL, 'Default configurable daily login reward.', NOW())
 ON DUPLICATE KEY UPDATE
   promotion_name = VALUES(promotion_name),

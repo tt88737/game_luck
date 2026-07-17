@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * Wallet credit request.
@@ -37,6 +38,24 @@ public class WalletCreditBo {
 
     @DecimalMin(value = "0", message = "{wallet.required.turnover.nonnegative}")
     private BigDecimal requiredTurnover;
+
+    private String fundPropertyCode;
+
+    @DecimalMin(value = "0", message = "{wallet.required.turnover.nonnegative}")
+    private BigDecimal turnoverMultiplier;
+
+    @DecimalMin(value = "0", message = "{wallet.required.turnover.nonnegative}")
+    private BigDecimal turnoverRequiredAmount;
+
+    private String gameScopeType;
+
+    private String gameScopeValue;
+
+    private String sourceId;
+
+    private String ruleSnapshot;
+
+    private Date turnoverExpireTime;
 
     @JsonIgnore
     private Boolean manualAdjustOverride;

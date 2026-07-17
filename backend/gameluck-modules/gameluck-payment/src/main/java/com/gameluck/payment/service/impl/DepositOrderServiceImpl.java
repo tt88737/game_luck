@@ -43,6 +43,8 @@ public class DepositOrderServiceImpl implements IDepositOrderService {
     private static final String DEFAULT_TENANT_ID = "000000";
     private static final String DEFAULT_CURRENCY = "RC";
     private static final String SIMULATED = "SIMULATED";
+    private static final String FUND_PROPERTY_DEPOSIT_PRINCIPAL = "DEPOSIT_PRINCIPAL";
+    private static final String GAME_SCOPE_ALL = "ALL";
     private static final int MONEY_SCALE = 6;
 
     private final DepositOrderMapper baseMapper;
@@ -169,6 +171,10 @@ public class DepositOrderServiceImpl implements IDepositOrderService {
         creditBo.setSourceType("DEPOSIT");
         creditBo.setBusinessNo(order.getDepositOrderNo());
         creditBo.setIdempotencyKey(order.getWalletIdempotencyKey());
+        creditBo.setFundPropertyCode(FUND_PROPERTY_DEPOSIT_PRINCIPAL);
+        creditBo.setTurnoverMultiplier(BigDecimal.ONE);
+        creditBo.setGameScopeType(GAME_SCOPE_ALL);
+        creditBo.setSourceId(order.getId() == null ? null : order.getId().toString());
         creditBo.setRemark("Simulated deposit success");
         return creditBo;
     }

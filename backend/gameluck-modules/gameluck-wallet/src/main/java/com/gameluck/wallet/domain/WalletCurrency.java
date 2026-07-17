@@ -40,9 +40,17 @@ public class WalletCurrency extends BaseEntity {
 
     private String freezeEnabled;
 
+    private String depositEnabled;
+
     private String withdrawEnabled;
 
     private String exchangeEnabled;
+
+    private String exchangeInEnabled;
+
+    private String exchangeOutEnabled;
+
+    private String playEnabled;
 
     private String negativeAllowed;
 

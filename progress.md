@@ -711,3 +711,45 @@
   - MySQL verification confirmed `gl_purchase_offer`, `gl_purchase_offer_grant_item`, `gl_purchase_order`, `gl_purchase_order_grant_snapshot`, `PURCHASE_GRANT_GC`, `PURCHASE_BONUS_SC`, purchase offer menu permissions, and `gl_purchase_*` dictionaries.
 - Remaining direction:
   - Next logical product slice is C-side purchase offer exposure and order fulfillment entry point, then runtime wallet credit smoke.
+
+## 2026-07-17 Wallet Policy / Turnover / Exchange Foundation Follow-up
+
+- Resumed the dirty worktree and confirmed the active uncommitted slice is the wallet policy, fund property, turnover task, exchange rule, and wallet-rule deprecation foundation.
+- Current architecture decision observed in code:
+  - Wallet credit policy is now carried by business requests and immutable snapshots.
+  - `gl_wallet_rule` is kept only as a compatibility table, while misleading seed data and B-side rule menu/API files are being removed.
+  - New B-side wallet pages exist for fund properties, currency policies, and exchange rules.
+- Verification passed:
+  - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-modules/gameluck-payment,gameluck-modules/gameluck-wallet,gameluck-modules/gameluck-promotion -am -DskipTests=false "-Dprofiles.active=local" "-Dtest=ClientPurchaseServiceTest,PurchaseOfferServiceImplTest,DepositOrderServiceImplTest,WalletCoreServiceImplTest,WalletTurnoverTaskServiceImplTest,PromotionRewardServiceImplTest,WalletCurrencyPolicyServiceImplTest,WalletExchangeRuleServiceImplTest,WalletFundPropertyTemplateServiceImplTest,WalletManualAdjustServiceImplTest,ClientWalletServiceTest" "-Dsurefire.failIfNoSpecifiedTests=false" test`
+    - Result: Maven `BUILD SUCCESS`; wallet 36 tests, payment 8 tests, promotion 15 tests; 0 failures.
+  - `pnpm --dir admin-ui check:i18n`
+    - Result: `i18n check passed`.
+  - `npm --prefix h5 run build`
+    - Result: Vite build passed.
+  - `$env:NODE_OPTIONS='--max-old-space-size=4096'; pnpm --dir admin-ui build:dev`
+    - Result: menu icon check passed, i18n check passed, Vite build passed with existing large chunk warnings.
+  - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal -DskipTests`
+    - Result: Maven `BUILD SUCCESS`.
+  - `git diff --check`
+    - Result: no whitespace errors; only CRLF conversion warnings.
+- Worktree hygiene notes:
+  - Implementation files are mixed with generated/runtime artifacts.
+  - Runtime artifacts observed but not touched: `backend-8080*.log`, `h5-5174*.log`, and `hs_err_pid*.mdmp`.
+- Local DB read-only verification:
+  - Wallet foundation tables exist: `gl_wallet_currency_policy`, `gl_wallet_fund_property_template`, `gl_wallet_turnover_task`, `gl_wallet_exchange_rule`, and `gl_wallet_exchange_order`.
+  - `gl_wallet_rule` table still exists for compatibility, with local row count `0`.
+  - Old `wallet/rule/index` menu/perms are absent.
+  - New menus are present: `wallet/fund-property/index`, `wallet/currency-policy/index`, and `wallet/exchange-rule/index`.
+- Bug fix found during log review:
+  - Historical backend log showed `promotion.reward.items.invalid` on `GET /api/client/promotions/daily-login`.
+  - Root cause: seeded `reward_items` still contains legacy `turnoverMode`, while `PromotionRewardItemBo` did not tolerate unknown JSON fields.
+  - Added regression test `dailyLoginRewardStateIgnoresLegacyTurnoverModeInSeededRewardItems`.
+  - Fixed by adding `@JsonIgnoreProperties(ignoreUnknown = true)` to `PromotionRewardItemBo`.
+  - Verified RED first: the new single test failed with `promotion.reward.items.invalid`.
+  - Verified GREEN and regression:
+    - Single regression test passed.
+    - Cross-module targeted Maven test passed: wallet 36 tests, payment 8 tests, promotion 16 tests; 0 failures.
+    - `pnpm --dir admin-ui check:i18n` passed.
+    - `npm --prefix h5 run build` passed.
+    - `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -pl gameluck-admin -am compile -Plocal -DskipTests` passed.
+    - `git diff --check` reported no whitespace errors; only CRLF conversion warnings.
