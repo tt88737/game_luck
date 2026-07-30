@@ -2386,3 +2386,11 @@
 - Fresh final verification passed Phase 46 backend tests `14/14`, both settlement frontend contracts, i18n, targeted ESLint, mutation/dependency safety scan, and `git diff --check`. A first CSV-only retry lacked reactor dependencies and a second retry exhausted native memory while services were active; stopping only verified project listeners and rerunning the full 14-test suite with a constrained JVM passed.
 - `task_plan.md` remains untouched because its historical mixed encoding contains invalid UTF-8 and rewriting it risks destructive transcoding. This progress entry and the checked implementation plan are the recovery source.
 - Phase 46 completed.
+
+## 2026-07-30 Phase 47 Settlement Payout Approval Planning
+
+- User selected one payout instruction per positive CLOSED settlement batch, maker/reviewer separation, approval as an internal terminal state that never claims funds were transferred, and no zero/negative payout instruction.
+- Approved an independent payout aggregate with `DRAFT / PENDING_APPROVAL / APPROVED / REJECTED / CANCELLED`, rejected edit/resubmission, optimistic versions, immutable action history, tenant isolation, and no bank credentials or financial source mutation.
+- Wrote `docs/superpowers/specs/2026-07-30-settlement-payout-approval-design.md` and committed it as `f8459fb` on `feat/settlement-payout-approval`.
+- Converted the approved design into `docs/superpowers/plans/2026-07-30-settlement-payout-approval.md`: 8 TDD tasks and 41 tracked steps with one commit/push per completed module.
+- The mixed-encoding root `task_plan.md` remains untouched to avoid destructive transcoding; the Phase 47 spec, implementation plan, and this progress entry are the authoritative recovery source.
