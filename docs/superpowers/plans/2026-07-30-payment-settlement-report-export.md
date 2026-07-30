@@ -243,11 +243,11 @@ git commit -m "feat: expose settlement report operations"
 - Create: `admin-ui/scripts/check-payment-settlement-report-contract.mjs`
 - Modify: `admin-ui/package.json`
 
-- [ ] **Step 1: Write the failing Node contract**
+- [x] **Step 1: Write the failing Node contract**
 
 Assert string money/IDs, `SettlementReportQuery`, row, currency total, page, and batch drill-down types; exact three endpoints; blob export; the three permission literals; and no `Number()` conversion of money.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ```powershell
 node admin-ui/scripts/check-payment-settlement-report-contract.mjs
@@ -255,7 +255,7 @@ node admin-ui/scripts/check-payment-settlement-report-contract.mjs
 
 Expected: failure because API/view files are absent.
 
-- [ ] **Step 3: Add types and API**
+- [x] **Step 3: Add types and API**
 
 ```ts
 export interface SettlementReportQuery extends PageQuery {
@@ -270,7 +270,7 @@ export const exportSettlementReport = (params: Omit<SettlementReportQuery, 'page
 
 Add `check:payment-settlement-report` to `package.json`.
 
-- [ ] **Step 4: Run GREEN and TypeScript check**
+- [x] **Step 4: Run GREEN and TypeScript check**
 
 ```powershell
 pnpm --dir admin-ui check:payment-settlement-report
@@ -279,7 +279,7 @@ pnpm --dir admin-ui exec vue-tsc --noEmit
 
 Expected: both exit `0`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```powershell
 git add admin-ui/src/api/payment/paymentSettlementReport admin-ui/scripts/check-payment-settlement-report-contract.mjs admin-ui/package.json

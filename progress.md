@@ -2351,3 +2351,9 @@
 - Repaired outdated Element Plus date/tag models, raw router destinations, checkbox values, retry click handlers, settings-store fields, and component prop narrowing without disabling strict checks.
 - Full `vue-tsc --noEmit` passed with exit `0`. The bounded Admin development build passed after transforming 3,175 modules; menu-icon and i18n guards passed, with only the established large-chunk advisory.
 - Targeted ESLint still reports historical Prettier/CRLF formatting debt in these legacy files; no semantic ESLint rule failed, and bulk formatting was deliberately excluded to avoid unrelated churn.
+
+## 2026-07-30 Phase 46 Task 5 Typed Admin API
+
+- Added typed report query, grouped row, per-currency total, page, and settlement-batch drill-down contracts with string-safe money and identifiers.
+- Added typed list, exact-group drill-down, and Blob export APIs plus the three settlement-report permission literals.
+- TDD RED failed because the report API files were absent. GREEN passed the payment settlement report contract guard and full `vue-tsc --noEmit`, both with exit `0`.
