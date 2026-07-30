@@ -1897,6 +1897,16 @@ INSERT INTO sys_menu
 (20333,'支付结算计算',2033,3,'#','','',1,0,'F','0','0','payment:settlement:calculate','#',103,1,NOW(),NULL,NULL,''),
 (20334,'支付结算关闭',2033,4,'#','','',1,0,'F','0','0','payment:settlement:close','#',103,1,NOW(),NULL,NULL,'');
 
+-- Phase 46 payment settlement report admin menu (idempotent delete + insert).
+DELETE FROM sys_menu WHERE menu_id IN (20341,20342,20343,2034);
+UPDATE sys_menu SET order_num=9 WHERE menu_id=19195 AND parent_id=1900;
+INSERT INTO sys_menu
+(menu_id,menu_name,parent_id,order_num,path,component,query_param,is_frame,is_cache,menu_type,visible,status,perms,icon,create_dept,create_by,create_time,update_by,update_time,remark) VALUES
+(2034,'支付结算报表',1900,8,'payment-settlement-report','payment/payment-settlement-report/index','',1,0,'C','0','0','payment:settlementReport:list','chart',103,1,NOW(),NULL,NULL,'支付结算日报与导出工作台'),
+(20341,'支付结算报表列表',2034,1,'#','','',1,0,'F','0','0','payment:settlementReport:list','#',103,1,NOW(),NULL,NULL,''),
+(20342,'支付结算报表查询',2034,2,'#','','',1,0,'F','0','0','payment:settlementReport:query','#',103,1,NOW(),NULL,NULL,''),
+(20343,'支付结算报表导出',2034,3,'#','','',1,0,'F','0','0','payment:settlementReport:export','#',103,1,NOW(),NULL,NULL,'');
+
 DELETE FROM sys_dict_data WHERE tenant_id='000000' AND dict_type IN
 ('gl_payment_settlement_batch_status','gl_payment_settlement_action_type');
 DELETE FROM sys_dict_type WHERE tenant_id='000000' AND dict_type IN

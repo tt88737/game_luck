@@ -60,7 +60,7 @@
 - Modify: `backend/script/sql/gameluck_wallet.sql`
 - Modify: backend message bundles listed in the file map
 
-- [ ] **Step 1: Write the failing persistence/API contract test**
+- [x] **Step 1: Write the failing persistence/API contract test**
 
 Assert exact fields and types: query `startDate/endDate/providerCode/currencyCode`; row string money and ISO date strings; page `rows/total/currencyTotals/generatedAt`; SQL page ID `2034`, route `payment/payment-settlement-report/index`, menu order after `2033`, and permissions `payment:settlementReport:list|query|export`; all three message bundles contain `payment.settlementReport.date.invalid`, `.date.future`, `.provider.invalid`, `.currency.invalid`, `.export.tooLarge`, and `.group.notFound`.
 
@@ -71,7 +71,7 @@ assertThat(walletSql).contains("payment:settlementReport:list", "payment:settlem
     "payment:settlementReport:export");
 ```
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ```powershell
 C:\tools\apache-maven-3.9.16\bin\mvn.cmd -Plocal -pl gameluck-modules/gameluck-payment -am '-DskipTests=false' '-Dtest=PaymentSettlementReportContractTest' '-Dsurefire.failIfNoSpecifiedTests=false' '-DforkCount=0' test
@@ -79,7 +79,7 @@ C:\tools\apache-maven-3.9.16\bin\mvn.cmd -Plocal -pl gameluck-modules/gameluck-p
 
 Expected: compilation/test failure because report contracts and metadata do not exist.
 
-- [ ] **Step 3: Add minimal contracts and idempotent metadata**
+- [x] **Step 3: Add minimal contracts and idempotent metadata**
 
 Use `LocalDate` for query dates and strings for all response money/IDs:
 
@@ -95,7 +95,7 @@ public class PaymentSettlementReportQueryBo {
 
 Add SQL delete-before-insert rows for `2034,20341,20342,20343`, preserving page `2033`. Add stable localized messages to all bundles.
 
-- [ ] **Step 4: Run GREEN and commit**
+- [x] **Step 4: Run GREEN and commit**
 
 Run the Task 1 command; expected `1` class with zero failures/errors/skips.
 
