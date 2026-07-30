@@ -212,6 +212,36 @@ SELECT * FROM (
 WHERE NOT EXISTS (SELECT 1 FROM sys_dict_data existing WHERE existing.tenant_id=settlement_seed.tenant_id
  AND existing.dict_type=settlement_seed.dict_type AND existing.dict_value=settlement_seed.dict_value);
 
+-- Phase 47 settlement payout approval dictionaries.
+INSERT INTO sys_dict_type
+(dict_id,tenant_id,dict_name,dict_type,create_dept,create_by,create_time,remark)
+SELECT 20047,'000000','Payment Settlement Payout Status','gl_payment_settlement_payout_status',103,1,SYSDATE(),''
+WHERE NOT EXISTS (SELECT 1 FROM sys_dict_type WHERE tenant_id='000000' AND dict_type='gl_payment_settlement_payout_status');
+INSERT INTO sys_dict_type
+(dict_id,tenant_id,dict_name,dict_type,create_dept,create_by,create_time,remark)
+SELECT 20048,'000000','Payment Settlement Payout Action Type','gl_payment_settlement_payout_action_type',103,1,SYSDATE(),''
+WHERE NOT EXISTS (SELECT 1 FROM sys_dict_type WHERE tenant_id='000000' AND dict_type='gl_payment_settlement_payout_action_type');
+
+INSERT INTO sys_dict_data
+(dict_code,tenant_id,dict_sort,dict_label,dict_value,dict_type,css_class,list_class,is_default,create_dept,create_by,create_time,remark)
+SELECT * FROM (
+ SELECT 21327 dict_code,'000000' tenant_id,1 dict_sort,'Draft' dict_label,'DRAFT' dict_value,
+ 'gl_payment_settlement_payout_status' dict_type,'' css_class,'info' list_class,'N' is_default,
+ 103 create_dept,1 create_by,SYSDATE() create_time,'' remark UNION ALL
+ SELECT 21328,'000000',2,'Pending Approval','PENDING_APPROVAL','gl_payment_settlement_payout_status','','warning','N',103,1,SYSDATE(),'' UNION ALL
+ SELECT 21329,'000000',3,'Approved','APPROVED','gl_payment_settlement_payout_status','','success','N',103,1,SYSDATE(),'' UNION ALL
+ SELECT 21330,'000000',4,'Rejected','REJECTED','gl_payment_settlement_payout_status','','danger','N',103,1,SYSDATE(),'' UNION ALL
+ SELECT 21331,'000000',5,'Cancelled','CANCELLED','gl_payment_settlement_payout_status','','info','N',103,1,SYSDATE(),'' UNION ALL
+ SELECT 21332,'000000',1,'Create','CREATE','gl_payment_settlement_payout_action_type','','info','N',103,1,SYSDATE(),'' UNION ALL
+ SELECT 21333,'000000',2,'Edit','EDIT','gl_payment_settlement_payout_action_type','','primary','N',103,1,SYSDATE(),'' UNION ALL
+ SELECT 21334,'000000',3,'Submit','SUBMIT','gl_payment_settlement_payout_action_type','','warning','N',103,1,SYSDATE(),'' UNION ALL
+ SELECT 21335,'000000',4,'Approve','APPROVE','gl_payment_settlement_payout_action_type','','success','N',103,1,SYSDATE(),'' UNION ALL
+ SELECT 21336,'000000',5,'Reject','REJECT','gl_payment_settlement_payout_action_type','','danger','N',103,1,SYSDATE(),'' UNION ALL
+ SELECT 21337,'000000',6,'Cancel','CANCEL','gl_payment_settlement_payout_action_type','','info','N',103,1,SYSDATE(),''
+) payout_seed
+WHERE NOT EXISTS (SELECT 1 FROM sys_dict_data existing WHERE existing.tenant_id=payout_seed.tenant_id
+ AND existing.dict_type=payout_seed.dict_type AND existing.dict_value=payout_seed.dict_value);
+
 INSERT INTO sys_dict_type
 (dict_id, tenant_id, dict_name, dict_type, create_dept, create_by, create_time, update_by, update_time, remark)
 SELECT dict_id, tenant_id, dict_name, dict_type, create_dept, create_by, create_time, update_by, update_time, remark FROM (

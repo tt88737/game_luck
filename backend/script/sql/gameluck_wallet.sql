@@ -1927,3 +1927,88 @@ INSERT INTO sys_dict_data
 (21324,'000000',3,'计算失败','CALCULATION_FAILED','gl_payment_settlement_action_type','','danger','N',103,1,SYSDATE(),''),
 (21325,'000000',4,'关闭拒绝','CLOSE_REJECTED','gl_payment_settlement_action_type','','warning','N',103,1,SYSDATE(),''),
 (21326,'000000',5,'关闭','CLOSE','gl_payment_settlement_action_type','','success','N',103,1,SYSDATE(),'');
+
+CREATE TABLE IF NOT EXISTS gl_payment_settlement_payout (
+  id BIGINT NOT NULL,
+  tenant_id VARCHAR(20) NOT NULL DEFAULT '000000',
+  payout_no VARCHAR(64) NOT NULL,
+  settlement_batch_id BIGINT NOT NULL,
+  settlement_no VARCHAR(64) NOT NULL,
+  provider_code VARCHAR(64) NOT NULL,
+  currency_code VARCHAR(32) NOT NULL,
+  payout_amount DECIMAL(20,6) NOT NULL,
+  settlement_evidence_json LONGTEXT DEFAULT NULL,
+  payout_purpose VARCHAR(500) NOT NULL,
+  payee_reference VARCHAR(128) NOT NULL,
+  status VARCHAR(32) NOT NULL,
+  maker_id BIGINT NOT NULL,
+  maker_name VARCHAR(100) NOT NULL,
+  submitter_id BIGINT DEFAULT NULL,
+  submitter_name VARCHAR(100) DEFAULT NULL,
+  reviewer_id BIGINT DEFAULT NULL,
+  reviewer_name VARCHAR(100) DEFAULT NULL,
+  decision_reason VARCHAR(500) DEFAULT NULL,
+  version INT NOT NULL DEFAULT 0,
+  submitted_time DATETIME DEFAULT NULL,
+  reviewed_time DATETIME DEFAULT NULL,
+  create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  update_time DATETIME DEFAULT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_gl_payment_settlement_payout_01 (tenant_id, payout_no),
+  UNIQUE KEY uk_gl_payment_settlement_payout_02 (tenant_id, settlement_batch_id),
+  KEY idx_gl_payment_settlement_payout_01 (tenant_id, status, create_time, id),
+  KEY idx_gl_payment_settlement_payout_02 (tenant_id, settlement_no, id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Settlement payout instruction and approval state';
+
+CREATE TABLE IF NOT EXISTS gl_payment_settlement_payout_action_log (
+  id BIGINT NOT NULL,
+  tenant_id VARCHAR(20) NOT NULL DEFAULT '000000',
+  payout_id BIGINT NOT NULL,
+  action_type VARCHAR(32) NOT NULL,
+  before_status VARCHAR(32) DEFAULT NULL,
+  after_status VARCHAR(32) NOT NULL,
+  operator_id BIGINT NOT NULL,
+  operator_name VARCHAR(100) NOT NULL,
+  reason VARCHAR(500) DEFAULT NULL,
+  evidence_snapshot_json LONGTEXT DEFAULT NULL,
+  expected_version INT DEFAULT NULL,
+  result_version INT NOT NULL,
+  create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY idx_gl_payment_settlement_payout_action_log_01 (tenant_id, payout_id, create_time, id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Append-only settlement payout action log';
+
+-- Phase 47 settlement payout approval menu and dictionaries (idempotent delete + insert).
+DELETE FROM sys_menu WHERE menu_id IN (20351,20352,20353,20354,20355,20356,2035);
+UPDATE sys_menu SET order_num=10 WHERE menu_id=19195 AND parent_id=1900;
+INSERT INTO sys_menu
+(menu_id,menu_name,parent_id,order_num,path,component,query_param,is_frame,is_cache,menu_type,visible,status,perms,icon,create_dept,create_by,create_time,update_by,update_time,remark) VALUES
+(2035,'结算付款审批',1900,9,'payment-settlement-payout','payment/payment-settlement-payout/index','',1,0,'C','0','0','payment:settlementPayout:list','money',103,1,NOW(),NULL,NULL,'结算付款指令与双人审批工作台'),
+(20351,'结算付款列表',2035,1,'#','','',1,0,'F','0','0','payment:settlementPayout:list','#',103,1,NOW(),NULL,NULL,''),
+(20352,'结算付款查询',2035,2,'#','','',1,0,'F','0','0','payment:settlementPayout:query','#',103,1,NOW(),NULL,NULL,''),
+(20353,'结算付款创建',2035,3,'#','','',1,0,'F','0','0','payment:settlementPayout:create','#',103,1,NOW(),NULL,NULL,''),
+(20354,'结算付款提交',2035,4,'#','','',1,0,'F','0','0','payment:settlementPayout:submit','#',103,1,NOW(),NULL,NULL,''),
+(20355,'结算付款审批',2035,5,'#','','',1,0,'F','0','0','payment:settlementPayout:approve','#',103,1,NOW(),NULL,NULL,''),
+(20356,'结算付款取消',2035,6,'#','','',1,0,'F','0','0','payment:settlementPayout:cancel','#',103,1,NOW(),NULL,NULL,'');
+
+DELETE FROM sys_dict_data WHERE tenant_id='000000' AND dict_type IN
+('gl_payment_settlement_payout_status','gl_payment_settlement_payout_action_type');
+DELETE FROM sys_dict_type WHERE tenant_id='000000' AND dict_type IN
+('gl_payment_settlement_payout_status','gl_payment_settlement_payout_action_type');
+INSERT INTO sys_dict_type
+(dict_id,tenant_id,dict_name,dict_type,create_dept,create_by,create_time,remark) VALUES
+(20047,'000000','结算付款状态','gl_payment_settlement_payout_status',103,1,SYSDATE(),''),
+(20048,'000000','结算付款操作类型','gl_payment_settlement_payout_action_type',103,1,SYSDATE(),'');
+INSERT INTO sys_dict_data
+(dict_code,tenant_id,dict_sort,dict_label,dict_value,dict_type,css_class,list_class,is_default,create_dept,create_by,create_time,remark) VALUES
+(21327,'000000',1,'草稿','DRAFT','gl_payment_settlement_payout_status','','info','N',103,1,SYSDATE(),''),
+(21328,'000000',2,'待审批','PENDING_APPROVAL','gl_payment_settlement_payout_status','','warning','N',103,1,SYSDATE(),''),
+(21329,'000000',3,'已批准','APPROVED','gl_payment_settlement_payout_status','','success','N',103,1,SYSDATE(),''),
+(21330,'000000',4,'已拒绝','REJECTED','gl_payment_settlement_payout_status','','danger','N',103,1,SYSDATE(),''),
+(21331,'000000',5,'已取消','CANCELLED','gl_payment_settlement_payout_status','','info','N',103,1,SYSDATE(),''),
+(21332,'000000',1,'创建','CREATE','gl_payment_settlement_payout_action_type','','info','N',103,1,SYSDATE(),''),
+(21333,'000000',2,'编辑','EDIT','gl_payment_settlement_payout_action_type','','primary','N',103,1,SYSDATE(),''),
+(21334,'000000',3,'提交','SUBMIT','gl_payment_settlement_payout_action_type','','warning','N',103,1,SYSDATE(),''),
+(21335,'000000',4,'批准','APPROVE','gl_payment_settlement_payout_action_type','','success','N',103,1,SYSDATE(),''),
+(21336,'000000',5,'拒绝','REJECT','gl_payment_settlement_payout_action_type','','danger','N',103,1,SYSDATE(),''),
+(21337,'000000',6,'取消','CANCEL','gl_payment_settlement_payout_action_type','','info','N',103,1,SYSDATE(),'');

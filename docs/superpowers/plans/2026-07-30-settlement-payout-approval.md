@@ -50,7 +50,7 @@
 
 **Files:** persistence enums/entities/mappers, wallet/platform SQL, backend messages, and `PaymentSettlementPayoutPersistenceContractTest.java`.
 
-- [ ] **Step 1: Write the failing persistence contract**
+- [x] **Step 1: Write the failing persistence contract**
 
 Assert exact statuses `DRAFT,PENDING_APPROVAL,APPROVED,REJECTED,CANCELLED`, actions `CREATE,EDIT,SUBMIT,APPROVE,REJECT,CANCEL`, money `BigDecimal`, version `Integer`, tenant-first unique keys, no sensitive fields, explicit mapper methods only, menu IDs `2035/20351-20356`, and stable message keys.
 
@@ -62,7 +62,7 @@ assertThat(tableDefinition(sql, "gl_payment_settlement_payout")).contains(
     "unique key uk_gl_payment_settlement_payout_02 (tenant_id, settlement_batch_id)");
 ```
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ```powershell
 C:\tools\apache-maven-3.9.16\bin\mvn.cmd -Plocal -pl gameluck-modules/gameluck-payment -am '-Dtest=PaymentSettlementPayoutPersistenceContractTest' '-Dsurefire.failIfNoSpecifiedTests=false' '-DforkCount=0' test
@@ -70,7 +70,7 @@ C:\tools\apache-maven-3.9.16\bin\mvn.cmd -Plocal -pl gameluck-modules/gameluck-p
 
 Expected: test compilation fails only because payout contracts do not exist.
 
-- [ ] **Step 3: Implement persistence and idempotent metadata**
+- [x] **Step 3: Implement persistence and idempotent metadata**
 
 Use `@TableName`, string-safe IDs in VOs only, explicit `@Insert/@Select/@Update`, and this guarded mapper surface:
 
@@ -81,16 +81,16 @@ PaymentSettlementPayout selectByTenantAndBatchId(String tenantId, Long batchId);
 Page<PaymentSettlementPayout> selectPageByTenant(Page<?> page, String tenantId, String payoutNo,
     String settlementNo, String status, String providerCode, String currencyCode, Date start, Date end);
 int editDraftOrRejected(String tenantId, Long id, int version, String purpose, String payeeReference,
-    Long operatorId, String operatorName, Date now);
+    Date now);
 int transition(String tenantId, Long id, int version, String expected, String next,
     Long operatorId, String operatorName, String reason, Date now);
 ```
 
-- [ ] **Step 4: Run GREEN and metadata scans**
+- [x] **Step 4: Run GREEN and metadata scans**
 
 Expected: persistence test passes; duplicate menu/dictionary values and sensitive-field scans return zero.
 
-- [ ] **Step 5: Commit and push module**
+- [x] **Step 5: Commit and push module**
 
 ```powershell
 git add backend/gameluck-modules/gameluck-payment/src backend/gameluck-admin/src/main/resources/i18n backend/script/sql
@@ -144,7 +144,7 @@ Cover DRAFT edit/submit/cancel, REJECTED edit returning to DRAFT, resubmission, 
 
 ```java
 service.edit(71L, editBo(3, "Revised purpose", "merchant-us"));
-verify(mapper).editDraftOrRejected("000000", 71L, 3, "Revised purpose", "merchant-us", 100L, "maker", now);
+verify(mapper).editDraftOrRejected("000000", 71L, 3, "Revised purpose", "merchant-us", now);
 verify(actionMapper).insert(argThat(log -> log.getActionType().equals("EDIT")
     && log.getAfterStatus().equals("DRAFT")));
 ```
