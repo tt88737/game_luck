@@ -102,7 +102,7 @@ git push
 
 **Files:** payout BOs/VOs, service interface/implementation, and `PaymentSettlementPayoutServiceImplTest.java`.
 
-- [ ] **Step 1: Write RED service tests**
+- [x] **Step 1: Write RED service tests**
 
 Cover positive CLOSED creation, server-owned snapshot values, zero/negative/non-CLOSED/missing/cross-tenant rejection, duplicate creation, exact six-decimal serialization, filters, detail, and ordered actions.
 
@@ -114,19 +114,19 @@ verify(payoutMapper).insert(argThat(p -> p.getSettlementBatchId().equals(41L)
     && p.getProviderCode().equals("SIMULATED")));
 ```
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 Expected: fails on absent service and contracts.
 
-- [ ] **Step 3: Implement minimal create/query service**
+- [x] **Step 3: Implement minimal create/query service**
 
 Creation loads `PaymentSettlementBatchMapper.selectByTenantAndId`, requires `CLOSED` and `netSettlement.signum() > 0`, generates `PSP + snowflake`, validates trimmed purpose/reference, inserts `DRAFT` plus `CREATE` action in one transaction, and translates duplicate-key races to `payment.settlementPayout.duplicate`.
 
-- [ ] **Step 4: Run GREEN plus Phase 45 query regression**
+- [x] **Step 4: Run GREEN plus Phase 45 query regression**
 
 Expected: payout service and `PaymentSettlementServiceImplTest` pass with zero failures/errors/skips.
 
-- [ ] **Step 5: Commit and push module**
+- [x] **Step 5: Commit and push module**
 
 ```powershell
 git add backend/gameluck-modules/gameluck-payment/src/main/java/com/gameluck/payment/domain/bo backend/gameluck-modules/gameluck-payment/src/main/java/com/gameluck/payment/domain/vo backend/gameluck-modules/gameluck-payment/src/main/java/com/gameluck/payment/service backend/gameluck-modules/gameluck-payment/src/test/java/com/gameluck/payment/service/impl/PaymentSettlementPayoutServiceImplTest.java
