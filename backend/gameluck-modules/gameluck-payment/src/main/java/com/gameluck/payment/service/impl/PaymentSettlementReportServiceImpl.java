@@ -12,6 +12,7 @@ import com.gameluck.payment.domain.vo.PaymentSettlementReportRowVo;
 import com.gameluck.payment.mapper.PaymentSettlementReportMapper;
 import com.gameluck.payment.provider.PaymentProviderRegistry;
 import com.gameluck.payment.service.IPaymentSettlementReportService;
+import com.gameluck.payment.service.report.SettlementReportCsvWriter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,7 @@ public class PaymentSettlementReportServiceImpl implements IPaymentSettlementRep
     private final PaymentSettlementReportMapper reportMapper;
     private final PaymentProviderRegistry providerRegistry;
     private final Clock clock;
+    private final SettlementReportCsvWriter csvWriter;
 
     @Override
     public PaymentSettlementReportPageVo queryPage(PaymentSettlementReportQueryBo query, PageQuery pageQuery) {
@@ -57,6 +59,17 @@ public class PaymentSettlementReportServiceImpl implements IPaymentSettlementRep
             TenantHelper.getTenantId(), reportDate, provider, currency);
         if (batches.isEmpty()) throw new ServiceException("payment.settlementReport.group.notFound");
         return batches.stream().map(this::batchVo).toList();
+    }
+
+    @Override
+    public byte[] export(PaymentSettlementReportQueryBo query) {
+        Bounds bounds = validate(query);
+        String tenantId = TenantHelper.getTenantId();
+        long rowCount = reportMapper.countGroupedRows(tenantId, bounds.start(), bounds.endExclusive(),
+            bounds.providerCode(), bounds.currencyCode());
+        if (rowCount > 2000) throw new ServiceException("payment.settlementReport.export.tooLarge");
+        return csvWriter.write(reportMapper.selectExportRows(tenantId, bounds.start(), bounds.endExclusive(),
+            bounds.providerCode(), bounds.currencyCode()));
     }
 
     private Bounds validate(PaymentSettlementReportQueryBo query) {

@@ -12,4 +12,6 @@ public interface IPaymentSettlementReportService {
     PaymentSettlementReportPageVo queryPage(PaymentSettlementReportQueryBo query, PageQuery pageQuery);
 
     List<PaymentSettlementBatchVo> queryBatches(LocalDate reportDate, String providerCode, String currencyCode);
+
+    byte[] export(PaymentSettlementReportQueryBo query);
 }

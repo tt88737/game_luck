@@ -163,7 +163,7 @@ git commit -m "feat: query settlement financial reports"
 - Modify: `backend/gameluck-modules/gameluck-payment/src/main/java/com/gameluck/payment/service/impl/PaymentSettlementReportServiceImpl.java`
 - Modify: `backend/gameluck-modules/gameluck-payment/src/test/java/com/gameluck/payment/service/impl/PaymentSettlementReportServiceImplTest.java`
 
-- [ ] **Step 1: Write CSV RED tests**
+- [x] **Step 1: Write CSV RED tests**
 
 Assert UTF-8 BOM bytes `EF BB BF`, fixed 17-column header, CR/LF and quote escaping, stable row ordering, six-decimal money preservation, and apostrophe prefix for text beginning after whitespace with `=`, `+`, `-`, or `@`. Assert service rejects mapper count `2001` before writing and exports exactly the full non-paged filter when count is `2000`.
 
@@ -172,11 +172,11 @@ assertThat(bytes).startsWith((byte) 0xEF, (byte) 0xBB, (byte) 0xBF);
 assertThat(csv).contains("'=@SUM(A1:A2)", "\"SIM,ULATED\"");
 ```
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 Run `SettlementReportCsvWriterTest,PaymentSettlementReportServiceImplTest`; expected missing writer/export failures.
 
-- [ ] **Step 3: Implement the writer with Hutool `CsvWriter`**
+- [x] **Step 3: Implement the writer with Hutool `CsvWriter`**
 
 Write BOM directly, then pass headers and cells to `cn.hutool.core.text.csv.CsvWriter`. Keep `safeText` isolated:
 
@@ -191,7 +191,7 @@ static String safeText(String value) {
 
 The service first calls `countGroupedRows`; reject above `2000`, then call one non-paged ordered export query and write once. Do not create temp files or DB rows.
 
-- [ ] **Step 4: Run GREEN and commit**
+- [x] **Step 4: Run GREEN and commit**
 
 Expected: both test classes pass with zero failures/errors/skips.
 

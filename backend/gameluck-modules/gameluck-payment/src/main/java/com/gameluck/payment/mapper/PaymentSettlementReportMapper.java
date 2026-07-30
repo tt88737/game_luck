@@ -44,6 +44,27 @@ public interface PaymentSettlementReportMapper {
         @Param("periodStart") Date periodStart, @Param("periodEndExclusive") Date periodEndExclusive,
         @Param("providerCode") String providerCode, @Param("currencyCode") String currencyCode);
 
+    @Select("<script>select count(*) from (select 1 from gl_payment_settlement_batch where" + FILTER
+        + " group by DATE(CONVERT_TZ(period_start,@@session.time_zone,'+00:00')),provider_code,currency_code) grouped</script>")
+    long countGroupedRows(@Param("tenantId") String tenantId, @Param("periodStart") Date periodStart,
+        @Param("periodEndExclusive") Date periodEndExclusive, @Param("providerCode") String providerCode,
+        @Param("currencyCode") String currencyCode);
+
+    @Select("<script>select DATE(CONVERT_TZ(period_start,@@session.time_zone,'+00:00')) report_date,"
+        + "provider_code,currency_code,count(*) batch_count,coalesce(sum(event_count),0) event_count,"
+        + "coalesce(sum(payment_count),0) payment_event_count,coalesce(sum(refund_count),0) refund_event_count,"
+        + "coalesce(sum(chargeback_count),0) chargeback_event_count,coalesce(sum(gross_payment),0) gross_payment,"
+        + "coalesce(sum(refund_amount),0) refund_amount,coalesce(sum(chargeback_amount),0) chargeback_amount,"
+        + "coalesce(sum(total_fee),0) total_fee,coalesce(sum(net_settlement),0) net_settlement,"
+        + "case when coalesce(sum(net_settlement),0)&lt;0 then true else false end negative_net,"
+        + "min(period_start) earliest_period_start,max(period_end) latest_period_end,max(closed_time) latest_close_time"
+        + " from gl_payment_settlement_batch where" + FILTER
+        + " group by DATE(CONVERT_TZ(period_start,@@session.time_zone,'+00:00')),provider_code,currency_code"
+        + " order by report_date desc,provider_code asc,currency_code asc</script>")
+    List<PaymentSettlementReportRowVo> selectExportRows(@Param("tenantId") String tenantId,
+        @Param("periodStart") Date periodStart, @Param("periodEndExclusive") Date periodEndExclusive,
+        @Param("providerCode") String providerCode, @Param("currencyCode") String currencyCode);
+
     @Select("select * from gl_payment_settlement_batch where tenant_id=#{tenantId} and status='CLOSED'"
         + " and DATE(CONVERT_TZ(period_start,@@session.time_zone,'+00:00'))=#{reportDate}"
         + " and provider_code=#{providerCode} and currency_code=#{currencyCode} order by period_start asc,id asc")

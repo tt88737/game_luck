@@ -2330,3 +2330,10 @@
 - Group queries enforce tenant, `CLOSED`, and UTC half-open period bounds; pagination applies to grouped rows while currency totals use the complete filter.
 - Added exact date/Provider/currency batch drill-down with string-safe Phase 45 batch projections and absent-group protection.
 - TDD RED failed at test compilation because the mapper and service were absent. GREEN passed report 4/4 plus Phase 45 settlement service 5/5, with zero failures, errors, or skips.
+
+## 2026-07-30 Phase 46 Task 3 Safe CSV Export
+
+- Added a Spring-managed Hutool CSV writer with UTF-8 BOM, fixed 17-column ordering, ISO timestamps, structured escaping, and spreadsheet-formula protection for text dimensions.
+- Added a grouped-row count query and one deterministic non-paged export query using the same tenant/closed/date/Provider/currency filter as the screen.
+- Export rejects more than 2,000 groups before loading rows and writes no server-side file or database record.
+- TDD RED failed on the absent writer/export contracts. GREEN passed service 5/5 and writer 2/2 with zero failures, errors, or skips.

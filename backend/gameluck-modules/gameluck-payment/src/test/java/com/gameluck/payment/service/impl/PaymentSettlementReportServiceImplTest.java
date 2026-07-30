@@ -12,6 +12,7 @@ import com.gameluck.payment.domain.vo.PaymentSettlementReportRowVo;
 import com.gameluck.payment.mapper.PaymentSettlementReportMapper;
 import com.gameluck.payment.provider.PaymentProviderAdapter;
 import com.gameluck.payment.provider.PaymentProviderRegistry;
+import com.gameluck.payment.service.report.SettlementReportCsvWriter;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -122,6 +123,27 @@ class PaymentSettlementReportServiceImplTest {
         }
     }
 
+    @Test
+    void rejectsOversizedExportBeforeLoadingRowsAndExportsFullBoundedFilterOnce() {
+        Fixture f = fixture();
+        PaymentSettlementReportQueryBo query = query("2026-07-24", "2026-07-30", "SIMULATED", "USD");
+        when(f.mapper.countGroupedRows(anyString(), any(), any(), anyString(), anyString())).thenReturn(2001L);
+        try (MockedStatic<TenantHelper> tenant = mockStatic(TenantHelper.class)) {
+            tenant.when(TenantHelper::getTenantId).thenReturn("tenant-a");
+            ServiceException error = assertThrows(ServiceException.class, () -> f.service.export(query));
+            assertThat(error.getMessage()).isEqualTo("payment.settlementReport.export.tooLarge");
+            verify(f.mapper, never()).selectExportRows(anyString(), any(), any(), any(), any());
+
+            reset(f.mapper);
+            when(f.mapper.countGroupedRows(anyString(), any(), any(), anyString(), anyString())).thenReturn(2000L);
+            when(f.mapper.selectExportRows(anyString(), any(), any(), anyString(), anyString()))
+                .thenReturn(List.of(row("2026-07-29", "SIMULATED", "USD", "-6.770000")));
+            byte[] csv = f.service.export(query);
+            assertThat(csv).startsWith((byte) 0xEF, (byte) 0xBB, (byte) 0xBF);
+            verify(f.mapper, times(1)).selectExportRows(eq("tenant-a"), any(), any(), eq("SIMULATED"), eq("USD"));
+        }
+    }
+
     private static Fixture fixture() {
         PaymentSettlementReportMapper mapper = mock(PaymentSettlementReportMapper.class);
         PaymentProviderAdapter adapter = mock(PaymentProviderAdapter.class);
@@ -129,7 +151,8 @@ class PaymentSettlementReportServiceImplTest {
         PaymentProviderProperties properties = new PaymentProviderProperties();
         properties.getSimulated().setEnabled(true);
         PaymentProviderRegistry registry = new PaymentProviderRegistry(List.of(adapter), properties);
-        return new Fixture(mapper, new PaymentSettlementReportServiceImpl(mapper, registry, CLOCK));
+        return new Fixture(mapper, new PaymentSettlementReportServiceImpl(mapper, registry, CLOCK,
+            new SettlementReportCsvWriter()));
     }
 
     private static PaymentSettlementReportQueryBo query(String start, String end, String provider, String currency) {
