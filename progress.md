@@ -2415,3 +2415,14 @@
 - GREEN command: `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -Plocal -pl gameluck-modules/gameluck-payment -am '-DskipTests=false' '-Dtest=PaymentSettlementPayoutServiceImplTest,PaymentSettlementServiceImplTest' '-Dsurefire.failIfNoSpecifiedTests=false' '-DforkCount=0' test`. It passed payout service 8/8 and Phase 45 settlement service 5/5, totaling 13/13 with zero failures, errors, or skips.
 - The scoped financial/sensitive dependency scan returned zero matches and `git diff --check` passed. Task 2 Step 5 remains open for the parent agent's two-stage review, commit, and push.
 - Parent verification passed 20/20 tests across Task 2 create/query, Phase 45 settlement service, and Task 1 persistence contracts, with zero failures, errors, or skips. Task 2 is ready for its module commit and push.
+
+## 2026-07-30 Phase 47 Task 3 Payout Workflow Commands
+
+- Added tenant-scoped edit, submit, cancel, and rejected-edit/resubmission contracts with optimistic versions and stable not-found, invalid-state, and version-conflict errors.
+- DRAFT instructions can be edited, submitted, or cancelled. REJECTED instructions can be edited back to DRAFT while preserving the original maker and latest reviewer metadata, then resubmitted. Successful commands append exactly one sanitized action; failed commands append none.
+- A zero-row guarded update reloads the instruction once to distinguish tenant-scoped absence, a concurrent invalid state, and a stale version. Commands never retry automatically.
+- RED command: `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -Plocal -pl gameluck-modules/gameluck-payment -am '-DskipTests=false' '-Dtest=PaymentSettlementPayoutWorkflowTest' '-Dsurefire.failIfNoSpecifiedTests=false' '-DforkCount=0' test`. It failed in `testCompile` only because the edit/command BOs and workflow service methods were absent.
+- GREEN workflow command: `C:\tools\apache-maven-3.9.16\bin\mvn.cmd -Plocal -pl gameluck-modules/gameluck-payment -am '-DskipTests=false' '-Dtest=PaymentSettlementPayoutWorkflowTest,PaymentSettlementPayoutServiceImplTest' '-Dsurefire.failIfNoSpecifiedTests=false' '-DforkCount=0' test`. It passed 15/15 with zero failures, errors, or skips.
+- Added `PaymentSettlementPayoutTransactionIntegrationTest` using a real Spring transaction proxy, MyBatis mappers, and H2. A forced action-log constraint failure leaves the payout status/version unchanged and persists no action, proving the state update and action insertion roll back together.
+- Combined Task 3 command and transaction suite passed 16/16 with zero failures, errors, or skips. Task 3 Step 4 remains open for parent review, commit, and push.
+- Parent verification passed 28/28 tests across Task 3 workflow and transaction coverage plus Task 1/2 and Phase 45 regressions. The scoped sensitive/financial scan returned zero and `git diff --check` passed; Task 3 is ready for its module commit and push.

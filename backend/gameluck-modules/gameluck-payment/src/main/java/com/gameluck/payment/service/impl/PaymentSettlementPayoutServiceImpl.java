@@ -10,6 +10,8 @@ import com.gameluck.payment.domain.PaymentSettlementBatch;
 import com.gameluck.payment.domain.PaymentSettlementPayout;
 import com.gameluck.payment.domain.PaymentSettlementPayoutActionLog;
 import com.gameluck.payment.domain.bo.PaymentSettlementPayoutCreateBo;
+import com.gameluck.payment.domain.bo.PaymentSettlementPayoutCommandBo;
+import com.gameluck.payment.domain.bo.PaymentSettlementPayoutEditBo;
 import com.gameluck.payment.domain.bo.PaymentSettlementPayoutQueryBo;
 import com.gameluck.payment.domain.vo.PaymentSettlementPayoutActionLogVo;
 import com.gameluck.payment.domain.vo.PaymentSettlementPayoutDetailVo;
@@ -33,6 +35,7 @@ import java.util.Locale;
 public class PaymentSettlementPayoutServiceImpl implements IPaymentSettlementPayoutService {
     private static final int PURPOSE_MAX_LENGTH = 500;
     private static final int PAYEE_REFERENCE_MAX_LENGTH = 128;
+    private static final int REASON_MAX_LENGTH = 500;
 
     private final PaymentSettlementBatchMapper batchMapper;
     private final PaymentSettlementPayoutMapper payoutMapper;
@@ -108,6 +111,107 @@ public class PaymentSettlementPayoutServiceImpl implements IPaymentSettlementPay
         PaymentSettlementPayout payout = payoutId == null ? null : payoutMapper.selectByTenantAndId(tenantId, payoutId);
         if (payout == null) throw new ServiceException("payment.settlementPayout.notFound");
         return detail(payout, actionLogMapper.selectByPayout(tenantId, payoutId).stream().map(this::actionVo).toList());
+    }
+
+    @Override
+    @Transactional
+    public PaymentSettlementPayoutDetailVo edit(Long payoutId, PaymentSettlementPayoutEditBo bo) {
+        if (bo == null || bo.getVersion() == null || bo.getVersion() < 0) {
+            throw new ServiceException("payment.settlementPayout.input.invalid");
+        }
+        String purpose = text(bo.getPayoutPurpose(), PURPOSE_MAX_LENGTH);
+        String reference = text(bo.getPayeeReference(), PAYEE_REFERENCE_MAX_LENGTH);
+        String tenantId = TenantHelper.getTenantId();
+        PaymentSettlementPayout before = requireCurrent(tenantId, payoutId);
+        requireState(before, "DRAFT", "REJECTED");
+        requireVersion(before, bo.getVersion());
+        PaymentReconciliationOperatorProvider.Operator operator = requireOperator();
+        Date now = new Date();
+        int updated = payoutMapper.editDraftOrRejected(tenantId, payoutId, bo.getVersion(), purpose, reference, now);
+        if (updated != 1) throw classifyFailedUpdate(tenantId, payoutId, "DRAFT", "REJECTED");
+        PaymentSettlementPayout after = requireCurrent(tenantId, payoutId);
+        insertAction(tenantId, before, after, "EDIT", null, bo.getVersion(), now, operator);
+        return detail(after, actionLogMapper.selectByPayout(tenantId, payoutId).stream().map(this::actionVo).toList());
+    }
+
+    @Override
+    @Transactional
+    public PaymentSettlementPayoutDetailVo submit(Long payoutId, PaymentSettlementPayoutCommandBo bo) {
+        return transition(payoutId, bo, "DRAFT", "PENDING_APPROVAL", "SUBMIT", null);
+    }
+
+    @Override
+    @Transactional
+    public PaymentSettlementPayoutDetailVo cancel(Long payoutId, PaymentSettlementPayoutCommandBo bo) {
+        String reason = bo == null || blank(bo.getReason()) ? null : text(bo.getReason(), REASON_MAX_LENGTH);
+        return transition(payoutId, bo, "DRAFT", "CANCELLED", "CANCEL", reason);
+    }
+
+    private PaymentSettlementPayoutDetailVo transition(Long payoutId, PaymentSettlementPayoutCommandBo bo,
+                                                        String expected, String next, String actionType, String reason) {
+        if (bo == null || bo.getVersion() == null || bo.getVersion() < 0) {
+            throw new ServiceException("payment.settlementPayout.input.invalid");
+        }
+        String tenantId = TenantHelper.getTenantId();
+        PaymentSettlementPayout before = requireCurrent(tenantId, payoutId);
+        requireState(before, expected);
+        requireVersion(before, bo.getVersion());
+        PaymentReconciliationOperatorProvider.Operator operator = requireOperator();
+        Date now = new Date();
+        int updated = payoutMapper.transition(tenantId, payoutId, bo.getVersion(), expected, next,
+            operator.id(), operator.name(), reason, now);
+        if (updated != 1) throw classifyFailedUpdate(tenantId, payoutId, expected);
+        PaymentSettlementPayout after = requireCurrent(tenantId, payoutId);
+        insertAction(tenantId, before, after, actionType, reason, bo.getVersion(), now, operator);
+        return detail(after, actionLogMapper.selectByPayout(tenantId, payoutId).stream().map(this::actionVo).toList());
+    }
+
+    private void insertAction(String tenantId, PaymentSettlementPayout before, PaymentSettlementPayout after,
+                              String actionType, String reason, int expectedVersion, Date now,
+                              PaymentReconciliationOperatorProvider.Operator operator) {
+        PaymentSettlementPayoutActionLog action = new PaymentSettlementPayoutActionLog();
+        action.setId(IdUtil.getSnowflakeNextId()); action.setTenantId(tenantId); action.setPayoutId(before.getId());
+        action.setActionType(actionType); action.setBeforeStatus(before.getStatus()); action.setAfterStatus(after.getStatus());
+        action.setOperatorId(operator.id()); action.setOperatorName(operator.name()); action.setReason(reason);
+        action.setEvidenceSnapshotJson(before.getSettlementEvidenceJson()); action.setExpectedVersion(expectedVersion);
+        action.setResultVersion(after.getVersion()); action.setCreateTime(now); actionLogMapper.insert(action);
+    }
+
+    private PaymentSettlementPayout requireCurrent(String tenantId, Long payoutId) {
+        if (payoutId == null || payoutId <= 0) throw new ServiceException("payment.settlementPayout.notFound");
+        PaymentSettlementPayout payout = payoutMapper.selectByTenantAndId(tenantId, payoutId);
+        if (payout == null) throw new ServiceException("payment.settlementPayout.notFound");
+        return payout;
+    }
+
+    private void requireState(PaymentSettlementPayout payout, String... allowed) {
+        for (String state : allowed) if (state.equals(payout.getStatus())) return;
+        throw new ServiceException("payment.settlementPayout.state.invalid");
+    }
+
+    private void requireVersion(PaymentSettlementPayout payout, int version) {
+        if (payout.getVersion() == null || payout.getVersion() != version) {
+            throw new ServiceException("payment.settlementPayout.version.conflict");
+        }
+    }
+
+    private ServiceException classifyFailedUpdate(String tenantId, Long payoutId, String... allowed) {
+        PaymentSettlementPayout current = payoutMapper.selectByTenantAndId(tenantId, payoutId);
+        if (current == null) return new ServiceException("payment.settlementPayout.notFound");
+        for (String state : allowed) {
+            if (state.equals(current.getStatus())) {
+                return new ServiceException("payment.settlementPayout.version.conflict");
+            }
+        }
+        return new ServiceException("payment.settlementPayout.state.invalid");
+    }
+
+    private PaymentReconciliationOperatorProvider.Operator requireOperator() {
+        PaymentReconciliationOperatorProvider.Operator operator = operatorProvider.current();
+        if (operator == null || operator.id() == null || blank(operator.name())) {
+            throw new ServiceException("payment.settlementPayout.operator.required");
+        }
+        return new PaymentReconciliationOperatorProvider.Operator(operator.id(), operator.name().trim());
     }
 
     private CreateInput validateCreate(PaymentSettlementPayoutCreateBo bo) {

@@ -138,7 +138,7 @@ git push
 
 **Files:** payout service/mapper and `PaymentSettlementPayoutWorkflowTest.java`.
 
-- [ ] **Step 1: Write RED workflow tests**
+- [x] **Step 1: Write RED workflow tests**
 
 Cover DRAFT edit/submit/cancel, REJECTED edit returning to DRAFT, resubmission, invalid transitions, stale versions, cross-tenant absence, one action per successful command, and no action on failure.
 
@@ -149,15 +149,15 @@ verify(actionMapper).insert(argThat(log -> log.getActionType().equals("EDIT")
     && log.getAfterStatus().equals("DRAFT")));
 ```
 
-- [ ] **Step 2: Run RED; implement guarded commands; run GREEN**
+- [x] **Step 2: Run RED; implement guarded commands; run GREEN**
 
 Every command reloads after a zero-row update to distinguish not-found, invalid state, and stale version. Do not retry automatically.
 
-- [ ] **Step 3: Run transaction integration test**
+- [x] **Step 3: Run transaction integration test**
 
 Add `PaymentSettlementPayoutTransactionIntegrationTest` proving state and action rollback together.
 
-- [ ] **Step 4: Commit and push module**
+- [x] **Step 4: Commit and push module**
 
 ```powershell
 git add backend/gameluck-modules/gameluck-payment/src backend/gameluck-modules/gameluck-payment/src/test
