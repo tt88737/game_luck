@@ -13,4 +13,9 @@ public interface IWalletTurnoverTaskService {
 
     void createFromCredit(String tenantId, WalletCreditBo bo, WalletTransaction transaction,
                           BigDecimal amount, BigDecimal requiredTurnover, Date now);
+
+    int applyValidTurnover(String tenantId, Long memberId, String currencyCode, BigDecimal validTurnoverAmount, Date now);
+
+    int cancelPendingByPurchase(String tenantId, Long memberId, String purchaseOrderNo,
+                                String reversalNo, Date now);
 }

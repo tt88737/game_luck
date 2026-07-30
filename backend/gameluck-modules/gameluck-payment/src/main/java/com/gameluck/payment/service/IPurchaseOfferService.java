@@ -7,6 +7,7 @@ import com.gameluck.payment.domain.PurchaseOrder;
 import com.gameluck.payment.domain.bo.PurchaseOfferBo;
 import com.gameluck.payment.domain.vo.PurchaseOfferVo;
 import com.gameluck.wallet.domain.bo.WalletCreditBo;
+import com.gameluck.payment.domain.PurchaseOrderGrantSnapshot;
 
 import java.util.List;
 
@@ -25,5 +26,11 @@ public interface IPurchaseOfferService {
 
     Boolean updateByBo(PurchaseOfferBo bo);
 
-    List<WalletCreditBo> snapshotPaidOrderGrants(PurchaseOrder order, List<PurchaseOfferGrantItem> items);
+    List<PurchaseOrderGrantSnapshot> prepareOrderGrantSnapshots(PurchaseOrder order, List<PurchaseOfferGrantItem> items);
+
+    List<PurchaseOrderGrantSnapshot> orderGrantSnapshots(PurchaseOrder order);
+
+    List<PurchaseOrderGrantSnapshot> orderGrantSnapshotsForUpdate(PurchaseOrder order);
+
+    List<WalletCreditBo> creditsFromOrderSnapshots(PurchaseOrder order);
 }

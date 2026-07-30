@@ -169,6 +169,9 @@ service.interceptors.response.use(
       }
       return Promise.reject(new Error(msg));
     } else if (code !== HttpStatus.SUCCESS) {
+      if (res.config.headers?.exposeBusinessCode === 'true') {
+        return Promise.reject(Object.assign(new Error(msg), { code }));
+      }
       if (!silentError) {
         ElNotification.error({ title: msg });
       }

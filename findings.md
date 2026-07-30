@@ -1,5 +1,12 @@
 # 包网平台底座调研记录
 
+## 2026-07-30 Phase 46 Planning Findings
+
+- Phase 45 already provides `PaymentSettlementBatch`, `PaymentSettlementBatchMapper`, string-safe settlement VOs, a `/payment/settlement` controller, and an Admin settlement detail workbench that Phase 46 can link to without duplicating command behavior.
+- Phase 46 should add a dedicated read-only report query service and mapper contract over `gl_payment_settlement_batch`; it must not add report behavior to `PaymentSettlementServiceImpl`, which owns create/query/calculate/close workflows.
+- Existing Admin patterns are under `admin-ui/src/api/payment/paymentSettlement`, `admin-ui/src/views/payment/payment-settlement`, and `admin-ui/scripts/check-payment-settlement-contract.mjs`.
+- Phase 45 menu metadata occupies page ID `2033` and permissions `20331` through `20334` in `backend/script/sql/gameluck_wallet.sql`; the Phase 46 plan must allocate a distinct sibling page and three distinct permissions.
+- Phase 45 runtime evidence is automated by `admin-ui/scripts/phase45-payment-settlement-runtime.mjs`; Phase 46 should use a separate script and preserve the read-only source snapshot proof.
 ## 已确认事实
 
 - 用户希望一个人启动项目，但担心框架选择和 AI 代码规范导致后期难维护。
@@ -53,3 +60,15 @@ Flutter Web 可用，但不建议作为主要 H5/官网/PWA 技术。
 - 目标市场国家或地区。
 - 是否需要 App Store / Google Play 上架，还是先 H5/PWA 和 APK 分发。
 - 是否已有第三方游戏供应商、支付、KYC、出款服务商。
+## 2026-07-24 Phase 42 Chargeback Review Discovery
+
+- Phase 41 intentionally made `CHARGEBACK_REVIEW` and `REFUND_REVIEW` terminal automated outcomes and explicitly excluded operator collection/write-off actions.
+- The existing `gl_purchase_reversal` model stores `REVIEW_REQUIRED` and `review_reason`, but has no disposition status, reviewer, review note, resolution time, retry count, or loss/write-off audit fields.
+- Admin currently exposes recovery details only inside purchase-order detail. There is no review queue, review mutation API, or dedicated review permission; all existing manual purchase actions share `payment:purchaseOrder:manual`.
+- Phase 42 should add a dedicated recovery-review workbench and a deterministic resolution state machine without changing the original payment-event idempotency boundary.
+
+## 2026-07-28 Phase 44 Runtime Discovery
+
+- `PaymentReconciliationPlatformDataSource` originally hardcoded `duplicatePriorStatementEvidence=false`, so the matcher-supported `DUPLICATE_PROVIDER_RECORD` outcome was unreachable in production runtime.
+- The production fix queries provider record IDs from other tenant-matched `COMPLETED` batches, excludes the current batch, and batches the lookup once per execution chunk rather than adding per-line queries.
+- Runtime reconciliation remains read-only toward payment, reversal, member-risk, turnover, and wallet state; only reconciliation batches, lines, issues, and append-only action logs changed during acceptance.

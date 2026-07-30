@@ -15,10 +15,12 @@ import com.gameluck.common.tenant.helper.TenantHelper;
 import com.gameluck.member.domain.MemberProfile;
 import com.gameluck.member.domain.bo.MemberProfileBo;
 import com.gameluck.member.domain.vo.MemberProfileVo;
+import com.gameluck.member.enums.MemberKycStatus;
 import com.gameluck.member.enums.MemberRiskLevel;
 import com.gameluck.member.enums.MemberStatus;
 import com.gameluck.member.mapper.MemberProfileMapper;
 import com.gameluck.member.service.IMemberProfileService;
+import com.gameluck.member.service.MemberIdGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,8 +38,10 @@ public class MemberProfileServiceImpl implements IMemberProfileService {
 
     private static final String DEFAULT_TENANT_ID = "000000";
     private static final String DEFAULT_CHANNEL = "ADMIN";
+    private static final String DEFAULT_KYC_REVIEWED_BY = "admin";
 
     private final MemberProfileMapper baseMapper;
+    private final MemberIdGenerator memberIdGenerator;
 
     @Override
     public TableDataInfo<MemberProfileVo> queryPageList(MemberProfileBo bo, PageQuery pageQuery) {
@@ -67,14 +71,16 @@ public class MemberProfileServiceImpl implements IMemberProfileService {
         MemberProfile add = BeanUtil.toBean(bo, MemberProfile.class);
         add.setId(IdUtil.getSnowflakeNextId());
         add.setTenantId(tenantId);
-        add.setMemberNo("MB" + IdUtil.getSnowflakeNextIdStr());
+        add.setMemberNo(memberIdGenerator.next());
         add.setUsername(username);
         add.setNickname(StringUtils.blankToDefault(bo.getNickname(), username));
         add.setStatus(StringUtils.blankToDefault(bo.getStatus(), MemberStatus.ACTIVE.name()));
         add.setRiskLevel(StringUtils.blankToDefault(bo.getRiskLevel(), MemberRiskLevel.NORMAL.name()));
+        add.setKycStatus(StringUtils.blankToDefault(bo.getKycStatus(), MemberKycStatus.NOT_STARTED.name()));
         add.setRegisterChannel(StringUtils.blankToDefault(bo.getRegisterChannel(), DEFAULT_CHANNEL));
         validateStatus(add.getStatus());
         validateRiskLevel(add.getRiskLevel());
+        validateKycStatus(add.getKycStatus());
         add.setVersion(0);
         add.setDelFlag(SystemConstants.NORMAL);
         add.setCreateTime(now);
@@ -98,10 +104,20 @@ public class MemberProfileServiceImpl implements IMemberProfileService {
         if (StringUtils.isNotBlank(bo.getRiskLevel())) {
             validateRiskLevel(bo.getRiskLevel());
         }
+        String normalizedKycStatus = StringUtils.blankToDefault(bo.getKycStatus(), MemberKycStatus.NOT_STARTED.name());
+        validateKycStatus(normalizedKycStatus);
 
         MemberProfile update = BeanUtil.toBean(bo, MemberProfile.class);
         update.setUsername(username);
         update.setTenantId(tenantId);
+        update.setKycStatus(normalizedKycStatus);
+        String currentKycStatus = StringUtils.blankToDefault(member.getKycStatus(), MemberKycStatus.NOT_STARTED.name());
+        boolean kycChanged = !normalizedKycStatus.equals(currentKycStatus);
+        boolean reasonChanged = !StringUtils.equals(StringUtils.trim(bo.getKycReviewReason()), StringUtils.trim(member.getKycReviewReason()));
+        if (kycChanged || reasonChanged) {
+            update.setKycReviewedBy(DEFAULT_KYC_REVIEWED_BY);
+            update.setKycReviewTime(new Date());
+        }
         update.setUpdateTime(new Date());
         return baseMapper.updateById(update) > 0;
     }
@@ -134,6 +150,7 @@ public class MemberProfileServiceImpl implements IMemberProfileService {
         lqw.like(StringUtils.isNotBlank(bo.getNickname()), MemberProfile::getNickname, bo.getNickname());
         lqw.eq(StringUtils.isNotBlank(bo.getStatus()), MemberProfile::getStatus, bo.getStatus());
         lqw.eq(StringUtils.isNotBlank(bo.getRiskLevel()), MemberProfile::getRiskLevel, bo.getRiskLevel());
+        lqw.eq(StringUtils.isNotBlank(bo.getKycStatus()), MemberProfile::getKycStatus, bo.getKycStatus());
         lqw.eq(StringUtils.isNotBlank(bo.getRegisterChannel()), MemberProfile::getRegisterChannel, bo.getRegisterChannel());
         lqw.eq(StringUtils.isNotBlank(bo.getCountryCode()), MemberProfile::getCountryCode, bo.getCountryCode());
         lqw.eq(StringUtils.isNotBlank(bo.getStateCode()), MemberProfile::getStateCode, bo.getStateCode());
@@ -171,6 +188,14 @@ public class MemberProfileServiceImpl implements IMemberProfileService {
             MemberRiskLevel.valueOf(riskLevel);
         } catch (Exception ex) {
             throw new ServiceException(MessageUtils.message("member.risk.level.invalid"));
+        }
+    }
+
+    private void validateKycStatus(String kycStatus) {
+        try {
+            MemberKycStatus.valueOf(kycStatus);
+        } catch (Exception ex) {
+            throw new ServiceException(MessageUtils.message("member.kyc.status.invalid"));
         }
     }
 

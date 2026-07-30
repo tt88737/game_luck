@@ -13,6 +13,7 @@ import com.gameluck.member.client.domain.vo.ClientLoginVo;
 import com.gameluck.member.client.domain.vo.ClientMemberVo;
 import com.gameluck.member.domain.MemberProfile;
 import com.gameluck.member.mapper.MemberProfileMapper;
+import com.gameluck.member.service.MemberIdGenerator;
 import com.gameluck.wallet.domain.WalletTransaction;
 import com.gameluck.wallet.domain.bo.WalletCreditBo;
 import com.gameluck.wallet.enums.WalletTransactionStatus;
@@ -38,6 +39,7 @@ public class ClientAuthService {
     private final MemberProfileMapper memberProfileMapper;
     private final ClientTokenService clientTokenService;
     private final IWalletCoreService walletCoreService;
+    private final MemberIdGenerator memberIdGenerator;
 
     public ClientLoginVo login(ClientLoginBo bo) {
         String username = normalizeUsername(bo.getUsername());
@@ -60,12 +62,13 @@ public class ClientAuthService {
         MemberProfile member = new MemberProfile();
         member.setId(IdUtil.getSnowflakeNextId());
         member.setTenantId(TENANT_ID);
-        member.setMemberNo("MB" + IdUtil.getSnowflakeNextIdStr());
+        member.setMemberNo(memberIdGenerator.next());
         member.setUsername(username);
         member.setNickname(StringUtils.blankToDefault(StringUtils.trim(bo.getNickname()), username));
         member.setPasswordHash(BCrypt.hashpw(bo.getPassword()));
         member.setStatus("ACTIVE");
         member.setRiskLevel("NORMAL");
+        member.setKycStatus("NOT_STARTED");
         member.setRegisterChannel(REGISTER_CHANNEL);
         member.setCountryCode(StringUtils.trim(bo.getCountryCode()));
         member.setStateCode(StringUtils.trim(bo.getStateCode()));
@@ -108,7 +111,7 @@ public class ClientAuthService {
         vo.setUsername(member.getUsername());
         vo.setNickname(member.getNickname());
         vo.setStatus(member.getStatus());
-        vo.setKycStatus("NOT_STARTED");
+        vo.setKycStatus(StringUtils.blankToDefault(member.getKycStatus(), "NOT_STARTED"));
         return vo;
     }
 

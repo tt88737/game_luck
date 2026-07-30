@@ -31,4 +31,26 @@
         LIMIT 1
     </select>
 
+    <select id="selectByIdForUpdate" resultType="com.gameluck.member.domain.MemberProfile">
+        SELECT *
+        FROM gl_member_profile
+        WHERE tenant_id = #{tenantId}
+          AND id = #{memberId}
+          AND del_flag = '0'
+        LIMIT 1
+        FOR UPDATE
+    </select>
+
+    <update id="updateChargebackRisk">
+        UPDATE gl_member_profile
+        SET risk_level = 'HIGH',
+            risk_reason = #{reason},
+            risk_source = #{source},
+            risk_updated_time = #{riskUpdatedTime},
+            update_time = #{riskUpdatedTime}
+        WHERE tenant_id = #{tenantId}
+          AND id = #{memberId}
+          AND del_flag = '0'
+    </update>
+
 </mapper>

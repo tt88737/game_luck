@@ -1,4 +1,4 @@
--- Wallet Center v1 schema and default currency seed.
+﻿-- Wallet Center v1 schema and default currency seed.
 
 CREATE TABLE IF NOT EXISTS gl_wallet_currency (
   id BIGINT NOT NULL COMMENT 'Primary key',
@@ -501,6 +501,13 @@ CREATE TABLE IF NOT EXISTS gl_member_profile (
   nickname VARCHAR(128) DEFAULT NULL COMMENT 'Nickname',
   status VARCHAR(32) NOT NULL DEFAULT 'ACTIVE' COMMENT 'Member status',
   risk_level VARCHAR(32) NOT NULL DEFAULT 'NORMAL' COMMENT 'Risk level',
+  risk_reason VARCHAR(500) DEFAULT NULL COMMENT 'Risk audit reason',
+  risk_source VARCHAR(255) DEFAULT NULL COMMENT 'Risk audit source',
+  risk_updated_time DATETIME DEFAULT NULL COMMENT 'Risk audit update time',
+  kyc_status VARCHAR(32) NOT NULL DEFAULT 'NOT_STARTED' COMMENT 'KYC status',
+  kyc_review_reason VARCHAR(512) DEFAULT NULL COMMENT 'KYC review reason',
+  kyc_reviewed_by VARCHAR(64) DEFAULT NULL COMMENT 'KYC reviewed by',
+  kyc_review_time DATETIME DEFAULT NULL COMMENT 'KYC review time',
   register_channel VARCHAR(64) NOT NULL DEFAULT 'ADMIN' COMMENT 'Register channel',
   last_login_time DATETIME DEFAULT NULL COMMENT 'Last login time',
   remark VARCHAR(500) DEFAULT NULL COMMENT 'Remark',
@@ -515,8 +522,95 @@ CREATE TABLE IF NOT EXISTS gl_member_profile (
   UNIQUE KEY uk_gl_member_profile_01 (tenant_id, member_no),
   UNIQUE KEY uk_gl_member_profile_02 (tenant_id, username),
   KEY idx_gl_member_profile_01 (tenant_id, status, create_time),
-  KEY idx_gl_member_profile_02 (tenant_id, risk_level)
+  KEY idx_gl_member_profile_02 (tenant_id, risk_level),
+  KEY idx_gl_member_profile_03 (tenant_id, kyc_status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Member profile';
+
+SET @db_name := DATABASE();
+
+SET @col_exists := (
+  SELECT COUNT(*) FROM information_schema.COLUMNS
+  WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_member_profile' AND COLUMN_NAME = 'risk_reason'
+);
+SET @sql := IF(@col_exists = 0,
+  'ALTER TABLE gl_member_profile ADD COLUMN risk_reason VARCHAR(500) DEFAULT NULL COMMENT ''Risk audit reason'' AFTER risk_level',
+  'SELECT 1'
+);
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (
+  SELECT COUNT(*) FROM information_schema.COLUMNS
+  WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_member_profile' AND COLUMN_NAME = 'risk_source'
+);
+SET @sql := IF(@col_exists = 0,
+  'ALTER TABLE gl_member_profile ADD COLUMN risk_source VARCHAR(255) DEFAULT NULL COMMENT ''Risk audit source'' AFTER risk_reason',
+  'SELECT 1'
+);
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (
+  SELECT COUNT(*) FROM information_schema.COLUMNS
+  WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_member_profile' AND COLUMN_NAME = 'risk_updated_time'
+);
+SET @sql := IF(@col_exists = 0,
+  'ALTER TABLE gl_member_profile ADD COLUMN risk_updated_time DATETIME DEFAULT NULL COMMENT ''Risk audit update time'' AFTER risk_source',
+  'SELECT 1'
+);
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (
+  SELECT COUNT(*) FROM information_schema.COLUMNS
+  WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_member_profile' AND COLUMN_NAME = 'kyc_status'
+);
+SET @sql := IF(@col_exists = 0,
+  'ALTER TABLE gl_member_profile ADD COLUMN kyc_status VARCHAR(32) NOT NULL DEFAULT ''NOT_STARTED'' COMMENT ''KYC status'' AFTER risk_level',
+  'SELECT 1'
+);
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (
+  SELECT COUNT(*) FROM information_schema.COLUMNS
+  WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_member_profile' AND COLUMN_NAME = 'kyc_review_reason'
+);
+SET @sql := IF(@col_exists = 0,
+  'ALTER TABLE gl_member_profile ADD COLUMN kyc_review_reason VARCHAR(512) DEFAULT NULL COMMENT ''KYC review reason'' AFTER kyc_status',
+  'SELECT 1'
+);
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (
+  SELECT COUNT(*) FROM information_schema.COLUMNS
+  WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_member_profile' AND COLUMN_NAME = 'kyc_reviewed_by'
+);
+SET @sql := IF(@col_exists = 0,
+  'ALTER TABLE gl_member_profile ADD COLUMN kyc_reviewed_by VARCHAR(64) DEFAULT NULL COMMENT ''KYC reviewed by'' AFTER kyc_review_reason',
+  'SELECT 1'
+);
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (
+  SELECT COUNT(*) FROM information_schema.COLUMNS
+  WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_member_profile' AND COLUMN_NAME = 'kyc_review_time'
+);
+SET @sql := IF(@col_exists = 0,
+  'ALTER TABLE gl_member_profile ADD COLUMN kyc_review_time DATETIME DEFAULT NULL COMMENT ''KYC review time'' AFTER kyc_reviewed_by',
+  'SELECT 1'
+);
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @idx_exists := (
+  SELECT COUNT(*) FROM information_schema.STATISTICS
+  WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_member_profile' AND INDEX_NAME = 'idx_gl_member_profile_03'
+);
+SET @sql := IF(@idx_exists = 0,
+  'ALTER TABLE gl_member_profile ADD KEY idx_gl_member_profile_03 (tenant_id, kyc_status)',
+  'SELECT 1'
+);
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+UPDATE gl_member_profile
+SET kyc_status = 'NOT_STARTED'
+WHERE kyc_status IS NULL OR kyc_status = '';
 
 INSERT INTO gl_member_profile
 (id, tenant_id, member_no, username, nickname, status, risk_level, register_channel, remark, create_time)
@@ -729,15 +823,64 @@ CREATE TABLE IF NOT EXISTS gl_redemption_order (
   KEY idx_gl_redemption_order_02 (tenant_id, status, create_time)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Redemption order';
 
+CREATE TABLE IF NOT EXISTS gl_redemption_eligibility_policy (
+  id BIGINT NOT NULL COMMENT 'Primary key',
+  tenant_id VARCHAR(20) NOT NULL DEFAULT '000000' COMMENT 'Tenant id',
+  policy_name VARCHAR(128) NOT NULL COMMENT 'Policy name',
+  currency_code VARCHAR(32) NOT NULL COMMENT 'Redemption currency code',
+  country_code VARCHAR(16) DEFAULT NULL COMMENT 'Country condition',
+  state_code VARCHAR(32) DEFAULT NULL COMMENT 'State or province condition',
+  channel VARCHAR(32) DEFAULT NULL COMMENT 'Channel condition',
+  effect VARCHAR(16) NOT NULL DEFAULT 'DENY' COMMENT 'ALLOW or DENY',
+  priority INT NOT NULL DEFAULT 0 COMMENT 'Higher priority wins; DENY wins ties',
+  status CHAR(1) NOT NULL DEFAULT '0' COMMENT 'Status: 0 enabled, 1 disabled',
+  start_time DATETIME DEFAULT NULL COMMENT 'Start time',
+  end_time DATETIME DEFAULT NULL COMMENT 'End time',
+  remark VARCHAR(500) DEFAULT NULL COMMENT 'Remark',
+  create_dept BIGINT DEFAULT NULL COMMENT 'Create department',
+  create_by BIGINT DEFAULT NULL COMMENT 'Created by',
+  create_time DATETIME DEFAULT NULL COMMENT 'Create time',
+  update_by BIGINT DEFAULT NULL COMMENT 'Updated by',
+  update_time DATETIME DEFAULT NULL COMMENT 'Update time',
+  version INT NOT NULL DEFAULT 0 COMMENT 'Optimistic lock version',
+  del_flag CHAR(1) NOT NULL DEFAULT '0' COMMENT 'Delete flag: 0 normal, 1 deleted',
+  PRIMARY KEY (id),
+  KEY idx_gl_redemption_eligibility_policy_01 (tenant_id, currency_code, status, priority),
+  KEY idx_gl_redemption_eligibility_policy_02 (tenant_id, country_code, state_code, channel)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Redemption eligibility policy';
+
+INSERT INTO gl_redemption_eligibility_policy
+(id, tenant_id, policy_name, currency_code, country_code, state_code, channel, effect, priority, status, remark, create_time, update_time, version, del_flag)
+VALUES
+(19000000000002901, '000000', 'US WA redemption denied', 'SC', 'US', 'WA', 'H5', 'DENY', 100, '0', 'Seeded denied redemption region.', NOW(), NOW(), 0, '0'),
+(19000000000002902, '000000', 'US ID redemption denied', 'SC', 'US', 'ID', 'H5', 'DENY', 100, '0', 'Seeded denied redemption region.', NOW(), NOW(), 0, '0'),
+(19000000000002903, '000000', 'US NV redemption denied', 'SC', 'US', 'NV', 'H5', 'DENY', 100, '0', 'Seeded denied redemption region.', NOW(), NOW(), 0, '0'),
+(19000000000002904, '000000', 'US MI redemption denied', 'SC', 'US', 'MI', 'H5', 'DENY', 100, '0', 'Seeded denied redemption region.', NOW(), NOW(), 0, '0')
+ON DUPLICATE KEY UPDATE
+  policy_name = VALUES(policy_name),
+  currency_code = VALUES(currency_code),
+  country_code = VALUES(country_code),
+  state_code = VALUES(state_code),
+  channel = VALUES(channel),
+  effect = VALUES(effect),
+  priority = VALUES(priority),
+  status = VALUES(status),
+  remark = VALUES(remark),
+  update_time = NOW();
+
 INSERT INTO sys_menu
 (menu_id, menu_name, parent_id, order_num, path, component, query_param, is_frame, is_cache, menu_type, visible, status, perms, icon, create_dept, create_by, create_time, update_by, update_time, remark)
 VALUES
 (1940, '兑换中心', 0, 5, 'redemption', NULL, '', 1, 0, 'M', '0', '0', '', 'money', 103, 1, NOW(), NULL, NULL, 'Redemption center directory'),
 (1941, '兑换订单', 1940, 1, 'order', 'redemption/order/index', '', 1, 0, 'C', '0', '0', 'redemption:order:list', 'money', 103, 1, NOW(), NULL, NULL, 'Redemption order menu'),
+(1955, '兑换资格策略', 1940, 2, 'eligibility-policy', 'redemption/eligibility-policy/index', '', 1, 0, 'C', '0', '0', 'redemption:eligibilityPolicy:list', 'guide', 103, 1, NOW(), NULL, NULL, 'Redemption eligibility policy menu'),
 (1951, '兑换查询', 1941, 1, '#', '', '', 1, 0, 'F', '0', '0', 'redemption:order:query', '#', 103, 1, NOW(), NULL, NULL, ''),
 (1952, '兑换新增', 1941, 2, '#', '', '', 1, 0, 'F', '0', '0', 'redemption:order:add', '#', 103, 1, NOW(), NULL, NULL, ''),
 (1953, '兑换通过', 1941, 3, '#', '', '', 1, 0, 'F', '0', '0', 'redemption:order:approve', '#', 103, 1, NOW(), NULL, NULL, ''),
-(1954, '兑换拒绝', 1941, 4, '#', '', '', 1, 0, 'F', '0', '0', 'redemption:order:reject', '#', 103, 1, NOW(), NULL, NULL, '')
+(1954, '兑换拒绝', 1941, 4, '#', '', '', 1, 0, 'F', '0', '0', 'redemption:order:reject', '#', 103, 1, NOW(), NULL, NULL, ''),
+(1956, '兑换资格策略查询', 1955, 1, '#', '', '', 1, 0, 'F', '0', '0', 'redemption:eligibilityPolicy:query', '#', 103, 1, NOW(), NULL, NULL, ''),
+(1957, '兑换资格策略新增', 1955, 2, '#', '', '', 1, 0, 'F', '0', '0', 'redemption:eligibilityPolicy:add', '#', 103, 1, NOW(), NULL, NULL, ''),
+(1958, '兑换资格策略编辑', 1955, 3, '#', '', '', 1, 0, 'F', '0', '0', 'redemption:eligibilityPolicy:edit', '#', 103, 1, NOW(), NULL, NULL, '')
 ON DUPLICATE KEY UPDATE
   menu_name = VALUES(menu_name),
   parent_id = VALUES(parent_id),
@@ -872,21 +1015,153 @@ CREATE TABLE IF NOT EXISTS gl_purchase_order (
   purchase_order_no VARCHAR(64) NOT NULL COMMENT 'Purchase order no',
   offer_id BIGINT DEFAULT NULL COMMENT 'Offer id',
   offer_no VARCHAR(64) DEFAULT NULL COMMENT 'Offer no snapshot',
+  offer_name_snapshot VARCHAR(128) DEFAULT NULL COMMENT 'Offer name snapshot',
   member_id BIGINT NOT NULL COMMENT 'Member id',
   pay_currency_code VARCHAR(32) NOT NULL COMMENT 'Payment currency',
   pay_amount DECIMAL(20,6) NOT NULL DEFAULT 0 COMMENT 'Payment amount',
-  status VARCHAR(32) NOT NULL DEFAULT 'PENDING' COMMENT 'PENDING,PAID,CREDITED,FAILED,CANCELLED',
+  status VARCHAR(32) NOT NULL DEFAULT 'PENDING' COMMENT 'CREATED,PENDING,PAID,CREDITED,FAILED,CANCELLED,REFUNDED,CHARGEBACK',
   idempotency_key VARCHAR(128) NOT NULL COMMENT 'Idempotency key',
+  provider_code VARCHAR(64) DEFAULT NULL COMMENT 'Payment provider code',
+  provider_order_no VARCHAR(128) DEFAULT NULL COMMENT 'Provider order no',
+  payment_session_no VARCHAR(128) DEFAULT NULL COMMENT 'Internal payment session no',
+  callback_event_key VARCHAR(128) DEFAULT NULL COMMENT 'Last callback event key',
   fail_reason VARCHAR(500) DEFAULT NULL COMMENT 'Failure reason',
   paid_time DATETIME DEFAULT NULL COMMENT 'Paid time',
   credited_time DATETIME DEFAULT NULL COMMENT 'Credited time',
+  cancel_time DATETIME DEFAULT NULL COMMENT 'Cancel time',
+  refund_time DATETIME DEFAULT NULL COMMENT 'Refund time',
+  chargeback_time DATETIME DEFAULT NULL COMMENT 'Chargeback time',
   create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Created at',
   update_time DATETIME DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Updated at',
   PRIMARY KEY (id),
   UNIQUE KEY uk_gl_purchase_order_01 (tenant_id, purchase_order_no),
   UNIQUE KEY uk_gl_purchase_order_02 (tenant_id, idempotency_key),
-  KEY idx_gl_purchase_order_01 (tenant_id, member_id, status, create_time)
+  KEY idx_gl_purchase_order_01 (tenant_id, member_id, status, create_time),
+  KEY idx_gl_purchase_order_02 (tenant_id, provider_code, provider_order_no),
+  KEY idx_gl_purchase_order_03 (tenant_id, payment_session_no)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Purchase order';
+
+SET @db_name := DATABASE();
+
+SET @col_exists := (
+  SELECT COUNT(*) FROM information_schema.COLUMNS
+  WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_purchase_order' AND COLUMN_NAME = 'offer_name_snapshot'
+);
+SET @sql := IF(@col_exists = 0,
+  'ALTER TABLE gl_purchase_order ADD COLUMN offer_name_snapshot VARCHAR(128) DEFAULT NULL COMMENT ''Offer name snapshot'' AFTER offer_no',
+  'SELECT 1'
+);
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (
+  SELECT COUNT(*) FROM information_schema.COLUMNS
+  WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_purchase_order' AND COLUMN_NAME = 'provider_code'
+);
+SET @sql := IF(@col_exists = 0,
+  'ALTER TABLE gl_purchase_order ADD COLUMN provider_code VARCHAR(64) DEFAULT NULL COMMENT ''Payment provider code'' AFTER idempotency_key',
+  'SELECT 1'
+);
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (
+  SELECT COUNT(*) FROM information_schema.COLUMNS
+  WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_purchase_order' AND COLUMN_NAME = 'provider_order_no'
+);
+SET @sql := IF(@col_exists = 0,
+  'ALTER TABLE gl_purchase_order ADD COLUMN provider_order_no VARCHAR(128) DEFAULT NULL COMMENT ''Provider order no'' AFTER provider_code',
+  'SELECT 1'
+);
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (
+  SELECT COUNT(*) FROM information_schema.COLUMNS
+  WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_purchase_order' AND COLUMN_NAME = 'payment_session_no'
+);
+SET @sql := IF(@col_exists = 0,
+  'ALTER TABLE gl_purchase_order ADD COLUMN payment_session_no VARCHAR(128) DEFAULT NULL COMMENT ''Internal payment session no'' AFTER provider_order_no',
+  'SELECT 1'
+);
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (
+  SELECT COUNT(*) FROM information_schema.COLUMNS
+  WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_purchase_order' AND COLUMN_NAME = 'callback_event_key'
+);
+SET @sql := IF(@col_exists = 0,
+  'ALTER TABLE gl_purchase_order ADD COLUMN callback_event_key VARCHAR(128) DEFAULT NULL COMMENT ''Last callback event key'' AFTER payment_session_no',
+  'SELECT 1'
+);
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (
+  SELECT COUNT(*) FROM information_schema.COLUMNS
+  WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_purchase_order' AND COLUMN_NAME = 'cancel_time'
+);
+SET @sql := IF(@col_exists = 0,
+  'ALTER TABLE gl_purchase_order ADD COLUMN cancel_time DATETIME DEFAULT NULL COMMENT ''Cancel time'' AFTER credited_time',
+  'SELECT 1'
+);
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (
+  SELECT COUNT(*) FROM information_schema.COLUMNS
+  WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_purchase_order' AND COLUMN_NAME = 'refund_time'
+);
+SET @sql := IF(@col_exists = 0,
+  'ALTER TABLE gl_purchase_order ADD COLUMN refund_time DATETIME DEFAULT NULL COMMENT ''Refund time'' AFTER cancel_time',
+  'SELECT 1'
+);
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (
+  SELECT COUNT(*) FROM information_schema.COLUMNS
+  WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_purchase_order' AND COLUMN_NAME = 'chargeback_time'
+);
+SET @sql := IF(@col_exists = 0,
+  'ALTER TABLE gl_purchase_order ADD COLUMN chargeback_time DATETIME DEFAULT NULL COMMENT ''Chargeback time'' AFTER refund_time',
+  'SELECT 1'
+);
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @idx_exists := (
+  SELECT COUNT(*) FROM information_schema.STATISTICS
+  WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_purchase_order' AND INDEX_NAME = 'idx_gl_purchase_order_02'
+);
+SET @sql := IF(@idx_exists = 0,
+  'ALTER TABLE gl_purchase_order ADD KEY idx_gl_purchase_order_02 (tenant_id, provider_code, provider_order_no)',
+  'SELECT 1'
+);
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @idx_exists := (
+  SELECT COUNT(*) FROM information_schema.STATISTICS
+  WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_purchase_order' AND INDEX_NAME = 'idx_gl_purchase_order_03'
+);
+SET @sql := IF(@idx_exists = 0,
+  'ALTER TABLE gl_purchase_order ADD KEY idx_gl_purchase_order_03 (tenant_id, payment_session_no)',
+  'SELECT 1'
+);
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+CREATE TABLE IF NOT EXISTS gl_purchase_payment_event (
+  id BIGINT NOT NULL COMMENT 'Primary key',
+  tenant_id VARCHAR(20) NOT NULL DEFAULT '000000' COMMENT 'Tenant id',
+  event_key VARCHAR(128) NOT NULL COMMENT 'Payment event idempotency key',
+  purchase_order_no VARCHAR(64) NOT NULL COMMENT 'Purchase order no',
+  provider_code VARCHAR(64) NOT NULL COMMENT 'Provider code',
+  provider_order_no VARCHAR(128) DEFAULT NULL COMMENT 'Provider order no',
+  event_type VARCHAR(32) NOT NULL COMMENT 'PAY_SUCCESS,PAY_FAILED,CANCELLED,REFUNDED,CHARGEBACK',
+  event_status VARCHAR(32) NOT NULL COMMENT 'RECEIVED,PROCESSED,IGNORED,FAILED',
+  request_hash VARCHAR(128) NOT NULL COMMENT 'Normalized request hash',
+  request_body TEXT DEFAULT NULL COMMENT 'Raw or normalized request body',
+  process_result VARCHAR(500) DEFAULT NULL COMMENT 'Process result',
+  process_time DATETIME DEFAULT NULL COMMENT 'Process time',
+  create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Created at',
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_gl_purchase_payment_event_01 (tenant_id, event_key),
+  KEY idx_gl_purchase_payment_event_01 (tenant_id, purchase_order_no),
+  KEY idx_gl_purchase_payment_event_02 (tenant_id, provider_code, provider_order_no)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Purchase payment event';
 
 CREATE TABLE IF NOT EXISTS gl_purchase_order_grant_snapshot (
   id BIGINT NOT NULL COMMENT 'Primary key',
@@ -901,6 +1176,8 @@ CREATE TABLE IF NOT EXISTS gl_purchase_order_grant_snapshot (
   wallet_transaction_no VARCHAR(64) DEFAULT NULL COMMENT 'Wallet transaction no',
   turnover_task_no VARCHAR(64) DEFAULT NULL COMMENT 'Turnover task no',
   wagering_mode VARCHAR(32) NOT NULL DEFAULT 'NONE' COMMENT 'Wagering mode snapshot',
+  wagering_multiplier DECIMAL(10,4) NOT NULL DEFAULT 0 COMMENT 'Wagering multiplier snapshot',
+  wagering_expire_days INT NOT NULL DEFAULT 0 COMMENT 'Wagering expiry days snapshot',
   required_turnover DECIMAL(20,6) NOT NULL DEFAULT 0 COMMENT 'Required turnover snapshot',
   game_scope_type VARCHAR(32) NOT NULL DEFAULT 'ALL' COMMENT 'Game scope type',
   game_scope_value VARCHAR(512) DEFAULT NULL COMMENT 'Game scope value',
@@ -910,6 +1187,26 @@ CREATE TABLE IF NOT EXISTS gl_purchase_order_grant_snapshot (
   KEY idx_gl_purchase_order_grant_snapshot_01 (tenant_id, purchase_order_no),
   KEY idx_gl_purchase_order_grant_snapshot_02 (tenant_id, member_id, currency_code)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Purchase order grant snapshot';
+
+SET @col_exists := (
+  SELECT COUNT(*) FROM information_schema.COLUMNS
+  WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'gl_purchase_order_grant_snapshot' AND COLUMN_NAME = 'wagering_multiplier'
+);
+SET @sql := IF(@col_exists = 0,
+  'ALTER TABLE gl_purchase_order_grant_snapshot ADD COLUMN wagering_multiplier DECIMAL(10,4) NOT NULL DEFAULT 0 COMMENT ''Wagering multiplier snapshot'' AFTER wagering_mode',
+  'SELECT 1'
+);
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @col_exists := (
+  SELECT COUNT(*) FROM information_schema.COLUMNS
+  WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'gl_purchase_order_grant_snapshot' AND COLUMN_NAME = 'wagering_expire_days'
+);
+SET @sql := IF(@col_exists = 0,
+  'ALTER TABLE gl_purchase_order_grant_snapshot ADD COLUMN wagering_expire_days INT NOT NULL DEFAULT 0 COMMENT ''Wagering expiry days snapshot'' AFTER wagering_multiplier',
+  'SELECT 1'
+);
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
 INSERT INTO sys_menu
 (menu_id, menu_name, parent_id, order_num, path, component, query_param, is_frame, is_cache, menu_type, visible, status, perms, icon, create_dept, create_by, create_time, update_by, update_time, remark)
@@ -923,7 +1220,10 @@ VALUES
 (1914, '充值订单取消', 1901, 4, '#', '', '', 1, 0, 'F', '0', '0', 'payment:deposit:cancel', '#', 103, 1, NOW(), NULL, NULL, ''),
 (1916, '购买产品查询', 1910, 1, '#', '', '', 1, 0, 'F', '0', '0', 'payment:purchaseOffer:query', '#', 103, 1, NOW(), NULL, NULL, ''),
 (1917, '购买产品新增', 1910, 2, '#', '', '', 1, 0, 'F', '0', '0', 'payment:purchaseOffer:add', '#', 103, 1, NOW(), NULL, NULL, ''),
-(1918, '购买产品编辑', 1910, 3, '#', '', '', 1, 0, 'F', '0', '0', 'payment:purchaseOffer:edit', '#', 103, 1, NOW(), NULL, NULL, '')
+(1918, '购买产品编辑', 1910, 3, '#', '', '', 1, 0, 'F', '0', '0', 'payment:purchaseOffer:edit', '#', 103, 1, NOW(), NULL, NULL, ''),
+(1919, '购买订单', 1900, 3, 'purchase-order', 'payment/purchase-order/index', '', 1, 0, 'C', '0', '0', 'payment:purchaseOrder:list', 'list', 103, 1, NOW(), NULL, NULL, '购买订单菜单'),
+(19191, '购买订单查询', 1919, 1, '#', '', '', 1, 0, 'F', '0', '0', 'payment:purchaseOrder:query', '#', 103, 1, NOW(), NULL, NULL, ''),
+(19192, '购买订单人工处理', 1919, 2, '#', '', '', 1, 0, 'F', '0', '0', 'payment:purchaseOrder:manual', '#', 103, 1, NOW(), NULL, NULL, '')
 ON DUPLICATE KEY UPDATE
   menu_name = VALUES(menu_name),
   parent_id = VALUES(parent_id),
@@ -934,6 +1234,27 @@ ON DUPLICATE KEY UPDATE
   icon = VALUES(icon),
   remark = VALUES(remark),
   update_time = NOW();
+
+DELETE FROM sys_menu WHERE menu_id = 1922 AND parent_id = 1919 AND perms = 'payment:purchaseOrder:manual';
+
+DELETE FROM sys_menu WHERE menu_id IN (20301, 20311, 20312, 2030, 2031);
+INSERT INTO sys_menu
+(menu_id, menu_name, parent_id, order_num, path, component, query_param, is_frame, is_cache, menu_type, visible, status, perms, icon, create_dept, create_by, create_time, update_by, update_time, remark)
+VALUES
+(2030, '支付会话', 1900, 4, 'payment-session', 'payment/payment-session/index', '', 1, 0, 'C', '0', '0', 'payment:paymentSession:list', 'link', 103, 1, NOW(), NULL, NULL, '支付通道会话'),
+(20301, '支付会话查询', 2030, 1, '#', '', '', 1, 0, 'F', '0', '0', 'payment:paymentSession:query', '#', 103, 1, NOW(), NULL, NULL, ''),
+(2031, '支付回调事件', 1900, 5, 'payment-webhook-event', 'payment/payment-webhook-event/index', '', 1, 0, 'C', '0', '0', 'payment:webhookEvent:list', 'webhook', 103, 1, NOW(), NULL, NULL, '支付通道回调事件'),
+(20311, '支付回调事件查询', 2031, 1, '#', '', '', 1, 0, 'F', '0', '0', 'payment:webhookEvent:query', '#', 103, 1, NOW(), NULL, NULL, ''),
+(20312, '支付回调事件重试', 2031, 2, '#', '', '', 1, 0, 'F', '0', '0', 'payment:webhookEvent:retry', '#', 103, 1, NOW(), NULL, NULL, '');
+
+INSERT INTO sys_menu
+(menu_id, menu_name, parent_id, order_num, path, component, query_param, is_frame, is_cache, menu_type, visible, status, perms, icon, create_dept, create_by, create_time, update_by, update_time, remark)
+VALUES
+(19195, '拒付审核', 1900, 6, 'purchase-reversal-review', 'payment/purchase-reversal-review/index', '', 1, 0, 'C', '0', '0', 'payment:reversalReview:list', 'audit', 103, 1, NOW(), NULL, NULL, '退款和拒付追偿审核工作台'),
+(19196, '拒付审核查询', 19195, 1, '#', '', '', 1, 0, 'F', '0', '0', 'payment:reversalReview:query', '#', 103, 1, NOW(), NULL, NULL, ''),
+(19197, '再次全额追偿', 19195, 2, '#', '', '', 1, 0, 'F', '0', '0', 'payment:reversalReview:retry', '#', 103, 1, NOW(), NULL, NULL, ''),
+(19198, '确认损失结案', 19195, 3, '#', '', '', 1, 0, 'F', '0', '0', 'payment:reversalReview:acceptLoss', '#', 103, 1, NOW(), NULL, NULL, '')
+ON DUPLICATE KEY UPDATE menu_name=VALUES(menu_name), parent_id=VALUES(parent_id), order_num=VALUES(order_num), path=VALUES(path), component=VALUES(component), perms=VALUES(perms), icon=VALUES(icon), remark=VALUES(remark), update_time=NOW();
 
 CREATE TABLE IF NOT EXISTS gl_game_bet_order (
   id BIGINT NOT NULL COMMENT 'Primary key',
@@ -1066,7 +1387,9 @@ VALUES
 (1829, '币种兑换规则查询', 1828, 1, '#', '', '', 1, 0, 'F', '0', '0', 'wallet:exchangeRule:query', '#', 103, 1, NOW(), NULL, NULL, ''),
 (1830, '币种兑换规则新增', 1828, 2, '#', '', '', 1, 0, 'F', '0', '0', 'wallet:exchangeRule:add', '#', 103, 1, NOW(), NULL, NULL, ''),
 (1831, '币种兑换规则编辑', 1828, 3, '#', '', '', 1, 0, 'F', '0', '0', 'wallet:exchangeRule:edit', '#', 103, 1, NOW(), NULL, NULL, ''),
-(1807, '人工调账', 1800, 10, 'manual-adjust', 'wallet/manual-adjust/index', '', 1, 0, 'C', '0', '0', 'wallet:manualAdjust:list', 'edit', 103, 1, NOW(), NULL, NULL, '后台人工调账菜单'),
+(1834, '币种兑换订单', 1800, 10, 'exchange-order', 'wallet/exchange-order/index', '', 1, 0, 'C', '0', '0', 'wallet:exchangeOrder:list', 'list', 103, 1, NOW(), NULL, NULL, '钱包币种兑换订单菜单'),
+(1835, '币种兑换订单查询', 1834, 1, '#', '', '', 1, 0, 'F', '0', '0', 'wallet:exchangeOrder:query', '#', 103, 1, NOW(), NULL, NULL, ''),
+(1807, '人工调账', 1800, 11, 'manual-adjust', 'wallet/manual-adjust/index', '', 1, 0, 'C', '0', '0', 'wallet:manualAdjust:list', 'edit', 103, 1, NOW(), NULL, NULL, '后台人工调账菜单'),
 (1821, '人工调账操作', 1807, 1, '#', '', '', 1, 0, 'F', '0', '0', 'wallet:manualAdjust:add', '#', 103, 1, NOW(), NULL, NULL, '')
 ON DUPLICATE KEY UPDATE
   menu_name = VALUES(menu_name),
@@ -1097,3 +1420,500 @@ END,
 update_time = NOW()
 WHERE parent_id = 0
   AND menu_id IN (1980, 1800, 1900, 1920, 1940, 1960, 2000, 6, 1, 3, 2);
+
+CREATE TABLE IF NOT EXISTS gl_purchase_reversal (
+  id BIGINT NOT NULL COMMENT 'Primary key',
+  tenant_id VARCHAR(20) NOT NULL DEFAULT '000000' COMMENT 'Tenant id',
+  reversal_no VARCHAR(64) NOT NULL COMMENT 'Purchase reversal number',
+  purchase_order_id BIGINT NOT NULL COMMENT 'Purchase order id',
+  purchase_order_no VARCHAR(64) NOT NULL COMMENT 'Purchase order number',
+  member_id BIGINT NOT NULL COMMENT 'Member id',
+  event_key VARCHAR(128) NOT NULL COMMENT 'Payment event idempotency key',
+  reversal_type VARCHAR(32) NOT NULL COMMENT 'REFUND or CHARGEBACK',
+  status VARCHAR(32) NOT NULL COMMENT 'PROCESSING, COMPLETED, or REVIEW_REQUIRED',
+  reason VARCHAR(500) DEFAULT NULL COMMENT 'Source reason',
+  review_reason VARCHAR(500) DEFAULT NULL COMMENT 'Manual review reason',
+  disposition_status VARCHAR(32) DEFAULT NULL COMMENT 'PENDING_REVIEW, RECOVERY_COMPLETED, or LOSS_ACCEPTED',
+  reviewed_by BIGINT DEFAULT NULL COMMENT 'Final review operator user id',
+  reviewed_name VARCHAR(100) DEFAULT NULL COMMENT 'Final review operator name snapshot',
+  review_note VARCHAR(500) DEFAULT NULL COMMENT 'Final review note',
+  resolved_time DATETIME DEFAULT NULL COMMENT 'Final disposition time',
+  retry_count INT NOT NULL DEFAULT 0 COMMENT 'Manual retry count',
+  last_retry_time DATETIME DEFAULT NULL COMMENT 'Latest manual retry time',
+  version INT NOT NULL DEFAULT 0 COMMENT 'Optimistic lock version',
+  completed_time DATETIME DEFAULT NULL COMMENT 'Completion time',
+  create_time DATETIME DEFAULT NULL COMMENT 'Create time',
+  update_time DATETIME DEFAULT NULL COMMENT 'Update time',
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_gl_purchase_reversal_01 (tenant_id, reversal_no),
+  UNIQUE KEY uk_gl_purchase_reversal_02 (tenant_id, event_key),
+  KEY idx_gl_purchase_reversal_01 (tenant_id, purchase_order_no),
+  KEY idx_gl_purchase_reversal_03 (tenant_id, purchase_order_no, create_time, id),
+  KEY idx_gl_purchase_reversal_02 (tenant_id, member_id, create_time)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Purchase asset reversal case';
+
+CREATE TABLE IF NOT EXISTS gl_purchase_reversal_item (
+  id BIGINT NOT NULL COMMENT 'Primary key',
+  tenant_id VARCHAR(20) NOT NULL DEFAULT '000000' COMMENT 'Tenant id',
+  reversal_id BIGINT NOT NULL COMMENT 'Purchase reversal id',
+  reversal_no VARCHAR(64) NOT NULL COMMENT 'Purchase reversal number',
+  purchase_order_no VARCHAR(64) NOT NULL COMMENT 'Purchase order number',
+  member_id BIGINT NOT NULL COMMENT 'Member id',
+  currency_code VARCHAR(32) NOT NULL COMMENT 'Aggregated grant currency',
+  required_amount DECIMAL(20,8) NOT NULL COMMENT 'Amount required for full recovery',
+  available_amount DECIMAL(20,8) NOT NULL DEFAULT 0 COMMENT 'Available balance observed during preflight',
+  recovered_amount DECIMAL(20,8) NOT NULL DEFAULT 0 COMMENT 'Recovered amount',
+  shortfall_amount DECIMAL(20,8) NOT NULL DEFAULT 0 COMMENT 'Recovery shortfall',
+  wallet_transaction_no VARCHAR(64) DEFAULT NULL COMMENT 'Recovery debit transaction number',
+  status VARCHAR(32) NOT NULL COMMENT 'COMPLETED or REVIEW_REQUIRED',
+  create_time DATETIME DEFAULT NULL COMMENT 'Create time',
+  update_time DATETIME DEFAULT NULL COMMENT 'Update time',
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_gl_purchase_reversal_item_01 (tenant_id, reversal_no, currency_code),
+  KEY idx_gl_purchase_reversal_item_01 (tenant_id, purchase_order_no),
+  KEY idx_gl_purchase_reversal_item_02 (tenant_id, member_id, currency_code)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Purchase asset reversal currency item';
+
+SET @db_name = DATABASE();
+
+SET @ddl = IF((SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_purchase_reversal' AND COLUMN_NAME = 'disposition_status') = 0,
+  'ALTER TABLE gl_purchase_reversal ADD COLUMN disposition_status VARCHAR(32) DEFAULT NULL COMMENT ''PENDING_REVIEW, RECOVERY_COMPLETED, or LOSS_ACCEPTED'' AFTER review_reason', 'SELECT 1');
+PREPARE stmt FROM @ddl; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @ddl = IF((SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_purchase_reversal' AND COLUMN_NAME = 'reviewed_by') = 0,
+  'ALTER TABLE gl_purchase_reversal ADD COLUMN reviewed_by BIGINT DEFAULT NULL COMMENT ''Final review operator user id'' AFTER disposition_status', 'SELECT 1');
+PREPARE stmt FROM @ddl; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @ddl = IF((SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_purchase_reversal' AND COLUMN_NAME = 'reviewed_name') = 0,
+  'ALTER TABLE gl_purchase_reversal ADD COLUMN reviewed_name VARCHAR(100) DEFAULT NULL COMMENT ''Final review operator name snapshot'' AFTER reviewed_by', 'SELECT 1');
+PREPARE stmt FROM @ddl; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @ddl = IF((SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_purchase_reversal' AND COLUMN_NAME = 'review_note') = 0,
+  'ALTER TABLE gl_purchase_reversal ADD COLUMN review_note VARCHAR(500) DEFAULT NULL COMMENT ''Final review note'' AFTER reviewed_name', 'SELECT 1');
+PREPARE stmt FROM @ddl; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @ddl = IF((SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_purchase_reversal' AND COLUMN_NAME = 'resolved_time') = 0,
+  'ALTER TABLE gl_purchase_reversal ADD COLUMN resolved_time DATETIME DEFAULT NULL COMMENT ''Final disposition time'' AFTER review_note', 'SELECT 1');
+PREPARE stmt FROM @ddl; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @ddl = IF((SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_purchase_reversal' AND COLUMN_NAME = 'retry_count') = 0,
+  'ALTER TABLE gl_purchase_reversal ADD COLUMN retry_count INT NOT NULL DEFAULT 0 COMMENT ''Manual retry count'' AFTER resolved_time', 'SELECT 1');
+PREPARE stmt FROM @ddl; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @ddl = IF((SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_purchase_reversal' AND COLUMN_NAME = 'last_retry_time') = 0,
+  'ALTER TABLE gl_purchase_reversal ADD COLUMN last_retry_time DATETIME DEFAULT NULL COMMENT ''Latest manual retry time'' AFTER retry_count', 'SELECT 1');
+PREPARE stmt FROM @ddl; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @ddl = IF((SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_purchase_reversal' AND COLUMN_NAME = 'version') = 0,
+  'ALTER TABLE gl_purchase_reversal ADD COLUMN version INT NOT NULL DEFAULT 0 COMMENT ''Optimistic lock version'' AFTER last_retry_time', 'SELECT 1');
+PREPARE stmt FROM @ddl; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+UPDATE gl_purchase_reversal
+SET disposition_status = 'PENDING_REVIEW', retry_count = COALESCE(retry_count, 0), version = COALESCE(version, 0)
+WHERE status = 'REVIEW_REQUIRED' AND disposition_status IS NULL;
+
+CREATE TABLE IF NOT EXISTS gl_purchase_reversal_review_log (
+  id BIGINT NOT NULL COMMENT 'Primary key',
+  tenant_id VARCHAR(20) NOT NULL DEFAULT '000000' COMMENT 'Tenant id',
+  operation_no VARCHAR(64) NOT NULL COMMENT 'Review operation number',
+  reversal_id BIGINT NOT NULL COMMENT 'Purchase reversal id',
+  reversal_no VARCHAR(64) NOT NULL COMMENT 'Purchase reversal number',
+  request_key VARCHAR(128) NOT NULL COMMENT 'Admin request idempotency key',
+  operation_type VARCHAR(32) NOT NULL COMMENT 'RETRY_INSUFFICIENT, RETRY_COMPLETED, or LOSS_ACCEPTED',
+  before_status VARCHAR(32) NOT NULL COMMENT 'Disposition before operation',
+  after_status VARCHAR(32) NOT NULL COMMENT 'Disposition after operation',
+  operator_id BIGINT NOT NULL COMMENT 'Operator user id',
+  operator_name VARCHAR(100) NOT NULL COMMENT 'Operator name snapshot',
+  review_note VARCHAR(500) DEFAULT NULL COMMENT 'Operation review note',
+  snapshot_json LONGTEXT NOT NULL COMMENT 'Per-currency recovery snapshot JSON',
+  create_time DATETIME NOT NULL COMMENT 'Operation time',
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_gl_purchase_reversal_review_log_01 (tenant_id, request_key),
+  UNIQUE KEY uk_gl_purchase_reversal_review_log_02 (tenant_id, operation_no),
+  KEY idx_gl_purchase_reversal_review_log_01 (tenant_id, reversal_no, create_time),
+  KEY idx_gl_purchase_reversal_review_log_02 (tenant_id, create_time)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Purchase reversal manual review operation log';
+
+CREATE TABLE IF NOT EXISTS gl_payment_session (
+  id BIGINT NOT NULL COMMENT 'Primary key',
+  tenant_id VARCHAR(20) NOT NULL DEFAULT '000000' COMMENT 'Tenant id',
+  session_no VARCHAR(64) NOT NULL COMMENT 'Internal payment session number',
+  purchase_order_id BIGINT NOT NULL COMMENT 'Purchase order id',
+  purchase_order_no VARCHAR(64) NOT NULL COMMENT 'Purchase order number',
+  member_id BIGINT NOT NULL COMMENT 'Member id',
+  provider_code VARCHAR(64) NOT NULL COMMENT 'Payment provider code',
+  provider_session_no VARCHAR(128) DEFAULT NULL COMMENT 'Provider session number',
+  pay_currency_code VARCHAR(32) NOT NULL COMMENT 'Payment currency',
+  pay_amount DECIMAL(20,6) NOT NULL COMMENT 'Payment amount',
+  checkout_url VARCHAR(1000) DEFAULT NULL COMMENT 'Provider checkout URL',
+  status VARCHAR(32) NOT NULL COMMENT 'CREATED,PENDING,SUCCEEDED,FAILED,CANCELLED,EXPIRED',
+  request_key VARCHAR(128) NOT NULL COMMENT 'Session creation idempotency key',
+  expire_time DATETIME NOT NULL COMMENT 'Session expiry time',
+  completed_time DATETIME DEFAULT NULL COMMENT 'Session completion time',
+  version INT NOT NULL DEFAULT 0 COMMENT 'Optimistic lock version',
+  create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Created at',
+  update_time DATETIME DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Updated at',
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_gl_payment_session_01 (tenant_id, session_no),
+  UNIQUE KEY uk_gl_payment_session_02 (tenant_id, request_key),
+  UNIQUE KEY uk_gl_payment_session_03 (tenant_id, provider_code, provider_session_no),
+  KEY idx_gl_payment_session_01 (tenant_id, purchase_order_no),
+  KEY idx_gl_payment_session_02 (tenant_id, member_id, status, create_time),
+  KEY idx_gl_payment_session_03 (tenant_id, status, expire_time),
+  KEY idx_gl_payment_session_04 (tenant_id, create_time, id),
+  KEY idx_gl_payment_session_05 (tenant_id, provider_session_no)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Provider-neutral payment session';
+
+CREATE TABLE IF NOT EXISTS gl_payment_webhook_event (
+  id BIGINT NOT NULL COMMENT 'Primary key',
+  tenant_id VARCHAR(20) NOT NULL DEFAULT '000000' COMMENT 'Tenant id',
+  provider_code VARCHAR(64) NOT NULL COMMENT 'Payment provider code',
+  provider_event_id VARCHAR(128) NOT NULL COMMENT 'Provider event id',
+  event_type VARCHAR(32) NOT NULL COMMENT 'Normalized provider event type',
+  provider_session_no VARCHAR(128) DEFAULT NULL COMMENT 'Provider session number',
+  session_no VARCHAR(64) DEFAULT NULL COMMENT 'Internal payment session number',
+  purchase_order_no VARCHAR(64) DEFAULT NULL COMMENT 'Purchase order number',
+  raw_body LONGTEXT NOT NULL COMMENT 'Raw webhook request body',
+  signature_digest VARCHAR(128) DEFAULT NULL COMMENT 'Webhook signature digest',
+  received_time DATETIME NOT NULL COMMENT 'Webhook receipt time',
+  status VARCHAR(32) NOT NULL COMMENT 'RECEIVED,PROCESSED,FAILED,IGNORED',
+  failure_reason VARCHAR(500) DEFAULT NULL COMMENT 'Processing failure reason',
+  processing_count INT NOT NULL DEFAULT 0 COMMENT 'Processing attempt count',
+  last_processing_time DATETIME DEFAULT NULL COMMENT 'Latest processing time',
+  create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Created at',
+  update_time DATETIME DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Updated at',
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_gl_payment_webhook_event_01 (tenant_id, provider_code, provider_event_id),
+  KEY idx_gl_payment_webhook_event_01 (tenant_id, session_no),
+  KEY idx_gl_payment_webhook_event_02 (tenant_id, purchase_order_no),
+  KEY idx_gl_payment_webhook_event_03 (tenant_id, status, received_time),
+  KEY idx_gl_payment_webhook_event_04 (tenant_id, provider_code, provider_session_no),
+  KEY idx_gl_payment_webhook_event_05 (tenant_id, received_time, id),
+  KEY idx_gl_payment_webhook_event_06 (tenant_id, provider_event_id),
+  KEY idx_gl_payment_webhook_event_07 (tenant_id, provider_session_no),
+  KEY idx_gl_payment_webhook_event_08 (tenant_id, provider_code, received_time, id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Payment provider webhook event inbox';
+
+SET @db_name := DATABASE();
+SET @idx_exists := (SELECT COUNT(*) FROM information_schema.STATISTICS WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_payment_session' AND INDEX_NAME = 'idx_gl_payment_session_04');
+SET @sql := IF(@idx_exists = 0, 'ALTER TABLE gl_payment_session ADD KEY idx_gl_payment_session_04 (tenant_id, create_time, id)', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @idx_exists := (SELECT COUNT(*) FROM information_schema.STATISTICS WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_payment_session' AND INDEX_NAME = 'idx_gl_payment_session_05');
+SET @sql := IF(@idx_exists = 0, 'ALTER TABLE gl_payment_session ADD KEY idx_gl_payment_session_05 (tenant_id, provider_session_no)', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @idx_exists := (SELECT COUNT(*) FROM information_schema.STATISTICS WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_payment_webhook_event' AND INDEX_NAME = 'idx_gl_payment_webhook_event_05');
+SET @sql := IF(@idx_exists = 0, 'ALTER TABLE gl_payment_webhook_event ADD KEY idx_gl_payment_webhook_event_05 (tenant_id, received_time, id)', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @idx_exists := (SELECT COUNT(*) FROM information_schema.STATISTICS WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_payment_webhook_event' AND INDEX_NAME = 'idx_gl_payment_webhook_event_06');
+SET @sql := IF(@idx_exists = 0, 'ALTER TABLE gl_payment_webhook_event ADD KEY idx_gl_payment_webhook_event_06 (tenant_id, provider_event_id)', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @idx_exists := (SELECT COUNT(*) FROM information_schema.STATISTICS WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_payment_webhook_event' AND INDEX_NAME = 'idx_gl_payment_webhook_event_07');
+SET @sql := IF(@idx_exists = 0, 'ALTER TABLE gl_payment_webhook_event ADD KEY idx_gl_payment_webhook_event_07 (tenant_id, provider_session_no)', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @idx_exists := (SELECT COUNT(*) FROM information_schema.STATISTICS WHERE TABLE_SCHEMA = @db_name AND TABLE_NAME = 'gl_payment_webhook_event' AND INDEX_NAME = 'idx_gl_payment_webhook_event_08');
+SET @sql := IF(@idx_exists = 0, 'ALTER TABLE gl_payment_webhook_event ADD KEY idx_gl_payment_webhook_event_08 (tenant_id, provider_code, received_time, id)', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+DELETE FROM sys_dict_data WHERE tenant_id = '000000' AND dict_type IN
+  ('gl_payment_session_status', 'gl_payment_webhook_status', 'gl_payment_provider_event_type');
+DELETE FROM sys_dict_type WHERE tenant_id = '000000' AND dict_type IN
+  ('gl_payment_session_status', 'gl_payment_webhook_status', 'gl_payment_provider_event_type');
+
+INSERT INTO sys_dict_type
+(dict_id, tenant_id, dict_name, dict_type, create_dept, create_by, create_time, update_by, update_time, remark)
+VALUES
+(20037, '000000', '支付会话状态', 'gl_payment_session_status', 103, 1, SYSDATE(), NULL, NULL, '支付通道会话生命周期状态'),
+(20038, '000000', '支付回调状态', 'gl_payment_webhook_status', 103, 1, SYSDATE(), NULL, NULL, '支付回调处理状态'),
+(20039, '000000', '支付通道事件类型', 'gl_payment_provider_event_type', 103, 1, SYSDATE(), NULL, NULL, '支付通道回调事件类型');
+
+INSERT INTO sys_dict_data
+(dict_code, tenant_id, dict_sort, dict_label, dict_value, dict_type, css_class, list_class, is_default, create_dept, create_by, create_time, update_by, update_time, remark)
+VALUES
+(21276, '000000', 1, '已创建', 'CREATED', 'gl_payment_session_status', '', 'info', 'N', 103, 1, SYSDATE(), NULL, NULL, ''),
+(21277, '000000', 2, '待支付', 'PENDING', 'gl_payment_session_status', '', 'warning', 'Y', 103, 1, SYSDATE(), NULL, NULL, ''),
+(21278, '000000', 3, '成功', 'SUCCEEDED', 'gl_payment_session_status', '', 'success', 'N', 103, 1, SYSDATE(), NULL, NULL, ''),
+(21279, '000000', 4, '失败', 'FAILED', 'gl_payment_session_status', '', 'danger', 'N', 103, 1, SYSDATE(), NULL, NULL, ''),
+(21280, '000000', 5, '已取消', 'CANCELLED', 'gl_payment_session_status', '', 'info', 'N', 103, 1, SYSDATE(), NULL, NULL, ''),
+(21281, '000000', 6, '已过期', 'EXPIRED', 'gl_payment_session_status', '', 'info', 'N', 103, 1, SYSDATE(), NULL, NULL, ''),
+(21282, '000000', 1, '已接收', 'RECEIVED', 'gl_payment_webhook_status', '', 'warning', 'Y', 103, 1, SYSDATE(), NULL, NULL, ''),
+(21283, '000000', 2, '已处理', 'PROCESSED', 'gl_payment_webhook_status', '', 'success', 'N', 103, 1, SYSDATE(), NULL, NULL, ''),
+(21284, '000000', 3, '失败', 'FAILED', 'gl_payment_webhook_status', '', 'danger', 'N', 103, 1, SYSDATE(), NULL, NULL, ''),
+(21285, '000000', 4, '已忽略', 'IGNORED', 'gl_payment_webhook_status', '', 'info', 'N', 103, 1, SYSDATE(), NULL, NULL, ''),
+(21286, '000000', 1, '支付成功', 'PAYMENT_SUCCEEDED', 'gl_payment_provider_event_type', '', 'success', 'N', 103, 1, SYSDATE(), NULL, NULL, ''),
+(21287, '000000', 2, '支付失败', 'PAYMENT_FAILED', 'gl_payment_provider_event_type', '', 'danger', 'N', 103, 1, SYSDATE(), NULL, NULL, ''),
+(21288, '000000', 3, '支付取消', 'PAYMENT_CANCELLED', 'gl_payment_provider_event_type', '', 'info', 'N', 103, 1, SYSDATE(), NULL, NULL, ''),
+(21289, '000000', 4, '退款成功', 'REFUND_SUCCEEDED', 'gl_payment_provider_event_type', '', 'info', 'N', 103, 1, SYSDATE(), NULL, NULL, ''),
+(21290, '000000', 5, '拒付创建', 'CHARGEBACK_CREATED', 'gl_payment_provider_event_type', '', 'danger', 'N', 103, 1, SYSDATE(), NULL, NULL, '');
+
+CREATE TABLE IF NOT EXISTS gl_simulated_payment_dispatch (
+  id BIGINT NOT NULL COMMENT 'Primary key',
+  tenant_id VARCHAR(20) NOT NULL DEFAULT '000000' COMMENT 'Tenant id',
+  provider_session_no VARCHAR(128) NOT NULL COMMENT 'Provider session number',
+  provider_event_id VARCHAR(128) NOT NULL COMMENT 'Provider event id',
+  action VARCHAR(32) NOT NULL COMMENT 'Hosted checkout action',
+  occurred_time DATETIME NOT NULL COMMENT 'Signed event occurrence time',
+  create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Created at',
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_gl_simulated_payment_dispatch_01 (tenant_id, provider_event_id),
+  KEY idx_gl_simulated_payment_dispatch_01 (tenant_id, provider_session_no, create_time)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Hosted simulated checkout dispatch marker';
+
+CREATE TABLE IF NOT EXISTS gl_payment_reconciliation_batch (
+  id BIGINT NOT NULL COMMENT 'Primary key',
+  tenant_id VARCHAR(20) NOT NULL DEFAULT '000000' COMMENT 'Tenant id',
+  provider_code VARCHAR(64) NOT NULL COMMENT 'Payment provider code',
+  statement_date DATE NOT NULL COMMENT 'Provider statement date in UTC',
+  original_file_name VARCHAR(255) NOT NULL COMMENT 'Original uploaded file name',
+  file_digest VARCHAR(64) NOT NULL COMMENT 'SHA-256 digest of uploaded bytes',
+  total_count INT NOT NULL DEFAULT 0 COMMENT 'Total parsed record count',
+  valid_count INT NOT NULL DEFAULT 0 COMMENT 'Valid record count',
+  invalid_count INT NOT NULL DEFAULT 0 COMMENT 'Invalid record count',
+  matched_count INT NOT NULL DEFAULT 0 COMMENT 'Matched record count',
+  discrepancy_count INT NOT NULL DEFAULT 0 COMMENT 'Discrepancy count',
+  status VARCHAR(32) NOT NULL COMMENT 'Batch lifecycle status',
+  failure_reason VARCHAR(500) DEFAULT NULL COMMENT 'Infrastructure failure reason',
+  creator_id BIGINT NOT NULL COMMENT 'Creator user id',
+  creator_name VARCHAR(100) NOT NULL COMMENT 'Creator name snapshot',
+  version INT NOT NULL DEFAULT 0 COMMENT 'Guarded transition version',
+  create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Created at',
+  update_time DATETIME DEFAULT NULL COMMENT 'Updated at',
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_gl_payment_reconciliation_batch_01 (tenant_id, provider_code, file_digest),
+  KEY idx_gl_payment_reconciliation_batch_01 (tenant_id, status, statement_date),
+  KEY idx_gl_payment_reconciliation_batch_02 (tenant_id, provider_code, statement_date, id),
+  KEY idx_gl_payment_reconciliation_batch_03 (tenant_id, create_time, id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Payment reconciliation import batch';
+
+CREATE TABLE IF NOT EXISTS gl_payment_reconciliation_line (
+  id BIGINT NOT NULL COMMENT 'Primary key',
+  tenant_id VARCHAR(20) NOT NULL DEFAULT '000000' COMMENT 'Tenant id',
+  batch_id BIGINT NOT NULL COMMENT 'Reconciliation batch id',
+  source_row_number BIGINT NOT NULL COMMENT 'CSV parser source line number',
+  provider_record_id VARCHAR(128) DEFAULT NULL COMMENT 'Provider statement record id',
+  event_type VARCHAR(32) DEFAULT NULL COMMENT 'Normalized provider event type',
+  provider_session_no VARCHAR(128) DEFAULT NULL COMMENT 'Provider session number',
+  purchase_order_no VARCHAR(64) DEFAULT NULL COMMENT 'Internal purchase order number',
+  currency_code VARCHAR(32) DEFAULT NULL COMMENT 'Payment currency',
+  amount DECIMAL(20,6) DEFAULT NULL COMMENT 'Provider payment amount',
+  occurred_time DATETIME DEFAULT NULL COMMENT 'Provider event occurrence time',
+  status VARCHAR(32) NOT NULL COMMENT 'VALID, INVALID, MATCHED, or ISSUE',
+  parse_error VARCHAR(500) DEFAULT NULL COMMENT 'Validation error',
+  raw_fields_json LONGTEXT NOT NULL COMMENT 'Canonical JSON array from parsed CSV fields',
+  create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Created at',
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_gl_payment_reconciliation_line_01 (tenant_id, batch_id, source_row_number),
+  KEY idx_gl_payment_reconciliation_line_02 (tenant_id, provider_record_id),
+  KEY idx_gl_payment_reconciliation_line_03 (tenant_id, purchase_order_no)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Immutable normalized reconciliation statement line';
+
+CREATE TABLE IF NOT EXISTS gl_payment_reconciliation_issue (
+  id BIGINT NOT NULL COMMENT 'Primary key',
+  tenant_id VARCHAR(20) NOT NULL DEFAULT '000000' COMMENT 'Tenant id',
+  batch_id BIGINT NOT NULL COMMENT 'Reconciliation batch id',
+  line_id BIGINT DEFAULT NULL COMMENT 'Related statement line id',
+  issue_type VARCHAR(64) NOT NULL COMMENT 'Primary discrepancy type',
+  status VARCHAR(32) NOT NULL COMMENT 'OPEN, RESOLVED, or IGNORED',
+  payment_session_id BIGINT DEFAULT NULL COMMENT 'Related payment session id',
+  session_no VARCHAR(64) DEFAULT NULL COMMENT 'Related payment session number',
+  purchase_order_id BIGINT DEFAULT NULL COMMENT 'Related purchase order id',
+  purchase_order_no VARCHAR(64) DEFAULT NULL COMMENT 'Related purchase order number',
+  webhook_event_id BIGINT DEFAULT NULL COMMENT 'Related webhook event id',
+  reversal_id BIGINT DEFAULT NULL COMMENT 'Related reversal id',
+  provider_event_type VARCHAR(32) DEFAULT NULL COMMENT 'Provider event comparison value',
+  platform_event_type VARCHAR(32) DEFAULT NULL COMMENT 'Platform event comparison value',
+  provider_currency_code VARCHAR(32) DEFAULT NULL COMMENT 'Provider currency comparison value',
+  platform_currency_code VARCHAR(32) DEFAULT NULL COMMENT 'Platform currency comparison value',
+  provider_amount DECIMAL(20,6) DEFAULT NULL COMMENT 'Provider amount comparison value',
+  platform_amount DECIMAL(20,6) DEFAULT NULL COMMENT 'Platform amount comparison value',
+  provider_status VARCHAR(32) DEFAULT NULL COMMENT 'Provider status comparison value',
+  platform_status VARCHAR(32) DEFAULT NULL COMMENT 'Platform status comparison value',
+  diagnostic_snapshot_json LONGTEXT NOT NULL COMMENT 'Immutable complete discrepancy diagnostic JSON',
+  resolution_type VARCHAR(32) DEFAULT NULL COMMENT 'Manual resolution classification',
+  resolution_remark VARCHAR(500) DEFAULT NULL COMMENT 'Required terminal resolution remark',
+  resolved_by BIGINT DEFAULT NULL COMMENT 'Resolver user id',
+  resolved_time DATETIME DEFAULT NULL COMMENT 'Resolution time',
+  version INT NOT NULL DEFAULT 0 COMMENT 'Optimistic lock version',
+  create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Created at',
+  update_time DATETIME DEFAULT NULL COMMENT 'Updated at',
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_gl_payment_reconciliation_issue_01 (tenant_id, batch_id, line_id),
+  KEY idx_gl_payment_reconciliation_issue_01 (tenant_id, batch_id, status, create_time),
+  KEY idx_gl_payment_reconciliation_issue_02 (tenant_id, line_id),
+  KEY idx_gl_payment_reconciliation_issue_03 (tenant_id, purchase_order_no),
+  KEY idx_gl_payment_reconciliation_issue_04 (tenant_id, session_no),
+  KEY idx_gl_payment_reconciliation_issue_05 (tenant_id, batch_id, create_time, id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Payment reconciliation discrepancy';
+
+CREATE TABLE IF NOT EXISTS gl_payment_reconciliation_action_log (
+  id BIGINT NOT NULL COMMENT 'Primary key',
+  tenant_id VARCHAR(20) NOT NULL DEFAULT '000000' COMMENT 'Tenant id',
+  batch_id BIGINT NOT NULL COMMENT 'Reconciliation batch id',
+  issue_id BIGINT DEFAULT NULL COMMENT 'Related discrepancy id',
+  action_type VARCHAR(32) NOT NULL COMMENT 'Business reconciliation action',
+  before_status VARCHAR(32) DEFAULT NULL COMMENT 'Business state before action',
+  after_status VARCHAR(32) DEFAULT NULL COMMENT 'Business state after action',
+  operator_id BIGINT NOT NULL COMMENT 'Operator user id',
+  operator_name VARCHAR(100) NOT NULL COMMENT 'Operator name snapshot',
+  remark VARCHAR(500) DEFAULT NULL COMMENT 'Action or mandatory resolution remark',
+  create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Action time',
+  PRIMARY KEY (id),
+  KEY idx_gl_payment_reconciliation_action_log_01 (tenant_id, batch_id, create_time, id),
+  KEY idx_gl_payment_reconciliation_action_log_02 (tenant_id, issue_id, create_time, id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Append-only payment reconciliation action log';
+
+SET @reversal_reconciliation_idx_exists := (
+  SELECT COUNT(*) FROM information_schema.STATISTICS
+  WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'gl_purchase_reversal'
+    AND INDEX_NAME = 'idx_gl_purchase_reversal_03'
+);
+SET @reversal_reconciliation_idx_sql := IF(@reversal_reconciliation_idx_exists = 0,
+  'ALTER TABLE gl_purchase_reversal ADD INDEX idx_gl_purchase_reversal_03 (tenant_id, purchase_order_no, create_time, id)',
+  'SELECT 1'
+);
+PREPARE stmt FROM @reversal_reconciliation_idx_sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+CREATE TABLE IF NOT EXISTS gl_payment_settlement_batch (
+  id BIGINT NOT NULL,
+  tenant_id VARCHAR(20) NOT NULL DEFAULT '000000',
+  settlement_no VARCHAR(64) NOT NULL,
+  provider_code VARCHAR(64) NOT NULL,
+  currency_code VARCHAR(32) NOT NULL,
+  period_start DATETIME NOT NULL,
+  period_end DATETIME NOT NULL,
+  status VARCHAR(32) NOT NULL,
+  payment_fee_rate DECIMAL(12,8) NOT NULL,
+  payment_fixed_fee DECIMAL(20,6) NOT NULL,
+  chargeback_fixed_fee DECIMAL(20,6) NOT NULL,
+  event_count INT NOT NULL DEFAULT 0,
+  payment_count INT NOT NULL DEFAULT 0,
+  refund_count INT NOT NULL DEFAULT 0,
+  chargeback_count INT NOT NULL DEFAULT 0,
+  gross_payment DECIMAL(20,6) NOT NULL DEFAULT 0,
+  refund_amount DECIMAL(20,6) NOT NULL DEFAULT 0,
+  chargeback_amount DECIMAL(20,6) NOT NULL DEFAULT 0,
+  total_fee DECIMAL(20,6) NOT NULL DEFAULT 0,
+  net_settlement DECIMAL(20,6) NOT NULL DEFAULT 0,
+  reconciliation_coverage_count INT NOT NULL DEFAULT 0,
+  open_issue_count INT NOT NULL DEFAULT 0,
+  evidence_snapshot_json LONGTEXT DEFAULT NULL,
+  failure_reason VARCHAR(500) DEFAULT NULL,
+  creator_id BIGINT NOT NULL,
+  creator_name VARCHAR(100) NOT NULL,
+  calculator_id BIGINT DEFAULT NULL,
+  calculator_name VARCHAR(100) DEFAULT NULL,
+  closer_id BIGINT DEFAULT NULL,
+  closer_name VARCHAR(100) DEFAULT NULL,
+  close_remark VARCHAR(500) DEFAULT NULL,
+  calculated_time DATETIME DEFAULT NULL,
+  closed_time DATETIME DEFAULT NULL,
+  version INT NOT NULL DEFAULT 0,
+  create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  update_time DATETIME DEFAULT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_gl_payment_settlement_batch_01 (tenant_id, settlement_no),
+  UNIQUE KEY uk_gl_payment_settlement_batch_02 (tenant_id, provider_code, currency_code, period_start, period_end),
+  KEY idx_gl_payment_settlement_batch_01 (tenant_id, status, period_start, id),
+  KEY idx_gl_payment_settlement_batch_02 (tenant_id, provider_code, currency_code, period_start, period_end)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Payment settlement financial snapshot batch';
+
+CREATE TABLE IF NOT EXISTS gl_payment_settlement_item (
+  id BIGINT NOT NULL,
+  tenant_id VARCHAR(20) NOT NULL DEFAULT '000000',
+  batch_id BIGINT NOT NULL,
+  webhook_event_id BIGINT NOT NULL,
+  provider_event_id VARCHAR(128) NOT NULL,
+  payment_session_id BIGINT NOT NULL,
+  session_no VARCHAR(64) NOT NULL,
+  provider_session_no VARCHAR(128) NOT NULL,
+  purchase_order_id BIGINT NOT NULL,
+  purchase_order_no VARCHAR(64) NOT NULL,
+  event_type VARCHAR(32) NOT NULL,
+  received_time DATETIME NOT NULL,
+  currency_code VARCHAR(32) NOT NULL,
+  source_amount DECIMAL(20,6) NOT NULL,
+  gross_payment DECIMAL(20,6) NOT NULL,
+  refund_amount DECIMAL(20,6) NOT NULL,
+  chargeback_amount DECIMAL(20,6) NOT NULL,
+  fee_amount DECIMAL(20,6) NOT NULL,
+  net_contribution DECIMAL(20,6) NOT NULL,
+  source_snapshot_json LONGTEXT NOT NULL,
+  create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_gl_payment_settlement_item_01 (tenant_id, webhook_event_id),
+  KEY idx_gl_payment_settlement_item_01 (tenant_id, batch_id, received_time, id),
+  KEY idx_gl_payment_settlement_item_02 (tenant_id, purchase_order_no, id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Immutable payment settlement event item';
+
+CREATE TABLE IF NOT EXISTS gl_payment_settlement_action_log (
+  id BIGINT NOT NULL,
+  tenant_id VARCHAR(20) NOT NULL DEFAULT '000000',
+  batch_id BIGINT NOT NULL,
+  action_type VARCHAR(32) NOT NULL,
+  before_status VARCHAR(32) DEFAULT NULL,
+  after_status VARCHAR(32) DEFAULT NULL,
+  operator_id BIGINT NOT NULL,
+  operator_name VARCHAR(100) NOT NULL,
+  remark VARCHAR(500) DEFAULT NULL,
+  evidence_snapshot_json LONGTEXT DEFAULT NULL,
+  create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY idx_gl_payment_settlement_action_log_01 (tenant_id, batch_id, create_time, id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Append-only payment settlement action log';
+
+-- Phase 44 payment reconciliation admin menu and dictionaries (idempotent delete + insert).
+DELETE FROM sys_menu WHERE menu_id IN (20321, 20322, 20323, 20324, 2032);
+UPDATE sys_menu SET order_num = 7 WHERE menu_id = 19195 AND parent_id = 1900;
+INSERT INTO sys_menu
+(menu_id, menu_name, parent_id, order_num, path, component, query_param, is_frame, is_cache, menu_type, visible, status, perms, icon, create_dept, create_by, create_time, update_by, update_time, remark)
+VALUES
+(2032, '支付对账', 1900, 6, 'payment-reconciliation', 'payment/payment-reconciliation/index', '', 1, 0, 'C', '0', '0', 'payment:reconciliation:list', 'audit', 103, 1, NOW(), NULL, NULL, '支付对账与差异处理工作台'),
+(20321, '支付对账查询', 2032, 1, '#', '', '', 1, 0, 'F', '0', '0', 'payment:reconciliation:query', '#', 103, 1, NOW(), NULL, NULL, ''),
+(20322, '支付对账上传', 2032, 2, '#', '', '', 1, 0, 'F', '0', '0', 'payment:reconciliation:upload', '#', 103, 1, NOW(), NULL, NULL, ''),
+(20323, '支付对账执行', 2032, 3, '#', '', '', 1, 0, 'F', '0', '0', 'payment:reconciliation:execute', '#', 103, 1, NOW(), NULL, NULL, ''),
+(20324, '支付对账处理', 2032, 4, '#', '', '', 1, 0, 'F', '0', '0', 'payment:reconciliation:resolve', '#', 103, 1, NOW(), NULL, NULL, '');
+
+DELETE FROM sys_dict_data WHERE tenant_id='000000' AND dict_type IN
+('gl_payment_reconciliation_batch_status','gl_payment_reconciliation_line_status','gl_payment_reconciliation_issue_type','gl_payment_reconciliation_issue_status','gl_payment_reconciliation_resolution_type');
+DELETE FROM sys_dict_type WHERE tenant_id='000000' AND dict_type IN
+('gl_payment_reconciliation_batch_status','gl_payment_reconciliation_line_status','gl_payment_reconciliation_issue_type','gl_payment_reconciliation_issue_status','gl_payment_reconciliation_resolution_type');
+INSERT INTO sys_dict_type
+(dict_id,tenant_id,dict_name,dict_type,create_dept,create_by,create_time,remark) VALUES
+(20040,'000000','支付对账批次状态','gl_payment_reconciliation_batch_status',103,1,SYSDATE(),''),
+(20041,'000000','支付对账行状态','gl_payment_reconciliation_line_status',103,1,SYSDATE(),''),
+(20042,'000000','支付对账差异类型','gl_payment_reconciliation_issue_type',103,1,SYSDATE(),''),
+(20043,'000000','支付对账差异状态','gl_payment_reconciliation_issue_status',103,1,SYSDATE(),''),
+(20044,'000000','支付对账处理类型','gl_payment_reconciliation_resolution_type',103,1,SYSDATE(),'');
+INSERT INTO sys_dict_data
+(dict_code,tenant_id,dict_sort,dict_label,dict_value,dict_type,css_class,list_class,is_default,create_dept,create_by,create_time,remark) VALUES
+(21291,'000000',1,'已上传','UPLOADED','gl_payment_reconciliation_batch_status','','info','N',103,1,SYSDATE(),''),(21292,'000000',2,'已校验','VALIDATED','gl_payment_reconciliation_batch_status','','warning','N',103,1,SYSDATE(),''),(21293,'000000',3,'对账中','RECONCILING','gl_payment_reconciliation_batch_status','','warning','N',103,1,SYSDATE(),''),(21294,'000000',4,'已完成','COMPLETED','gl_payment_reconciliation_batch_status','','success','N',103,1,SYSDATE(),''),(21295,'000000',5,'失败','FAILED','gl_payment_reconciliation_batch_status','','danger','N',103,1,SYSDATE(),''),
+(21296,'000000',1,'有效','VALID','gl_payment_reconciliation_line_status','','info','N',103,1,SYSDATE(),''),(21297,'000000',2,'无效','INVALID','gl_payment_reconciliation_line_status','','danger','N',103,1,SYSDATE(),''),(21298,'000000',3,'已匹配','MATCHED','gl_payment_reconciliation_line_status','','success','N',103,1,SYSDATE(),''),(21299,'000000',4,'有差异','ISSUE','gl_payment_reconciliation_line_status','','warning','N',103,1,SYSDATE(),''),
+(21300,'000000',1,'平台记录缺失','PLATFORM_RECORD_MISSING','gl_payment_reconciliation_issue_type','','danger','N',103,1,SYSDATE(),''),(21301,'000000',2,'通道记录缺失','PROVIDER_RECORD_MISSING','gl_payment_reconciliation_issue_type','','danger','N',103,1,SYSDATE(),''),(21302,'000000',3,'订单身份不符','ORDER_IDENTITY_MISMATCH','gl_payment_reconciliation_issue_type','','warning','N',103,1,SYSDATE(),''),(21303,'000000',4,'金额不符','AMOUNT_MISMATCH','gl_payment_reconciliation_issue_type','','warning','N',103,1,SYSDATE(),''),(21304,'000000',5,'币种不符','CURRENCY_MISMATCH','gl_payment_reconciliation_issue_type','','warning','N',103,1,SYSDATE(),''),(21305,'000000',6,'事件缺失','EVENT_MISSING','gl_payment_reconciliation_issue_type','','warning','N',103,1,SYSDATE(),''),(21306,'000000',7,'状态不符','STATUS_MISMATCH','gl_payment_reconciliation_issue_type','','warning','N',103,1,SYSDATE(),''),(21307,'000000',8,'通道记录重复','DUPLICATE_PROVIDER_RECORD','gl_payment_reconciliation_issue_type','','warning','N',103,1,SYSDATE(),''),(21308,'000000',9,'不支持的记录','UNSUPPORTED_RECORD','gl_payment_reconciliation_issue_type','','info','N',103,1,SYSDATE(),''),
+(21309,'000000',1,'待处理','OPEN','gl_payment_reconciliation_issue_status','','warning','N',103,1,SYSDATE(),''),(21310,'000000',2,'已解决','RESOLVED','gl_payment_reconciliation_issue_status','','success','N',103,1,SYSDATE(),''),(21311,'000000',3,'已忽略','IGNORED','gl_payment_reconciliation_issue_status','','info','N',103,1,SYSDATE(),''),
+(21312,'000000',1,'平台数据确认','PLATFORM_CONFIRMED','gl_payment_reconciliation_resolution_type','','success','N',103,1,SYSDATE(),''),(21313,'000000',2,'通道数据确认','PROVIDER_CONFIRMED','gl_payment_reconciliation_resolution_type','','success','N',103,1,SYSDATE(),''),(21314,'000000',3,'预期差异','EXPECTED_DIFFERENCE','gl_payment_reconciliation_resolution_type','','info','N',103,1,SYSDATE(),''),(21315,'000000',4,'重复记录确认','DUPLICATE_CONFIRMED','gl_payment_reconciliation_resolution_type','','info','N',103,1,SYSDATE(),''),(21316,'000000',5,'其他','OTHER','gl_payment_reconciliation_resolution_type','','info','N',103,1,SYSDATE(),'');
+
+-- Phase 45 payment settlement admin menu and dictionaries (idempotent delete + insert).
+DELETE FROM sys_menu WHERE menu_id IN (20331,20332,20333,20334,2033);
+UPDATE sys_menu SET order_num=8 WHERE menu_id=19195 AND parent_id=1900;
+INSERT INTO sys_menu
+(menu_id,menu_name,parent_id,order_num,path,component,query_param,is_frame,is_cache,menu_type,visible,status,perms,icon,create_dept,create_by,create_time,update_by,update_time,remark) VALUES
+(2033,'支付结算',1900,7,'payment-settlement','payment/payment-settlement/index','',1,0,'C','0','0','payment:settlement:list','receipt',103,1,NOW(),NULL,NULL,'支付结算批次与财务汇总工作台'),
+(20331,'支付结算查询',2033,1,'#','','',1,0,'F','0','0','payment:settlement:query','#',103,1,NOW(),NULL,NULL,''),
+(20332,'支付结算创建',2033,2,'#','','',1,0,'F','0','0','payment:settlement:create','#',103,1,NOW(),NULL,NULL,''),
+(20333,'支付结算计算',2033,3,'#','','',1,0,'F','0','0','payment:settlement:calculate','#',103,1,NOW(),NULL,NULL,''),
+(20334,'支付结算关闭',2033,4,'#','','',1,0,'F','0','0','payment:settlement:close','#',103,1,NOW(),NULL,NULL,'');
+
+DELETE FROM sys_dict_data WHERE tenant_id='000000' AND dict_type IN
+('gl_payment_settlement_batch_status','gl_payment_settlement_action_type');
+DELETE FROM sys_dict_type WHERE tenant_id='000000' AND dict_type IN
+('gl_payment_settlement_batch_status','gl_payment_settlement_action_type');
+INSERT INTO sys_dict_type
+(dict_id,tenant_id,dict_name,dict_type,create_dept,create_by,create_time,remark) VALUES
+(20045,'000000','支付结算批次状态','gl_payment_settlement_batch_status',103,1,SYSDATE(),''),
+(20046,'000000','支付结算操作类型','gl_payment_settlement_action_type',103,1,SYSDATE(),'');
+INSERT INTO sys_dict_data
+(dict_code,tenant_id,dict_sort,dict_label,dict_value,dict_type,css_class,list_class,is_default,create_dept,create_by,create_time,remark) VALUES
+(21317,'000000',1,'已创建','CREATED','gl_payment_settlement_batch_status','','info','N',103,1,SYSDATE(),''),
+(21318,'000000',2,'计算中','CALCULATING','gl_payment_settlement_batch_status','','warning','N',103,1,SYSDATE(),''),
+(21319,'000000',3,'已计算','CALCULATED','gl_payment_settlement_batch_status','','primary','N',103,1,SYSDATE(),''),
+(21320,'000000',4,'已关闭','CLOSED','gl_payment_settlement_batch_status','','success','N',103,1,SYSDATE(),''),
+(21321,'000000',5,'失败','FAILED','gl_payment_settlement_batch_status','','danger','N',103,1,SYSDATE(),''),
+(21322,'000000',1,'创建','CREATE','gl_payment_settlement_action_type','','info','N',103,1,SYSDATE(),''),
+(21323,'000000',2,'计算','CALCULATE','gl_payment_settlement_action_type','','primary','N',103,1,SYSDATE(),''),
+(21324,'000000',3,'计算失败','CALCULATION_FAILED','gl_payment_settlement_action_type','','danger','N',103,1,SYSDATE(),''),
+(21325,'000000',4,'关闭拒绝','CLOSE_REJECTED','gl_payment_settlement_action_type','','warning','N',103,1,SYSDATE(),''),
+(21326,'000000',5,'关闭','CLOSE','gl_payment_settlement_action_type','','success','N',103,1,SYSDATE(),'');

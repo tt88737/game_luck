@@ -27,6 +27,8 @@ public class WalletExchangeOrderVo implements Serializable {
 
     private Long memberId;
 
+    private String memberNo;
+
     private Long exchangeRuleId;
 
     private String fromCurrencyCode;

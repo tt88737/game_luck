@@ -1,6 +1,8 @@
 package com.gameluck.wallet.client.service;
 
 import com.gameluck.common.core.client.ClientTokenService;
+import com.gameluck.wallet.client.domain.bo.ClientExchangeOrderBo;
+import com.gameluck.wallet.client.domain.vo.ClientExchangeOrderVo;
 import com.gameluck.wallet.client.domain.vo.ClientWalletCurrencyVo;
 import com.gameluck.wallet.client.domain.vo.ClientPageVo;
 import com.gameluck.wallet.client.domain.vo.ClientWalletAccountVo;
@@ -10,6 +12,7 @@ import com.gameluck.wallet.domain.WalletTransaction;
 import com.gameluck.wallet.mapper.WalletAccountMapper;
 import com.gameluck.wallet.mapper.WalletTransactionMapper;
 import com.gameluck.wallet.service.IWalletCurrencyPolicyService;
+import com.gameluck.wallet.service.IWalletExchangeOrderService;
 import com.gameluck.wallet.service.IWalletExchangeRuleService;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -35,7 +38,8 @@ class ClientWalletServiceTest {
         WalletTransactionMapper transactionMapper = mock(WalletTransactionMapper.class);
         IWalletCurrencyPolicyService policyService = mock(IWalletCurrencyPolicyService.class);
         ClientTokenService tokenService = new ClientTokenService();
-        ClientWalletService service = new ClientWalletService(accountMapper, transactionMapper, policyService, mock(IWalletExchangeRuleService.class), tokenService);
+        ClientWalletService service = new ClientWalletService(accountMapper, transactionMapper, policyService,
+            mock(IWalletExchangeRuleService.class), mock(IWalletExchangeOrderService.class), tokenService);
         WalletAccount account = new WalletAccount();
         account.setCurrencyCode("GC");
         account.setAvailableBalance(new BigDecimal("1000.00"));
@@ -58,7 +62,8 @@ class ClientWalletServiceTest {
         WalletTransactionMapper transactionMapper = mock(WalletTransactionMapper.class);
         IWalletCurrencyPolicyService policyService = mock(IWalletCurrencyPolicyService.class);
         ClientTokenService tokenService = new ClientTokenService();
-        ClientWalletService service = new ClientWalletService(accountMapper, transactionMapper, policyService, mock(IWalletExchangeRuleService.class), tokenService);
+        ClientWalletService service = new ClientWalletService(accountMapper, transactionMapper, policyService,
+            mock(IWalletExchangeRuleService.class), mock(IWalletExchangeOrderService.class), tokenService);
         WalletTransaction tx = new WalletTransaction();
         tx.setId(9001L);
         tx.setCurrencyCode("GC");
@@ -84,7 +89,8 @@ class ClientWalletServiceTest {
         WalletTransactionMapper transactionMapper = mock(WalletTransactionMapper.class);
         IWalletCurrencyPolicyService policyService = mock(IWalletCurrencyPolicyService.class);
         ClientTokenService tokenService = new ClientTokenService();
-        ClientWalletService service = new ClientWalletService(accountMapper, transactionMapper, policyService, mock(IWalletExchangeRuleService.class), tokenService);
+        ClientWalletService service = new ClientWalletService(accountMapper, transactionMapper, policyService,
+            mock(IWalletExchangeRuleService.class), mock(IWalletExchangeOrderService.class), tokenService);
         when(policyService.listClientCurrencies("000000", 1001L, "H5")).thenReturn(List.of(currency("GC")));
 
         ClientPageVo<ClientWalletLedgerVo> result = service.ledgers("Bearer " + tokenService.issue(1001L), "SC", 1, 20);
@@ -102,7 +108,8 @@ class ClientWalletServiceTest {
         WalletTransactionMapper transactionMapper = mock(WalletTransactionMapper.class);
         IWalletCurrencyPolicyService policyService = mock(IWalletCurrencyPolicyService.class);
         ClientTokenService tokenService = new ClientTokenService();
-        ClientWalletService service = new ClientWalletService(accountMapper, transactionMapper, policyService, mock(IWalletExchangeRuleService.class), tokenService);
+        ClientWalletService service = new ClientWalletService(accountMapper, transactionMapper, policyService,
+            mock(IWalletExchangeRuleService.class), mock(IWalletExchangeOrderService.class), tokenService);
         WalletTransaction tx = new WalletTransaction();
         tx.setId(9002L);
         tx.setCurrencyCode("GC");
@@ -119,6 +126,31 @@ class ClientWalletServiceTest {
 
         assertEquals(1L, result.getTotal());
         assertEquals("GC", result.getRecords().get(0).getCurrencyCode());
+    }
+
+    @Test
+    @Tag("local")
+    void exchangeOrderIsSubmittedForCurrentMember() {
+        WalletAccountMapper accountMapper = mock(WalletAccountMapper.class);
+        WalletTransactionMapper transactionMapper = mock(WalletTransactionMapper.class);
+        IWalletCurrencyPolicyService policyService = mock(IWalletCurrencyPolicyService.class);
+        IWalletExchangeOrderService exchangeOrderService = mock(IWalletExchangeOrderService.class);
+        ClientTokenService tokenService = new ClientTokenService();
+        ClientWalletService service = new ClientWalletService(accountMapper, transactionMapper, policyService,
+            mock(IWalletExchangeRuleService.class), exchangeOrderService, tokenService);
+        ClientExchangeOrderBo bo = new ClientExchangeOrderBo();
+        bo.setExchangeRuleId(9001L);
+        bo.setFromAmount(new BigDecimal("10.000000"));
+        ClientExchangeOrderVo vo = new ClientExchangeOrderVo();
+        vo.setExchangeOrderNo("WE1001");
+        vo.setStatus("SUCCESS");
+        when(exchangeOrderService.submit(1001L, bo)).thenReturn(vo);
+
+        ClientExchangeOrderVo result = service.exchangeOrder("Bearer " + tokenService.issue(1001L), bo);
+
+        assertEquals("WE1001", result.getExchangeOrderNo());
+        assertEquals("SUCCESS", result.getStatus());
+        verify(exchangeOrderService).submit(1001L, bo);
     }
 
     private static ClientWalletCurrencyVo currency(String currencyCode) {

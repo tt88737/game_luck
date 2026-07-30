@@ -3,6 +3,12 @@ package com.gameluck.redemption.client.service;
 import com.gameluck.common.core.client.ClientTokenService;
 import com.gameluck.common.core.exception.ServiceException;
 import com.gameluck.common.core.utils.MessageUtils;
+import com.gameluck.member.compliance.MemberComplianceAction;
+import com.gameluck.member.compliance.MemberComplianceContext;
+import com.gameluck.member.compliance.MemberComplianceDecision;
+import com.gameluck.member.domain.MemberProfile;
+import com.gameluck.member.mapper.MemberProfileMapper;
+import com.gameluck.member.service.IMemberComplianceGateService;
 import com.gameluck.redemption.client.domain.bo.ClientRedemptionRequestBo;
 import com.gameluck.redemption.client.domain.vo.ClientRedemptionVo;
 import com.gameluck.redemption.domain.RedemptionOrder;
@@ -25,6 +31,8 @@ public class ClientRedemptionService {
 
     private final RedemptionOrderMapper redemptionOrderMapper;
     private final IRedemptionOrderService redemptionOrderService;
+    private final MemberProfileMapper memberProfileMapper;
+    private final IMemberComplianceGateService complianceGateService;
     private final ClientTokenService clientTokenService;
 
     public List<ClientRedemptionVo> redemptions(String authorization) {
@@ -36,6 +44,17 @@ public class ClientRedemptionService {
 
     public ClientRedemptionVo request(String authorization, ClientRedemptionRequestBo bo) {
         Long memberId = clientTokenService.requireMemberId(authorization);
+        MemberProfile member = memberProfileMapper.selectClientMember(TENANT_ID, memberId);
+        MemberComplianceDecision decision = complianceGateService.evaluate(MemberComplianceContext.builder()
+            .tenantId(TENANT_ID)
+            .member(member)
+            .action(MemberComplianceAction.REDEMPTION_REQUEST)
+            .currencyCode(SUPPORTED_CURRENCY)
+            .channel("h5")
+            .build());
+        if (!decision.isAllowed()) {
+            throw new ServiceException(MessageUtils.message(decision.getMessageKey()));
+        }
         if (!SUPPORTED_CURRENCY.equals(bo.getCurrencyCode())) {
             throw new ServiceException(MessageUtils.message("client.redemption.currency.unsupported"));
         }

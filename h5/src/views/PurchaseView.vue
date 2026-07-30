@@ -68,6 +68,15 @@ function idempotencyKey(offerId: number) {
   return `h5-${offerId}-${Date.now()}-${Math.random().toString(16).slice(2)}`
 }
 
+function sessionRequestKey(orderNo: string) {
+  const storageKey = `payment-session:${orderNo}`
+  const existing = sessionStorage.getItem(storageKey)
+  if (existing) return existing
+  const value = globalThis.crypto?.randomUUID?.() || `h5-session-${orderNo}-${Date.now()}`
+  sessionStorage.setItem(storageKey, value)
+  return value
+}
+
 async function pay(offer: ClientPurchaseOffer) {
   if (!sessionState.member || payingId.value) {
     return
@@ -76,10 +85,11 @@ async function pay(offer: ClientPurchaseOffer) {
   error.value = ''
   success.value = ''
   try {
-    const result = await clientApi.payPurchaseOffer(offer.offerId, idempotencyKey(offer.offerId))
-    lastOrder.value = result
-    success.value = `购买成功，订单 ${result.orderNo} 已入账`
-    await loadWallet()
+    const order = await clientApi.payPurchaseOffer(offer.offerId, idempotencyKey(offer.offerId))
+    lastOrder.value = order
+    const paymentSession = await clientApi.createPaymentSession(order.orderNo, sessionRequestKey(order.orderNo))
+    success.value = `订单 ${order.orderNo} 已创建，正在前往支付`
+    window.location.assign(paymentSession.checkoutUrl)
   } catch (err) {
     error.value = err instanceof Error ? err.message : '购买失败'
   } finally {

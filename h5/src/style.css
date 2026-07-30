@@ -150,7 +150,16 @@ h2 {
   gap: 8px;
 }
 
+.session-chip span {
+  min-width: 0;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .session-chip button {
+  flex: 0 0 auto;
   border: 0;
   background: transparent;
   color: var(--brand-strong);
@@ -502,10 +511,25 @@ h2 {
     margin-left: auto;
   }
 
+  .language-switcher {
+    gap: 4px;
+    padding: 0 4px;
+  }
+
+  .session-chip {
+    min-width: 0;
+    max-width: 124px;
+    padding: 0;
+  }
+
+  .session-chip span {
+    max-width: 78px;
+  }
+
   .page-wrap {
     width: 100vw;
     max-width: 100%;
-    padding: 16px 14px 84px;
+    padding: 16px 14px calc(132px + env(safe-area-inset-bottom));
   }
 
   .hero-panel,

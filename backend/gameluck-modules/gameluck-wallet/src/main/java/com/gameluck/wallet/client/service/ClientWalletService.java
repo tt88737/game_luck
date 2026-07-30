@@ -1,6 +1,8 @@
 package com.gameluck.wallet.client.service;
 
 import com.gameluck.common.core.client.ClientTokenService;
+import com.gameluck.wallet.client.domain.bo.ClientExchangeOrderBo;
+import com.gameluck.wallet.client.domain.vo.ClientExchangeOrderVo;
 import com.gameluck.wallet.client.domain.vo.ClientExchangeOptionVo;
 import com.gameluck.wallet.client.domain.vo.ClientPageVo;
 import com.gameluck.wallet.client.domain.vo.ClientWalletCurrencyVo;
@@ -11,6 +13,7 @@ import com.gameluck.wallet.domain.WalletTransaction;
 import com.gameluck.wallet.mapper.WalletAccountMapper;
 import com.gameluck.wallet.mapper.WalletTransactionMapper;
 import com.gameluck.wallet.service.IWalletCurrencyPolicyService;
+import com.gameluck.wallet.service.IWalletExchangeOrderService;
 import com.gameluck.wallet.service.IWalletExchangeRuleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,6 +35,7 @@ public class ClientWalletService {
     private final WalletTransactionMapper walletTransactionMapper;
     private final IWalletCurrencyPolicyService walletCurrencyPolicyService;
     private final IWalletExchangeRuleService walletExchangeRuleService;
+    private final IWalletExchangeOrderService walletExchangeOrderService;
     private final ClientTokenService clientTokenService;
 
     public List<ClientWalletAccountVo> accounts(String authorization) {
@@ -51,6 +55,11 @@ public class ClientWalletService {
     public List<ClientExchangeOptionVo> exchangeOptions(String authorization, String channel) {
         Long memberId = clientTokenService.requireMemberId(authorization);
         return walletExchangeRuleService.listOptions(memberId, channel);
+    }
+
+    public ClientExchangeOrderVo exchangeOrder(String authorization, ClientExchangeOrderBo bo) {
+        Long memberId = clientTokenService.requireMemberId(authorization);
+        return walletExchangeOrderService.submit(memberId, bo);
     }
 
     public ClientPageVo<ClientWalletLedgerVo> ledgers(String authorization, String currencyCode, Integer pageNum, Integer pageSize) {

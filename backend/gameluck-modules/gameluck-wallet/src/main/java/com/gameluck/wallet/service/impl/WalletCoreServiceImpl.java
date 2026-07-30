@@ -12,9 +12,15 @@ import com.gameluck.wallet.domain.WalletFreeze;
 import com.gameluck.wallet.domain.WalletRelease;
 import com.gameluck.wallet.domain.WalletTransaction;
 import com.gameluck.wallet.domain.bo.WalletCreditBo;
+import com.gameluck.wallet.domain.bo.WalletBatchDebitBo;
+import com.gameluck.wallet.domain.bo.WalletBatchDebitLineBo;
 import com.gameluck.wallet.domain.bo.WalletDebitBo;
 import com.gameluck.wallet.domain.bo.WalletFreezeOperationBo;
 import com.gameluck.wallet.domain.bo.WalletTurnoverBo;
+import com.gameluck.wallet.domain.vo.WalletBatchDebitLineResult;
+import com.gameluck.wallet.domain.vo.WalletBatchDebitResult;
+import com.gameluck.wallet.domain.vo.WalletBatchDebitPreviewResult;
+import com.gameluck.wallet.domain.vo.WalletBatchDebitPreviewLineResult;
 import com.gameluck.wallet.enums.WalletFreezeStatus;
 import com.gameluck.wallet.enums.WalletOperation;
 import com.gameluck.wallet.enums.WalletReleaseMode;
@@ -35,7 +41,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -158,6 +169,168 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    public WalletBatchDebitResult batchDebit(WalletBatchDebitBo bo) {
+        String tenantId = StringUtils.blankToDefault(bo.getTenantId(), currentTenantId());
+        requireExistingMember(tenantId, bo.getMemberId());
+        List<WalletBatchDebitLineBo> lines = normalizeBatchLines(bo.getLines());
+        Date now = new Date();
+        Map<String, WalletTransaction> planned = new LinkedHashMap<>();
+        int existingCount = 0;
+        for (WalletBatchDebitLineBo line : lines) {
+            WalletDebitBo debit = batchDebitLine(bo, line);
+            WalletTransaction expected = buildDebitTransaction(tenantId, debit, line.getAmount(), ZERO, ZERO, ZERO, now);
+            planned.put(line.getCurrencyCode(), expected);
+            WalletTransaction existing = walletTransactionMapper.selectByIdempotencyKey(tenantId, line.getIdempotencyKey());
+            if (existing != null) {
+                resolveIdempotentResult(existing, expected.getRequestHash());
+                planned.put(line.getCurrencyCode(), existing);
+                existingCount++;
+            }
+        }
+        if (existingCount == lines.size()) {
+            return completedBatchResult(lines, planned);
+        }
+        if (existingCount > 0) {
+            throw new ServiceException(MessageUtils.message("wallet.idempotency.conflict"));
+        }
+
+        Map<String, WalletAccount> accounts = new LinkedHashMap<>();
+        List<WalletBatchDebitLineResult> observed = new ArrayList<>();
+        boolean reviewRequired = false;
+        for (WalletBatchDebitLineBo line : lines) {
+            WalletAccount account = walletAccountMapper.selectByBizKeyForUpdate(tenantId, bo.getMemberId(), line.getCurrencyCode());
+            accounts.put(line.getCurrencyCode(), account);
+            BigDecimal available = account == null ? ZERO : defaultZero(account.getAvailableBalance());
+            BigDecimal shortfall = line.getAmount().subtract(available).max(ZERO);
+            observed.add(batchLineResult(line, available, ZERO, shortfall, null));
+            reviewRequired |= shortfall.compareTo(ZERO) > 0;
+        }
+        if (reviewRequired) {
+            return batchResult("REVIEW_REQUIRED", observed);
+        }
+
+        List<WalletBatchDebitLineResult> completed = new ArrayList<>();
+        for (WalletBatchDebitLineBo line : lines) {
+            WalletTransaction transaction = planned.get(line.getCurrencyCode());
+            WalletTransaction concurrent = reserveTransaction(transaction);
+            if (concurrent != null) {
+                throw new ServiceException(MessageUtils.message("wallet.idempotency.conflict"));
+            }
+            WalletAccount account = accounts.get(line.getCurrencyCode());
+            BigDecimal balanceBefore = defaultZero(account.getAvailableBalance());
+            BigDecimal frozenBefore = defaultZero(account.getFrozenBalance());
+            BigDecimal balanceAfter = normalizeAmount(balanceBefore.subtract(line.getAmount()));
+            account.setAvailableBalance(balanceAfter);
+            account.setUpdateTime(now);
+            walletAccountMapper.updateById(account);
+
+            transaction.setBalanceBefore(normalizeAmount(balanceBefore));
+            transaction.setBalanceAfter(balanceAfter);
+            transaction.setFrozenBefore(normalizeAmount(frozenBefore));
+            transaction.setFrozenAfter(normalizeAmount(frozenBefore));
+            transaction.setStatus(WalletTransactionStatus.SUCCESS.name());
+            transaction.setUpdateTime(now);
+            walletTransactionMapper.updateById(transaction);
+            completed.add(batchLineResult(line, balanceBefore, line.getAmount(), ZERO, transaction.getTransactionNo()));
+        }
+        return batchResult("COMPLETED", completed);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public WalletBatchDebitPreviewResult previewBatchDebit(WalletBatchDebitBo bo) {
+        String tenantId = StringUtils.blankToDefault(bo.getTenantId(), currentTenantId());
+        requireExistingMember(tenantId, bo.getMemberId());
+        List<WalletBatchDebitLineBo> lines = normalizeBatchLines(bo.getLines());
+        WalletBatchDebitPreviewResult result = new WalletBatchDebitPreviewResult();
+        boolean sufficient = true;
+        for (WalletBatchDebitLineBo line : lines) {
+            WalletAccount account = walletAccountMapper.selectByBizKeyForUpdate(
+                tenantId, bo.getMemberId(), line.getCurrencyCode());
+            BigDecimal available = account == null ? ZERO : defaultZero(account.getAvailableBalance());
+            BigDecimal shortfall = line.getAmount().subtract(available).max(ZERO);
+            WalletBatchDebitPreviewLineResult observed = new WalletBatchDebitPreviewLineResult();
+            observed.setCurrencyCode(line.getCurrencyCode());
+            observed.setRequiredAmount(normalizeAmount(line.getAmount()));
+            observed.setAvailableAmount(normalizeAmount(available));
+            observed.setShortfallAmount(normalizeAmount(shortfall));
+            result.getLines().add(observed);
+            sufficient &= shortfall.compareTo(ZERO) == 0;
+        }
+        result.setSufficient(sufficient);
+        return result;
+    }
+
+    private List<WalletBatchDebitLineBo> normalizeBatchLines(List<WalletBatchDebitLineBo> source) {
+        if (source == null || source.isEmpty()) {
+            throw new ServiceException(MessageUtils.message("wallet.debit.amount.positive"));
+        }
+        Map<String, WalletBatchDebitLineBo> normalized = new TreeMap<>();
+        for (WalletBatchDebitLineBo original : source) {
+            String currencyCode = StringUtils.blankToDefault(original.getCurrencyCode(), "").trim().toUpperCase(Locale.ROOT);
+            BigDecimal amount = requirePositive(original.getAmount(), "wallet.debit.amount.positive");
+            if (StringUtils.isBlank(currencyCode) || StringUtils.isBlank(original.getIdempotencyKey())) {
+                throw new ServiceException(MessageUtils.message("wallet.idempotency.key.required"));
+            }
+            WalletBatchDebitLineBo line = normalized.get(currencyCode);
+            if (line == null) {
+                line = new WalletBatchDebitLineBo();
+                line.setCurrencyCode(currencyCode);
+                line.setAmount(amount);
+                line.setIdempotencyKey(original.getIdempotencyKey());
+                normalized.put(currencyCode, line);
+            } else {
+                line.setAmount(normalizeAmount(line.getAmount().add(amount)));
+            }
+        }
+        return new ArrayList<>(normalized.values());
+    }
+
+    private WalletDebitBo batchDebitLine(WalletBatchDebitBo batch, WalletBatchDebitLineBo line) {
+        WalletDebitBo debit = new WalletDebitBo();
+        debit.setMemberId(batch.getMemberId());
+        debit.setCurrencyCode(line.getCurrencyCode());
+        debit.setAmount(line.getAmount());
+        debit.setSourceType(batch.getSourceType());
+        debit.setBusinessNo(batch.getBusinessNo());
+        debit.setIdempotencyKey(line.getIdempotencyKey());
+        debit.setRemark(batch.getRemark());
+        return debit;
+    }
+
+    private WalletBatchDebitResult completedBatchResult(List<WalletBatchDebitLineBo> lines,
+                                                         Map<String, WalletTransaction> transactions) {
+        List<WalletBatchDebitLineResult> results = new ArrayList<>();
+        for (WalletBatchDebitLineBo line : lines) {
+            WalletTransaction transaction = transactions.get(line.getCurrencyCode());
+            results.add(batchLineResult(line, transaction.getBalanceBefore(), line.getAmount(), ZERO,
+                transaction.getTransactionNo()));
+        }
+        return batchResult("COMPLETED", results);
+    }
+
+    private WalletBatchDebitLineResult batchLineResult(WalletBatchDebitLineBo line, BigDecimal available,
+                                                        BigDecimal recovered, BigDecimal shortfall,
+                                                        String transactionNo) {
+        WalletBatchDebitLineResult result = new WalletBatchDebitLineResult();
+        result.setCurrencyCode(line.getCurrencyCode());
+        result.setRequiredAmount(normalizeAmount(line.getAmount()));
+        result.setAvailableAmount(normalizeAmount(defaultZero(available)));
+        result.setRecoveredAmount(normalizeAmount(defaultZero(recovered)));
+        result.setShortfallAmount(normalizeAmount(defaultZero(shortfall)));
+        result.setWalletTransactionNo(transactionNo);
+        return result;
+    }
+
+    private WalletBatchDebitResult batchResult(String status, List<WalletBatchDebitLineResult> lines) {
+        WalletBatchDebitResult result = new WalletBatchDebitResult();
+        result.setStatus(status);
+        result.setLines(lines);
+        return result;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public WalletTransaction freeze(WalletFreezeOperationBo bo) {
         String tenantId = currentTenantId();
         requireExistingMember(tenantId, bo.getMemberId());
@@ -262,6 +435,7 @@ public class WalletCoreServiceImpl implements IWalletCoreService {
             release.setUpdateTime(now);
             walletReleaseMapper.updateById(release);
         }
+        walletTurnoverTaskService.applyValidTurnover(tenantId, bo.getMemberId(), bo.getCurrencyCode(), validTurnoverAmount, now);
         transaction.setStatus(WalletTransactionStatus.SUCCESS.name());
         transaction.setRemark(turnoverRemark(releasedCount));
         transaction.setUpdateTime(now);

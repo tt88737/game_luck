@@ -1,2 +1,11 @@
 .worktrees/
 .superpowers/
+
+# Local runtime artifacts
+artifacts/
+*screens/
+*.log
+*.out.log
+*.err.log
+*.mdmp
+backend-runtime-logs/

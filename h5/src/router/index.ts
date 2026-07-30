@@ -8,6 +8,8 @@ import PromotionsView from '../views/PromotionsView.vue'
 import PurchaseView from '../views/PurchaseView.vue'
 import RedemptionsView from '../views/RedemptionsView.vue'
 import HelpView from '../views/HelpView.vue'
+import SimulatedCheckoutView from '../views/SimulatedCheckoutView.vue'
+import PurchaseResultView from '../views/PurchaseResultView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -17,6 +19,8 @@ const router = createRouter({
     { path: '/register', name: 'register', component: RegisterView },
     { path: '/wallet', name: 'wallet', component: WalletView },
     { path: '/purchase', name: 'purchase', component: PurchaseView },
+    { path: '/simulated-checkout/:providerSessionNo', name: 'simulated-checkout', component: SimulatedCheckoutView },
+    { path: '/purchase-result/:sessionNo', name: 'purchase-result', component: PurchaseResultView },
     { path: '/games', name: 'games', component: GamesView },
     { path: '/promotions', name: 'promotions', component: PromotionsView },
     { path: '/redemptions', name: 'redemptions', component: RedemptionsView },

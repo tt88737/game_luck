@@ -6,6 +6,13 @@ export interface MemberProfileVO extends BaseEntity {
   nickname: string;
   status: string;
   riskLevel: string;
+  riskReason: string;
+  riskSource: string;
+  riskUpdatedTime: string;
+  kycStatus: string;
+  kycReviewReason: string;
+  kycReviewedBy: string;
+  kycReviewTime: string;
   registerChannel: string;
   countryCode: string;
   stateCode: string;
@@ -25,6 +32,10 @@ export interface MemberProfileForm {
   nickname?: string;
   status?: string;
   riskLevel?: string;
+  kycStatus?: string;
+  kycReviewReason?: string;
+  kycReviewedBy?: string;
+  kycReviewTime?: string;
   registerChannel?: string;
   countryCode?: string;
   stateCode?: string;
@@ -38,6 +49,7 @@ export interface MemberProfileQuery extends PageQuery {
   nickname?: string;
   status?: string;
   riskLevel?: string;
+  kycStatus?: string;
   registerChannel?: string;
   countryCode?: string;
   stateCode?: string;

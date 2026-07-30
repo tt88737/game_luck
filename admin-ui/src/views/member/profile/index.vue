@@ -27,6 +27,11 @@
                 <el-option :label="t('memberProfile.risk.HIGH')" value="HIGH" />
               </el-select>
             </el-form-item>
+            <el-form-item :label="t('memberProfile.fields.kycStatus')" prop="kycStatus">
+              <el-select v-model="queryParams.kycStatus" :placeholder="t('memberProfile.placeholders.kycStatus')" clearable class="!w-140px">
+                <el-option v-for="item in gl_kyc_status" :key="item.value" :label="item.label" :value="item.value" />
+              </el-select>
+            </el-form-item>
             <el-form-item :label="t('memberProfile.fields.countryCode')" prop="countryCode">
               <el-input v-model="queryParams.countryCode" :placeholder="t('memberProfile.placeholders.countryCode')" clearable class="!w-110px" @keyup.enter="handleQuery" />
             </el-form-item>
@@ -75,6 +80,11 @@
         <el-table-column :label="t('memberProfile.fields.riskLevel')" align="center" prop="riskLevel" width="100">
           <template #default="scope">
             <el-tag :type="riskType(scope.row.riskLevel)">{{ riskLabel(scope.row.riskLevel) }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column :label="t('memberProfile.fields.kycStatus')" align="center" prop="kycStatus" width="120">
+          <template #default="scope">
+            <dict-tag :options="gl_kyc_status" :value="scope.row.kycStatus" />
           </template>
         </el-table-column>
         <el-table-column :label="t('memberProfile.fields.registerChannel')" align="center" prop="registerChannel" width="120" show-overflow-tooltip />
@@ -160,6 +170,14 @@
             <el-radio-button label="HIGH">{{ t('memberProfile.risk.HIGH') }}</el-radio-button>
           </el-radio-group>
         </el-form-item>
+        <el-form-item :label="t('memberProfile.fields.kycStatus')" prop="kycStatus">
+          <el-select v-model="form.kycStatus" :placeholder="t('memberProfile.placeholders.kycStatus')" class="w-full">
+            <el-option v-for="item in gl_kyc_status" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item :label="t('memberProfile.fields.kycReviewReason')" prop="kycReviewReason">
+          <el-input v-model="form.kycReviewReason" type="textarea" :rows="2" :placeholder="t('memberProfile.placeholders.kycReviewReason')" />
+        </el-form-item>
         <el-form-item :label="t('memberProfile.fields.registerChannel')" prop="registerChannel">
           <el-input v-model="form.registerChannel" placeholder="ADMIN" />
         </el-form-item>
@@ -175,8 +193,8 @@
       </template>
     </el-dialog>
 
-    <el-dialog v-model="detailOpen" :title="t('memberProfile.dialog.detail')" width="760px" append-to-body>
-      <el-descriptions :column="2" border>
+    <el-dialog v-model="detailOpen" :title="t('memberProfile.dialog.detail')" width="min(760px, 92vw)" append-to-body>
+      <el-descriptions class="member-profile-detail" :column="2" border>
         <el-descriptions-item :label="t('memberProfile.fields.memberNo')">{{ detail.memberNo }}</el-descriptions-item>
         <el-descriptions-item :label="t('memberProfile.fields.username')">{{ detail.username }}</el-descriptions-item>
         <el-descriptions-item :label="t('memberProfile.fields.nickname')">{{ detail.nickname }}</el-descriptions-item>
@@ -184,6 +202,15 @@
         <el-descriptions-item :label="t('memberProfile.fields.stateCode')">{{ detail.stateCode }}</el-descriptions-item>
         <el-descriptions-item :label="t('common.status')">{{ statusLabel(detail.status) }}</el-descriptions-item>
         <el-descriptions-item :label="t('memberProfile.fields.riskLevel')">{{ riskLabel(detail.riskLevel) }}</el-descriptions-item>
+        <el-descriptions-item :label="t('memberProfile.fields.riskUpdatedTime')">{{ detail.riskUpdatedTime || '-' }}</el-descriptions-item>
+        <el-descriptions-item :label="t('memberProfile.fields.riskReason')" :span="2">{{ detail.riskReason || '-' }}</el-descriptions-item>
+        <el-descriptions-item :label="t('memberProfile.fields.riskSource')" :span="2">{{ detail.riskSource || '-' }}</el-descriptions-item>
+        <el-descriptions-item :label="t('memberProfile.fields.kycStatus')">
+          <dict-tag :options="gl_kyc_status" :value="detail.kycStatus" />
+        </el-descriptions-item>
+        <el-descriptions-item :label="t('memberProfile.fields.kycReviewedBy')">{{ detail.kycReviewedBy }}</el-descriptions-item>
+        <el-descriptions-item :label="t('memberProfile.fields.kycReviewTime')">{{ detail.kycReviewTime }}</el-descriptions-item>
+        <el-descriptions-item :label="t('memberProfile.fields.kycReviewReason')" :span="2">{{ detail.kycReviewReason }}</el-descriptions-item>
         <el-descriptions-item :label="t('memberProfile.fields.registerChannel')">{{ detail.registerChannel }}</el-descriptions-item>
         <el-descriptions-item :label="t('memberProfile.consent.age')">{{ consentLabel(detail.ageConfirmed) }}</el-descriptions-item>
         <el-descriptions-item :label="t('memberProfile.consent.terms')">{{ consentLabel(detail.termsAccepted) }}</el-descriptions-item>
@@ -205,6 +232,7 @@ import { useI18n } from 'vue-i18n';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { t } = useI18n();
+const { gl_kyc_status } = toRefs<any>(proxy?.useDict('gl_kyc_status'));
 
 const memberList = ref<MemberProfileVO[]>([]);
 const loading = ref(true);
@@ -225,6 +253,7 @@ const dialog = reactive({
 const initFormData: MemberProfileForm = {
   status: 'ACTIVE',
   riskLevel: 'NORMAL',
+  kycStatus: 'NOT_STARTED',
   registerChannel: 'ADMIN'
 };
 
@@ -237,6 +266,7 @@ const queryParams = ref<MemberProfileQuery>({
   nickname: '',
   status: '',
   riskLevel: '',
+  kycStatus: '',
   registerChannel: '',
   countryCode: '',
   stateCode: ''
@@ -247,8 +277,11 @@ const dialogTitle = computed(() => t(dialog.mode === 'add' ? 'memberProfile.dial
 const rules = computed(() => ({
   username: [{ required: true, message: t('memberProfile.rules.username'), trigger: 'blur' }],
   status: [{ required: true, message: t('memberProfile.rules.status'), trigger: 'change' }],
-  riskLevel: [{ required: true, message: t('memberProfile.rules.riskLevel'), trigger: 'change' }]
+  riskLevel: [{ required: true, message: t('memberProfile.rules.riskLevel'), trigger: 'change' }],
+  kycStatus: [{ required: true, message: t('memberProfile.rules.kycStatus'), trigger: 'change' }]
 }));
+
+type TagType = 'success' | 'warning' | 'primary' | 'info' | 'danger';
 
 const getList = async () => {
   loading.value = true;
@@ -266,12 +299,12 @@ const statusLabel = (status?: string) => {
 };
 
 const statusType = (status?: string) => {
-  const map: Record<string, string> = {
+  const map: Record<string, TagType> = {
     ACTIVE: 'success',
     FROZEN: 'warning',
     DISABLED: 'danger'
   };
-  return status ? map[status] || '' : '';
+  return status ? map[status] || 'info' : 'info';
 };
 
 const riskLabel = (riskLevel?: string) => {
@@ -279,12 +312,12 @@ const riskLabel = (riskLevel?: string) => {
 };
 
 const riskType = (riskLevel?: string) => {
-  const map: Record<string, string> = {
+  const map: Record<string, TagType> = {
     NORMAL: 'success',
     WATCH: 'warning',
     HIGH: 'danger'
   };
-  return riskLevel ? map[riskLevel] || '' : '';
+  return riskLevel ? map[riskLevel] || 'info' : 'info';
 };
 
 const formatRegion = (row: MemberProfileVO) => {
@@ -330,7 +363,7 @@ const handleAdd = () => {
 const handleUpdate = async (row: MemberProfileVO) => {
   reset();
   const res = await getMemberProfile(row.id);
-  form.value = res.data;
+  form.value = { ...initFormData, ...res.data, kycStatus: res.data?.kycStatus || 'NOT_STARTED' };
   dialog.mode = 'edit';
   dialog.visible = true;
 };
@@ -381,3 +414,14 @@ onMounted(() => {
   getList();
 });
 </script>
+
+<style scoped>
+.member-profile-detail :deep(.el-descriptions__label) {
+  width: 120px;
+  white-space: nowrap;
+}
+
+.member-profile-detail :deep(.el-descriptions__content) {
+  overflow-wrap: anywhere;
+}
+</style>

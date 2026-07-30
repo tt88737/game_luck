@@ -129,8 +129,9 @@ public class PurchaseOfferServiceImpl implements IPurchaseOfferService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public List<WalletCreditBo> snapshotPaidOrderGrants(PurchaseOrder order, List<PurchaseOfferGrantItem> items) {
+    public List<PurchaseOrderGrantSnapshot> prepareOrderGrantSnapshots(PurchaseOrder order, List<PurchaseOfferGrantItem> items) {
         List<WalletCreditBo> credits = buildWalletCreditsForPaidOrder(order, items);
+        List<PurchaseOrderGrantSnapshot> snapshots = new ArrayList<>();
         for (int i = 0; i < items.size(); i++) {
             PurchaseOfferGrantItem item = items.get(i);
             WalletCreditBo credit = credits.get(i);
@@ -145,11 +146,45 @@ public class PurchaseOfferServiceImpl implements IPurchaseOfferService {
             snapshot.setGrantAmount(item.getGrantAmount());
             snapshot.setFundPropertyCode(item.getFundPropertyCode());
             snapshot.setWageringMode(item.getWageringMode());
+            snapshot.setWageringMultiplier(item.getWageringMultiplier());
+            snapshot.setWageringExpireDays(item.getWageringExpireDays());
             snapshot.setRequiredTurnover(credit.getTurnoverRequiredAmount());
             snapshot.setGameScopeType(StringUtils.blankToDefault(item.getGameScopeType(), DEFAULT_SCOPE_ALL));
             snapshot.setGameScopeValue(item.getGameScopeValue());
             snapshot.setRuleSnapshot(credit.getRuleSnapshot());
             snapshotMapper.insert(snapshot);
+            snapshots.add(snapshot);
+        }
+        return snapshots;
+    }
+
+    @Override
+    public List<PurchaseOrderGrantSnapshot> orderGrantSnapshots(PurchaseOrder order) {
+        return snapshotMapper.selectByPurchaseOrderNo(order.getTenantId(), order.getPurchaseOrderNo());
+    }
+
+    @Override
+    public List<PurchaseOrderGrantSnapshot> orderGrantSnapshotsForUpdate(PurchaseOrder order) {
+        return snapshotMapper.selectByPurchaseOrderNoForUpdate(order.getTenantId(), order.getPurchaseOrderNo());
+    }
+
+    @Override
+    public List<WalletCreditBo> creditsFromOrderSnapshots(PurchaseOrder order) {
+        List<PurchaseOrderGrantSnapshot> snapshots = orderGrantSnapshots(order);
+        if (snapshots.isEmpty()) throw new ServiceException(MessageUtils.message("payment.purchase.reversal.snapshot.missing"));
+        List<WalletCreditBo> credits = new ArrayList<>();
+        for (PurchaseOrderGrantSnapshot snapshot : snapshots) {
+            WalletCreditBo credit = new WalletCreditBo();
+            credit.setIdempotencyKey("purchase:" + order.getPurchaseOrderNo() + ":" + snapshot.getId());
+            credit.setMemberId(order.getMemberId()); credit.setCurrencyCode(snapshot.getCurrencyCode());
+            credit.setAmount(snapshot.getGrantAmount()); credit.setSourceType(SOURCE_TYPE_PURCHASE);
+            credit.setBusinessNo(order.getPurchaseOrderNo()); credit.setFundPropertyCode(snapshot.getFundPropertyCode());
+            credit.setTurnoverRequiredAmount(snapshot.getRequiredTurnover()); credit.setRequiredTurnover(snapshot.getRequiredTurnover());
+            credit.setTurnoverMultiplier(snapshot.getWageringMultiplier() == null ? BigDecimal.ZERO : snapshot.getWageringMultiplier());
+            credit.setTurnoverExpireTime(resolveTurnoverExpireTime(snapshot.getWageringExpireDays()));
+            credit.setGameScopeType(snapshot.getGameScopeType()); credit.setGameScopeValue(snapshot.getGameScopeValue());
+            credit.setSourceId(order.getId() == null ? null : order.getId().toString()); credit.setRuleSnapshot(snapshot.getRuleSnapshot());
+            credits.add(credit);
         }
         return credits;
     }

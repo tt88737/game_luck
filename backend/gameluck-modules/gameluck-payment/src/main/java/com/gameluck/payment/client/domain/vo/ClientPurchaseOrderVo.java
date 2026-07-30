@@ -28,6 +28,12 @@ public class ClientPurchaseOrderVo {
 
     private String status;
 
+    private String providerCode;
+
+    private String providerOrderNo;
+
+    private String paymentSessionNo;
+
     private List<ClientPurchaseGrantItemVo> grantItems;
 
     private Date createdAt;

@@ -1,12 +1,19 @@
 package com.gameluck.payment.client.service;
 
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.gameluck.common.core.client.ClientTokenService;
 import com.gameluck.common.core.exception.ServiceException;
 import com.gameluck.common.core.utils.MessageUtils;
 import com.gameluck.common.core.utils.StringUtils;
 import com.gameluck.common.tenant.helper.TenantHelper;
+import com.gameluck.member.compliance.MemberComplianceAction;
+import com.gameluck.member.compliance.MemberComplianceContext;
+import com.gameluck.member.compliance.MemberComplianceDecision;
+import com.gameluck.member.domain.MemberProfile;
+import com.gameluck.member.mapper.MemberProfileMapper;
+import com.gameluck.member.service.IMemberComplianceGateService;
 import com.gameluck.payment.client.domain.bo.ClientPurchasePayBo;
 import com.gameluck.payment.client.domain.vo.ClientPurchaseGrantItemVo;
 import com.gameluck.payment.client.domain.vo.ClientPurchaseOfferVo;
@@ -14,17 +21,16 @@ import com.gameluck.payment.client.domain.vo.ClientPurchaseOrderVo;
 import com.gameluck.payment.domain.PurchaseOffer;
 import com.gameluck.payment.domain.PurchaseOfferGrantItem;
 import com.gameluck.payment.domain.PurchaseOrder;
+import com.gameluck.payment.domain.PurchaseOrderGrantSnapshot;
+import com.gameluck.payment.enums.PurchaseOrderStatus;
 import com.gameluck.payment.mapper.PurchaseOfferGrantItemMapper;
 import com.gameluck.payment.mapper.PurchaseOfferMapper;
 import com.gameluck.payment.mapper.PurchaseOrderMapper;
 import com.gameluck.payment.service.IPurchaseOfferService;
-import com.gameluck.wallet.domain.WalletTransaction;
-import com.gameluck.wallet.domain.bo.WalletCreditBo;
-import com.gameluck.wallet.enums.WalletTransactionStatus;
-import com.gameluck.wallet.service.IWalletCoreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.dao.DuplicateKeyException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -42,10 +48,6 @@ public class ClientPurchaseService {
 
     private static final String DEFAULT_TENANT_ID = "000000";
     private static final String ENABLED = "0";
-    private static final String STATUS_PENDING = "PENDING";
-    private static final String STATUS_PAID = "PAID";
-    private static final String STATUS_CREDITED = "CREDITED";
-    private static final String STATUS_FAILED = "FAILED";
     private static final int MONEY_SCALE = 6;
 
     private final ClientTokenService clientTokenService;
@@ -53,7 +55,8 @@ public class ClientPurchaseService {
     private final PurchaseOfferGrantItemMapper grantItemMapper;
     private final PurchaseOrderMapper orderMapper;
     private final IPurchaseOfferService purchaseOfferService;
-    private final IWalletCoreService walletCoreService;
+    private final MemberProfileMapper memberProfileMapper;
+    private final IMemberComplianceGateService complianceGateService;
 
     public List<ClientPurchaseOfferVo> offers() {
         String tenantId = currentTenantId();
@@ -87,9 +90,11 @@ public class ClientPurchaseService {
             if (!memberId.equals(exists.getMemberId()) || !bo.getOfferId().equals(exists.getOfferId())) {
                 throw new ServiceException(MessageUtils.message("wallet.idempotency.conflict"));
             }
-            return toOrderVo(exists, List.of(), null);
+            return replayVo(exists);
         }
         PurchaseOffer offer = requireAvailableOffer(tenantId, bo.getOfferId());
+        validatePurchaseCompliance(tenantId, memberId, offer);
+        enforcePurchaseLimit(tenantId, memberId, offer);
         List<PurchaseOfferGrantItem> items = grantItemMapper.selectList(Wrappers.<PurchaseOfferGrantItem>lambdaQuery()
             .eq(PurchaseOfferGrantItem::getTenantId, tenantId)
             .eq(PurchaseOfferGrantItem::getOfferId, offer.getId())
@@ -99,27 +104,39 @@ public class ClientPurchaseService {
         }
         Date now = new Date();
         PurchaseOrder order = buildOrder(tenantId, memberId, offer, bo.getIdempotencyKey(), now);
-        orderMapper.insert(order);
-        order.setStatus(STATUS_PAID);
-        order.setPaidTime(now);
-        orderMapper.updateById(order);
         try {
-            List<WalletCreditBo> credits = purchaseOfferService.snapshotPaidOrderGrants(order, items);
-            for (WalletCreditBo credit : credits) {
-                WalletTransaction tx = walletCoreService.credit(credit);
-                if (!WalletTransactionStatus.SUCCESS.name().equals(tx.getStatus())) {
-                    throw new ServiceException(StringUtils.blankToDefault(tx.getFailReason(), MessageUtils.message("client.purchase.credit.failed")));
-                }
+            orderMapper.insert(order);
+        } catch (DuplicateKeyException duplicate) {
+            PurchaseOrder winner = orderMapper.selectByIdempotencyKeyForUpdate(tenantId, bo.getIdempotencyKey());
+            if (winner == null) throw duplicate;
+            if (!memberId.equals(winner.getMemberId()) || !bo.getOfferId().equals(winner.getOfferId())) {
+                throw new ServiceException(MessageUtils.message("wallet.idempotency.conflict"));
             }
-            order.setStatus(STATUS_CREDITED);
-            order.setCreditedTime(new Date());
-            orderMapper.updateById(order);
-            return toOrderVo(order, items, offer);
-        } catch (RuntimeException ex) {
-            order.setStatus(STATUS_FAILED);
-            order.setFailReason(ex.getMessage());
-            orderMapper.updateById(order);
-            throw ex;
+            return reconcileWinnerVo(winner);
+        }
+        List<PurchaseOrderGrantSnapshot> snapshots = purchaseOfferService.prepareOrderGrantSnapshots(order, items);
+        return toOrderVoFromSnapshots(order, snapshots);
+    }
+
+    private ClientPurchaseOrderVo replayVo(PurchaseOrder order) {
+        return toOrderVoFromSnapshots(order, purchaseOfferService.orderGrantSnapshots(order));
+    }
+
+    private ClientPurchaseOrderVo reconcileWinnerVo(PurchaseOrder order) {
+        return toOrderVoFromSnapshots(order, purchaseOfferService.orderGrantSnapshotsForUpdate(order));
+    }
+
+    private void validatePurchaseCompliance(String tenantId, Long memberId, PurchaseOffer offer) {
+        MemberProfile member = memberProfileMapper.selectById(memberId);
+        MemberComplianceDecision decision = complianceGateService.evaluate(MemberComplianceContext.builder()
+            .tenantId(tenantId)
+            .member(member)
+            .action(MemberComplianceAction.PURCHASE_PAY)
+            .currencyCode(offer.getPayCurrencyCode())
+            .channel("h5")
+            .build());
+        if (!decision.isAllowed()) {
+            throw new ServiceException(MessageUtils.message(decision.getMessageKey()));
         }
     }
 
@@ -134,6 +151,34 @@ public class ClientPurchaseService {
         return offer;
     }
 
+    private void enforcePurchaseLimit(String tenantId, Long memberId, PurchaseOffer offer) {
+        String limitType = StringUtils.blankToDefault(offer.getPurchaseLimitType(), "NONE");
+        if ("NONE".equals(limitType)) {
+            return;
+        }
+        if ("FIRST_ONLY".equals(limitType)) {
+            if (orderMapper.countCreditedByMember(tenantId, memberId) > 0) {
+                throw new ServiceException(MessageUtils.message("client.purchase.limit.first.only"));
+            }
+            return;
+        }
+        if ("TOTAL_ONCE".equals(limitType)) {
+            if (orderMapper.countCreditedByMemberAndOffer(tenantId, memberId, offer.getId()) > 0) {
+                throw new ServiceException(MessageUtils.message("client.purchase.limit.total.once"));
+            }
+            return;
+        }
+        if ("DAILY_ONCE".equals(limitType)) {
+            Date dayStart = DateUtil.beginOfDay(new Date());
+            Date nextDayStart = DateUtil.offsetDay(dayStart, 1);
+            if (orderMapper.countCreditedByMemberOfferAndCreditedTimeRange(tenantId, memberId, offer.getId(), dayStart, nextDayStart) > 0) {
+                throw new ServiceException(MessageUtils.message("client.purchase.limit.daily.once"));
+            }
+            return;
+        }
+        throw new ServiceException(MessageUtils.message("client.purchase.limit.unsupported"));
+    }
+
     private PurchaseOrder buildOrder(String tenantId, Long memberId, PurchaseOffer offer, String idempotencyKey, Date now) {
         PurchaseOrder order = new PurchaseOrder();
         order.setId(IdUtil.getSnowflakeNextId());
@@ -141,11 +186,14 @@ public class ClientPurchaseService {
         order.setPurchaseOrderNo("PO" + IdUtil.getSnowflakeNextIdStr());
         order.setOfferId(offer.getId());
         order.setOfferNo(offer.getOfferNo());
+        order.setOfferNameSnapshot(offer.getOfferName());
         order.setMemberId(memberId);
         order.setPayCurrencyCode(offer.getPayCurrencyCode());
         order.setPayAmount(offer.getPayAmount());
-        order.setStatus(STATUS_PENDING);
+        order.setStatus(PurchaseOrderStatus.PENDING.name());
         order.setIdempotencyKey(idempotencyKey);
+        order.setCreateTime(now);
+        order.setUpdateTime(now);
         return order;
     }
 
@@ -173,8 +221,32 @@ public class ClientPurchaseService {
         vo.setPayCurrencyCode(order.getPayCurrencyCode());
         vo.setPayAmount(order.getPayAmount());
         vo.setStatus(order.getStatus());
+        vo.setProviderCode(order.getProviderCode());
+        vo.setProviderOrderNo(order.getProviderOrderNo());
+        vo.setPaymentSessionNo(order.getPaymentSessionNo());
         vo.setGrantItems(items.stream().map(this::toGrantVo).toList());
+        vo.setCreatedAt(order.getCreateTime());
         vo.setCreditedAt(order.getCreditedTime());
+        return vo;
+    }
+
+    private ClientPurchaseOrderVo toOrderVoFromSnapshots(PurchaseOrder order, List<PurchaseOrderGrantSnapshot> snapshots) {
+        ClientPurchaseOrderVo vo = toOrderVo(order, List.of(), null);
+        vo.setOfferName(order.getOfferNameSnapshot());
+        vo.setGrantItems(snapshots.stream().map(this::toGrantVo).toList());
+        return vo;
+    }
+
+    private ClientPurchaseGrantItemVo toGrantVo(PurchaseOrderGrantSnapshot item) {
+        ClientPurchaseGrantItemVo vo = new ClientPurchaseGrantItemVo();
+        vo.setGrantType(item.getGrantType());
+        vo.setCurrencyCode(item.getCurrencyCode());
+        vo.setGrantAmount(item.getGrantAmount());
+        vo.setWageringMode(item.getWageringMode());
+        vo.setRequiredTurnover(item.getRequiredTurnover());
+        vo.setWageringMultiplier(item.getWageringMultiplier());
+        vo.setGameScopeType(item.getGameScopeType());
+        vo.setGameScopeValue(item.getGameScopeValue());
         return vo;
     }
 

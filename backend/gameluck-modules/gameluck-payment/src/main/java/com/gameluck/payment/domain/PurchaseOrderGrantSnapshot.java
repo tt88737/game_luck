@@ -38,6 +38,10 @@ public class PurchaseOrderGrantSnapshot {
 
     private String wageringMode;
 
+    private BigDecimal wageringMultiplier;
+
+    private Integer wageringExpireDays;
+
     private BigDecimal requiredTurnover;
 
     private String gameScopeType;

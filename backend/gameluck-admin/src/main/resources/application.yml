@@ -20,6 +20,10 @@ server:
       # 阻塞任务线程池, 当执行类似servlet请求阻塞操作, undertow会从这个线程池中取得线程,它的值设置取决于系统的负载
       worker: 256
 
+client:
+  auth:
+    token-secret: ${CLIENT_AUTH_TOKEN_SECRET}
+
 captcha:
   # 是否启用验证码校验
   enable: true
@@ -115,6 +119,8 @@ security:
     - /error
     - /*/api-docs
     - /*/api-docs/**
+    - /payment/webhooks/**
+    - /payment/simulated/checkout/**
 
 # 多租户配置
 tenant:
@@ -194,6 +200,7 @@ springdoc:
       name: GameLuck
       email:
       url:
+
   #这里定义了两个分组，可定义多个，也可以不定义
   group-configs:
     - group: 2.通用模块
@@ -203,6 +210,16 @@ springdoc:
     - group: 4.代码生成模块
       packages-to-scan: com.gameluck.generator
 
+payment:
+  providers:
+    simulated:
+      enabled: ${PAYMENT_SIMULATED_ENABLED:false}
+      secret: ${PAYMENT_SIMULATED_SECRET:}
+      checkout-base-url: ${PAYMENT_SIMULATED_CHECKOUT_BASE_URL:}
+      webhook-base-url: ${PAYMENT_WEBHOOK_BASE_URL:}
+      session-ttl-minutes: ${PAYMENT_SIMULATED_SESSION_TTL_MINUTES:15}
+      signature-tolerance-seconds: ${PAYMENT_SIMULATED_SIGNATURE_TOLERANCE_SECONDS:300}
+
 # 防止XSS攻击
 xss:
   # 过滤开关
@@ -210,6 +227,7 @@ xss:
   # 排除链接
   excludeUrls:
     - /system/notice
+    - /payment/webhooks/**
 
 --- # 分布式锁 lock4j 全局配置
 lock4j:

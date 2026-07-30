@@ -14,6 +14,7 @@
     "build:dev": "vite build --mode development",
     "check:menu-icons": "node scripts/check-menu-icons.mjs",
     "check:i18n": "node scripts/check-i18n.mjs",
+    "check:payment-settlement": "node scripts/check-payment-settlement-contract.mjs",
     "preview": "vite preview",
     "lint:eslint": "eslint",
     "lint:eslint:fix": "eslint --fix",

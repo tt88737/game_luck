@@ -17,6 +17,8 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -74,19 +76,68 @@ class PurchaseOfferServiceImplTest {
 
         PurchaseOfferGrantItem gc = grantItem("PURCHASE_GRANT", "GC", "10000.000000", "PURCHASE_GRANT_GC", "NONE", "0");
         PurchaseOfferGrantItem sc = grantItem("PURCHASE_BONUS", "SC", "1.000000", "PURCHASE_BONUS_SC", "MULTIPLIER", "10");
+        sc.setWageringExpireDays(2);
 
-        List<WalletCreditBo> credits = service.snapshotPaidOrderGrants(order, List.of(gc, sc));
+        List<PurchaseOrderGrantSnapshot> prepared = service.prepareOrderGrantSnapshots(order, List.of(gc, sc));
+        when(snapshotMapper.selectByPurchaseOrderNo("000000", "PO202607160001")).thenReturn(prepared);
+        List<WalletCreditBo> credits = service.creditsFromOrderSnapshots(order);
 
         ArgumentCaptor<PurchaseOrderGrantSnapshot> captor = ArgumentCaptor.forClass(PurchaseOrderGrantSnapshot.class);
         verify(snapshotMapper, times(2)).insert(captor.capture());
         List<PurchaseOrderGrantSnapshot> snapshots = captor.getAllValues();
         assertEquals(new BigDecimal("0.000000"), snapshots.get(0).getRequiredTurnover());
         assertEquals(new BigDecimal("10.000000"), snapshots.get(1).getRequiredTurnover());
+        assertEquals(new BigDecimal("10"), snapshots.get(1).getWageringMultiplier());
+        assertEquals(2, snapshots.get(1).getWageringExpireDays());
         assertEquals("PURCHASE", credits.get(0).getSourceType());
         assertEquals("PO202607160001", credits.get(1).getBusinessNo());
         assertEquals("PURCHASE_BONUS_SC", credits.get(1).getFundPropertyCode());
         assertEquals(new BigDecimal("10.000000"), credits.get(1).getTurnoverRequiredAmount());
         assertEquals(new BigDecimal("10"), credits.get(1).getTurnoverMultiplier());
+        assertNull(credits.get(0).getTurnoverExpireTime());
+        long expiresIn = credits.get(1).getTurnoverExpireTime().getTime() - System.currentTimeMillis();
+        assertTrue(expiresIn > 47L * 60 * 60 * 1000 && expiresIn <= 48L * 60 * 60 * 1000);
+    }
+
+    @Test
+    @Tag("local")
+    void duplicateGrantCombinationsUseSnapshotIdsForDistinctCreditKeys() {
+        PurchaseOrderGrantSnapshotMapper mapper = mock(PurchaseOrderGrantSnapshotMapper.class);
+        PurchaseOfferServiceImpl service = new PurchaseOfferServiceImpl(mock(PurchaseOfferMapper.class),
+            mock(PurchaseOfferGrantItemMapper.class), mapper);
+        PurchaseOrder order = new PurchaseOrder();
+        order.setId(200L); order.setTenantId("000000"); order.setPurchaseOrderNo("PO-DUP"); order.setMemberId(1001L);
+        PurchaseOrderGrantSnapshot a = snapshot(901L, "1.000000");
+        PurchaseOrderGrantSnapshot b = snapshot(902L, "2.000000");
+        when(mapper.selectByPurchaseOrderNo("000000", "PO-DUP")).thenReturn(List.of(a, b));
+        List<WalletCreditBo> credits = service.creditsFromOrderSnapshots(order);
+        assertEquals(2, credits.size());
+        assertEquals("purchase:PO-DUP:901", credits.get(0).getIdempotencyKey());
+        assertEquals("purchase:PO-DUP:902", credits.get(1).getIdempotencyKey());
+        assertEquals(new BigDecimal("1.000000"), credits.get(0).getAmount());
+        assertEquals(new BigDecimal("2.000000"), credits.get(1).getAmount());
+    }
+
+    @Test
+    @Tag("local")
+    void winnerSnapshotsUseCurrentRead() {
+        PurchaseOrderGrantSnapshotMapper mapper = mock(PurchaseOrderGrantSnapshotMapper.class);
+        PurchaseOfferServiceImpl service = new PurchaseOfferServiceImpl(mock(PurchaseOfferMapper.class),
+            mock(PurchaseOfferGrantItemMapper.class), mapper);
+        PurchaseOrder order = new PurchaseOrder();
+        order.setTenantId("000000"); order.setPurchaseOrderNo("PO-WINNER");
+        when(mapper.selectByPurchaseOrderNoForUpdate("000000", "PO-WINNER")).thenReturn(List.of(snapshot(1L, "1.0")));
+        assertEquals(1, service.orderGrantSnapshotsForUpdate(order).size());
+        verify(mapper).selectByPurchaseOrderNoForUpdate("000000", "PO-WINNER");
+        verify(mapper, org.mockito.Mockito.never()).selectByPurchaseOrderNo(any(), any());
+    }
+
+    private PurchaseOrderGrantSnapshot snapshot(Long id, String amount) {
+        PurchaseOrderGrantSnapshot snapshot = new PurchaseOrderGrantSnapshot();
+        snapshot.setId(id); snapshot.setGrantType("PURCHASE_BONUS"); snapshot.setCurrencyCode("SC");
+        snapshot.setGrantAmount(new BigDecimal(amount)); snapshot.setWageringMode("NONE");
+        snapshot.setRequiredTurnover(BigDecimal.ZERO); snapshot.setWageringExpireDays(0);
+        return snapshot;
     }
 
     private PurchaseOfferGrantItem grantItem(String grantType, String currencyCode, String amount, String propertyCode, String wageringMode, String multiplier) {

@@ -25,6 +25,8 @@ public class PurchaseOrder {
 
     private String offerNo;
 
+    private String offerNameSnapshot;
+
     private Long memberId;
 
     private String payCurrencyCode;
@@ -35,9 +37,27 @@ public class PurchaseOrder {
 
     private String idempotencyKey;
 
+    private String providerCode;
+
+    private String providerOrderNo;
+
+    private String paymentSessionNo;
+
+    private String callbackEventKey;
+
     private String failReason;
 
     private Date paidTime;
 
     private Date creditedTime;
+
+    private Date cancelTime;
+
+    private Date refundTime;
+
+    private Date chargebackTime;
+
+    private Date createTime;
+
+    private Date updateTime;
 }

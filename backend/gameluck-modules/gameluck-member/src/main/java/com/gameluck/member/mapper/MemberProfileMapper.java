@@ -5,6 +5,8 @@ import com.gameluck.member.domain.MemberProfile;
 import com.gameluck.member.domain.vo.MemberProfileVo;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
+
 /**
  * Member profile mapper.
  */
@@ -15,4 +17,10 @@ public interface MemberProfileMapper extends BaseMapperPlus<MemberProfile, Membe
     MemberProfile selectClientMember(@Param("tenantId") String tenantId, @Param("memberId") Long memberId);
 
     MemberProfile selectByMemberNo(@Param("tenantId") String tenantId, @Param("memberNo") String memberNo);
+
+    MemberProfile selectByIdForUpdate(@Param("tenantId") String tenantId, @Param("memberId") Long memberId);
+
+    int updateChargebackRisk(@Param("tenantId") String tenantId, @Param("memberId") Long memberId,
+                             @Param("reason") String reason, @Param("source") String source,
+                             @Param("riskUpdatedTime") Date riskUpdatedTime);
 }

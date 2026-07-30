@@ -10,15 +10,33 @@ import org.mockito.ArgumentCaptor;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class WalletTurnoverTaskServiceImplTest {
+
+    @Test
+    @Tag("local")
+    void cancelPendingByPurchaseUsesGuardedIdempotentUpdate() {
+        WalletTurnoverTaskMapper mapper = mock(WalletTurnoverTaskMapper.class);
+        Date now = new Date(1893369600000L);
+        when(mapper.cancelPendingByPurchase("000000", 1001L, "PO1", "PENDING", "CANCELLED",
+            "Purchase reversal RV1", now)).thenReturn(2, 0);
+        WalletTurnoverTaskServiceImpl service = new WalletTurnoverTaskServiceImpl(mapper);
+
+        assertEquals(2, service.cancelPendingByPurchase("000000", 1001L, "PO1", "RV1", now));
+        assertEquals(0, service.cancelPendingByPurchase("000000", 1001L, "PO1", "RV1", now));
+
+        verify(mapper, org.mockito.Mockito.times(2)).cancelPendingByPurchase("000000", 1001L, "PO1",
+            "PENDING", "CANCELLED", "Purchase reversal RV1", now);
+    }
 
     @Test
     @Tag("local")
@@ -72,5 +90,25 @@ class WalletTurnoverTaskServiceImplTest {
         service.createFromCredit("000000", new WalletCreditBo(), new WalletTransaction(), new BigDecimal("20"), BigDecimal.ZERO, new Date());
 
         verify(mapper, never()).insert(any(WalletTurnoverTask.class));
+    }
+
+    @Test
+    @Tag("local")
+    void applyValidTurnoverCompletesPendingTasksInOrder() {
+        WalletTurnoverTaskMapper mapper = mock(WalletTurnoverTaskMapper.class);
+        WalletTurnoverTask task = new WalletTurnoverTask();
+        task.setRequiredTurnover(new BigDecimal("10.000000"));
+        task.setCompletedTurnover(new BigDecimal("4.000000"));
+        when(mapper.selectPendingByMemberForUpdate(eq("000000"), eq(1001L), eq("SC"), eq("PENDING")))
+            .thenReturn(List.of(task));
+        WalletTurnoverTaskServiceImpl service = new WalletTurnoverTaskServiceImpl(mapper);
+
+        int completed = service.applyValidTurnover("000000", 1001L, "SC", new BigDecimal("6.000000"), new Date(1893369600000L));
+
+        assertEquals(1, completed);
+        assertEquals(new BigDecimal("10.000000"), task.getCompletedTurnover());
+        assertEquals("COMPLETED", task.getStatus());
+        assertEquals(new Date(1893369600000L), task.getCompleteTime());
+        verify(mapper).updateById(task);
     }
 }

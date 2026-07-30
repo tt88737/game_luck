@@ -4,12 +4,18 @@ import type {
   ClientGame,
   ClientGameLaunch,
   ClientDailyLoginReward,
+  ClientExchangeOption,
+  ClientExchangeOrder,
   ClientLoginResponse,
   ClientMember,
   ClientPage,
   ClientPromotion,
   ClientPurchaseOffer,
   ClientPurchaseOrder,
+  ClientPaymentSession,
+  PaymentWebhookAck,
+  SimulatedCheckout,
+  SimulatedPaymentAction,
   ClientRegisterRequest,
   ClientRedemption,
   WalletAccount,
@@ -55,6 +61,16 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   return payload.data
 }
 
+async function directRequest<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const headers = new Headers(options.headers)
+  headers.set('Content-Type', 'application/json')
+  const response = await fetch(`${API_BASE}${path}`, { ...options, headers })
+  if (!response.ok) {
+    throw new Error(`请求失败：${response.status}`)
+  }
+  return response.json() as Promise<T>
+}
+
 export const clientApi = {
   bootstrap: () => request<ClientBootstrap>('/api/client/bootstrap'),
   login: (username: string, password: string) =>
@@ -71,6 +87,12 @@ export const clientApi = {
   walletAccounts: () => request<WalletAccount[]>('/api/client/wallet/accounts'),
   walletLedgers: (currencyCode = 'GC') =>
     request<ClientPage<WalletLedger>>(`/api/client/wallet/ledgers?currencyCode=${encodeURIComponent(currencyCode)}&pageNum=1&pageSize=20`),
+  walletExchangeOptions: () => request<ClientExchangeOption[]>('/api/client/wallet/exchange/options'),
+  submitWalletExchange: (exchangeRuleId: number, fromAmount: string, idempotencyKey: string) =>
+    request<ClientExchangeOrder>('/api/client/wallet/exchange/orders', {
+      method: 'POST',
+      body: JSON.stringify({ exchangeRuleId, fromAmount, idempotencyKey }),
+    }),
   games: (currencyCode = 'GC') => request<ClientGame[]>(`/api/client/games?currencyCode=${encodeURIComponent(currencyCode)}`),
   launchGame: (providerCode: string, gameCode: string, currencyCode: string) =>
     request<ClientGameLaunch>('/api/client/games/launch', {
@@ -99,5 +121,23 @@ export const clientApi = {
     request<ClientPurchaseOrder>('/api/client/purchase/orders/pay', {
       method: 'POST',
       body: JSON.stringify({ offerId, idempotencyKey }),
+    }),
+  createPaymentSession: (orderNo: string, requestKey: string, providerCode = 'SIMULATED') =>
+    request<ClientPaymentSession>(`/api/client/purchase/orders/${encodeURIComponent(orderNo)}/payment-sessions`, {
+      method: 'POST',
+      body: JSON.stringify({ requestKey, providerCode }),
+    }),
+  paymentSession: (sessionNo: string) =>
+    request<ClientPaymentSession>(`/api/client/purchase/payment-sessions/${encodeURIComponent(sessionNo)}`),
+  simulatedCheckout: (providerSessionNo: string) =>
+    directRequest<SimulatedCheckout>(`/payment/simulated/checkout/${encodeURIComponent(providerSessionNo)}`),
+  executeSimulatedPaymentAction: (providerSessionNo: string, action: SimulatedPaymentAction) =>
+    directRequest<PaymentWebhookAck>(`/payment/simulated/checkout/${encodeURIComponent(providerSessionNo)}/actions`, {
+      method: 'POST',
+      body: JSON.stringify({ action }),
+    }),
+  replaySimulatedPayment: (providerSessionNo: string) =>
+    directRequest<PaymentWebhookAck>(`/payment/simulated/checkout/${encodeURIComponent(providerSessionNo)}/replay`, {
+      method: 'POST',
     }),
 }

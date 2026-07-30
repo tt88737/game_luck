@@ -8,6 +8,7 @@ import com.gameluck.member.client.domain.bo.ClientRegisterBo;
 import com.gameluck.member.client.domain.vo.ClientLoginVo;
 import com.gameluck.member.domain.MemberProfile;
 import com.gameluck.member.mapper.MemberProfileMapper;
+import com.gameluck.member.service.MemberIdGenerator;
 import com.gameluck.wallet.domain.WalletTransaction;
 import com.gameluck.wallet.domain.bo.WalletCreditBo;
 import com.gameluck.wallet.enums.WalletTransactionStatus;
@@ -18,6 +19,7 @@ import org.mockito.ArgumentCaptor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -34,7 +36,7 @@ class ClientAuthServiceTest {
         MemberProfileMapper mapper = mock(MemberProfileMapper.class);
         IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
         ClientTokenService tokenService = new ClientTokenService();
-        ClientAuthService service = new ClientAuthService(mapper, tokenService, walletCoreService);
+        ClientAuthService service = new ClientAuthService(mapper, tokenService, walletCoreService, new MemberIdGenerator());
         MemberProfile member = member();
         when(mapper.selectByUsername("000000", "demo_player")).thenReturn(member);
 
@@ -51,10 +53,46 @@ class ClientAuthServiceTest {
 
     @Test
     @Tag("local")
+    void loginReturnsPersistedKycStatus() {
+        MemberProfileMapper mapper = mock(MemberProfileMapper.class);
+        IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
+        ClientAuthService service = new ClientAuthService(mapper, new ClientTokenService(), walletCoreService, new MemberIdGenerator());
+        MemberProfile member = member();
+        member.setKycStatus("APPROVED");
+        when(mapper.selectByUsername("000000", "demo_player")).thenReturn(member);
+        ClientLoginBo bo = new ClientLoginBo();
+        bo.setUsername("demo_player");
+        bo.setPassword("Demo123456");
+
+        ClientLoginVo result = service.login(bo);
+
+        assertEquals("APPROVED", result.getMember().getKycStatus());
+    }
+
+    @Test
+    @Tag("local")
+    void loginDefaultsBlankKycStatusToNotStarted() {
+        MemberProfileMapper mapper = mock(MemberProfileMapper.class);
+        IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
+        ClientAuthService service = new ClientAuthService(mapper, new ClientTokenService(), walletCoreService, new MemberIdGenerator());
+        MemberProfile member = member();
+        member.setKycStatus("");
+        when(mapper.selectByUsername("000000", "demo_player")).thenReturn(member);
+        ClientLoginBo bo = new ClientLoginBo();
+        bo.setUsername("demo_player");
+        bo.setPassword("Demo123456");
+
+        ClientLoginVo result = service.login(bo);
+
+        assertEquals("NOT_STARTED", result.getMember().getKycStatus());
+    }
+
+    @Test
+    @Tag("local")
     void loginRejectsWrongPassword() {
         MemberProfileMapper mapper = mock(MemberProfileMapper.class);
         IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
-        ClientAuthService service = new ClientAuthService(mapper, new ClientTokenService(), walletCoreService);
+        ClientAuthService service = new ClientAuthService(mapper, new ClientTokenService(), walletCoreService, new MemberIdGenerator());
         when(mapper.selectByUsername("000000", "demo_player")).thenReturn(member());
         ClientLoginBo bo = new ClientLoginBo();
         bo.setUsername("demo_player");
@@ -70,7 +108,7 @@ class ClientAuthServiceTest {
     void loginAcceptsStoredPasswordHash() {
         MemberProfileMapper mapper = mock(MemberProfileMapper.class);
         IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
-        ClientAuthService service = new ClientAuthService(mapper, new ClientTokenService(), walletCoreService);
+        ClientAuthService service = new ClientAuthService(mapper, new ClientTokenService(), walletCoreService, new MemberIdGenerator());
         MemberProfile member = member();
         member.setPasswordHash(BCrypt.hashpw("Secret123"));
         when(mapper.selectByUsername("000000", "demo_player")).thenReturn(member);
@@ -89,7 +127,7 @@ class ClientAuthServiceTest {
     void registerRejectsDuplicateUsername() {
         MemberProfileMapper mapper = mock(MemberProfileMapper.class);
         IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
-        ClientAuthService service = new ClientAuthService(mapper, new ClientTokenService(), walletCoreService);
+        ClientAuthService service = new ClientAuthService(mapper, new ClientTokenService(), walletCoreService, new MemberIdGenerator());
         when(mapper.selectByUsername("000000", "alice")).thenReturn(member());
 
         ServiceException exception = assertThrows(ServiceException.class, () -> service.register(registerBo("alice")));
@@ -104,7 +142,7 @@ class ClientAuthServiceTest {
     void registerCreatesMemberCreditsGcAndScThenReturnsToken() {
         MemberProfileMapper mapper = mock(MemberProfileMapper.class);
         IWalletCoreService walletCoreService = mock(IWalletCoreService.class);
-        ClientAuthService service = new ClientAuthService(mapper, new ClientTokenService(), walletCoreService);
+        ClientAuthService service = new ClientAuthService(mapper, new ClientTokenService(), walletCoreService, new MemberIdGenerator());
         when(mapper.selectByUsername("000000", "alice")).thenReturn(null);
         when(mapper.insert(org.mockito.ArgumentMatchers.<MemberProfile>any())).thenReturn(1);
         when(walletCoreService.credit(any(WalletCreditBo.class))).thenReturn(successWalletTransaction());
@@ -123,6 +161,8 @@ class ClientAuthServiceTest {
         assertEquals(Boolean.TRUE, inserted.getTermsAccepted());
         assertEquals(Boolean.TRUE, inserted.getPrivacyAccepted());
         assertEquals(Boolean.TRUE, inserted.getSweepstakesRulesAccepted());
+        assertTrue(inserted.getMemberNo().startsWith("GL"));
+        assertTrue(inserted.getMemberNo().length() >= 8);
         assertNotNull(inserted.getPasswordHash());
         assertEquals(true, BCrypt.checkpw("Secret123", inserted.getPasswordHash()));
         verify(walletCoreService).credit(argThat(bo ->

@@ -1,4 +1,4 @@
-import i18n from '@/lang';
+﻿import i18n from '@/lang';
 
 const titleKeyMap: Record<string, string> = {
   首页: 'route.dashboard',
@@ -15,6 +15,12 @@ const titleKeyMap: Record<string, string> = {
   'Wallet Center': 'route.walletCenter',
   支付中心: 'route.paymentCenter',
   'Payment Center': 'route.paymentCenter',
+  支付会话: 'route.paymentSessions',
+  'Payment Sessions': 'route.paymentSessions',
+  支付回调事件: 'route.paymentWebhookEvents',
+  'Payment Webhook Events': 'route.paymentWebhookEvents',
+  支付对账: 'route.paymentReconciliation',
+  'Payment Reconciliation': 'route.paymentReconciliation',
   游戏交易: 'route.gameTrading',
   'Game Trading': 'route.gameTrading',
   用户管理: 'route.userManagement',
@@ -79,6 +85,8 @@ const titleKeyMap: Record<string, string> = {
   币种兑换规则: 'route.walletExchangeRules',
   'Exchange Rules': 'route.walletExchangeRules',
   'Currency Exchange Rules': 'route.walletExchangeRules',
+  币种兑换订单: 'route.walletExchangeOrders',
+  'Currency Exchange Orders': 'route.walletExchangeOrders',
   'Report Center': 'route.reportCenter',
   报表中心: 'route.reportCenter',
   'Overview': 'route.reportOverview',

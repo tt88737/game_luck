@@ -2,14 +2,19 @@ package com.gameluck.wallet.client.controller;
 
 import cn.dev33.satoken.annotation.SaIgnore;
 import com.gameluck.common.core.domain.R;
+import com.gameluck.wallet.client.domain.bo.ClientExchangeOrderBo;
+import com.gameluck.wallet.client.domain.vo.ClientExchangeOrderVo;
 import com.gameluck.wallet.client.domain.vo.ClientExchangeOptionVo;
 import com.gameluck.wallet.client.domain.vo.ClientPageVo;
 import com.gameluck.wallet.client.domain.vo.ClientWalletAccountVo;
 import com.gameluck.wallet.client.domain.vo.ClientWalletCurrencyVo;
 import com.gameluck.wallet.client.domain.vo.ClientWalletLedgerVo;
 import com.gameluck.wallet.client.service.ClientWalletService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -40,6 +45,12 @@ public class ClientWalletController {
     public R<List<ClientExchangeOptionVo>> exchangeOptions(@RequestHeader(value = "Authorization", required = false) String authorization,
                                                            @RequestHeader(value = "X-Client-Channel", required = false, defaultValue = "H5") String channel) {
         return R.ok(clientWalletService.exchangeOptions(authorization, channel));
+    }
+
+    @PostMapping("/exchange/orders")
+    public R<ClientExchangeOrderVo> exchangeOrder(@RequestHeader(value = "Authorization", required = false) String authorization,
+                                                  @Valid @RequestBody ClientExchangeOrderBo bo) {
+        return R.ok(clientWalletService.exchangeOrder(authorization, bo));
     }
 
     @GetMapping("/ledgers")

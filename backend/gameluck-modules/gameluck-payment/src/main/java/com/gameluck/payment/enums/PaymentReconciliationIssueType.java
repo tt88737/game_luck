@@ -1,0 +1,13 @@
+package com.gameluck.payment.enums;
+
+public enum PaymentReconciliationIssueType {
+    PLATFORM_RECORD_MISSING,
+    PROVIDER_RECORD_MISSING,
+    ORDER_IDENTITY_MISMATCH,
+    AMOUNT_MISMATCH,
+    CURRENCY_MISMATCH,
+    EVENT_MISSING,
+    STATUS_MISMATCH,
+    DUPLICATE_PROVIDER_RECORD,
+    UNSUPPORTED_RECORD
+}

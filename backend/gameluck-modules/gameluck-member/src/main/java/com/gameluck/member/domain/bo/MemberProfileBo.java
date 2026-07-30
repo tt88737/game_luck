@@ -29,6 +29,20 @@ public class MemberProfileBo {
 
     private String riskLevel;
 
+    private String riskReason;
+
+    private String riskSource;
+
+    private Date riskUpdatedTime;
+
+    private String kycStatus;
+
+    private String kycReviewReason;
+
+    private String kycReviewedBy;
+
+    private Date kycReviewTime;
+
     private String registerChannel;
 
     private String countryCode;

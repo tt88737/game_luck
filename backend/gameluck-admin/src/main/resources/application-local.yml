@@ -2,6 +2,10 @@
 spring.boot.admin.client:
   enabled: false
 
+client:
+  auth:
+    token-secret: ${CLIENT_AUTH_TOKEN_SECRET:local-client-token-secret}
+
 --- # Disable SnailJob for the first local backend startup
 snail-job:
   enabled: false
@@ -31,3 +35,13 @@ mail:
 
 sms:
   restricted: true
+
+payment:
+  providers:
+    simulated:
+      enabled: true
+      secret: ${PAYMENT_SIMULATED_SECRET:local-simulated-payment-secret}
+      checkout-base-url: http://127.0.0.1:5174/simulated-checkout
+      webhook-base-url: http://127.0.0.1:8080/payment/webhooks
+      session-ttl-minutes: 15
+      signature-tolerance-seconds: 300

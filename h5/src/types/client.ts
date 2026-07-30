@@ -81,6 +81,34 @@ export interface WalletLedger {
   createdAt: string
 }
 
+export interface ClientExchangeOption {
+  exchangeRuleId: number
+  ruleName: string
+  fromCurrencyCode: string
+  toCurrencyCode: string
+  rateType: string
+  rateValue: string | number
+  minFromAmount: string | number
+  maxFromAmount: string | number
+  dailyFromLimit: string | number
+  feeType: string
+  feeValue: string | number
+  turnoverRequired: string
+  turnoverMultiplier: string | number
+}
+
+export interface ClientExchangeOrder {
+  exchangeOrderNo: string
+  exchangeRuleId: number
+  fromCurrencyCode: string
+  fromAmount: string
+  toCurrencyCode: string
+  toAmount: string
+  feeAmount: string
+  status: string
+  failReason?: string
+}
+
 export interface ClientPage<T> {
   records: T[]
   total: number
@@ -179,4 +207,47 @@ export interface ClientPurchaseOrder {
   status: string
   grantItems: ClientPurchaseGrantItem[]
   creditedAt?: string
+}
+
+export type PaymentSessionStatus = 'CREATED' | 'PENDING' | 'SUCCEEDED' | 'FAILED' | 'CANCELLED' | 'EXPIRED'
+
+export type SimulatedPaymentAction =
+  | 'PAYMENT_SUCCEEDED'
+  | 'PAYMENT_FAILED'
+  | 'PAYMENT_CANCELLED'
+  | 'REFUND_SUCCEEDED'
+  | 'CHARGEBACK_CREATED'
+
+export interface ClientPaymentSession {
+  sessionNo: string
+  orderNo: string
+  providerCode: string
+  providerSessionNo: string
+  payCurrencyCode: string
+  payAmount: string
+  checkoutUrl: string
+  status: PaymentSessionStatus
+  expireTime: string
+  completedTime?: string
+}
+
+export interface SimulatedCheckout {
+  sessionNo: string
+  orderNo: string
+  providerCode: string
+  providerSessionNo: string
+  payCurrencyCode: string
+  payAmount: string
+  status: PaymentSessionStatus
+  expireTime: string
+  checkoutUrl: string
+  allowedActions: SimulatedPaymentAction[]
+  latestProviderEventId?: string
+  latestWebhookStatus?: string
+}
+
+export interface PaymentWebhookAck {
+  providerEventId: string
+  status: string
+  replay: boolean
 }
