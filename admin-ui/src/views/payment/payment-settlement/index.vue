@@ -193,7 +193,7 @@
 <script setup name="PaymentSettlement" lang="ts">
 import auth from '@/plugins/auth';
 import { useI18n } from 'vue-i18n';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useWindowSize } from '@vueuse/core';
 import type { FormInstance, FormRules } from 'element-plus';
 import {
@@ -217,6 +217,7 @@ import type {
 
 const { t } = useI18n(),
   router = useRouter(),
+  route = useRoute(),
   { width } = useWindowSize();
 const canList = auth.hasPermi('payment:settlement:list');
 const drawerSize = computed(() => (width.value < 768 ? '100%' : '920px')),
@@ -400,8 +401,26 @@ const pretty = (value?: string) => {
   }
 };
 const goReconciliation = () => router.push({ path: '/payment/payment-reconciliation', query: { providerCode: detail.value.providerCode } });
-onMounted(() => {
-  if (canList) load();
+const openRouteDetail = async () => {
+  const batchId = typeof route.query.batchId === 'string' ? route.query.batchId.trim() : '';
+  if (!batchId) return;
+  detailLoading.value = true;
+  detailError.value = false;
+  try {
+    detail.value = (await getSettlementBatch(batchId)).data;
+    detailOpen.value = true;
+    if (tab.value === 'items') await loadItems();
+  } catch {
+    detail.value = {};
+  } finally {
+    detailLoading.value = false;
+  }
+};
+onMounted(async () => {
+  if (canList) {
+    await load();
+    await openRouteDetail();
+  }
 });
 </script>
 

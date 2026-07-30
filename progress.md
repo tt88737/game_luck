@@ -2357,3 +2357,10 @@
 - Added typed report query, grouped row, per-currency total, page, and settlement-batch drill-down contracts with string-safe money and identifiers.
 - Added typed list, exact-group drill-down, and Blob export APIs plus the three settlement-report permission literals.
 - TDD RED failed because the report API files were absent. GREEN passed the payment settlement report contract guard and full `vue-tsc --noEmit`, both with exit `0`.
+
+## 2026-07-30 Phase 46 Task 6 Settlement Report Workbench
+
+- Added the permission-scoped Admin report workbench with UTC 7/31-day ranges, validated Provider/currency filters, explicit loading/error/empty/export states, and internal wide-table scrolling.
+- Added peer per-currency summaries, string-safe negative-net treatment with explicit text, a source-batch drawer, and deterministic Blob downloads through `file-saver`.
+- Extended Phase 45 settlement details to consume a string `batchId` route query and open the drawer only after a successful tenant-visible API response.
+- TDD RED failed because the report page and route deep link were absent. GREEN passed both settlement frontend contracts, i18n, full `vue-tsc --noEmit`, and targeted ESLint with exit `0`.

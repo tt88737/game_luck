@@ -72,5 +72,9 @@ assert.match(
 assert.doesNotMatch(api, /updateSettlementItem|deleteSettlementItem|updateSettlementTotals/);
 assert.ok(zh.includes('关闭结算只记录财务确认，不会修改支付订单、冲正或钱包余额'));
 assert.match(en, /Closing a settlement records financial confirmation only.+does not change payment orders, reversals, or wallet balances/i);
+assert.match(page, /useRoute/);
+assert.match(page, /route\.query\.batchId/);
+assert.match(page, /getSettlementBatch\(batchId\)/);
+assert.match(page, /detailOpen\.value\s*=\s*true/);
 
 console.log('Payment settlement frontend contract check passed.');
