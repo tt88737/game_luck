@@ -269,12 +269,12 @@ export const walletStatusType = (status?: string) => {
   return 'info';
 };
 
-export const depositStatusType = (status?: string) => {
+export const depositStatusType = (status?: string): ElTagType => {
   if (status === 'SUCCESS') return 'success';
   if (status === 'FAILED') return 'danger';
   if (status === 'PENDING') return 'warning';
   if (status === 'CANCELLED') return 'info';
-  return '';
+  return 'info';
 };
 
 export const purchaseOrderStatusType = (status?: string) => {
@@ -323,13 +323,13 @@ export const paymentSessionStatusType = (status?: string) => {
 
 export const paymentWebhookStatusType = purchasePaymentEventStatusType;
 
-export const gameBetStatusType = (status?: string) => {
+export const gameBetStatusType = (status?: string): ElTagType => {
   if (status === 'SETTLED') return 'success';
   if (status === 'BET_SUCCESS') return 'primary';
   if (status === 'BET_FAILED' || status === 'SETTLE_FAILED') return 'danger';
   if (status === 'PENDING') return 'warning';
   if (status === 'CANCELLED') return 'info';
-  return '';
+  return 'info';
 };
 
 export const redemptionStatusType = (status?: string) => {

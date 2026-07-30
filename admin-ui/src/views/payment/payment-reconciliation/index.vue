@@ -115,7 +115,7 @@
           :title="t('paymentReconciliation.reconciling')"
           type="info"
           show-icon /><el-alert v-if="detailError" :title="t('paymentReconciliation.detailFailed')" type="error" show-icon :closable="false"
-          ><el-button link type="primary" @click="reloadDetail">{{ t('paymentReconciliation.retry') }}</el-button></el-alert
+          ><el-button link type="primary" @click="() => reloadDetail()">{{ t('paymentReconciliation.retry') }}</el-button></el-alert
         ><el-tabs v-else v-model="tab" @tab-change="loadTab"
           ><el-tab-pane :label="t('paymentReconciliation.invalid')" name="INVALID" /><el-tab-pane
             :label="t('paymentReconciliation.matched')"
@@ -193,7 +193,7 @@
         type="error"
         show-icon
         :closable="false"
-        ><el-button link type="primary" @click="reloadIssue">{{ t('paymentReconciliation.retry') }}</el-button></el-alert
+        ><el-button link type="primary" @click="() => reloadIssue()">{{ t('paymentReconciliation.retry') }}</el-button></el-alert
       ><template v-else
         ><el-descriptions border :column="columns"
           ><el-descriptions-item :label="t('paymentReconciliation.issueType')"

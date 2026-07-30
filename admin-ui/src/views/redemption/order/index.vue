@@ -253,14 +253,14 @@ const statusLabel = (status?: string) => {
   return status ? t(`redemptionOrder.status.${status}`) || status : '';
 };
 
-const statusType = (status?: string) => {
-  const map: Record<string, string> = {
+const statusType = (status?: string): ElTagType => {
+  const map: Record<string, ElTagType> = {
     PENDING: 'warning',
     APPROVED: 'success',
     REJECTED: 'info',
     FAILED: 'danger'
   };
-  return status ? map[status] || '' : '';
+  return status ? map[status] || 'info' : 'info';
 };
 
 const reset = () => {

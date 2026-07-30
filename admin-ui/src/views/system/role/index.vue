@@ -209,7 +209,7 @@ const ids = ref<Array<string | number>>([]);
 const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
-const dateRange = ref<[DateModelType, DateModelType]>(['', '']);
+const dateRange = ref<[string, string]>(['', '']);
 const menuOptions = ref<MenuTreeOption[]>([]);
 const menuExpand = ref(false);
 const menuNodeAll = ref(false);
@@ -403,19 +403,20 @@ const getRoleDeptTreeSelect = async (roleId: string | number) => {
   return res.data;
 };
 /** 树权限（展开/折叠）*/
-const handleCheckedTreeExpand = (value: boolean, type: string) => {
+const handleCheckedTreeExpand = (value: CheckboxValueType, type: string) => {
+  const expanded = value === true;
   if (type == 'menu') {
     const treeList = menuOptions.value;
     for (let i = 0; i < treeList.length; i++) {
       if (menuRef.value) {
-        menuRef.value.store.nodesMap[treeList[i].id].expanded = value;
+        menuRef.value.store.nodesMap[treeList[i].id].expanded = expanded;
       }
     }
   } else if (type == 'dept') {
     const treeList = deptOptions.value;
     for (let i = 0; i < treeList.length; i++) {
       if (deptRef.value) {
-        deptRef.value.store.nodesMap[treeList[i].id].expanded = value;
+        deptRef.value.store.nodesMap[treeList[i].id].expanded = expanded;
       }
     }
   }

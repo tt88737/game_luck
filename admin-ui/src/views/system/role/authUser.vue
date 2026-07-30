@@ -103,18 +103,7 @@ const getList = async () => {
 };
 // 返回按钮
 const handleClose = () => {
-  const obj: RouteLocationNormalized = {
-    path: '/system/role',
-    fullPath: '',
-    hash: '',
-    matched: [],
-    meta: undefined,
-    name: undefined,
-    params: undefined,
-    query: undefined,
-    redirectedFrom: undefined
-  };
-  proxy?.$tab.closeOpenPage(obj);
+  proxy?.$tab.closeOpenPage({ path: '/system/role' });
 };
 /** 搜索按钮操作 */
 const handleQuery = () => {

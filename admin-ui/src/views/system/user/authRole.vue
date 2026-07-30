@@ -101,18 +101,7 @@ const checkSelectable = (row: RoleVO): boolean => {
 };
 /** 关闭按钮 */
 const close = () => {
-  const obj: RouteLocationNormalized = {
-    fullPath: '',
-    hash: '',
-    matched: [],
-    meta: undefined,
-    name: undefined,
-    params: undefined,
-    query: undefined,
-    redirectedFrom: undefined,
-    path: '/system/user'
-  };
-  proxy?.$tab.closeOpenPage(obj);
+  proxy?.$tab.closeOpenPage({ path: '/system/user' });
 };
 /** 提交按钮 */
 const submitForm = async () => {

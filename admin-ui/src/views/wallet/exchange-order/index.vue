@@ -111,7 +111,7 @@ const loading = ref(true);
 const showSearch = ref(true);
 const total = ref(0);
 const queryFormRef = ref<ElFormInstance>();
-const dateRange = ref<[DateModelType, DateModelType]>(['', '']);
+const dateRange = ref<[string, string]>(['', '']);
 const statusOptions = businessOptions('walletExchangeOrderStatus', tt);
 
 const queryParams = ref<ExchangeOrderQuery>({

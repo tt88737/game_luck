@@ -98,7 +98,7 @@ import router from '@/router';
 import { ElMessageBoxOptions } from 'element-plus/es/components/message-box/src/message-box.type';
 import { NavTypeEnum } from '@/enums/NavTypeEnum';
 import Logo from "@/layout/components/Sidebar/Logo.vue";
-import TopBar from './TopBar'
+import TopBar from './TopBar/index.vue';
 
 const appStore = useAppStore();
 const userStore = useUserStore();

@@ -169,15 +169,8 @@ const getFormPromise = (form: any) => {
   });
 };
 const close = () => {
-  const obj: RouteLocationNormalized = {
+  const obj = {
     path: '/tool/gen',
-    fullPath: '',
-    hash: '',
-    matched: [],
-    meta: undefined,
-    name: undefined,
-    params: undefined,
-    redirectedFrom: undefined,
     query: { t: Date.now().toString(), pageNum: route.query.pageNum }
   };
   proxy?.$tab.closeOpenPage(obj);

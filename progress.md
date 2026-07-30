@@ -2344,3 +2344,10 @@
 - Applied the exact list/query/export permissions and sanitized export auditing with request/response payload capture disabled.
 - CSV responses use `text/csv;charset=UTF-8`, a deterministic ASCII filename with RFC 5987 `filename*`, and write only the service-produced bytes.
 - TDD RED failed at test compilation because the controller was absent. GREEN passed the controller contract 3/3 with zero failures, errors, or skips; specification review found no gaps.
+
+## 2026-07-30 Admin TypeScript Baseline Repair
+
+- Phase 46 Task 5 exposed 32 pre-existing Admin type errors after the ignored Vite auto-import declarations were regenerated in the isolated worktree.
+- Repaired outdated Element Plus date/tag models, raw router destinations, checkbox values, retry click handlers, settings-store fields, and component prop narrowing without disabling strict checks.
+- Full `vue-tsc --noEmit` passed with exit `0`. The bounded Admin development build passed after transforming 3,175 modules; menu-icon and i18n guards passed, with only the established large-chunk advisory.
+- Targeted ESLint still reports historical Prettier/CRLF formatting debt in these legacy files; no semantic ESLint rule failed, and bulk formatting was deliberately excluded to avoid unrelated churn.
