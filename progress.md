@@ -2337,3 +2337,10 @@
 - Added a grouped-row count query and one deterministic non-paged export query using the same tenant/closed/date/Provider/currency filter as the screen.
 - Export rejects more than 2,000 groups before loading rows and writes no server-side file or database record.
 - TDD RED failed on the absent writer/export contracts. GREEN passed service 5/5 and writer 2/2 with zero failures, errors, or skips.
+
+## 2026-07-30 Phase 46 Task 4 Permission-Scoped Admin Endpoints
+
+- Added the read-only settlement-report controller with list, exact-group batch drill-down, and CSV export GET endpoints under `/payment/settlement-report`.
+- Applied the exact list/query/export permissions and sanitized export auditing with request/response payload capture disabled.
+- CSV responses use `text/csv;charset=UTF-8`, a deterministic ASCII filename with RFC 5987 `filename*`, and write only the service-produced bytes.
+- TDD RED failed at test compilation because the controller was absent. GREEN passed the controller contract 3/3 with zero failures, errors, or skips; specification review found no gaps.
