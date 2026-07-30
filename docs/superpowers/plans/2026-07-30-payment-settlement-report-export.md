@@ -389,7 +389,7 @@ Append test counts, build module counts, warnings, and any bounded-memory retry 
 - Create: `docs/implementation/phase46-payment-settlement-report-mobile.png`
 - Modify: `progress.md`
 
-- [ ] **Step 1: Import SQL twice and verify exact metadata**
+- [x] **Step 1: Import SQL twice and verify exact metadata**
 
 ```powershell
 .\backend\script\bin\import-sql-utf8.ps1 -SqlPath backend\script\sql\gameluck_wallet.sql
@@ -398,35 +398,35 @@ Append test counts, build module counts, warnings, and any bounded-memory retry 
 
 Query `sys_menu`. Expected: exactly one page `2034`, exactly three permissions `20341`-`20343`, no duplicates, and Phase 45 page/permissions unchanged.
 
-- [ ] **Step 2: Restart refreshed services**
+- [x] **Step 2: Restart refreshed services**
 
 Stop only verified project listeners on `8080/5173/5174`. Start the packaged backend with `--spring.profiles.active=local` and the established constrained JVM settings, then Admin and H5. Expected: all three return HTTP `200`.
 
-- [ ] **Step 3: Establish deterministic closed-batch fixtures and source snapshots**
+- [x] **Step 3: Establish deterministic closed-batch fixtures and source snapshots**
 
 Create or reuse closed Phase 45 batches covering at least two UTC dates, two currencies, a negative net, and multiple Providers where available. Snapshot settlement batches and all payment/reversal/member-risk/turnover/wallet source tables before report calls.
 
-- [ ] **Step 4: Verify report math, filters, drill-down, and tenant isolation**
+- [x] **Step 4: Verify report math, filters, drill-down, and tenant isolation**
 
 Call the real authenticated endpoints. Recalculate every expected integer and six-decimal total directly from closed batches; confirm crossed-midnight membership follows UTC `period_start`, currency footers never combine currencies, paging does not change footers, empty filters return empty arrays, and another tenant sees no rows/group.
 
-- [ ] **Step 5: Verify CSV parity and safety**
+- [x] **Step 5: Verify CSV parity and safety**
 
 Download the real export, assert BOM/header/order/17 columns, compare every screen row to CSV, and seed a safely isolated Provider-code fixture beginning with `=` to prove the exported text is apostrophe-prefixed. Confirm a user without export permission receives authorization denial and no server-side file appears.
 
-- [ ] **Step 6: Verify read-only source state**
+- [x] **Step 6: Verify read-only source state**
 
 Repeat source-table dumps after list, drill-down, and export. Expected: hashes are byte-identical; only the Admin operation log may gain the sanitized export entry.
 
-- [ ] **Step 7: Capture desktop and mobile evidence**
+- [x] **Step 7: Capture desktop and mobile evidence**
 
 Use the encrypted captcha login at `1440x900` and `390x844`. Verify summaries, filters, negative-net label, table scrolling, drill-down, export state, no console errors, no page-level overflow, and nonblank pixels. Save the two named PNG files.
 
-- [ ] **Step 8: Final verification and recovery record**
+- [x] **Step 8: Final verification and recovery record**
 
 Re-run Phase 46 backend tests, both frontend contracts, i18n, targeted ESLint, safety scan, and `git diff --check`. Mark every checkbox in this plan, append exact evidence and `Phase 46 completed` to `progress.md`, and leave mixed-encoding `task_plan.md` untouched with the reason recorded.
 
-- [ ] **Step 9: Commit runtime evidence and completion record**
+- [x] **Step 9: Commit runtime evidence and completion record**
 
 ```powershell
 git add admin-ui/scripts/phase46-payment-settlement-report-runtime.mjs docs/implementation/phase46-payment-settlement-report-desktop.png docs/implementation/phase46-payment-settlement-report-mobile.png progress.md docs/superpowers/plans/2026-07-30-payment-settlement-report-export.md

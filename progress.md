@@ -2372,3 +2372,17 @@
 - The bounded backend package completed all 40 Reactor modules with `BUILD SUCCESS`. The bounded Admin build transformed 3,179 modules, and the H5 build transformed 58 modules; both exited `0`.
 - Admin menu-icon and i18n prebuild guards passed. The only frontend build warning was the established large-chunk advisory.
 - Report safety scanning found no wallet/command/raw-body/signature dependency and no mutation SQL. `git diff --check` passed after excluding the Vite-generated auto-import config.
+
+## 2026-07-30 Phase 46 Task 8 Runtime Acceptance
+
+- Imported `backend/script/sql/gameluck_wallet.sql` twice with exit `0`. Menu IDs `2034`, `20341`, `20342`, and `20343` each exist exactly once; Phase 45 menu `2033` remains unchanged. The list permission appears on both the report page and its intended child permission row, while all menu IDs remain unique.
+- Restarted the packaged backend with the local profile and constrained JVM, plus refreshed Admin and H5 Vite services. All three returned HTTP `200` before runtime acceptance.
+- Added a rerunnable runtime script with isolated fixed-ID CLOSED fixtures covering two UTC dates, EUR/USD, multiple Providers, a negative grouped net, a formula-prefixed Provider, a UTC-crossing period, and an excluded tenant `999999` row.
+- Real encrypted-captcha Admin login and authenticated endpoints verified 4 grouped rows. Currency totals were EUR gross `7.000000`, fee `0.500000`, net `6.500000`; USD gross `155.000000`, refund `50.000000`, chargeback `104.000000`, fee `20.870000`, net `-19.870000`.
+- Integer-micro-unit recalculation from raw CLOSED batches matched every screen count and six-decimal amount. Provider/currency filters, paging-independent footers, legal empty result, UTC membership, exact drill-down IDs `2099000000000004601` and `2099000000000004602`, and tenant isolation all passed.
+- CSV acceptance verified UTF-8 BOM, fixed 17 columns, 4 ordered data rows, full screen parity, and apostrophe protection for `=FORMULA`. An unauthenticated export received business code `401`; no server-side report CSV was created.
+- Before/after deterministic dumps across settlement, payment, reversal, member, turnover, and wallet source tables were byte-identical at SHA-256 `a914f20a134ee621742dacf9edfb81b1fea01101d03d7f4defc6a8a3a77cf9f8` after list, drill-down, and export.
+- Browser evidence passed at `1440x900` and `390x844`, including successful source-batch drawer, negative-net presentation, internal table scrolling, no console errors, no page-level overflow, and nonblank files: desktop `84,107` bytes and mobile `40,468` bytes.
+- Fresh final verification passed Phase 46 backend tests `14/14`, both settlement frontend contracts, i18n, targeted ESLint, mutation/dependency safety scan, and `git diff --check`. A first CSV-only retry lacked reactor dependencies and a second retry exhausted native memory while services were active; stopping only verified project listeners and rerunning the full 14-test suite with a constrained JVM passed.
+- `task_plan.md` remains untouched because its historical mixed encoding contains invalid UTF-8 and rewriting it risks destructive transcoding. This progress entry and the checked implementation plan are the recovery source.
+- Phase 46 completed.
