@@ -69,7 +69,7 @@ class PaymentSettlementPayoutWorkflowTest {
         when(draft.payouts.selectByTenantAndId("000000", 71L))
             .thenReturn(payout("DRAFT", 2), payout("PENDING_APPROVAL", 3));
         when(draft.payouts.transition(eq("000000"), eq(71L), eq(2), eq("DRAFT"),
-            eq("PENDING_APPROVAL"), eq(100L), eq("maker"), isNull(), any(Date.class))).thenReturn(1);
+            eq("PENDING_APPROVAL"), eq(100L), eq("maker"), eq("workflow reason"), any(Date.class))).thenReturn(1);
         try (MockedStatic<TenantHelper> tenant = tenant()) {
             draft.service.submit(71L, command(2));
         }
@@ -81,7 +81,7 @@ class PaymentSettlementPayoutWorkflowTest {
         when(resubmit.payouts.selectByTenantAndId("000000", 71L))
             .thenReturn(edited, after(edited, "PENDING_APPROVAL", 7));
         when(resubmit.payouts.transition(eq("000000"), eq(71L), eq(6), eq("DRAFT"),
-            eq("PENDING_APPROVAL"), eq(100L), eq("maker"), isNull(), any(Date.class))).thenReturn(1);
+            eq("PENDING_APPROVAL"), eq(100L), eq("maker"), eq("workflow reason"), any(Date.class))).thenReturn(1);
         try (MockedStatic<TenantHelper> tenant = tenant()) {
             resubmit.service.submit(71L, command(6));
         }
@@ -183,7 +183,8 @@ class PaymentSettlementPayoutWorkflowTest {
     }
 
     private static PaymentSettlementPayoutCommandBo command(int version) {
-        PaymentSettlementPayoutCommandBo bo = new PaymentSettlementPayoutCommandBo(); bo.setVersion(version); return bo;
+        PaymentSettlementPayoutCommandBo bo = new PaymentSettlementPayoutCommandBo();
+        bo.setVersion(version); bo.setReason("workflow reason"); return bo;
     }
 
     private static PaymentSettlementPayout payout(String status, int version) {

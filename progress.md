@@ -2434,3 +2434,11 @@
 - Approval action evidence is parsed as JSON and recursively removes bank, account, routing, credential, secret, token, signature, and raw-body keys; malformed evidence is omitted rather than logged.
 - RED failed in test compilation only because `PaymentSettlementPayoutApprovalService` was absent. GREEN plus Task 1-3 and Phase 45 regression passed 33/33 with zero failures, errors, or skips.
 - Financial dependency scan found no wallet mapper, payment command, settlement/reconciliation mutation, credential, bank-field, raw-body, or signature dependency outside the explicit sanitizer denylist. `git diff --check` passed.
+
+## 2026-07-31 Phase 47 Task 5 Permission-Scoped Admin API
+
+- Added the eight exact settlement-payout Admin routes with six permissions. Edit reuses create permission, approve/reject share reviewer permission, list returns `TableDataInfo`, and all mutations disable generic request/response body logging.
+- Added controller validation to create/edit/state command fields. Submit and cancel now enforce the design's required bounded reason at the domain boundary as well as the HTTP boundary; state commands expose stable business codes without silent retries.
+- Added string-safe Admin TypeScript contracts and typed list/detail/create/edit/submit/approve/reject/cancel requests. IDs and payout amounts remain strings.
+- Controller plus Task 1-4 focused backend regression passed 24/24. The frontend API contract, full `vue-tsc --noEmit`, i18n check, and `git diff --check` all passed.
+- An initial parallel Maven/typecheck attempt exhausted native JVM memory; rerunning serially with bounded Maven memory passed. The failure was environmental and produced no code/test assertion failure.

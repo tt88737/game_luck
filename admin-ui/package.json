@@ -16,6 +16,7 @@
     "check:i18n": "node scripts/check-i18n.mjs",
     "check:payment-settlement": "node scripts/check-payment-settlement-contract.mjs",
     "check:payment-settlement-report": "node scripts/check-payment-settlement-report-contract.mjs",
+    "check:payment-settlement-payout": "node scripts/check-payment-settlement-payout-contract.mjs",
     "preview": "vite preview",
     "lint:eslint": "eslint",
     "lint:eslint:fix": "eslint --fix",

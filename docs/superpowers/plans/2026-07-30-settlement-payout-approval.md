@@ -200,11 +200,11 @@ git push
 
 **Files:** controller, controller contract test, Admin typed API, API contract script, package script, and backend messages.
 
-- [ ] **Step 1: Write RED controller and frontend contracts**
+- [x] **Step 1: Write RED controller and frontend contracts**
 
 Assert the eight exact routes, six permissions, sanitized `@Log` annotations, `TableDataInfo` list, string IDs/money, command version/reason fields, and `exposeBusinessCode` on state commands.
 
-- [ ] **Step 2: Implement controller and typed API**
+- [x] **Step 2: Implement controller and typed API**
 
 ```java
 @SaCheckPermission("payment:settlementPayout:approve")
@@ -215,11 +215,11 @@ public R<PaymentSettlementPayoutDetailVo> approve(@PathVariable Long id,
 }
 ```
 
-- [ ] **Step 3: Run GREEN, `vue-tsc --noEmit`, and i18n**
+- [x] **Step 3: Run GREEN, `vue-tsc --noEmit`, and i18n**
 
 Expected: controller test, API contract, full typecheck, and i18n exit `0`.
 
-- [ ] **Step 4: Commit and push module**
+- [x] **Step 4: Commit and push module**
 
 ```powershell
 git add backend/gameluck-modules/gameluck-payment/src backend/gameluck-admin/src/main/resources/i18n admin-ui/src/api/payment/paymentSettlementPayout admin-ui/scripts/check-payment-settlement-payout-contract.mjs admin-ui/package.json

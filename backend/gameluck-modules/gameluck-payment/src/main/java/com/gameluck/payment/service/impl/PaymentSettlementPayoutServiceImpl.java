@@ -140,14 +140,13 @@ public class PaymentSettlementPayoutServiceImpl implements IPaymentSettlementPay
     @Override
     @Transactional
     public PaymentSettlementPayoutDetailVo submit(Long payoutId, PaymentSettlementPayoutCommandBo bo) {
-        return transition(payoutId, bo, "DRAFT", "PENDING_APPROVAL", "SUBMIT", null);
+        return transition(payoutId, bo, "DRAFT", "PENDING_APPROVAL", "SUBMIT", commandReason(bo));
     }
 
     @Override
     @Transactional
     public PaymentSettlementPayoutDetailVo cancel(Long payoutId, PaymentSettlementPayoutCommandBo bo) {
-        String reason = bo == null || blank(bo.getReason()) ? null : text(bo.getReason(), REASON_MAX_LENGTH);
-        return transition(payoutId, bo, "DRAFT", "CANCELLED", "CANCEL", reason);
+        return transition(payoutId, bo, "DRAFT", "CANCELLED", "CANCEL", commandReason(bo));
     }
 
     @Override
@@ -189,6 +188,11 @@ public class PaymentSettlementPayoutServiceImpl implements IPaymentSettlementPay
         PaymentSettlementPayout after = requireCurrent(tenantId, payoutId);
         insertAction(tenantId, before, after, actionType, reason, bo.getVersion(), now, operator);
         return detail(after, actionLogMapper.selectByPayout(tenantId, payoutId).stream().map(this::actionVo).toList());
+    }
+
+    private String commandReason(PaymentSettlementPayoutCommandBo bo) {
+        if (bo == null) throw new ServiceException("payment.settlementPayout.input.invalid");
+        return text(bo.getReason(), REASON_MAX_LENGTH);
     }
 
     private void insertAction(String tenantId, PaymentSettlementPayout before, PaymentSettlementPayout after,
