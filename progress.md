@@ -2323,3 +2323,10 @@
 - Added idempotent Admin page `2034`, permissions `20341`-`20343`, and all six stable report error keys in the three backend message bundles.
 - TDD RED failed because the four contract classes were absent. GREEN passed `PaymentSettlementReportContractTest` 4/4 with zero failures, errors, or skips.
 - Scoped whitespace and menu-icon checks passed. Task 1 implementation commit is `8929c4a` before the plan/progress amend.
+
+## 2026-07-30 Phase 46 Task 2 Grouped Report Queries
+
+- Added the dedicated read-only report mapper, service interface, and service implementation without extending the Phase 45 command service.
+- Group queries enforce tenant, `CLOSED`, and UTC half-open period bounds; pagination applies to grouped rows while currency totals use the complete filter.
+- Added exact date/Provider/currency batch drill-down with string-safe Phase 45 batch projections and absent-group protection.
+- TDD RED failed at test compilation because the mapper and service were absent. GREEN passed report 4/4 plus Phase 45 settlement service 5/5, with zero failures, errors, or skips.
