@@ -13,13 +13,8 @@ export const settlementReportPermissions = {
 export const listSettlementReport = (params: SettlementReportQuery): AxiosPromise<SettlementReportPageVO> =>
   request({ url: `${base}/list`, method: 'get', params });
 
-export const listSettlementReportBatches = (
-  date: string,
-  providerCode: string,
-  currencyCode: string
-): AxiosPromise<SettlementReportBatchVO[]> =>
+export const listSettlementReportBatches = (date: string, providerCode: string, currencyCode: string): AxiosPromise<SettlementReportBatchVO[]> =>
   request({ url: `${base}/${date}/${providerCode}/${currencyCode}/batches`, method: 'get' });
 
-export const exportSettlementReport = (
-  params: Omit<SettlementReportQuery, 'pageNum' | 'pageSize'>
-): AxiosPromise<Blob> => request({ url: `${base}/export`, method: 'get', params, responseType: 'blob' });
+export const exportSettlementReport = (params: Omit<SettlementReportQuery, 'pageNum' | 'pageSize'>): AxiosPromise<Blob> =>
+  request({ url: `${base}/export`, method: 'get', params, responseType: 'blob' });
