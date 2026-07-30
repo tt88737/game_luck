@@ -2364,3 +2364,11 @@
 - Added peer per-currency summaries, string-safe negative-net treatment with explicit text, a source-batch drawer, and deterministic Blob downloads through `file-saver`.
 - Extended Phase 45 settlement details to consume a string `batchId` route query and open the drawer only after a successful tenant-visible API response.
 - TDD RED failed because the report page and route deep link were absent. GREEN passed both settlement frontend contracts, i18n, full `vue-tsc --noEmit`, and targeted ESLint with exit `0`.
+
+## 2026-07-30 Phase 46 Task 7 Regression And Builds
+
+- Focused payment settlement/reconciliation/webhook/reversal regression passed 207/207 with zero failures, errors, or skips.
+- Fresh Maven JVM regressions passed wallet 19/19, member 7/7, and payment fulfillment/reversal 45/45 with zero failures, errors, or skips.
+- The bounded backend package completed all 40 Reactor modules with `BUILD SUCCESS`. The bounded Admin build transformed 3,179 modules, and the H5 build transformed 58 modules; both exited `0`.
+- Admin menu-icon and i18n prebuild guards passed. The only frontend build warning was the established large-chunk advisory.
+- Report safety scanning found no wallet/command/raw-body/signature dependency and no mutation SQL. `git diff --check` passed after excluding the Vite-generated auto-import config.

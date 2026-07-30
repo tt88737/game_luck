@@ -337,7 +337,7 @@ git commit -m "feat: add settlement report workbench"
 - Modify only when a failing regression proves an in-scope defect.
 - Modify: `progress.md`
 
-- [ ] **Step 1: Run focused payment regression**
+- [x] **Step 1: Run focused payment regression**
 
 ```powershell
 $env:MAVEN_OPTS='-Djdk.attach.allowAttachSelf=true -Xmx768m'
@@ -346,7 +346,7 @@ C:\tools\apache-maven-3.9.16\bin\mvn.cmd -Plocal -pl gameluck-modules/gameluck-p
 
 Expected: zero failures, errors, and skips.
 
-- [ ] **Step 2: Run split cross-module regression in fresh JVMs**
+- [x] **Step 2: Run split cross-module regression in fresh JVMs**
 
 ```powershell
 C:\tools\apache-maven-3.9.16\bin\mvn.cmd -Plocal -pl gameluck-modules/gameluck-wallet -am '-DskipTests=false' '-Dtest=WalletCoreServiceImplTest,WalletTurnoverTaskServiceImplTest' '-Dsurefire.failIfNoSpecifiedTests=false' '-DforkCount=0' test
@@ -356,7 +356,7 @@ C:\tools\apache-maven-3.9.16\bin\mvn.cmd -Plocal -pl gameluck-modules/gameluck-p
 
 Expected: wallet `19/19`, member `7/7`, and payment fulfillment/reversal `45/45`, with zero failures/errors/skips and no shared-JVM native-memory exhaustion.
 
-- [ ] **Step 3: Build all deliverables with bounded memory**
+- [x] **Step 3: Build all deliverables with bounded memory**
 
 ```powershell
 C:\tools\apache-maven-3.9.16\bin\mvn.cmd -Plocal -DskipTests package
@@ -368,7 +368,7 @@ pnpm --dir h5 build
 
 Expected: backend `BUILD SUCCESS`, Admin and H5 exit `0`; only the established large-chunk advisory is acceptable.
 
-- [ ] **Step 4: Run safety and consistency scans**
+- [x] **Step 4: Run safety and consistency scans**
 
 ```powershell
 rg -n "IWallet|Wallet.*Mapper|Payment.*Command|rawBody|signature|update |insert |delete " backend/gameluck-modules/gameluck-payment/src/main/java/com/gameluck/payment/service/impl/PaymentSettlementReportServiceImpl.java backend/gameluck-modules/gameluck-payment/src/main/java/com/gameluck/payment/mapper/PaymentSettlementReportMapper.java backend/gameluck-modules/gameluck-payment/src/main/java/com/gameluck/payment/service/report/SettlementReportCsvWriter.java
@@ -377,7 +377,7 @@ git diff --check
 
 Expected: no wallet/command/sensitive-data dependency and no report mutation SQL; diff check exits `0` apart from existing line-ending warnings.
 
-- [ ] **Step 5: Record exact evidence**
+- [x] **Step 5: Record exact evidence**
 
 Append test counts, build module counts, warnings, and any bounded-memory retry to `progress.md`.
 
