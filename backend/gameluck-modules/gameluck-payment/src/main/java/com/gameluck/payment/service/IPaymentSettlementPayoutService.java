@@ -16,4 +16,6 @@ public interface IPaymentSettlementPayoutService {
     PaymentSettlementPayoutDetailVo edit(Long payoutId, PaymentSettlementPayoutEditBo bo);
     PaymentSettlementPayoutDetailVo submit(Long payoutId, PaymentSettlementPayoutCommandBo bo);
     PaymentSettlementPayoutDetailVo cancel(Long payoutId, PaymentSettlementPayoutCommandBo bo);
+    PaymentSettlementPayoutDetailVo approve(Long payoutId, PaymentSettlementPayoutCommandBo bo);
+    PaymentSettlementPayoutDetailVo reject(Long payoutId, PaymentSettlementPayoutCommandBo bo);
 }

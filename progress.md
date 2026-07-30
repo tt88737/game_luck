@@ -2426,3 +2426,11 @@
 - Added `PaymentSettlementPayoutTransactionIntegrationTest` using a real Spring transaction proxy, MyBatis mappers, and H2. A forced action-log constraint failure leaves the payout status/version unchanged and persists no action, proving the state update and action insertion roll back together.
 - Combined Task 3 command and transaction suite passed 16/16 with zero failures, errors, or skips. Task 3 Step 4 remains open for parent review, commit, and push.
 - Parent verification passed 28/28 tests across Task 3 workflow and transaction coverage plus Task 1/2 and Phase 45 regressions. The scoped sensitive/financial scan returned zero and `git diff --check` passed; Task 3 is ready for its module commit and push.
+
+## 2026-07-30 Phase 47 Task 4 Maker-Checker Approval
+
+- Added an independent approval boundary for approve/reject decisions. Only `PENDING_APPROVAL` instructions are eligible, the reviewer must differ from the immutable maker, a bounded non-control-character reason is required, and optimistic updates are never retried.
+- Approval and rejection persist reviewer identity, decision reason, terminal/rejected status, version, and exactly one action in the surrounding transaction. Zero-row updates reload once to classify not-found, invalid-state, and version-conflict outcomes.
+- Approval action evidence is parsed as JSON and recursively removes bank, account, routing, credential, secret, token, signature, and raw-body keys; malformed evidence is omitted rather than logged.
+- RED failed in test compilation only because `PaymentSettlementPayoutApprovalService` was absent. GREEN plus Task 1-3 and Phase 45 regression passed 33/33 with zero failures, errors, or skips.
+- Financial dependency scan found no wallet mapper, payment command, settlement/reconciliation mutation, credential, bank-field, raw-body, or signature dependency outside the explicit sanitizer denylist. `git diff --check` passed.

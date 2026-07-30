@@ -21,6 +21,7 @@ import com.gameluck.payment.mapper.PaymentSettlementPayoutActionLogMapper;
 import com.gameluck.payment.mapper.PaymentSettlementPayoutMapper;
 import com.gameluck.payment.service.IPaymentSettlementPayoutService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +42,8 @@ public class PaymentSettlementPayoutServiceImpl implements IPaymentSettlementPay
     private final PaymentSettlementPayoutMapper payoutMapper;
     private final PaymentSettlementPayoutActionLogMapper actionLogMapper;
     private final PaymentReconciliationOperatorProvider operatorProvider;
+    @Autowired(required = false)
+    private PaymentSettlementPayoutApprovalService approvalService;
 
     @Override
     @Transactional
@@ -145,6 +148,28 @@ public class PaymentSettlementPayoutServiceImpl implements IPaymentSettlementPay
     public PaymentSettlementPayoutDetailVo cancel(Long payoutId, PaymentSettlementPayoutCommandBo bo) {
         String reason = bo == null || blank(bo.getReason()) ? null : text(bo.getReason(), REASON_MAX_LENGTH);
         return transition(payoutId, bo, "DRAFT", "CANCELLED", "CANCEL", reason);
+    }
+
+    @Override
+    @Transactional
+    public PaymentSettlementPayoutDetailVo approve(Long payoutId, PaymentSettlementPayoutCommandBo bo) {
+        return decision(payoutId, bo, true);
+    }
+
+    @Override
+    @Transactional
+    public PaymentSettlementPayoutDetailVo reject(Long payoutId, PaymentSettlementPayoutCommandBo bo) {
+        return decision(payoutId, bo, false);
+    }
+
+    private PaymentSettlementPayoutDetailVo decision(Long payoutId, PaymentSettlementPayoutCommandBo bo,
+                                                       boolean approve) {
+        String tenantId = TenantHelper.getTenantId();
+        PaymentSettlementPayout before = requireCurrent(tenantId, payoutId);
+        PaymentSettlementPayout after = approve
+            ? approvalService.approve(tenantId, before, bo)
+            : approvalService.reject(tenantId, before, bo);
+        return detail(after, actionLogMapper.selectByPayout(tenantId, payoutId).stream().map(this::actionVo).toList());
     }
 
     private PaymentSettlementPayoutDetailVo transition(Long payoutId, PaymentSettlementPayoutCommandBo bo,

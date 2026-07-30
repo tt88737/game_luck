@@ -169,7 +169,7 @@ git push
 
 **Files:** approval service, payout service delegation, mapper transitions, and `PaymentSettlementPayoutApprovalServiceTest.java`.
 
-- [ ] **Step 1: Write RED approval tests**
+- [x] **Step 1: Write RED approval tests**
 
 Cover self-approval denial by maker ID, second-user approve/reject, APPROVED/CANCELLED terminal replay, REJECTED not directly approvable, reviewer identity persistence, sanitized evidence, and unchanged settlement mapper.
 
@@ -180,15 +180,15 @@ assertThatThrownBy(() -> approval.approve("000000", pendingMadeBy(100L), command
 verify(payoutMapper, never()).transition(any(), any(), anyInt(), any(), any(), any(), any(), any(), any());
 ```
 
-- [ ] **Step 2: Implement approval boundary**
+- [x] **Step 2: Implement approval boundary**
 
 Require `PENDING_APPROVAL`, reviewer ID different from `makerId`, required bounded reason, expected version, and atomic `APPROVE`/`REJECT` action insertion.
 
-- [ ] **Step 3: Run GREEN and financial dependency scan**
+- [x] **Step 3: Run GREEN and financial dependency scan**
 
 Expected: no wallet mapper, payment command, settlement update, reconciliation update, raw body, signature, credential, or bank field dependency.
 
-- [ ] **Step 4: Commit and push module**
+- [x] **Step 4: Commit and push module**
 
 ```powershell
 git add backend/gameluck-modules/gameluck-payment/src
