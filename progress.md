@@ -2326,3 +2326,13 @@
 - Pre-commit review caught and removed unsupported fee-component fields, then aligned the row contract with the approved negative-net and period/close timestamp evidence.
 - Focused contract verification passed 3/3 with zero failures, errors, or skips; the three permission literals are unique and `git diff --check` passed with only existing line-ending warnings.
 - Task 1 is complete. Task 2 tenant-scoped grouped queries is next.
+
+## 2026-07-31 Phase 46 Task 2 Tenant-Scoped Grouped Queries
+
+- TDD RED failed compilation only because the dedicated report mapper and service did not exist.
+- Added a read-only mapper over `gl_payment_settlement_batch` with mandatory tenant, `CLOSED`, and half-open UTC period predicates for grouped rows, full-filter currency totals, and exact group drill-down.
+- Added default latest-seven-day normalization, inclusive 31-day validation, future/reversed rejection, normalized Provider/currency filters, JavaScript-safe projections, empty report handling, and stable absent-group behavior.
+- Kept pagination separate from the locked filter BO, matching existing Admin controller/service conventions; currency totals remain independent of page bounds.
+- Focused report service tests and the Phase 45 settlement service regression passed 8/8 with zero failures, errors, or skips.
+- Read-only SQL, tenant/status/date boundaries, no-wallet/no-command-service dependencies, and `git diff --check` passed.
+- Task 2 is complete. Task 3 bounded safe CSV export is next.

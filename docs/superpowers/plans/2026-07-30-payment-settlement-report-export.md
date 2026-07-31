@@ -112,7 +112,7 @@ git commit -m "feat: add settlement report contracts"
 - Create: `backend/gameluck-modules/gameluck-payment/src/main/java/com/gameluck/payment/service/impl/PaymentSettlementReportServiceImpl.java`
 - Create: `backend/gameluck-modules/gameluck-payment/src/test/java/com/gameluck/payment/service/impl/PaymentSettlementReportServiceImplTest.java`
 
-- [ ] **Step 1: Write failing service tests**
+- [x] **Step 1: Write failing service tests**
 
 Cover default normalization, inclusive 31-day UTC bounds, future/reversed rejection, uppercase Provider/currency, tenant forwarding, grouped-page projection, full-filter currency totals, empty results, exact drill-down, and absent groups. Capture mapper arguments and prove `periodEndExclusive = endDate.plusDays(1) at UTC midnight`.
 
@@ -122,11 +122,11 @@ assertThat(capturedEnd.toInstant()).isEqualTo(Instant.parse("2026-08-01T00:00:00
 verify(mapper).selectGroupedRows(any(), eq("000000"), any(), any(), eq("SIMULATED"), eq("USD"));
 ```
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 Run `PaymentSettlementReportServiceImplTest`; expected failure because mapper/service are absent.
 
-- [ ] **Step 3: Add grouped mapper and minimal service**
+- [x] **Step 3: Add grouped mapper and minimal service**
 
 Use annotated MyBatis SQL over `gl_payment_settlement_batch` with these non-negotiable predicates:
 
@@ -139,7 +139,7 @@ and period_start < #{periodEndExclusive}
 
 Group with `DATE(CONVERT_TZ(period_start, @@session.time_zone, '+00:00'))`, `provider_code`, and `currency_code`; sum every Phase 45 count/money field; order date descending then Provider/currency ascending. Apply MyBatis `Page` to grouped rows. Totals group only by currency and ignore page bounds. Drill-down repeats the exact source membership and returns `PaymentSettlementBatchVo` ordered by `period_start,id`.
 
-- [ ] **Step 4: Run GREEN and the Phase 45 service regression**
+- [x] **Step 4: Run GREEN and the Phase 45 service regression**
 
 ```powershell
 C:\tools\apache-maven-3.9.16\bin\mvn.cmd -Plocal -pl gameluck-modules/gameluck-payment -am '-DskipTests=false' '-Dtest=PaymentSettlementReportServiceImplTest,PaymentSettlementServiceImplTest' '-Dsurefire.failIfNoSpecifiedTests=false' '-DforkCount=0' test
@@ -147,7 +147,7 @@ C:\tools\apache-maven-3.9.16\bin\mvn.cmd -Plocal -pl gameluck-modules/gameluck-p
 
 Expected: zero failures/errors/skips.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```powershell
 git add backend/gameluck-modules/gameluck-payment/src/main/java/com/gameluck/payment/mapper/PaymentSettlementReportMapper.java backend/gameluck-modules/gameluck-payment/src/main/java/com/gameluck/payment/service backend/gameluck-modules/gameluck-payment/src/test/java/com/gameluck/payment/service/impl/PaymentSettlementReportServiceImplTest.java
