@@ -2345,3 +2345,12 @@
 - Export remains in memory and creates no temporary/server files, database rows, or write statements.
 - Focused service and CSV tests passed 6/6 with zero failures, errors, or skips; no-file/no-database-write scans and `git diff --check` passed.
 - Task 3 is complete. Task 4 permission-scoped Admin endpoints is next.
+
+## 2026-07-31 Phase 46 Task 4 Permission-Scoped Admin Endpoints
+
+- TDD RED failed compilation only because the report controller did not exist.
+- Added the approved list, exact-group batch drill-down, and CSV export GET endpoints under `/payment/settlement-report` with exact `list`, `query`, and `export` permissions.
+- Export sets the deterministic date-based filename through RFC 5987 `Content-Disposition`, exposes that header to the Admin client, and writes only the in-memory service bytes.
+- Export operation logging uses `BusinessType.EXPORT` with request and response payload persistence disabled; the controller depends only on `IPaymentSettlementReportService`.
+- All four Phase 46 backend test classes passed 12/12 with zero failures, errors, or skips; `git diff --check` passed.
+- Task 4 is complete. Task 5 typed Admin API and contract guard is next.

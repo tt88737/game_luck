@@ -206,15 +206,15 @@ git commit -m "feat: export safe settlement report csv"
 - Create: `backend/gameluck-modules/gameluck-payment/src/main/java/com/gameluck/payment/controller/PaymentSettlementReportController.java`
 - Create: `backend/gameluck-modules/gameluck-payment/src/test/java/com/gameluck/payment/controller/PaymentSettlementReportControllerContractTest.java`
 
-- [ ] **Step 1: Write controller RED contract**
+- [x] **Step 1: Write controller RED contract**
 
 Require `/payment/settlement-report`, `GET /list`, `GET /{date}/{providerCode}/{currencyCode}/batches`, and `GET /export`; exact permissions; `@Log(businessType = BusinessType.EXPORT, isSaveRequestData = false, isSaveResponseData = false)` on export; `text/csv` response; and no command-service dependency.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 Run `PaymentSettlementReportControllerContractTest`; expected missing controller failure.
 
-- [ ] **Step 3: Add minimal controller**
+- [x] **Step 3: Add minimal controller**
 
 ```java
 @SaCheckPermission("payment:settlementReport:export")
@@ -226,7 +226,7 @@ public void export(@Validated PaymentSettlementReportQueryBo query, HttpServletR
 
 Set RFC 5987-safe `Content-Disposition` to the deterministic filename and write only service bytes to the response stream.
 
-- [ ] **Step 4: Run GREEN plus Tasks 1-3 tests and commit**
+- [x] **Step 4: Run GREEN plus Tasks 1-3 tests and commit**
 
 Expected: all Phase 46 backend test classes pass.
 
