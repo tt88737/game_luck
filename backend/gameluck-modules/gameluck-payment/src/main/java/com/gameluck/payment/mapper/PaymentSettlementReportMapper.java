@@ -35,6 +35,27 @@ public interface PaymentSettlementReportMapper {
         @Param("periodEndExclusive") Date periodEndExclusive, @Param("providerCode") String providerCode,
         @Param("currencyCode") String currencyCode);
 
+    @Select("<script>select count(*) from (select 1" + FILTER + " group by " + GROUP_COLUMNS
+        + ") settlement_report_groups</script>")
+    long countGroupedRows(@Param("tenantId") String tenantId, @Param("periodStart") Date periodStart,
+        @Param("periodEndExclusive") Date periodEndExclusive, @Param("providerCode") String providerCode,
+        @Param("currencyCode") String currencyCode);
+
+    @Select("<script>select DATE_FORMAT(DATE(CONVERT_TZ(period_start,@@session.time_zone,'+00:00')),'%Y-%m-%d') settlement_date,"
+        + "provider_code,currency_code,COUNT(*) batch_count,SUM(event_count) event_count,"
+        + "SUM(payment_count) payment_count,SUM(refund_count) refund_count,SUM(chargeback_count) chargeback_count,"
+        + "CAST(SUM(gross_payment) AS CHAR) gross_payment,CAST(SUM(refund_amount) AS CHAR) refund_amount,"
+        + "CAST(SUM(chargeback_amount) AS CHAR) chargeback_amount,CAST(SUM(total_fee) AS CHAR) total_fee,"
+        + "CAST(SUM(net_settlement) AS CHAR) net_settlement,(SUM(net_settlement)&lt;0) negative_net,"
+        + "DATE_FORMAT(MIN(period_start),'%Y-%m-%dT%H:%i:%sZ') earliest_period_start,"
+        + "DATE_FORMAT(MAX(period_end),'%Y-%m-%dT%H:%i:%sZ') latest_period_end,"
+        + "DATE_FORMAT(MAX(closed_time),'%Y-%m-%dT%H:%i:%sZ') latest_close_time"
+        + FILTER + " group by " + GROUP_COLUMNS
+        + " order by DATE(CONVERT_TZ(period_start,@@session.time_zone,'+00:00')) desc,provider_code,currency_code</script>")
+    List<PaymentSettlementReportRowVo> selectExportRows(@Param("tenantId") String tenantId,
+        @Param("periodStart") Date periodStart, @Param("periodEndExclusive") Date periodEndExclusive,
+        @Param("providerCode") String providerCode, @Param("currencyCode") String currencyCode);
+
     @Select("<script>select currency_code,COUNT(*) batch_count,SUM(event_count) event_count,"
         + "SUM(payment_count) payment_count,SUM(refund_count) refund_count,SUM(chargeback_count) chargeback_count,"
         + "CAST(SUM(gross_payment) AS CHAR) gross_payment,CAST(SUM(refund_amount) AS CHAR) refund_amount,"

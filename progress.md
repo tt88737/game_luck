@@ -2336,3 +2336,12 @@
 - Focused report service tests and the Phase 45 settlement service regression passed 8/8 with zero failures, errors, or skips.
 - Read-only SQL, tenant/status/date boundaries, no-wallet/no-command-service dependencies, and `git diff --check` passed.
 - Task 2 is complete. Task 3 bounded safe CSV export is next.
+
+## 2026-07-31 Phase 46 Task 3 Safe Bounded CSV Export
+
+- TDD RED failed only on the absent CSV writer, export mapper methods, and service export contract.
+- Added a Hutool structured CSV writer with UTF-8 BOM, the approved fixed 17-column order, library-managed quoting/newlines, exact decimal text, and formula-injection protection based on the first non-whitespace character.
+- Added a count-first export boundary: more than 2,000 grouped rows is rejected before row selection; exactly 2,000 is allowed and uses the same tenant/filter/UTC grouping and stable ordering as the screen query.
+- Export remains in memory and creates no temporary/server files, database rows, or write statements.
+- Focused service and CSV tests passed 6/6 with zero failures, errors, or skips; no-file/no-database-write scans and `git diff --check` passed.
+- Task 3 is complete. Task 4 permission-scoped Admin endpoints is next.

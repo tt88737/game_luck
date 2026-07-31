@@ -11,4 +11,5 @@ import java.util.List;
 public interface IPaymentSettlementReportService {
     PaymentSettlementReportPageVo queryPage(PaymentSettlementReportQueryBo bo, PageQuery pageQuery);
     List<PaymentSettlementBatchVo> queryBatches(LocalDate date, String providerCode, String currencyCode);
+    byte[] export(PaymentSettlementReportQueryBo bo);
 }

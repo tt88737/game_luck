@@ -11,6 +11,7 @@ import com.gameluck.payment.domain.vo.PaymentSettlementReportRowVo;
 import com.gameluck.payment.mapper.PaymentSettlementReportMapper;
 import com.gameluck.payment.provider.PaymentProviderRegistry;
 import com.gameluck.payment.service.IPaymentSettlementReportService;
+import com.gameluck.payment.service.report.SettlementReportCsvWriter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,7 @@ import java.util.Locale;
 @Service
 @RequiredArgsConstructor
 public class PaymentSettlementReportServiceImpl implements IPaymentSettlementReportService {
+    private static final long EXPORT_LIMIT = 2000;
     private final PaymentSettlementReportMapper mapper;
     private final PaymentProviderRegistry providerRegistry;
 
@@ -55,6 +57,17 @@ public class PaymentSettlementReportServiceImpl implements IPaymentSettlementRep
             query.periodStart(), query.periodEndExclusive(), query.providerCode(), query.currencyCode());
         if (batches.isEmpty()) throw new ServiceException("payment.settlementReport.group.notFound");
         return batches;
+    }
+
+    @Override
+    public byte[] export(PaymentSettlementReportQueryBo bo) {
+        NormalizedQuery query = normalize(bo);
+        String tenantId = TenantHelper.getTenantId();
+        long count = mapper.countGroupedRows(tenantId, query.periodStart(), query.periodEndExclusive(),
+            query.providerCode(), query.currencyCode());
+        if (count > EXPORT_LIMIT) throw new ServiceException("payment.settlementReport.export.tooLarge");
+        return new SettlementReportCsvWriter().write(mapper.selectExportRows(tenantId, query.periodStart(),
+            query.periodEndExclusive(), query.providerCode(), query.currencyCode()));
     }
 
     private NormalizedQuery normalize(PaymentSettlementReportQueryBo bo) {

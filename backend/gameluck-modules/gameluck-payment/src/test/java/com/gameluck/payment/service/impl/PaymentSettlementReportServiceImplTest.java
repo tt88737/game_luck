@@ -111,6 +111,25 @@ class PaymentSettlementReportServiceImplTest {
         }
     }
 
+    @Test
+    void rejectsOversizedExportBeforeReadingRowsAndExportsTheExactLimit() {
+        LocalDate today = LocalDate.now(ZoneOffset.UTC);
+        PaymentSettlementReportQueryBo query = query(today, today);
+        when(mapper.countGroupedRows(eq("tenant-a"), any(), any(), eq(null), eq(null)))
+            .thenReturn(2001L, 2000L);
+        when(mapper.selectExportRows(eq("tenant-a"), any(), any(), eq(null), eq(null)))
+            .thenReturn(List.of());
+
+        try (MockedStatic<TenantHelper> tenant = mockStatic(TenantHelper.class)) {
+            tenant.when(TenantHelper::getTenantId).thenReturn("tenant-a");
+            assertThatThrownBy(() -> service.export(query)).isInstanceOf(ServiceException.class)
+                .hasMessage("payment.settlementReport.export.tooLarge");
+            assertThat(service.export(query)).startsWith((byte) 0xEF, (byte) 0xBB, (byte) 0xBF);
+        }
+
+        verify(mapper).selectExportRows(eq("tenant-a"), any(), any(), eq(null), eq(null));
+    }
+
     private void assertFailure(PaymentSettlementReportQueryBo query, String message) {
         assertThatThrownBy(() -> service.queryPage(query, new PageQuery(20, 1)))
             .isInstanceOf(ServiceException.class).hasMessage(message);
