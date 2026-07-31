@@ -2408,3 +2408,11 @@
 - Selected a unified dense Admin list with a detail drawer and timeline instead of direction tabs; responsive behavior keeps table scrolling local at 390 px.
 - The visual companion Bash launcher was unavailable on Windows, so the same bundled Node server was used successfully; the first session later auto-expired and was restarted on a new local port without affecting project services.
 - Wrote the approved design to `docs/superpowers/specs/2026-07-31-payment-settlement-instruction-review-design.md`. `task_plan.md` remains untouched because of its historical mixed encoding.
+
+## 2026-07-31 Phase 47 Implementation Planning
+
+- Mapped Phase 45/46 settlement/report entities, mappers, services, controllers, Admin APIs/pages, contracts, runtime scripts, SQL menu range, and backend message bundles before fixing the Phase 47 file structure.
+- Reused the existing request-key replay and append-only review-log patterns while keeping Phase 47 free of wallet and payment command dependencies.
+- A read-only discovery command first requested nonexistent `PurchaseReversalReviewCommandBo.java`; the actual established command type is `PurchaseReversalReviewActionBo.java`, and the Phase 47 plan uses only verified paths.
+- Plan self-review also corrected an assumed modular Admin language path to the repository's actual flat files, `admin-ui/src/lang/en_US.ts` and `admin-ui/src/lang/zh_CN.ts`.
+- Converted the approved design into `docs/superpowers/plans/2026-07-31-payment-settlement-instruction-review.md` with eight TDD tasks covering persistence, generation/query, payable review, external outcomes, Admin API, responsive workbench, regression/builds, and SQL/runtime acceptance.
