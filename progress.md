@@ -2354,3 +2354,12 @@
 - Export operation logging uses `BusinessType.EXPORT` with request and response payload persistence disabled; the controller depends only on `IPaymentSettlementReportService`.
 - All four Phase 46 backend test classes passed 12/12 with zero failures, errors, or skips; `git diff --check` passed.
 - Task 4 is complete. Task 5 typed Admin API and contract guard is next.
+
+## 2026-07-31 Phase 46 Task 5 Typed Admin API And Contract Guard
+
+- TDD RED failed because the typed settlement-report API directory did not exist.
+- Added string-safe report query, grouped row, currency-total, page, and drill-down batch types plus exact list/drill-down/blob-export API functions and explicit permission constants.
+- Added `check:payment-settlement-report`; the contract rejects numeric money/IDs, endpoint drift, missing Blob response configuration, missing permissions, and `Number()` money conversion.
+- The focused contract, targeted ESLint, Prettier, and `git diff --check` passed.
+- The planned repository-wide `vue-tsc --noEmit` remains nonzero on established baseline errors in shared components, layout, and unrelated legacy pages; no Phase 46 API/type file appeared in diagnostics. This is recorded rather than expanding scope, and Task 7 will run the production-equivalent Admin build.
+- Task 5 is complete. Task 6 Admin settlement report workbench is next.
