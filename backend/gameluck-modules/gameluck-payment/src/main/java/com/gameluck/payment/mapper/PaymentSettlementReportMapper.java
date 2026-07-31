@@ -66,7 +66,7 @@ public interface PaymentSettlementReportMapper {
         @Param("periodStart") Date periodStart, @Param("periodEndExclusive") Date periodEndExclusive,
         @Param("providerCode") String providerCode, @Param("currencyCode") String currencyCode);
 
-    @Select("select cast(id as char) id,settlement_no,provider_code,currency_code,period_start,period_end,status,"
+    @Select("<script>select cast(id as char) id,settlement_no,provider_code,currency_code,period_start,period_end,status,"
         + "cast(payment_fee_rate as char) payment_fee_rate,cast(payment_fixed_fee as char) payment_fixed_fee,"
         + "cast(chargeback_fixed_fee as char) chargeback_fixed_fee,event_count,payment_count,refund_count,chargeback_count,"
         + "cast(gross_payment as char) gross_payment,cast(refund_amount as char) refund_amount,"
@@ -76,7 +76,7 @@ public interface PaymentSettlementReportMapper {
         + "cast(closer_id as char) closer_id,closer_name,close_remark,calculated_time,closed_time,version,create_time,update_time"
         + " from gl_payment_settlement_batch where tenant_id=#{tenantId} and status='CLOSED'"
         + " and period_start &gt;= #{periodStart} and period_start &lt; #{periodEndExclusive}"
-        + " and provider_code=#{providerCode} and currency_code=#{currencyCode} order by period_start,id")
+        + " and provider_code=#{providerCode} and currency_code=#{currencyCode} order by period_start,id</script>")
     List<PaymentSettlementBatchVo> selectGroupBatches(@Param("tenantId") String tenantId,
         @Param("periodStart") Date periodStart, @Param("periodEndExclusive") Date periodEndExclusive,
         @Param("providerCode") String providerCode, @Param("currencyCode") String currencyCode);

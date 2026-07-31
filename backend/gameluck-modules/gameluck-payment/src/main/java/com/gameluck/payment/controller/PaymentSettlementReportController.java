@@ -49,6 +49,7 @@ public class PaymentSettlementReportController {
     @GetMapping(value = "/export", produces = "text/csv;charset=UTF-8")
     public void export(@Validated PaymentSettlementReportQueryBo bo, HttpServletResponse response) throws IOException {
         String filename = "payment-settlement-report_" + bo.getStartDate() + "_" + bo.getEndDate() + ".csv";
+        response.setContentType("text/csv;charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + filename);
         response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");

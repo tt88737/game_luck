@@ -2383,3 +2383,17 @@
 - H5 typecheck/production build transformed 58 modules and completed successfully.
 - Report safety scans returned no wallet/command-service/raw-body/signature/mutation matches. Phase 46 contract, Phase 45 contract, i18n guard, and `git diff --check` passed.
 - Task 7 is complete. Task 8 SQL/runtime/CSV/responsive acceptance is next.
+
+## 2026-07-31 Phase 46 Task 8 SQL, Runtime, CSV, And Responsive Acceptance
+
+- Imported `gameluck_wallet.sql` twice. Live metadata retained exactly one report page `2034`, exactly three permission rows `20341`-`20343` with three unique permissions, and the unchanged Phase 45 page plus four action permissions.
+- Restarted the refreshed backend/Admin/H5 services from the current workspace; HTTP checks returned 200 on `8080`, `5173`, and `5174`.
+- Reused deterministic closed-batch fixtures covering UTC dates `2026-07-28` and `2026-07-29`, USD/EUR, negative net settlement, multiple Providers, a formula-prefix Provider, and an isolated `999999` tenant row.
+- Runtime list verification matched all 4 expected grouped rows against direct database aggregation, preserved two separate currency totals across pagination, returned correct empty filters, exposed exact SIMULATED/USD drill-down batches, and did not leak the other tenant's `999.000000` row.
+- Runtime CSV verification matched 4 screen groups in stable order with UTF-8 BOM, 17 columns, deterministic filename/content type, exact six-decimal values, and apostrophe protection for `=FORMULA`. An unauthenticated export request was denied.
+- Checksums before and after list/drill-down/export were byte-identical for settlement, purchase, payment-event, reversal, member-risk, turnover, wallet-account, and wallet-transaction sources. Only permitted operation logging can change outside that source set.
+- Runtime exposed two production-only defects. First, escaped drill-down comparison operators lacked a MyBatis `<script>` wrapper and were truncated by the tenant SQL interceptor; a RED annotation regression failed first, the wrapper fix passed 5/5, and the real drill-down then succeeded. Second, CSV bytes inherited JSON content type; a RED direct-controller test reproduced null content type, explicit CSV content type fixed it, and combined controller/service regressions passed 9/9.
+- Final Phase 46 backend verification passed 14/14 with zero failures, errors, or skips. Both frontend contracts, i18n, targeted ESLint, safety scans, `git diff --check`, and a final end-to-end runtime rerun passed.
+- Browser evidence at `1440x900` and `390x844` is stored in `docs/implementation/phase46-payment-settlement-report-desktop.png` and `docs/implementation/phase46-payment-settlement-report-mobile.png`. Visual inspection confirmed nonblank content, readable summaries/negative net, local table scrolling, no incoherent overlap, and no page-level overflow.
+- Mixed-encoding `task_plan.md` remains deliberately untouched to avoid destructive transcoding; this progress entry and the checked implementation plan are the authoritative recovery record.
+- Phase 46 completed.

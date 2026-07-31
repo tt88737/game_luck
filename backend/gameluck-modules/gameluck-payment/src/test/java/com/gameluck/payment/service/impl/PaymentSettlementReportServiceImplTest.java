@@ -14,6 +14,7 @@ import com.gameluck.payment.provider.PaymentProviderRegistry;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
+import org.apache.ibatis.annotations.Select;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -128,6 +129,14 @@ class PaymentSettlementReportServiceImplTest {
         }
 
         verify(mapper).selectExportRows(eq("tenant-a"), any(), any(), eq(null), eq(null));
+    }
+
+    @Test
+    void drillDownSqlUsesAParsedScriptForEscapedComparisonOperators() throws Exception {
+        String sql = String.join("", PaymentSettlementReportMapper.class
+            .getMethod("selectGroupBatches", String.class, Date.class, Date.class, String.class, String.class)
+            .getAnnotation(Select.class).value());
+        assertThat(sql).startsWith("<script>").endsWith("</script>").contains("&gt;=", "&lt;");
     }
 
     private void assertFailure(PaymentSettlementReportQueryBo query, String message) {
