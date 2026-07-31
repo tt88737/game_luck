@@ -2397,3 +2397,14 @@
 - Browser evidence at `1440x900` and `390x844` is stored in `docs/implementation/phase46-payment-settlement-report-desktop.png` and `docs/implementation/phase46-payment-settlement-report-mobile.png`. Visual inspection confirmed nonblank content, readable summaries/negative net, local table scrolling, no incoherent overlap, and no page-level overflow.
 - Mixed-encoding `task_plan.md` remains deliberately untouched to avoid destructive transcoding; this progress entry and the checked implementation plan are the authoritative recovery record.
 - Phase 46 completed.
+
+## 2026-07-31 Phase 47 Payment Settlement Instruction And Review Design
+
+- Selected a local-only settlement instruction and review loop as the next vertical slice after Phase 46; real bank execution, wallet mutation, and Provider payout APIs remain excluded.
+- Confirmed one instruction per closed Phase 45 batch, with deterministic `PAYABLE`, `RECEIVABLE`, and zero-value `BALANCED / NO_ACTION` directions.
+- Confirmed single-reviewer payable approval with mandatory creator/reviewer separation, rejected-item revision and resubmission, externally evidenced execution, and irreversible terminal states.
+- Confirmed receivable collection and separately authorized waiver outcomes, both requiring bounded external evidence or reasons and remaining outside payable approval.
+- Selected one unified instruction table plus an append-only action log, expected-version concurrency, request-key idempotency, exact tenant isolation, and no full bank-account or credential storage.
+- Selected a unified dense Admin list with a detail drawer and timeline instead of direction tabs; responsive behavior keeps table scrolling local at 390 px.
+- The visual companion Bash launcher was unavailable on Windows, so the same bundled Node server was used successfully; the first session later auto-expired and was restarted on a new local port without affecting project services.
+- Wrote the approved design to `docs/superpowers/specs/2026-07-31-payment-settlement-instruction-review-design.md`. `task_plan.md` remains untouched because of its historical mixed encoding.
