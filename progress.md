@@ -2316,3 +2316,13 @@
 - Admin development build passed with `NODE_OPTIONS=2048` and `ROLLUP_MAX_PARALLEL_FILE_OPS=1`, transforming 3175 modules. Only the accepted large-chunk advisory remained.
 - The first 40-project backend package reached `gameluck-admin` but failed during Spring Boot repackage because PID `6604` was running the exact local `gameluck-admin/target/gameluck-admin.jar` and held the JAR lock.
 - After verifying the PID command line and stopping only that project backend, the unchanged Maven package command completed all 40 projects with `BUILD SUCCESS` in 29.217 seconds.
+
+## 2026-07-31 Phase 46 Task 1 Backend Contract And SQL Metadata
+
+- Resumed the approved Phase 46 plan from clean commit `33fc6f9` on the user-authorized shared `main` branch.
+- TDD RED failed compilation only because the report query BO and three report VO contracts did not exist.
+- Added the UTC date/dimension query contract, string-safe grouped row and per-currency total contracts, and the paged report envelope with generation timestamp.
+- Added idempotent Admin menu IDs `2034` and `20341`-`20343` with the three dedicated settlement-report permissions, plus six stable localized failures in all backend message bundles.
+- Pre-commit review caught and removed unsupported fee-component fields, then aligned the row contract with the approved negative-net and period/close timestamp evidence.
+- Focused contract verification passed 3/3 with zero failures, errors, or skips; the three permission literals are unique and `git diff --check` passed with only existing line-ending warnings.
+- Task 1 is complete. Task 2 tenant-scoped grouped queries is next.
