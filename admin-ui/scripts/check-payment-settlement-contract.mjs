@@ -63,6 +63,7 @@ assert.match(page, /\/payment\/payment-reconciliation/);
 assert.match(page, /noMutation/);
 assert.match(page, /table-scroll/);
 assert.match(page, /@media \(max-width: 600px\)/);
+assert.match(page, /route\.query\.batchId/);
 assert.match(page, /prop="eventType"[^>]+min-width="190"/, 'mobile event names need a stable readable column width');
 assert.match(
   page,

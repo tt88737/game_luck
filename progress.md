@@ -2363,3 +2363,13 @@
 - The focused contract, targeted ESLint, Prettier, and `git diff --check` passed.
 - The planned repository-wide `vue-tsc --noEmit` remains nonzero on established baseline errors in shared components, layout, and unrelated legacy pages; no Phase 46 API/type file appeared in diagnostics. This is recorded rather than expanding scope, and Task 7 will run the production-equivalent Admin build.
 - Task 5 is complete. Task 6 Admin settlement report workbench is next.
+
+## 2026-07-31 Phase 46 Task 6 Admin Settlement Report Workbench
+
+- Extended the Phase 46 and Phase 45 frontend contracts first; RED failed because the report page did not exist.
+- Added a B-side report workbench with UTC 7/31-day controls, validated date/Provider/currency filters, full-filter currency summaries, dense grouped financial table, explicit payable/receivable negative-net text, pagination, and permission-scoped CSV export.
+- Added loading, filtered-empty, empty, network error/retry, permission-denied, export-processing, export-success, export-failure, drill-down-loading, drill-down-empty, and drill-down-error states.
+- Added an exact-group batch drawer and Phase 45 detail navigation through string-safe `batchId`; the existing settlement page opens the drawer only after a successful tenant-visible detail response and keeps its list usable on absent/rejected IDs.
+- Added bilingual report copy and a mobile layout with one-column filters/summaries, local table scrolling, full-width drawer, and no page-level fixed-width dependency.
+- Phase 46 contract, Phase 45 contract, i18n guard, targeted ESLint, Prettier, and `git diff --check` passed. Browser evidence remains assigned to Task 8 runtime acceptance.
+- Task 6 is complete. Task 7 regression and production-equivalent builds is next.

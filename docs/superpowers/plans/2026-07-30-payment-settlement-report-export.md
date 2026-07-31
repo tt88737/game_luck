@@ -296,15 +296,15 @@ git commit -m "feat: add settlement report admin api"
 - Modify: `admin-ui/src/lang/zh_CN.ts`
 - Modify: `admin-ui/scripts/check-payment-settlement-report-contract.mjs`
 
-- [ ] **Step 1: Extend the RED frontend contract**
+- [x] **Step 1: Extend the RED frontend contract**
 
 Require default latest-seven-day UTC range, latest 7/31 segmented control, date validation, loading/empty/error/permission/export states, currency summary band, grouped table, explicit negative-net text, nested table scrolling, drill-down drawer, Phase 45 detail navigation, `file-saver` blob download, and all three permission directives.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 Run `pnpm --dir admin-ui check:payment-settlement-report`; expected missing view/i18n assertions.
 
-- [ ] **Step 3: Implement the operational page**
+- [x] **Step 3: Implement the operational page**
 
 Use one unframed page with a filter band, peer currency summaries, dense table, and drawer. Preserve money as strings; use a decimal sign helper that checks `/^-/.test(value)` rather than `Number(value)`.
 
@@ -315,7 +315,7 @@ const canList = computed(() => permissions.value.includes('*:*:*') || permission
 
 Export strips pagination, locks the button, saves the server blob with the deterministic filename, and restores state in `finally`. Drill-down links to `/payment/payment-settlement?batchId=<id>`. Extend the Phase 45 view to read the string `batchId` query on mount, load that tenant-visible batch through its existing detail API, open the drawer only after a successful response, and leave the list usable when the ID is absent or rejected. Cover this behavior in both frontend contracts.
 
-- [ ] **Step 4: Run focused frontend checks**
+- [x] **Step 4: Run focused frontend checks**
 
 ```powershell
 pnpm --dir admin-ui check:payment-settlement-report
@@ -326,7 +326,7 @@ pnpm --dir admin-ui exec eslint src/views/payment/payment-settlement-report/inde
 
 Expected: all commands exit `0`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```powershell
 git add admin-ui/src/views/payment/payment-settlement-report admin-ui/src/lang admin-ui/scripts/check-payment-settlement-report-contract.mjs admin-ui/src/views/payment/payment-settlement/index.vue admin-ui/scripts/check-payment-settlement-contract.mjs
