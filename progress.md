@@ -2373,3 +2373,13 @@
 - Added bilingual report copy and a mobile layout with one-column filters/summaries, local table scrolling, full-width drawer, and no page-level fixed-width dependency.
 - Phase 46 contract, Phase 45 contract, i18n guard, targeted ESLint, Prettier, and `git diff --check` passed. Browser evidence remains assigned to Task 8 runtime acceptance.
 - Task 6 is complete. Task 7 regression and production-equivalent builds is next.
+
+## 2026-07-31 Phase 46 Task 7 Regression And Production-Equivalent Builds
+
+- Focused payment settlement/report/reconciliation/webhook/payment-event/reversal regression passed 205/205 with zero failures, errors, or skips.
+- Split fresh-JVM cross-module regression passed wallet 19/19, member 7/7, and payment fulfillment/reversal 45/45, all with zero failures, errors, or skips and no native-memory retry.
+- The full 40-module backend package completed with `BUILD SUCCESS` on the first attempt.
+- The bounded-memory Admin development build transformed 3,179 modules and completed successfully with `NODE_OPTIONS=2048` and single-operation Rollup concurrency; only the established large-chunk advisory remained.
+- H5 typecheck/production build transformed 58 modules and completed successfully.
+- Report safety scans returned no wallet/command-service/raw-body/signature/mutation matches. Phase 46 contract, Phase 45 contract, i18n guard, and `git diff --check` passed.
+- Task 7 is complete. Task 8 SQL/runtime/CSV/responsive acceptance is next.
