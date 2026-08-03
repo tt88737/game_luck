@@ -86,3 +86,7 @@ Flutter Web 可用，但不建议作为主要 H5/官网/PWA 技术。
 - Approved UTC natural-day semantics: an event on day D with an N-day SLA is due through `23:59:59 UTC` on D+N and becomes overdue on the next UTC day.
 - Approved APIs are a list endpoint returning full-filter summaries plus paged rows, and versioned policy read/update endpoints. Monitoring permissions remain separate from Phase 47 command permissions.
 - Amount summaries remain per currency, IDs and money remain strings, and the UI must not imply owner assignment that Phase 47 does not model.
+- Phase 47 already persists the exact monitor base timestamps on the instruction row: `create_time` for `DRAFT`/`OPEN`, `submitted_time` for `PENDING_REVIEW`, `reviewed_time` for `REJECTED`, and `reviewed_time` for `APPROVED`. Phase 48 therefore does not need action-log scans or redundant deadline columns.
+- The next verified Payment Center menu allocation is page `2036` with permissions `20361`-`20363`; the existing rejection-review sibling moves from order 10 to 11.
+- The established payment module already provides an injectable UTC `Clock` bean through `PaymentProviderConfiguration`; Phase 48 should reuse it so `evaluatedAt` and UTC-boundary tests are deterministic.
+- The existing report page envelope pattern supports returning rows, total, full-filter summaries, and a generated/evaluated timestamp in one response. Phase 48 should follow this pattern rather than return `TableDataInfo` plus separate summary requests.
