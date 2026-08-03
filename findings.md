@@ -72,3 +72,17 @@ Flutter Web 可用，但不建议作为主要 H5/官网/PWA 技术。
 - `PaymentReconciliationPlatformDataSource` originally hardcoded `duplicatePriorStatementEvidence=false`, so the matcher-supported `DUPLICATE_PROVIDER_RECORD` outcome was unreachable in production runtime.
 - The production fix queries provider record IDs from other tenant-matched `COMPLETED` batches, excludes the current batch, and batches the lookup once per execution chunk rather than adding per-line queries.
 - Runtime reconciliation remains read-only toward payment, reversal, member-risk, turnover, and wallet state; only reconciliation batches, lines, issues, and append-only action logs changed during acceptance.
+# 2026-08-03 Phase 48 Discovery
+
+- Phase 47 is complete on `feat/payment-settlement-instruction-review` and remains ten commits ahead of `main`; no Phase 48 design or implementation plan exists.
+- Phase 45-47 already provide immutable settlement batches, grouped reports/CSV, and one operational instruction per closed batch with payable review and externally evidenced terminal outcomes.
+- The clearest next local-only operations gap is instruction aging and exception visibility: operators can process individual instructions, but there is no due-date policy, aging bucket, overdue queue, exception summary, or per-currency exposure view.
+- Phase 48 should continue to exclude real bank/provider execution, treasury movement, wallet mutation, accounting-ledger posting, and storage of full bank details.
+- Alternative bounded directions remain evidence reconciliation for externally completed outcomes, or finance-oriented instruction export; scope requires user confirmation before design.
+- User selected instruction aging and exception monitoring. SLA uses tenant-configurable natural-day thresholds: payable timing starts at approval, receivable timing starts at instruction creation, with system defaults when no tenant override exists.
+- Monitoring covers both terminal-deadline exposure (`APPROVED` payable and `OPEN` receivable) and workflow stalls (`DRAFT`, `REJECTED`, and `PENDING_REVIEW`).
+- Phase 48 will not add claim, acknowledge, ignore, or snooze state; source instruction progress resolves the derived exception automatically.
+- Selected architecture persists only SLA policy configuration and derives `NORMAL`, `DUE_SOON`, `OVERDUE`, and `STALLED` results at query time. Scheduled snapshots and write-back to Phase 47 instructions were rejected to avoid synchronization and state-machine coupling.
+- Approved UTC natural-day semantics: an event on day D with an N-day SLA is due through `23:59:59 UTC` on D+N and becomes overdue on the next UTC day.
+- Approved APIs are a list endpoint returning full-filter summaries plus paged rows, and versioned policy read/update endpoints. Monitoring permissions remain separate from Phase 47 command permissions.
+- Amount summaries remain per currency, IDs and money remain strings, and the UI must not imply owner assignment that Phase 47 does not model.

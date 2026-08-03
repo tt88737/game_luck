@@ -2416,3 +2416,20 @@
 - A read-only discovery command first requested nonexistent `PurchaseReversalReviewCommandBo.java`; the actual established command type is `PurchaseReversalReviewActionBo.java`, and the Phase 47 plan uses only verified paths.
 - Plan self-review also corrected an assumed modular Admin language path to the repository's actual flat files, `admin-ui/src/lang/en_US.ts` and `admin-ui/src/lang/zh_CN.ts`.
 - Converted the approved design into `docs/superpowers/plans/2026-07-31-payment-settlement-instruction-review.md` with eight TDD tasks covering persistence, generation/query, payable review, external outcomes, Admin API, responsive workbench, regression/builds, and SQL/runtime acceptance.
+# 2026-08-03 Phase 48 Recovery And Discovery
+
+- Recovered the prior session with `planning-with-files` and confirmed Phase 47 is fully implemented and verified on its isolated worktree.
+- Confirmed `main` remains at `af90588`; the Phase 47 branch is ten commits ahead and has only a line-ending-only `.eslintrc-auto-import.json` worktree marker with no content diff.
+- Reviewed the Phase 45-47 boundaries and current settlement/reconciliation/Admin surfaces. No approved Phase 48 specification or plan exists, so implementation remains gated on design approval.
+- Identified instruction aging/exception monitoring as the recommended next vertical slice, with evidence reconciliation and bounded operational export as alternatives.
+- Historical mixed-encoding `task_plan.md` was deliberately left untouched.
+- User approved Phase 48 instruction aging and exception monitoring, natural-day tenant SLA configuration, coverage of overdue and workflow-stalled records, and a monitoring-only workflow without separate exception disposition state.
+- Compared query-time derivation, scheduled exception snapshots, and instruction write-back. User approved query-time derivation with only SLA configuration persisted.
+- Started the optional visual companion at `http://localhost:56837`; UI layout will be presented after architecture confirmation.
+- The first visual-companion process inherited a short-lived launcher PID and exited before the layout write. It was restarted without owner-PID binding at `http://localhost:59119`; no project runtime service was affected.
+- User selected visual option A: one dense monitoring workbench with risk summaries, aging/currency distribution, filters, exception rows, and navigation into the existing Phase 47 instruction workflow.
+- User approved the data contract, UTC natural-day deadline semantics, dedicated monitoring/policy permissions, versioned tenant policy updates, and per-currency summaries.
+- User selected mobile visual option A: a 2x2 summary grid, collapsed filters, and table-local horizontal scrolling with no page-level overflow at 390 px.
+- User approved the complete Phase 48 design, including deterministic request-time evaluation, explicit error states, source-data mutation boundaries, and runtime checksum acceptance.
+- Wrote the approved design to `docs/superpowers/specs/2026-08-03-payment-settlement-instruction-aging-monitor-design.md`; self-review and commit are next.
+- Phase 48 spec self-review passed: 13 expected sections, no placeholders, consistent query-time architecture, per-currency rules, error handling, testing, exclusions, and clean scoped whitespace apart from existing line-ending warnings.
